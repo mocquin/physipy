@@ -1,0 +1,106 @@
+import unittest
+
+from dimension import Dimension, DimensionError
+
+
+class TestClassDimension(unittest.TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.m = Dimension("L")
+        cls.none = Dimension(None)
+        cls.dim_complexe = Dimension({"J": 1, "Θ": -3})
+        cls.no_dimension_str = "no-dimension"
+
+    def test_010_init(cls):
+
+        metre_by_dict = Dimension({"L": 1})
+        cls.assertEqual(cls.m, metre_by_dict)
+
+        none_dimenion_dict = cls.none.dim_dict
+        dico_dimension_none = {'L': 0,
+                               'M': 0,
+                               'T': 0,
+                               'I': 0,
+                               'Θ': 0,
+                               'N': 0,
+                               'J': 0,
+                               'RAD': 0,
+                               'SR': 0}
+        cls.assertEqual(none_dimenion_dict, dico_dimension_none)
+        
+        cls.assertRaises(TypeError,lambda: Dimension({"m":1}))
+
+    def test_020_str(cls):
+
+        expected_str = "L"
+        actual_str = str(cls.m)
+        cls.assertEqual(expected_str, actual_str)
+
+        expected_str = "J/Θ**3"
+        actual_str = str(cls.dim_complexe)
+        cls.assertEqual(expected_str, actual_str)
+
+        expected_str = cls.no_dimension_str
+        actual_str = str(cls.none)
+        cls.assertEqual(expected_str, actual_str)
+
+    def test_030_repr(cls):
+
+        cls.assertEqual(repr(cls.none), "<Dimension : no-dimension>")
+        cls.assertEqual(repr(cls.m), "<Dimension : L>")
+        cls.assertEqual(repr(cls.dim_complexe), "<Dimension : J/Θ**3>")
+
+    def test_040_mul(cls):
+
+        cls.assertEqual(cls.m * cls.dim_complexe,
+                        Dimension({"J": 1, "L": 1, "Θ": -3}))
+
+        # Multipliying by a number, not a Dimension object
+        cls.assertRaises(TypeError, lambda: cls.m * 1.12)
+        cls.assertRaises(TypeError, lambda: 1.12 * cls.m)
+
+    def test_050_div(cls):
+
+        cls.assertEqual(cls.m / cls.dim_complexe,
+                        Dimension({"J": -1, "L": 1, "Θ": 3}))
+        # Testing the inversion by dividing 1
+        cls.assertEqual(1 / cls.m,
+                        Dimension({"L": -1}))
+
+        # Dividing by a number, not a Dimension object
+        cls.assertRaises(TypeError, lambda: cls.m / 1.12)
+        cls.assertRaises(TypeError, lambda: 1.12 / cls.m)
+        
+        cls.assertEqual(cls.m/1,
+                       cls.m)
+
+    def test_060_pow(cls):
+
+        cls.assertEqual(cls.m ** 2, Dimension({"L": 2}))
+        cls.assertEqual(cls.m ** (1/2), Dimension({"L": 1/2}))
+
+        # TODO
+        cls.assertRaises(TypeError, lambda: cls.m ** 1.2j)
+
+    def test_070_eq_ne(cls):
+
+        cls.assertTrue(cls.m == Dimension({"L": 1}))
+        cls.assertTrue(cls.m != cls.none)
+
+    def test_080_inv(cls):
+        m_inv = cls.m.__inv__()
+        cls.assertEqual(m_inv, Dimension({"L": -1}))
+        
+    def test_090_str_SI_unit(cls):
+        cls.assertEqual(cls.m.str_SI_unit(), "m")
+        cls.assertEqual(cls.none.str_SI_unit(),"")
+
+    #def test_pycodestyle(cls):
+    #    style = pycodestyle.StyleGuide(quiet=True)
+    #    result = style.check_files(['dimension.py', 'test_dimension.py'])
+    #    cls.assertEqual(result.total_errors, 0,
+    #                    "Found code style errors (and warnings).")
+
+if __name__ == "__main__":
+    unittest.main()
