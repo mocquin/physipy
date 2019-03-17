@@ -8,6 +8,7 @@ import numbers as nb
 
 from dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 
+from .quantity import quantify, array_to_Q_array, Quantity
 
 
 
