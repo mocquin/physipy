@@ -17,45 +17,56 @@ Other module/package :
  - https://quantiphy.readthedocs.io/en/stable/index.html
  - pint : https://pint.readthedocs.io/en/latest/
  - pynbody : https://github.com/pynbody/pynbody
+ - http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
+
+ - [ ] : module physics.py : ipython-physics.py : https://github.com/TheGrum/python3-physics
+Adaptation python 3 de https://bitbucket.org/birkenfeld/ipython-physics, lui même adpaté de scientificpython de KonradHinsen
+http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
+Les "unités" peuvent avoir un "nom" sous forme de chaine de caractères
+méthodes tan, cos, sin pour "numpy ufunc" ?
+globale précision de 8 par défaut dans la classe
+système si avec rad et sr
+système cgs dispo
++ extension Ipython pour écriture "1 m"
+- [ ] : scientificpython par Konrad Hinsen 
+http://dirac.cnrs-orleans.fr/ScientificPython : seulement sur python 2.7 et numpy 1.8
+https://bitbucket.org/khinsen/scientificpython : 
+https://github.com/ScientificPython/ScientificPython
 
 
+# Known issues
 
-
-
- 
-Known issues
- 
-Advantages:
+# Advantages:
 - Full object-oriented approach : change value attribute, change display
  
-Drawbacks (that could be implemented later ?)
+# Drawbacks (that could be implemented later ?)
 - No simple way to change base-unit system
 - No offset scaling (ex degC to K)
 - Dimension powers are treated as scalars – one could need them to be treated as rational fractions
 - No compatibility with uncertainties
 - No compatibility with Fractions
  
-Goals :
+# Goals :
 - Few LOC
 - High numpy compatibility
 - Array-like behaviour
 - SI-unit base (including for printing)
 - Simple syntax (fast syntax !)
  
-Use case :
+# Use case :
 - Define scalar and arrays of physical quantities
 - Compute operation between them : add, sub, mul, div, pow
 - Display physical quantities in various “units”.
 - Easy ability to use scalar or arrays (in functions) : easy vectorisation
  
-Implementation approach and key mechanic:
+# Implementation approach and key mechanic:
 - Dimension object represents only the dimension, based on SI-unit. Stored as a dictionary where key is a string of SI-unit, and value is exponent of dimension.
 - Quantity object is association of value (scalar or array) and dimension object (Container approach, not subclass of np.ndarray, see TrevorBekolay)
 - By default, representation is in SI-unit. To express in any other unit, use the favunit attribute.
 - Physical units (ex : Watt), physical constants (ex : speed of light), and physical quantities (ex : 74 kg) are all Quantity objects.
 - If we a looking for a physical quantity package, then dimension analysis is needed !
  
-Comparing:
+# Comparing:
 - LOC
 - Dinstinguishes between constants, units, dimension, and quantities ?
 - List of available constants / units / prefixes ?
@@ -97,24 +108,8 @@ o    Plotting a function on a given segment
 ·         Time
 ·         LOC
  
-Ideas :
-- If attribute does not exist, try to find attribute of the value
-- Express a speed in km/h quickly (stored as m/s)
-- Single line and multiline latex display ?
- 
-# Quantity
 
-## TODO
-
-## Quick-check
-
-### Prerequisites
-
-## Running the tests
-
-## Related
-Similar projects : 
-
+# Requirements
 
 
 ## License
@@ -122,27 +117,3 @@ Similar projects :
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 
-
-http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
-
- - [ ] : module physics.py : ipython-physics.py : https://github.com/TheGrum/python3-physics
-Adaptation python 3 de https://bitbucket.org/birkenfeld/ipython-physics, lui même adpaté de scientificpython de KonradHinsen
-http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
-Les "unités" peuvent avoir un "nom" sous forme de chaine de caractères
-méthodes tan, cos, sin pour "numpy ufunc" ?
-globale précision de 8 par défaut dans la classe
-système si avec rad et sr
-système cgs dispo
-+ extension Ipython pour écriture "1 m"
-
-
-- [ ] : scientificpython par Konrad Hinsen 
-http://dirac.cnrs-orleans.fr/ScientificPython : seulement sur python 2.7 et numpy 1.8
-https://bitbucket.org/khinsen/scientificpython : 
-https://github.com/ScientificPython/ScientificPython
-
-- [ ] : https://bitbucket.org/kiv/unum/wiki/Home
-
-- [ ] : https://pythonhosted.org/quantities/user/tutorial.html
-
-- [ ] : https://github.com/hgrecco/pint
