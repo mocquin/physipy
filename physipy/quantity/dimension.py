@@ -19,10 +19,11 @@ PROPOSITIONS:
  * should sr be just a unit with dimension rad**2 ?
  * add a full-named repr ? (ex: "length/time")
  * change the dimension representation from dict to array (faster)
+ * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
 
 PLEASE NOTE :
 rad and sr are not base SI-units, but were added for convenience.
-They can be deleted if not needed, but do update tests in consequence.
+They can be deleted if not needed, but update tests in consequence.
 
 """
 
@@ -117,18 +118,6 @@ class Dimension(object):
             raise TypeError(("A dimension can only be multiplied "
                              "by another dimension, not {}.").format(y))
 
-    # def __rmul__(self, x):
-    #    """Allow multplication on the left.
-
-    #   Since the multiplication of Dimension relies on adding
-    #   the dim_dict values, the multiplication is commutative.
-
-    #   But, it will only be used when trying to multiply something
-    #   that is not a Dimension object with a Dimension object -
-    #   which will raise a TypeError.
-
-    #  """
-    #  return self.__mul__(x)
     __rmul__ = __mul__
 
     def __div__(self, y):
@@ -170,7 +159,7 @@ class Dimension(object):
 
     def __eq__(self, y):
         """Dimensions are equal if their dim_dict are equal."""
-        return self.dim_dict == y.dim_dict  # isinstance(y, Dimension) and
+        return self.dim_dict == y.dim_dict
 
     def __ne__(self, y):
         """Return not (self == y)."""

@@ -1,7 +1,3 @@
-import sys
-sys.path.insert(0,'/Users/mocquin/Documents/CLE/Optique/Python/JUPYTER/MYLIB10/MODULES/quantity-master/')
-
-#import numpy as np
 from numpy import pi
 
 import quantity

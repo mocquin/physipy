@@ -15,10 +15,6 @@ Ideas/Ressources :
 """
 
 
-import sys
-sys.path.insert(0,'/Users/mocquin/Documents/CLE/Optique/Python/JUPYTER/MYLIB10/MODULES/quantity-master')
-
-
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import style

@@ -1,3 +1,16 @@
+"""
+TODO : 
+ - [ ] : should 'SI_units_derived' have another name ?
+ - [X] : deal with prefixed kg
+ - [ ] : add other dicts of units : imperial, astrophys
+ - [ ] : add scipy.constants.physical_constants units
+ 
+Questions : 
+ - should the definition of other packages units be fixed or relative ?
+ - should other packages units/constants be in the same dict ?
+"""
+
+
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
 
 DICT_OF_PREFIX_UNITS = {'Y': 1e24,
@@ -26,6 +39,10 @@ def derive_units(prefix_dic, base_units, dic={}):
     """Return all the combination Quantities between the prefixes and the units."""
     for prefix_symbol, prefix_value in prefix_dic.items():
         for dim_symbol, unit_symbol in base_units.items():
+            # dealing with kg
+            if unit_symbol == "kg" and dim_symbol == "M" :
+                unit_symbol = "g"
+                prefix_value = prefix_value/1000
             prefixed_unit_symbol = prefix_symbol + unit_symbol
             dic[prefixed_unit_symbol] = Quantity(prefix_value, Dimension(dim_symbol), symbol=prefixed_unit_symbol)
     return dic
@@ -43,7 +60,10 @@ mol = SI_units["mol"]
 rad = SI_units["rad"]
 sr  = SI_units["sr"]
 
+# Derived SI units with all prefixes
+# dealing with kg for the prefixes
 SI_units_derived = derive_units(DICT_OF_PREFIX_UNITS, SI_UNIT_SYMBOL, SI_units)
+SI_units_derived["g"] = Quantity(0.001, Dimension("M"), symbol="g")
 
 # Units
 units_raw = {"Hz"  : 1/s,
@@ -62,14 +82,11 @@ units_raw = {"Hz"  : 1/s,
              "lx"  : cd * m**-2,
              "Bq"  : 1/s,
              "h"   : 3600*s,
-             "g"   : 0.001 * kg,
+             "deg": pi/180 *rad,
+             "liter": 0.001 * m**3
             }
 
 units = {key: make_quantity(value, symbol=key) for key, value in units_raw.items()}
 
 units = {**units, **SI_units} #including base SI units to units dict
 
-#for key, value in units_raw.items():
-#    q = quantify(value)
-#    q.symbol = key
-#    units[key] = q

@@ -4,3 +4,4 @@ pycache/
 .ipynb_checkpoints/
 _old/
 __pycache__/
+local_test*

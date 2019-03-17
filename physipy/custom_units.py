@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0,'/Users/mocquin/Documents/CLE/Optique/Python/JUPYTER/MYLIB10/MODULES/quantity-master')
-
 from quantity import m, s, kg, A, cd, mol, K, rad, units, make_quantity, SI_units_derived
 from math import pi
 
@@ -13,8 +10,7 @@ kJ = J * 1000
 kJ.symbol = 'kJ'
 
 
-raw_units = {"deg": pi/180 *rad,
-             "liter": 0.001 * m**3
+raw_units = {
             }
 
 # Extending quantity units dict
