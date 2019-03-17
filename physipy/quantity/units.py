@@ -10,8 +10,9 @@ Questions :
  - should other packages units/constants be in the same dict ?
 """
 
-
+from numpy import pi
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
+
 
 DICT_OF_PREFIX_UNITS = {'Y': 1e24,
                         'Z': 1e21,
@@ -82,7 +83,7 @@ units_raw = {"Hz"  : 1/s,
              "lx"  : cd * m**-2,
              "Bq"  : 1/s,
              "h"   : 3600*s,
-             "deg": pi/180 *rad,
+             "deg" : pi/180 *rad,
              "liter": 0.001 * m**3
             }
 
