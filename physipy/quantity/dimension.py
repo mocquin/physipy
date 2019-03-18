@@ -11,7 +11,8 @@ TODO:
  * [X] : declare truediv as equal to div (and so on).
  * [X] : make exception strings display correctly
  * [X] : char for temperatures Θ is changed to "theta" (for sympy)
- * [ ] : try a cleaner convesrion from dict to str
+ * [ ] : try a cleaner conversion from dict to str
+ * [X] : allow construction with strings Dimension("m**2") and Dimension("L**2")
 
 PROPOSITIONS:
  * method to return a latex-formated str ?
@@ -19,7 +20,6 @@ PROPOSITIONS:
  * should sr be just a unit with dimension rad**2 ?
  * add a full-named repr ? (ex: "length/time")
  * change the dimension representation from dict to array (faster)
- * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
 
 PLEASE NOTE :
 rad and sr are not base SI-units, but were added for convenience.
