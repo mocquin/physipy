@@ -98,7 +98,14 @@ class Dimension(object):
             for dim_symbol, dim_power in definition.items():
                 if dim_power == int(dim_power):
                     dim_power = int(dim_power)
-                self.dim_dict[dim_symbol] = dim_power            
+                self.dim_dict[dim_symbol] = dim_power
+        elif (isinstance(definition, str) and check_pattern(definition, SI_UNIT_SYMBOL.values())):
+            definition = parse_str_to_dic(definition)
+            for my_si_symbol, dim_power in definition.items():
+                if dim_power == int(dim_power):
+                    dim_power = int(dim_power)
+                dim_symbol = [dim_symbol for dim_symbol, si_symbol in SI_UNIT_SYMBOL.items() if my_si_symbol == si_symbol][0]
+                self.dim_dict[dim_symbol] = dim_power
         else:
             raise TypeError(("Dimension can be constructed with either a "
                              "string among {}, either None, either a "
