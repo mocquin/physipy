@@ -35,7 +35,7 @@ SI_UNIT_SYMBOL = {
     'M': 'kg',
     'T': 's',
     'I': 'A',
-    'Θ': 'K',
+    'theta': 'K',
     'N': 'mol',
     'J': 'cd',
     'RAD': 'rad',

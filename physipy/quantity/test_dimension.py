@@ -9,7 +9,7 @@ class TestClassDimension(unittest.TestCase):
     def setUp(cls):
         cls.m = Dimension("L")
         cls.none = Dimension(None)
-        cls.dim_complexe = Dimension({"J": 1, "Θ": -3})
+        cls.dim_complexe = Dimension({"J": 1, "theta": -3})
         cls.no_dimension_str = "no-dimension"
 
     def test_010_init(cls):
@@ -22,7 +22,7 @@ class TestClassDimension(unittest.TestCase):
                                'M': 0,
                                'T': 0,
                                'I': 0,
-                               'Θ': 0,
+                               'theta': 0,
                                'N': 0,
                                'J': 0,
                                'RAD': 0,
@@ -37,7 +37,7 @@ class TestClassDimension(unittest.TestCase):
         actual_str = str(cls.m)
         cls.assertEqual(expected_str, actual_str)
 
-        expected_str = "J/Θ**3"
+        expected_str = "J/theta**3"
         actual_str = str(cls.dim_complexe)
         cls.assertEqual(expected_str, actual_str)
 
@@ -49,12 +49,12 @@ class TestClassDimension(unittest.TestCase):
 
         cls.assertEqual(repr(cls.none), "<Dimension : no-dimension>")
         cls.assertEqual(repr(cls.m), "<Dimension : L>")
-        cls.assertEqual(repr(cls.dim_complexe), "<Dimension : J/Θ**3>")
+        cls.assertEqual(repr(cls.dim_complexe), "<Dimension : J/theta**3>")
 
     def test_040_mul(cls):
 
         cls.assertEqual(cls.m * cls.dim_complexe,
-                        Dimension({"J": 1, "L": 1, "Θ": -3}))
+                        Dimension({"J": 1, "L": 1, "theta": -3}))
 
         # Multipliying by a number, not a Dimension object
         cls.assertRaises(TypeError, lambda: cls.m * 1.12)
@@ -63,7 +63,7 @@ class TestClassDimension(unittest.TestCase):
     def test_050_div(cls):
 
         cls.assertEqual(cls.m / cls.dim_complexe,
-                        Dimension({"J": -1, "L": 1, "Θ": 3}))
+                        Dimension({"J": -1, "L": 1, "theta": 3}))
         # Testing the inversion by dividing 1
         cls.assertEqual(1 / cls.m,
                         Dimension({"L": -1}))
