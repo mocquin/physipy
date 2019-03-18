@@ -10,10 +10,9 @@ TODO:
  * [X] : rename the method without the dunders (not for special methods)
  * [X] : declare truediv as equal to div (and so on).
  * [X] : make exception strings display correctly
+ * [X] : char for temperatures Θ is changed to "theta" (for sympy)
 
 PROPOSITIONS:
- * find another char for temperatures (Θ is valid character and SI 
-     recommanded but not convenient and 0-looking) --> use "K" for Kelvin ?
  * method to return a latex-formated str ?
  * change the str/repr style to a table-view of the dimension content ?
  * should sr be just a unit with dimension rad**2 ?
