@@ -29,6 +29,8 @@ They can be deleted if not needed, but update tests in consequence.
 
 import sympy as sp
 import numpy as np
+from sympy.parsing.sympy_parser import parse_expr
+
 
 SI_UNIT_SYMBOL = {
     'L': 'm',
@@ -44,6 +46,15 @@ SI_UNIT_SYMBOL = {
 
 SI_SYMBOL_LIST = SI_UNIT_SYMBOL.keys()
 NO_DIMENSION_STR = "no-dimension"
+
+def parse_str_to_dic(exp_str):
+    parsed = parse_expr(exp_str)
+    exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
+    return exp_dic
+
+def check_pattern(exp_str, symbol_list):
+    exp_dic = parse_str_to_dic(exp_str)
+    return set(exp_dic.keys()).issubset(set(symbol_list))
 
 
 class DimensionError(Exception):
@@ -82,10 +93,18 @@ class Dimension(object):
                 if dim_power == int(dim_power):
                     dim_power = int(dim_power)
                 self.dim_dict[dim_symbol] = dim_power
+        elif (isinstance(definition, str) and check_pattern(definition, SI_UNIT_SYMBOL.keys())):
+            definition = parse_str_to_dic(definition)
+            for dim_symbol, dim_power in definition.items():
+                if dim_power == int(dim_power):
+                    dim_power = int(dim_power)
+                self.dim_dict[dim_symbol] = dim_power            
         else:
             raise TypeError(("Dimension can be constructed with either a "
                              "string among {}, either None, either a "
                              "dictionnary with keys included in {}, "
+                             "either a string of sympy expression with "
+                             "those same keys "
                              "but not {}.").format(SI_SYMBOL_LIST,
                                                    SI_SYMBOL_LIST,
                                                    definition))
