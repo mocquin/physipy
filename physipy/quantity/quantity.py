@@ -391,11 +391,12 @@ class Quantity(object):
         value_for_repr = self._compute_value() # this is the full value
         complement_value_for_repr = self._compute_complement_value() # this a string to append to the value
         if not complement_value_for_repr == "":
-            return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+            #return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+            return str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
         else: 
-            return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
-        #return self.__repr__()
-    
+            #return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
+            return str(value_for_repr) + UNIT_SUFFIX
+
     #def __format__(self, format_spec):
     #    return 
 
