@@ -4,7 +4,7 @@ import unittest
 
 from quantity import Dimension, Quantity, DimensionError
 from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from quantity import interp, vectorize, integrate_trapz, turn_scalar_to_str, linspace, quad, dblquad, tplquad
+from quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
 from quantity import SI_units, units#, custom_units
 from quantity import m, s, kg, A, cd, K, mol
 from quantity import quantify, make_quantity

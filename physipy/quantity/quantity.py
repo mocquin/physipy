@@ -125,36 +125,36 @@ np.set_printoptions(precision=DISPLAY_DIGITS,
                     edgeitems=20)
 
 
-def turn_scalar_to_str(number,
-                       display_digit=DISPLAY_DIGITS,
-                       exp_thresh=EXP_THRESHOLD):
-    if isinstance(number,np.ndarray):
-        list_val_str = []
-        for val in number:
-            val_str = turn_scalar_to_str(val)
-            list_val_str = list_val_str + [val_str]
-        list_str = str(list_val_str)
-        list_str = list_str.replace(",","")
-        list_str = list_str.replace("'","")
-        return list_str
-    elif (isinstance(number,float) or isinstance(number,int) or
-          type(number) == np.int64 or type(number) == np.int32):
-        if np.all(np.isreal(number)):       # isrealobj()
-            if ((np.all(np.abs(number) >= 10**exp_thresh) or 
-                np.all(np.abs(number) < 10**(-exp_thresh))) and 
-                not number == 0):  # numpy.any(maCondition)
-                scientific = '%.' + str(display_digit) + 'E'
-                return scientific % number
-            else: 
-                classic =  '%.' + str(display_digit) + 'f'
-                return classic % number
-        elif np.any(np.iscomplexobj(number)):           
-            return ("(%s + %sj)" % (turn_scalar_to_str(number.real),
-                                    turn_scalar_to_str(number.imag)))
-        else:
-            raise TypeError("Number not real nor complex.")
-    else:
-        raise TypeError("Number must be array or number.")
+#def turn_scalar_to_str(number,
+#                       display_digit=DISPLAY_DIGITS,
+#                       exp_thresh=EXP_THRESHOLD):
+#    if isinstance(number,np.ndarray):
+#        list_val_str = []
+#        for val in number:
+#            val_str = turn_scalar_to_str(val)
+#            list_val_str = list_val_str + [val_str]
+#        list_str = str(list_val_str)
+#        list_str = list_str.replace(",","")
+#        list_str = list_str.replace("'","")
+#        return list_str
+#    elif (isinstance(number,float) or isinstance(number,int) or
+#          type(number) == np.int64 or type(number) == np.int32):
+#        if np.all(np.isreal(number)):       # isrealobj()
+#            if ((np.all(np.abs(number) >= 10**exp_thresh) or 
+#                np.all(np.abs(number) < 10**(-exp_thresh))) and 
+#                not number == 0):  # numpy.any(maCondition)
+#                scientific = '%.' + str(display_digit) + 'E'
+#                return scientific % number
+#            else: 
+#                classic =  '%.' + str(display_digit) + 'f'
+#                return classic % number
+#        elif np.any(np.iscomplexobj(number)):           
+#            return ("(%s + %sj)" % (turn_scalar_to_str(number.real),
+#                                    turn_scalar_to_str(number.imag)))
+#        else:
+#            raise TypeError("Number not real nor complex.")
+#    else:
+#        raise TypeError("Number must be array or number.")
 
 # Decorator for trigo methods of Quantity object 
 # This should be done via __array__ ?
