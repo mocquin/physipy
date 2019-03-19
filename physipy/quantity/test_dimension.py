@@ -47,9 +47,9 @@ class TestClassDimension(unittest.TestCase):
 
     def test_030_repr(cls):
 
-        cls.assertEqual(repr(cls.none), "<Dimension : no-dimension>")
-        cls.assertEqual(repr(cls.m), "<Dimension : L>")
-        cls.assertEqual(repr(cls.dim_complexe), "<Dimension : J/theta**3>")
+        cls.assertEqual(repr(cls.none), "<Dimension : {'L': 0, 'M': 0, 'T': 0, 'I': 0, 'theta': 0, 'N': 0, 'J': 0, 'RAD': 0, 'SR': 0}>")
+        cls.assertEqual(repr(cls.m), "<Dimension : {'L': 1, 'M': 0, 'T': 0, 'I': 0, 'theta': 0, 'N': 0, 'J': 0, 'RAD': 0, 'SR': 0}>")
+        cls.assertEqual(repr(cls.dim_complexe), "<Dimension : {'L': 0, 'M': 0, 'T': 0, 'I': 0, 'theta': -3, 'N': 0, 'J': 1, 'RAD': 0, 'SR': 0}>")
 
     def test_040_mul(cls):
 
