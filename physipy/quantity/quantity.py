@@ -25,7 +25,7 @@ TODO:
  - [ ] : make default symbol variable name ?
  - [ ] : make favunit defaults to SI ?
  - [ ] : for trigo method, prevent when unit is sr ?
- - [ ] : create a Wrong dimension Error, for trigo functions for eg
+ - [X] : create a Wrong dimension Error, for trigo functions for eg
  - [X] : deal with numpy slicing a[a>1]
  - [ ] : improve integration of eq, ne (ex : assertNotEqual when dealing with arrays)
  - [ ] : when uncertainties is implemented, add an automatic plotting
