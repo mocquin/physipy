@@ -140,8 +140,9 @@ def turn_scalar_to_str(number,
 def trigo_func(func):
     def func_dec(x):
         if not x.is_dimensionless_ext():
-            raise TypeError(("Quantity must be dimensionless or "
-                             "angle to compute trigonometric value"))
+            raise DimensionError(x.dimension,
+                                Dimension(None),
+                                binary=False)
         return func(x)
     return func_dec
 
