@@ -49,6 +49,8 @@ From astropy comparison :
  - find other common unit with same dimension ?
  - [X] : add SI units in units
  - add a string parser constructor ?
+ - add a decorator for checking dimension
+ - add a parser to favunit for functions output
 
  
 
