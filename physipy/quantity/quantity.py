@@ -68,7 +68,7 @@ PROPOSITIONS/QUESTIONS :
  - should setting dimension be forbiden ? or with a warning ?
  - make a floordiv ?
  - no np.all in comparison for indexing a[a>1], but then np.all is needed in functions verifications
-
+ - should repr precise the favunit and symbol ?
 
 PENDING : 
  - rmul, truediv, rtruediv
@@ -369,7 +369,13 @@ class Quantity(object):
         #return round(self.value, i)
 
     def __str__(self):
-        return self.__repr__()
+        value_for_repr = self._compute_value() # this is the full value
+        complement_value_for_repr = self._compute_complement_value() # this a string to append to the value
+        if not complement_value_for_repr == "":
+            return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+        else: 
+            return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
+        #return self.__repr__()
     
     #def __format__(self, format_spec):
     #    return 
@@ -409,12 +415,7 @@ class Quantity(object):
         return Quantity(1, self.dimension)
     
     def __repr__(self):
-        value_for_repr = self._compute_value()
-        complement_value_for_repr = self._compute_complement_value()
-        if not complement_value_for_repr == "":
-            return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
-        else: 
-            return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
+        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"
 
     def __getitem__(self, idx):
         if isinstance(self.value, np.ndarray):
