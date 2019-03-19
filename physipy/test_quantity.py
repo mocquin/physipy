@@ -52,12 +52,12 @@ class TestQuantity(unittest.TestCase):
         #print("EXP_THRESHOLD : "+ str(EXP_THRESHOLD))
         longueur = 543.21*m
         longueur.favunit = self.mm
-        self.assertEqual(str(longueur),"5.43E+05 mm")
+        self.assertEqual(str(longueur),"543210.0 mm")
         
         cy = Quantity(1,Dimension(None),symbol="cy")
         f_cymm = 5*cy/self.mm
         f_cymm.favunit = cy/self.mm
-        self.assertEqual(str(f_cymm),"5.00 cy/mm")
+        self.assertEqual(str(f_cymm),"5.0 cy/mm")
         
         
     
@@ -230,9 +230,9 @@ class TestQuantity(unittest.TestCase):
     
     def test_90_getteur(self):
         # Sans unité favorite
-        self.assertEqual(str(self.y_q[2]),"3.00 m")
+        self.assertEqual(str(self.y_q[2]),"3.0 m")
         # Avec unité favorite
-        self.assertEqual(str(self.y_qu[2]),"3.00E+03 mm")
+        self.assertEqual(str(self.y_qu[2]),"3000.0 mm")
         
     def test_100_vectorizateur(self):
         mm = Quantity(0.001,Dimension("L"),symbol="mm")
@@ -264,7 +264,7 @@ class TestQuantity(unittest.TestCase):
         
         m = Quantity(1,Dimension("L"))
         self.assertEqual(str(linspace(1*m, 2*m, 8)),
-                        '[1.00 1.14 1.29 1.43 1.57 1.71 1.86 2.00] m')
+                        '[1.   1.14 1.29 1.43 1.57 1.71 1.86 2.  ] m')
         with self.assertRaises(DimensionError):
             linspace(1*m, 2)
     
@@ -291,7 +291,7 @@ class TestQuantity(unittest.TestCase):
 
     def test_170_str(self):
         self.assertEqual(str(Quantity(np.array([1,2,3]),Dimension(None))),
-                         "[1.00 2.00 3.00]")
+                         "[1 2 3]")
 
     def test_init_SI_init(self):
         # Not checking symbols
