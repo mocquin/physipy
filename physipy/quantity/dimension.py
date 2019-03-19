@@ -102,8 +102,8 @@ class Dimension(object):
             return str(output)
 
     def __repr__(self):
-        """Insert the __str__ in a <Dimension : ...> tag."""
-        return "<Dimension : " + str(self) + ">"
+        """Return the dim_dict into a <Dimension : ...> tag."""
+        return "<Dimension : " + str(self.dim_dict) + ">"
 
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
