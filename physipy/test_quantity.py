@@ -372,7 +372,7 @@ class TestQuantity(unittest.TestCase):
     def test_trigo(self):
         #print(np.cos(self.x_q/self.x_q * 0))
         self.assertEqual(1, np.cos(self.x_q/self.x_q * 0))
-        with self.assertRaises(TypeError):
+        with self.assertRaises(DimensionError):
             np.cos(self.x_q)
         
 if __name__ == "__main__":
