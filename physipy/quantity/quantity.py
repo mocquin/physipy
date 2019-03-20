@@ -52,6 +52,25 @@ From astropy comparison :
  - add a decorator for checking dimension
  - add a parser to favunit for functions output
 
+From pint :
+ - Allow adding units from a text file
+ - Remplacer isinstance(quantity) par isinstance(self.__class__)
+ - To() et ito()
+ - Faire des property ?
+ - Essayer de s’affranchir de numpy ?
+ - Ajouter une propriété dimensionnalty qui renvoi les length
+ - Ajouter un dict de dimneisonnaltiy classique comme acceleration, qui peut être consulté pour afficher la diemnsionnalty de façon plus sympa
+ - Différencier in et to, l’un qui change juste la favunit, l’autre qui vérifier en plus que la favunit est de même dimension que l’objet
+ - Prévoir un nom ? (m = Quantity(1, Dimension(« L »), name= ‘meter’))
+ - Vérifier le comportement de «  this is { !s} ».format(q) et « this is { !r} ».format(q) qui doivent faire appel à str() et repr()
+ -  
+ - Pouvoir spécifier un specifier par défaut ; Quantity.default_spec = « :s »
+ - Utiliser __array_wrap__ pour overloader les fonctions numpy (see pint)
+ - Check and refuse any « ^ » notation in string parsing ? only python power ** ? what about sympy ?
+ - Method check(“dimensionality”) pour verifier à la main la dimension
+ - Decorateur pour check dimension (accept Dimension object, Quantity, dimensionnality)
+ - Ajouter methode plus_minus pour ajouter une incertitude
+ 
  
 
 PROPOSITIONS/QUESTIONS : 
