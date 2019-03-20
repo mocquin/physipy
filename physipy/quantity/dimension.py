@@ -46,7 +46,6 @@ import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
 
 
-
 dirname = os.path.dirname(__file__)
 with open(os.path.join(dirname, "dimension.txt")) as file:
     SI_UNIT_SYMBOL = json.load(file)
@@ -55,10 +54,12 @@ with open(os.path.join(dirname, "dimension.txt")) as file:
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
+
 def parse_str_to_dic(exp_str):
     parsed = parse_expr(exp_str)
     exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
     return exp_dic
+
 
 def check_pattern(exp_str, symbol_list):
     exp_dic = parse_str_to_dic(exp_str)
@@ -185,6 +186,10 @@ class Dimension(object):
         str_dict = {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
         return compute_str(str_dict, "")
 
+    @property
+    def dimensionality(self):
+        return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
+
 
 def compute_str(dic, default):
     """Compute the product-concatenation of the dict as key**value."""
@@ -196,3 +201,27 @@ def compute_str(dic, default):
         return default
     else:
         return str(output)
+
+
+DIMENSIONALITY = {
+    # Base dimension
+    "length":             Dimension("L"),
+    "mass":               Dimension("M"),
+    "time":               Dimension("T"),
+    "electric_current":   Dimension("I"),
+    "temperature":        Dimension("theta"),
+    "amount_of_substance":Dimension("N"),
+    "luminous_intensity": Dimension("J"),
+    "plane_angle":        Dimension("RAD"),
+    "solid_angle":        Dimension("SR"),
+    
+    #
+    "area":               Dimension({"L":2}),
+    "volume":             Dimension({"L":3}),
+    
+    "speed":              Dimension({"L":1, "T":-1}),
+    "acceleration":       Dimension({"L":1, "T":-2}),
+    "force":              Dimension({"M":1, "L":1, "T":-2}),
+    "energy":             Dimension({"M":1, "L":2, "T":-2}),
+    "power":              Dimension({"M":1, "L":2, "T":-3}),
+}

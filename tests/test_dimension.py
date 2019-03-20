@@ -110,6 +110,9 @@ class TestClassDimension(unittest.TestCase):
         with cls.assertRaises(AttributeError):
             # sympy parsing not good with ^ char
             cls.assertEqual(cls.m * cls.m, Dimension("m^2"))
+            
+    def test_101_dimensionality(cls):
+        cls.assertEqual(cls.m.dimensionality, 'length')
     
     #def test_pycodestyle(cls):
     #    import pycodestyle
