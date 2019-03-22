@@ -6,8 +6,8 @@ TODO :
 '''
 
 from .quantity import Dimension, Quantity
-from .quantity import DISPLAY_DIGITS, EXP_THRESHOLD, DimensionError, SI_UNIT_SYMBOL
-from .quantity import turn_scalar_to_str, quantify, make_quantity
+from .quantity import DimensionError, SI_UNIT_SYMBOL  #, DISPLAY_DIGITS, EXP_THRESHOLD
+from .quantity import quantify, make_quantity  #, turn_scalar_to_str
 
 from .calculus import interp, linspace, vectorize, integrate_trapz, qroot, qbrentq
 from .calculus import sqrt

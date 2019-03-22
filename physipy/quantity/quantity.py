@@ -29,13 +29,12 @@ TODO:
  - [X] : deal with numpy slicing a[a>1]
  - [ ] : improve integration of eq, ne (ex : assertNotEqual when dealing with arrays)
  - [ ] : when uncertainties is implemented, add an automatic plotting
+ - [X] : add a format method --> need a refactor of repr..
+
  
 From astropy comparison : 
 - display about :
- - [ ] : display digits '1.' instead of 1.00
  - add a pretty display with latex
- - display default number of digits ?
- - [ ] : add a format method --> need a refactor of repr..
  - change display of powered units : m**2 to m2 ?
 - other
  - allow conversion in different unit system ?
@@ -62,8 +61,6 @@ From pint :
  - Ajouter un dict de dimneisonnaltiy classique comme acceleration, qui peut être consulté pour afficher la diemnsionnalty de façon plus sympa
  - Différencier in et to, l’un qui change juste la favunit, l’autre qui vérifier en plus que la favunit est de même dimension que l’objet
  - Prévoir un nom ? (m = Quantity(1, Dimension(« L »), name= ‘meter’))
- - Vérifier le comportement de «  this is { !s} ».format(q) et « this is { !r} ».format(q) qui doivent faire appel à str() et repr()
- -  
  - Pouvoir spécifier un specifier par défaut ; Quantity.default_spec = « :s »
  - Utiliser __array_wrap__ pour overloader les fonctions numpy (see pint)
  - Check and refuse any « ^ » notation in string parsing ? only python power ** ? what about sympy ?
@@ -125,36 +122,36 @@ np.set_printoptions(precision=DISPLAY_DIGITS,
                     edgeitems=20)
 
 
-def turn_scalar_to_str(number,
-                       display_digit=DISPLAY_DIGITS,
-                       exp_thresh=EXP_THRESHOLD):
-    if isinstance(number,np.ndarray):
-        list_val_str = []
-        for val in number:
-            val_str = turn_scalar_to_str(val)
-            list_val_str = list_val_str + [val_str]
-        list_str = str(list_val_str)
-        list_str = list_str.replace(",","")
-        list_str = list_str.replace("'","")
-        return list_str
-    elif (isinstance(number,float) or isinstance(number,int) or
-          type(number) == np.int64 or type(number) == np.int32):
-        if np.all(np.isreal(number)):       # isrealobj()
-            if ((np.all(np.abs(number) >= 10**exp_thresh) or 
-                np.all(np.abs(number) < 10**(-exp_thresh))) and 
-                not number == 0):  # numpy.any(maCondition)
-                scientific = '%.' + str(display_digit) + 'E'
-                return scientific % number
-            else: 
-                classic =  '%.' + str(display_digit) + 'f'
-                return classic % number
-        elif np.any(np.iscomplexobj(number)):           
-            return ("(%s + %sj)" % (turn_scalar_to_str(number.real),
-                                    turn_scalar_to_str(number.imag)))
-        else:
-            raise TypeError("Number not real nor complex.")
-    else:
-        raise TypeError("Number must be array or number.")
+#def turn_scalar_to_str(number,
+#                       display_digit=DISPLAY_DIGITS,
+#                       exp_thresh=EXP_THRESHOLD):
+#    if isinstance(number,np.ndarray):
+#        list_val_str = []
+#        for val in number:
+#            val_str = turn_scalar_to_str(val)
+#            list_val_str = list_val_str + [val_str]
+#        list_str = str(list_val_str)
+#        list_str = list_str.replace(",","")
+#        list_str = list_str.replace("'","")
+#        return list_str
+#    elif (isinstance(number,float) or isinstance(number,int) or
+#          type(number) == np.int64 or type(number) == np.int32):
+#        if np.all(np.isreal(number)):       # isrealobj()
+#            if ((np.all(np.abs(number) >= 10**exp_thresh) or 
+#                np.all(np.abs(number) < 10**(-exp_thresh))) and 
+#                not number == 0):  # numpy.any(maCondition)
+#                scientific = '%.' + str(display_digit) + 'E'
+#                return scientific % number
+#            else: 
+#                classic =  '%.' + str(display_digit) + 'f'
+#                return classic % number
+#        elif np.any(np.iscomplexobj(number)):           
+#            return ("(%s + %sj)" % (turn_scalar_to_str(number.real),
+#                                    turn_scalar_to_str(number.imag)))
+#        else:
+#            raise TypeError("Number not real nor complex.")
+#    else:
+#        raise TypeError("Number must be array or number.")
 
 # Decorator for trigo methods of Quantity object 
 # This should be done via __array__ ?
@@ -170,8 +167,8 @@ def trigo_func(func):
 class Quantity(object):
     """Quantity class : """
     
-    DIGITS = DISPLAY_DIGITS
-    EXP_THRESH = EXP_THRESHOLD
+    #DIGITS = DISPLAY_DIGITS
+    #EXP_THRESH = EXP_THRESHOLD
     
     def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None):
         self.__array_priority__ = 100
@@ -385,19 +382,26 @@ class Quantity(object):
                        self.dimension,
                        favunit = self.favunit)
 
-    def __str__(self):
-        value_for_repr = self._compute_value() # this is the full value
-        complement_value_for_repr = self._compute_complement_value() # this a string to append to the value
-        if not complement_value_for_repr == "":
-            return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
-        else: 
-            return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
-        #return self.__repr__()
-    
-    #def __format__(self, format_spec):
-    #    return 
+    def __repr__(self):
+        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
 
-    # TODO : factorize this with repr
+    def __str__(self):
+        complement_value_for_repr = self._compute_complement_value() 
+        if not complement_value_for_repr == "":
+            return str(self._compute_value()) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+        else: 
+            return str(self._compute_value()) + UNIT_SUFFIX
+
+    def __format_raw__(self, format_spec):
+        return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
+
+    def __format__(self, format_spec):
+        complement_value_for_repr = self._compute_complement_value()
+        if not complement_value_for_repr == "":
+            return format(self._compute_value(), format_spec) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+        else: 
+            return format(self._compute_value(), format_spec) + UNIT_PREFIX
+    
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
@@ -406,7 +410,6 @@ class Quantity(object):
         else:
             return self.value
     
-    # TODO : factorize this with repr
     def _compute_complement_value(self, custom_favunit=None):
         """Return the complement to the value as a str."""
         if custom_favunit is None:
@@ -431,9 +434,6 @@ class Quantity(object):
         """
         return Quantity(1, self.dimension)
     
-    def __repr__(self):
-        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"
-
     def __getitem__(self, idx):
         if isinstance(self.value, np.ndarray):
             return Quantity(self.value[idx],

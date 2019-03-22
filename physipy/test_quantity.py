@@ -3,8 +3,8 @@ import numpy as np
 import unittest
 
 from quantity import Dimension, Quantity, DimensionError
-from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from quantity import interp, vectorize, integrate_trapz, turn_scalar_to_str, linspace, quad, dblquad, tplquad
+#from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
+from quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
 from quantity import SI_units, units#, custom_units
 from quantity import m, s, kg, A, cd, K, mol
 from quantity import quantify, make_quantity
@@ -52,12 +52,12 @@ class TestQuantity(unittest.TestCase):
         #print("EXP_THRESHOLD : "+ str(EXP_THRESHOLD))
         longueur = 543.21*m
         longueur.favunit = self.mm
-        self.assertEqual(str(longueur),"5.43E+05 mm")
+        self.assertEqual(str(longueur),"543210.0 mm")
         
         cy = Quantity(1,Dimension(None),symbol="cy")
         f_cymm = 5*cy/self.mm
         f_cymm.favunit = cy/self.mm
-        self.assertEqual(str(f_cymm),"5.00 cy/mm")
+        self.assertEqual(str(f_cymm),"5.0 cy/mm")
         
         
     
@@ -230,9 +230,9 @@ class TestQuantity(unittest.TestCase):
     
     def test_90_getteur(self):
         # Sans unité favorite
-        self.assertEqual(str(self.y_q[2]),"3.00 m")
+        self.assertEqual(str(self.y_q[2]),"3.0 m")
         # Avec unité favorite
-        self.assertEqual(str(self.y_qu[2]),"3.00E+03 mm")
+        self.assertEqual(str(self.y_qu[2]),"3000.0 mm")
         
     def test_100_vectorizateur(self):
         mm = Quantity(0.001,Dimension("L"),symbol="mm")
@@ -264,7 +264,7 @@ class TestQuantity(unittest.TestCase):
         
         m = Quantity(1,Dimension("L"))
         self.assertEqual(str(linspace(1*m, 2*m, 8)),
-                        '[1.00 1.14 1.29 1.43 1.57 1.71 1.86 2.00] m')
+                        '[1.   1.14 1.29 1.43 1.57 1.71 1.86 2.  ] m')
         with self.assertRaises(DimensionError):
             linspace(1*m, 2)
     
@@ -285,13 +285,21 @@ class TestQuantity(unittest.TestCase):
 
     def test_150_mean(self):
         self.assertEqual(self.z_q.mean(),Quantity(1,Dimension("L")))
-        
+
     def test_160_sum(self):
         self.assertEqual(self.z_q._sum(),Quantity(3,Dimension("L")))
 
     def test_170_str(self):
         self.assertEqual(str(Quantity(np.array([1,2,3]),Dimension(None))),
-                         "[1.00 2.00 3.00]")
+                         "[1 2 3]")
+
+    def test_180_repr(self):
+        self.assertEqual(repr(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
+        self.assertEqual(repr(Quantity(np.array([1,2,3]), Dimension("L"))), "<Quantity : [1 2 3] m>")
+
+    def test_190_format(self):
+        self.assertEqual("{!s}".format(Quantity(1, Dimension("L"))), "1 m")
+        self.assertEqual("{!r}".format(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
 
     def test_init_SI_init(self):
         # Not checking symbols
