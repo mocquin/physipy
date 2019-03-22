@@ -391,14 +391,11 @@ class Quantity(object):
         return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
 
     def __str__(self):
-        value_for_repr = self._compute_value() # this is the full value
-        complement_value_for_repr = self._compute_complement_value() # this a string to append to the value
+        complement_value_for_repr = self._compute_complement_value() 
         if not complement_value_for_repr == "":
-            #return turn_scalar_to_str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
-            return str(value_for_repr) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+            return str(self._compute_value()) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
         else: 
-            #return turn_scalar_to_str(value_for_repr) + UNIT_SUFFIX
-            return str(value_for_repr) + UNIT_SUFFIX
+            return str(self._compute_value()) + UNIT_SUFFIX
 
     #def __format__(self, format_spec):
     #    return 
