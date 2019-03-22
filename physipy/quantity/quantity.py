@@ -488,15 +488,30 @@ class Quantity(object):
         return all(is_integer(value) for value in self.dim.values())
     
     def to(self, y):
-        """in-place change of favunit."""
+        """return quantity with another favunit."""
         if not isinstance(y, Quantity):
             raise TypeError("Cannot express Quantity in not Quantity")
-        #q = self
-        #q.favunit = y
-        #return q
+        q = self
+        q.favunit = y
+        return q
+
+    def ito(self, y):
+        """in-place change of favunit."""
         self.favunit = y
         return self
     
+    def into(self, y):
+        """like to, but with same dimension"""
+        if not self.dimension == y.dimension:
+            raise ValueError("must have same unit. Try to().")
+        return self.to(y)
+        
+    def iinto(self, y):
+        """like ito, but with same dimension"""
+        if not self.dimension == y.dimension:
+            raise ValueError("must have same unit. Try to().")
+        return self.ito(y)
+
     # Shortcut for checking dimension
     def is_length(self):
         return self.dimension == Dimension("L")
