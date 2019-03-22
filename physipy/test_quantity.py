@@ -285,13 +285,21 @@ class TestQuantity(unittest.TestCase):
 
     def test_150_mean(self):
         self.assertEqual(self.z_q.mean(),Quantity(1,Dimension("L")))
-        
+
     def test_160_sum(self):
         self.assertEqual(self.z_q._sum(),Quantity(3,Dimension("L")))
 
     def test_170_str(self):
         self.assertEqual(str(Quantity(np.array([1,2,3]),Dimension(None))),
                          "[1 2 3]")
+
+    def test_180_repr(self):
+        self.assertEqual(repr(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
+        self.assertEqual(repr(Quantity(np.array([1,2,3]), Dimension("L"))), "<Quantity : [1 2 3] m>")
+
+    def test_190_format(self):
+        self.assertEqual("{!s}".format(Quantity(1, Dimension("L"))), "1 m")
+        self.assertEqual("{!r}".format(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
 
     def test_init_SI_init(self):
         # Not checking symbols
