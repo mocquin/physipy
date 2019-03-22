@@ -29,13 +29,12 @@ TODO:
  - [X] : deal with numpy slicing a[a>1]
  - [ ] : improve integration of eq, ne (ex : assertNotEqual when dealing with arrays)
  - [ ] : when uncertainties is implemented, add an automatic plotting
+ - [X] : add a format method --> need a refactor of repr..
+
  
 From astropy comparison : 
 - display about :
- - [ ] : display digits '1.' instead of 1.00
  - add a pretty display with latex
- - display default number of digits ?
- - [ ] : add a format method --> need a refactor of repr..
  - change display of powered units : m**2 to m2 ?
 - other
  - allow conversion in different unit system ?
