@@ -326,7 +326,6 @@ class Quantity(object):
     def __eq__(self,y):
         y = quantify(y)
         if self.dimension == y.dimension:
-            #return self.value == y.value
             return self.value == y.value # comparing arrays returns array of bool
         else:
             return False
@@ -385,7 +384,6 @@ class Quantity(object):
         return Quantity(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit)
-        #return round(self.value, i)
 
     def __str__(self):
         value_for_repr = self._compute_value() # this is the full value
@@ -502,19 +500,28 @@ class Quantity(object):
     # Shortcut for checking dimension
     def is_length(self):
         return self.dimension == Dimension("L")
+
     def is_surface(self):
         return self.dimension == Dimension("L")**2
+
     def is_volume(self):
         return self.dimension == Dimension("L")**3
+
     def is_time(self):
         return self.dimension == Dimension("T")
+
     def is_mass(self):
         return self.dimension == Dimension("M")
+
     def is_angle(self):
-        return (self.dimension == Dimension("RAD") or 
-                self.dimension == Dimension("SR"))
+        return self.dimension == Dimension("RAD")
+
+    def is_solid_angle(self):
+        return self.dimension == Dimension("SR")
+
     def is_temperature(self):
         return self.dimension == Dimension("Θ")
+
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
 
