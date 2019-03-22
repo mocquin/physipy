@@ -400,6 +400,13 @@ class Quantity(object):
     def __format_raw__(self, format_spec):
         return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
+    def __format__(self, format_spec):
+        complement_value_for_repr = self._compute_complement_value()
+        if not complement_value_for_repr == "":
+            return format(self._compute_value(), format_spec) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+        else: 
+            return format(self._compute_value(), format_spec) + UNIT_PREFIX
+    
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
