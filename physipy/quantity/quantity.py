@@ -387,6 +387,9 @@ class Quantity(object):
                        favunit = self.favunit)
         #return round(self.value, i)
 
+    def __repr__(self):
+        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
+
     def __str__(self):
         value_for_repr = self._compute_value() # this is the full value
         complement_value_for_repr = self._compute_complement_value() # this a string to append to the value
@@ -432,9 +435,6 @@ class Quantity(object):
         """
         return Quantity(1, self.dimension)
     
-    def __repr__(self):
-        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"
-
     def __getitem__(self, idx):
         if isinstance(self.value, np.ndarray):
             return Quantity(self.value[idx],
