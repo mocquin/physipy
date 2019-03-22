@@ -400,7 +400,6 @@ class Quantity(object):
     #def __format__(self, format_spec):
     #    return 
 
-    # TODO : factorize this with repr
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
@@ -409,7 +408,6 @@ class Quantity(object):
         else:
             return self.value
     
-    # TODO : factorize this with repr
     def _compute_complement_value(self, custom_favunit=None):
         """Return the complement to the value as a str."""
         if custom_favunit is None:
