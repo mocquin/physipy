@@ -168,8 +168,8 @@ def trigo_func(func):
 class Quantity(object):
     """Quantity class : """
     
-    DIGITS = DISPLAY_DIGITS
-    EXP_THRESH = EXP_THRESHOLD
+    #DIGITS = DISPLAY_DIGITS
+    #EXP_THRESH = EXP_THRESHOLD
     
     def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None):
         self.__array_priority__ = 100
