@@ -397,8 +397,8 @@ class Quantity(object):
         else: 
             return str(self._compute_value()) + UNIT_SUFFIX
 
-    #def __format__(self, format_spec):
-    #    return 
+    def __format_raw__(self, format_spec):
+        return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
