@@ -33,6 +33,7 @@ TODO:
  - [X] : add a method to reset favunit ?
  - [ ] : better tests for complex number support
  - [ ] : see if possible to not rely on sympy, numpy and scipy
+ - [ ] : better tests for Fraction support
 
 
 PROPOSITIONS/QUESTIONS : 
