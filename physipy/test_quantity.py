@@ -382,6 +382,11 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(1, np.cos(self.x_q/self.x_q * 0))
         with self.assertRaises(DimensionError):
             np.cos(self.x_q)
+    
+    def test_400_complex(self):
+        self.assertEqual((1j+1) * m, Quantity((1j+1), Dimension("L")))
+        self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
+        self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
         
 if __name__ == "__main__":
     unittest.main()
