@@ -3,24 +3,29 @@ add a quick start import
 
  
 Other module/package :
- - https://github.com/sbyrnes321/numericalunits
- - https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/
- - https://bitbucket.org/adonohue/units/src
+ - [X] : magnitude : http://juanreyero.com/open/magnitude/
+ -  physics.py : 
+  - (2.) birkenfeld physics.py (==George Brandl) : ipython-physics : https://bitbucket.org/birkenfeld/ipython-physics
+  - [X] : (3.) : python3-physics : https://github.com/TheGrum/python3-physics
+ - ScientificPython.Scientific.Physics.PhysicalQuantities (Konrad Hinsen) :
+  - (2.7) https://bitbucket.org/khinsen/scientificpython : http://dirac.cnrs-orleans.fr/ScientificPython = https://github.com/ScientificPython/ScientificPython
+ - numericalunits : https://github.com/sbyrnes321/numericalunits
+ - [ ] : Unum : https://bitbucket.org/kiv/unum/ (https://pypi.org/project/Unum/4.1.0/)
+ - (2.) dimensions.py : https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/
+ - units (Aran Donohue) :  https://bitbucket.org/adonohue/units/src
  - https://pythonhosted.org/quantities/user/tutorial.html
  - astropy : http://www.astropy.org/astropy-tutorials/Quantities.html
- - https://astropy-tutorials.readthedocs.io/en/latest/rst-tutorials/units-and-integration.html
- - Unum : https://pypi.org/project/Unum/4.1.0/
- - Magnitude : http://juanreyero.com/open/magnitude/
+    - http://learn.astropy.org/rst-tutorials/quantities.html
  - sympy.physics : https://docs.sympy.org/latest/modules/physics/units/philosophy.html
  - https://github.com/hplgit/physical-quantities
  - https://github.com/KenKundert/quantiphy
  - https://quantiphy.readthedocs.io/en/stable/index.html
  - pint : https://pint.readthedocs.io/en/latest/
  - pynbody : https://github.com/pynbody/pynbody
- - http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
+ -  : http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
 
- - [ ] : module physics.py : ipython-physics.py : https://github.com/TheGrum/python3-physics
-Adaptation python 3 de https://bitbucket.org/birkenfeld/ipython-physics, lui même adpaté de scientificpython de KonradHinsen
+ - [ ] : module physics.py : ipython-physics.py : 
+Adaptation python 3 de , lui même adpaté de scientificpython de KonradHinsen
 http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
 Les "unités" peuvent avoir un "nom" sous forme de chaine de caractères
 méthodes tan, cos, sin pour "numpy ufunc" ?
@@ -29,9 +34,7 @@ système si avec rad et sr
 système cgs dispo
 + extension Ipython pour écriture "1 m"
 - [ ] : scientificpython par Konrad Hinsen 
-http://dirac.cnrs-orleans.fr/ScientificPython : seulement sur python 2.7 et numpy 1.8
-https://bitbucket.org/khinsen/scientificpython : 
-https://github.com/ScientificPython/ScientificPython
+
 
 
 # Known issues
