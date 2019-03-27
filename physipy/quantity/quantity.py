@@ -31,6 +31,7 @@ TODO:
  - [ ] : when uncertainties is implemented, add an automatic plotting
  - [X] : add a format method --> need a refactor of repr..
  - [X] : add a method to reset favunit ?
+ - [ ] : better tests for complex number support
  
 From physics : 
  - some packages relies on hand-parsing string or regex to parse fractions ? (could allow not relying on sympy)
@@ -85,7 +86,6 @@ From unum:
  - Formatter is defined as a class, set_formet and reset_format as classmethod
  - Add a copy method with flags to include repr formats.
  - Add Fraction support for values
- - Test with complex values
  - Store all quantities through their symbol, and check for Name conflict ?
  - Clean imports with del
  - Store quantities in a dict-like object ?
