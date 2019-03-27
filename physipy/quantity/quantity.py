@@ -33,6 +33,14 @@ TODO:
  - [X] : add a method to reset favunit ?
  - [ ] : better tests for complex number support
  
+About wrapping numpy functions :
+https://odlgroup.github.io/odl/guide/numpy_guide.html
+https://gist.github.com/shoyer/36b84ab064f027df318c0b823558de24
+https://docs.scipy.org/doc/numpy/release.html#array-ufunc-added
+http://www.numpy.org/neps/nep-0013-ufunc-overrides.html
+http://www.astro.utoronto.ca/%7Emhvk/numpy-doc/neps/ufunc-overrides.html#proposed-interface
+https://pint.readthedocs.io/en/0.9/numpy.html#comments
+ 
 From physics : 
  - some packages relies on hand-parsing string or regex to parse fractions ? (could allow not relying on sympy)
  - use lambda and map to add/sub dicts of dimension power
@@ -61,7 +69,8 @@ From astropy comparison :
  - add a string parser constructor ?
  - add a decorator for checking dimension
  - add a parser to favunit for functions output
-
+ - Add method to simply return value in other systems
+ - Deal with powers with fractions if necessary (utils)
 
 From pint :
  - Allow adding units from a text file
@@ -112,6 +121,10 @@ PROPOSITIONS/QUESTIONS :
  - make a floordiv ?
  - no np.all in comparison for indexing a[a>1], but then np.all is needed in functions verifications
  - should repr precise the favunit and symbol ?
+ - switch base system by replacing the dimension dict (or making it setable)
+ - exponent repr : use re to change “**” to “^” or to “”
+ - base nominal representation and str should allow plain copy/paste to be reused in code
+ - list unicode possible changes : micron character, superscripts for exponents
 
 """
 
