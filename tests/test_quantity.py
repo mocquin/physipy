@@ -1,6 +1,7 @@
 ###############################################################################
 import numpy as np
 import unittest
+from fractions import Fraction
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
@@ -8,7 +9,6 @@ from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad,
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
-
 
 # from quantity import SI_units as u
 
@@ -385,10 +385,23 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.cos(self.x_q)
     
+    def test_300_define_fraction(self):
+        self.assertEqual(Fraction(1, 2) * m, Quantity(Fraction(1,2), Dimension("L")))
+    
+    def test_310_fraction_operation(self):
+        self.assertEqual(Fraction(1, 2) * m * 2, Fraction(1, 1) * m)
+        self.assertEqual(Fraction(1, 2) * m + Fraction(1, 2) * m, Fraction(1, 1) * m)
+        self.assertEqual(Fraction(1, 2) * m / 2, Fraction(1, 4) * m)
+        self.assertEqual(2 / (Fraction(1, 2) * m), 4 * 1/m)
+        with self.assertRaises(DimensionError):
+            Fraction(1, 2) * m + 1
+        self.assertTrue(Fraction(1, 2) * m <= Fraction(3, 2) * m)
+
     def test_400_complex(self):
         self.assertEqual((1j+1) * m, Quantity((1j+1), Dimension("L")))
         self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
         self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
+
         
 if __name__ == "__main__":
     unittest.main()
