@@ -30,7 +30,17 @@ TODO:
  - [ ] : improve integration of eq, ne (ex : assertNotEqual when dealing with arrays)
  - [ ] : when uncertainties is implemented, add an automatic plotting
  - [X] : add a format method --> need a refactor of repr..
-
+ - [X] : add a method to reset favunit ?
+ 
+From physics : 
+ - some packages relies on hand-parsing string or regex to parse fractions ? (could allow not relying on sympy)
+ - use lambda and map to add/sub dicts of dimension power
+ - Dimension object (PhysicalUnit) have a scale_factor and a offset attribute, that are multiplied as Dimensions are multiplie (and power are added), with conversion_factor/tuple method
+ - add rpow method (must be dimensionless)
+ - try to import uncertainties
+ 
+ - allow to fix the default precision output of an instance
+ - allow to fix an output format (as string) of an instance
  
 From astropy comparison : 
 - display about :
@@ -51,6 +61,7 @@ From astropy comparison :
  - add a decorator for checking dimension
  - add a parser to favunit for functions output
 
+
 From pint :
  - Allow adding units from a text file
  - Remplacer isinstance(quantity) par isinstance(self.__class__)
@@ -67,8 +78,24 @@ From pint :
  - Method check(“dimensionality”) pour verifier à la main la dimension
  - Decorateur pour check dimension (accept Dimension object, Quantity, dimensionnality)
  - Ajouter methode plus_minus pour ajouter une incertitude
+ - Able to define the units and base system in a file
  
+From unum:
+ - Quantify is a staticmethod, and defined as a decorator outside the class
+ - Formatter is defined as a class, set_formet and reset_format as classmethod
+ - Add a copy method with flags to include repr formats.
+ - Add Fraction support for values
+ - Test with complex values
+ - Store all quantities through their symbol, and check for Name conflict ?
+ - Clean imports with del
+ - Store quantities in a dict-like object ?
+ - Use of Unicode superscripts ? display only, copy-paste problems ?
  
+From magnitude : 
+ - create a dictionnary tied to Quantity class, containing all the quantities ? units ? 
+ - should Dimension be stored within the Quantity class (Quantity(1, kg=1, m=1)) ?
+ - allow creating quantities with value and str of symbol of other quantity ?
+ - init create oprec and oformat to None. They can be set later, and str and repr rely on the module value of oprec and oformat
 
 PROPOSITIONS/QUESTIONS : 
  - make sum, mean, integrate, is_dimensionless properties IO methods ?
@@ -85,12 +112,6 @@ PROPOSITIONS/QUESTIONS :
  - make a floordiv ?
  - no np.all in comparison for indexing a[a>1], but then np.all is needed in functions verifications
  - should repr precise the favunit and symbol ?
-
-PENDING : 
- - rmul, truediv, rtruediv
- - modification in iterator next
- - doit être dimensionless pour conversion en float
- - decorator for trigo methods
 
 """
 
