@@ -390,6 +390,92 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
         self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
         
+    def test_500_numpy(self):
+        
+        arr = np.array([1,2,3])
+        arr_m = Quantity(arr, Dimension("L"))
+        
+        # add
+        self.assertTrue(np.all(m + arr_m == Quantity(1 + arr, Dimension("L"))))
+        self.assertTrue(np.all(arr_m + m == Quantity(1 + arr, Dimension("L"))))
+        self.assertTrue(np.all(np.add(arr_m, arr_m) == Quantity(2 * arr, Dimension("L"))))
+        
+        # sub
+        self.assertTrue(np.all(m - arr_m == Quantity(1 - arr, Dimension("L"))))
+        self.assertTrue(np.all(arr_m - m == Quantity(arr - 1, Dimension("L"))))
+        
+        self.assertTrue(np.all(np.subtract(m, arr_m) == Quantity(1 - arr, Dimension("L"))))
+        self.assertTrue(np.all(np.subtract(arr_m, m) == Quantity(arr - 1, Dimension("L"))))
+        self.assertTrue(np.all(np.subtract(arr_m, arr_m) == Quantity(0 * arr, Dimension("L"))))
+        
+        # mul
+        self.assertTrue(np.all(m * arr_m ==  Quantity(1 * arr, Dimension({"L":2}))))
+        self.assertTrue(np.all(arr_m * m ==  Quantity(arr * 1, Dimension({"L":2}))))
+        
+        self.assertTrue(np.all(np.multiply(m, arr_m) ==  Quantity(1 * arr, Dimension({"L":2}))))
+        self.assertTrue(np.all(np.multiply(arr_m, m) == Quantity(arr * 1, Dimension({"L":2}))))
+        self.assertTrue(np.all(np.multiply(arr_m, arr_m) == Quantity(arr * arr, Dimension({"L":2}))))
+        
+        # div
+        self.assertTrue(np.all(m / arr_m == np.array([1/1, 1/2, 1/3])))
+        self.assertTrue(np.all(arr_m / m == np.array([1.,2.,3.])))
+        
+        self.assertTrue(np.all(np.divide(m, arr_m) == np.array([1/1, 1/2, 1/3])))
+        self.assertTrue(np.all(np.divide(arr_m, m) == np.array([1.,2.,3.])))
+        self.assertTrue(np.all(np.divide(arr_m, arr_m) == np.array([1.,1.,1.])))
+        
+        # pow
+        with self.assertRaises(TypeError):
+            np.power(m, arr_m)
+        with self.assertRaises(TypeError):
+            np.power(arr_m, m)
+        self.assertTrue(np.all(arr_m ** 1 == arr_m))
+        self.assertTrue(np.all(arr_m ** 2 == arr_m * arr_m))
+        
+        # hypot
+        self.assertTrue(np.all(np.hypot(m, m) == Quantity((1+1)**(1/2), Dimension("L"))))
+        self.assertTrue(np.all(np.hypot(m, arr_m) == Quantity(np.hypot(1, np.array([1,2,3])), Dimension("L"))))
+        self.assertTrue(np.all(np.hypot(arr_m, m) == np.hypot(m, arr_m)))
+        
+        # greater
+        self.assertTrue(np.all(np.greater(m, m) == False))
+        self.assertTrue(np.all(np.greater(m, arr_m) == np.array([False, False, False])))
+        self.assertTrue(np.all(np.greater(arr_m, m) == np.array([False, True, True])))
+        self.assertTrue(np.all(np.greater(arr_m, arr_m) == np.array([False, False, False])))
+        
+        # greater_or_equal
+        self.assertTrue(np.all(np.greater_equal(m, m) == True))
+        self.assertTrue(np.all(np.greater_equal(m, arr_m) == np.array([True, False, False])))
+        self.assertTrue(np.all(np.greater_equal(arr_m, m) == np.array([True, True, True])))
+        self.assertTrue(np.all(np.greater_equal(arr_m, arr_m) == np.array([True, True, True])))
+        
+        # sqrt
+        self.assertEqual(np.sqrt(m), Quantity(1, Dimension({"L":1/2})))
+        self.assertTrue(np.all(np.sqrt(arr_m) == Quantity(np.sqrt(np.array([1.,2.,3.])), Dimension({"L":1/2}))))
+
+        ## Trigo
+        zero_rad = Quantity(0, Dimension("RAD"))
+        zero_none = Quantity(0, Dimension(None))
+        # cos
+        self.assertTrue(np.cos(zero_none) == np.cos(zero_rad))
+        self.assertTrue(np.cos(zero_none) == np.cos(0))
+        # sin
+        self.assertTrue(np.sin(zero_none) == np.sin(zero_rad))
+        self.assertTrue(np.sin(zero_none) == np.sin(0))
+        # tan
+        self.assertTrue(np.tan(zero_none) == np.tan(zero_rad))
+        self.assertTrue(np.tan(zero_none) == np.tan(0))
+        # arccos
+        self.assertTrue(np.arccos(zero_none) == np.arccos(0))
+        # arcsin
+        self.assertTrue(np.arcsin(zero_none) == np.arcsin(0))
+        # arctan
+        self.assertTrue(np.arctan(zero_none) == np.arctan(0))
+
+                
+                
+        
+        
 if __name__ == "__main__":
     unittest.main()
         

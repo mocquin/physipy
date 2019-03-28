@@ -497,30 +497,106 @@ class Quantity(object):
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
 
-    @trigo_func
-    def cos(self):
-        return np.cos(self.value)
-    
-    @trigo_func
-    def sin(self):
-        return np.sin(self.value)
-    @trigo_func
-    def tan(self):
-        return np.tan(self.value)
-    
-    @trigo_func
-    def arccos(self):
-        return np.arccos(self.value)
-    
-    @trigo_func
-    def arcsin(self):
-        return np.arcsin(self.value)
-    
-    @trigo_func
-    def arctan(self):
-        return np.arctan(self.value)
-    
-    
+    # TODO : make this a static function ?
+    def __array_ufunc__(self, ufunc, method, *args, **kwargs):
+        #print(args)
+        ufunc_name = ufunc.__name__
+        left = quantify(args[0])
+
+        if ufunc_name in same_dim_out_2:
+            other = quantify(args[1])
+            if not left.dimension == other.dimension:
+                raise DimensionError(left.dimension, other.dimenion)
+            res = ufunc.__call__(left.value,other.value)    
+            return Quantity(res, left.dimension)
+        elif ufunc_name in skip_2:
+            other = quantify(args[1])
+            res = ufunc.__call__(left.value, other.value)    
+            if ufunc_name == "multiply":
+                return Quantity(res, left.dimension * other.dimension)
+            elif ufunc_name == 'divide' or ufunc_name == "true_divide":
+                return Quantity(res, left.dimension / other.dimension).remove_dimension_if_dimensionless()
+        elif ufunc_name in no_dim_1:
+            if not left.dimension == Dimension(None):
+                raise DimensionError(left.dimension, Dimension(None))
+            res = ufunc.__call__(left.value)
+            return Quantity(res, Dimension(None))
+        elif ufunc_name in angle_1:
+            if not left.is_dimensionless_ext():
+                raise DimensionError(left.dimension, Dimension(None), binary=True)
+            res = ufunc.__call__(left.value)
+            return Quantity(res, Dimension(None)).remove_dimension_if_dimensionless()
+        elif ufunc_name in same_out:
+            res = ufunc.__call__(left.value)
+            return Quantity(res, left.dimension).remove_dimension_if_dimensionless()
+        elif ufunc_name in special_dict:
+            if ufunc_name == "sqrt":
+                res = ufunc.__call__(left.value)
+                return Quantity(res, left.dimension**(1/2))
+            elif ufunc_name == "power":
+                power_num = args[1]
+                if not (isinstance(power_num,int) or isinstance(power_num,float)):
+                    raise TypeError(("Power must be a number, "
+                            "not {}").format(type(power_num)))
+                res = ufunc.__call__(left.value, power_num)
+                return Quantity(res, 
+                        left.dimension ** power_num,
+                        symbol = left.symbol ** power_num).remove_dimension_if_dimensionless()
+            elif ufunc_name == "reciprocal":
+                res = ufunc.__call__(left.value)
+                return Quantity(res, 1/left.dimension)
+            elif ufunc_name == "square":
+                res = ufunc.__call__(left.value)
+                return Quantity(res, left.dimension**2)
+            else:
+                raise ValueError
+        elif ufunc_name in same_dim_in_2_nodim_out:
+            other = quantify(args[1])
+            if not left.dimension == other.dimension:
+                raise DimensionError(left.dimension, other.dimenion)
+            res = ufunc.__call__(left.value, other.value)    
+            return res
+        elif ufunc_name in inv_angle_1:
+            if not left.dimension == Dimension(None):
+                raise DimensionError(left.dimension, Dimension(None))
+            res = ufunc.__call__(left.value)
+            return res
+        elif ufunc_name in same_dim_in_1_nodim_out:
+            res = ufunc.__call__(left.value)
+            return res
+        else:
+            raise ValueError
+
+            
+
+
+
+# 2 in : same dimension ---> out : same dim as in
+same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin"]
+# 2 in : same dim ---> out : not a quantity
+same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal"] # , "logical_and", "logical_or", "logical_xor", "logical_not"]
+same_dim_in_1_nodim_out = ["sign"]
+# 2 in : any ---> out : depends
+skip_2 = ["multiply", "divide", "true_divide"]
+# 1 in : any ---> out : depends
+special_dict = ["sqrt", "power", "reciprocal", "square"]
+# 1 in : no dim ---> out : no dim
+no_dim_1 = ["exp", "log"]
+# 2 in : no dim ---> out : no dim
+no_dim_2 = ["logaddexp", "logaddexp2", ]
+# 1 in : dimless or angle ---> out : dimless
+angle_1 = ["cos", "sin", "tan", 
+          "cosh", "sinh", "tanh"]
+# 1 in : any --> out : same
+same_out = ["ceil", "conjugate", "floor", "rint", "trunc"]
+# 1 in : dimless -> out : dimless
+inv_angle_1 = ["arcsin", "arccos", "arctan",
+              "arcsinh", "arccosh", "arctanh"]
+# dimless -> dimless
+deg_rad = ["deg2rad", "rad2deg"]
+
+ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
+
 
 def quantify(x):
     if isinstance(x, Quantity):
