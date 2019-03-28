@@ -32,7 +32,7 @@ TODO:
  - [X] : add a format method --> need a refactor of repr..
  - [X] : add a method to reset favunit ?
  - [ ] : better tests for complex number support
- 
+
 About wrapping numpy functions :
 https://odlgroup.github.io/odl/guide/numpy_guide.html
 https://gist.github.com/shoyer/36b84ab064f027df318c0b823558de24
@@ -125,6 +125,8 @@ PROPOSITIONS/QUESTIONS :
  - exponent repr : use re to change “**” to “^” or to “”
  - base nominal representation and str should allow plain copy/paste to be reused in code
  - list unicode possible changes : micron character, superscripts for exponents
+ - quantify in each method is ugly
+ - should redefine every numpy ufunc as method ?
 
 """
 
