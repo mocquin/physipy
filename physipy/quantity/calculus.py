@@ -11,49 +11,6 @@ from dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, array_to_Q_array, Quantity
 
 
-
-# TRIGO
-def sqrt(x):
-    x = quantify(x)
-    return Quantity(np.sqrt(x.value), x.dimension**(1/2))
-
-# Trigo moved to class-method
-#def cos(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.cos(x.value)
-#
-#def sin(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.sin(x.value)
-#
-#def tan(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.tan(x.value)
-#
-#def arccos(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.arccos(x.value)
-#
-#def arcsin(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.arcsin(x.value)
-#
-#def arctan(x):
-#    x = quantify(x)
-#    if not x.is_dimensionless_ext():
-#        raise DimensionError
-#    return np.arctan(x.value)
-
 # Generiques
 def linspace(Q_1, Q_2, nb_points=100):
     """Generate a lineary-spaced vector of Quantity.
