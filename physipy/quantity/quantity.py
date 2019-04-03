@@ -300,7 +300,6 @@ class Quantity(object):
         return x / self
     __rtruediv__ = __rdiv__
 
-    
     def __floordiv__(self, y):
         y = quantify(y)
         if not self.dimension == y.dimension:
@@ -314,12 +313,6 @@ class Quantity(object):
             raise DimensionError(self.dimension, y.dimension)
         return Quantity(self.value % y.value,
                        self.dimension).remove_dimension_if_dimensionless()
-    
-    # def __truediv__(self,y):
-    #    return self.__div__(y)
-
-    # def __rtruediv__(self,x):
-    #    return self.__rdiv__(x)
 
     def __pow__(self,power):
         """
