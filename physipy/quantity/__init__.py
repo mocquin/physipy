@@ -1,10 +1,3 @@
-
-
-'''
-TODO : 
- - check for derived kg....
-'''
-
 from .quantity import Dimension, Quantity
 from .quantity import DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, make_quantity
