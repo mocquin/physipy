@@ -1,7 +1,8 @@
 import unittest
 
+import physipy
 
 class TestPhysipy(unittest.TestCase):
     
     def test_import(self):
-        import physipy
+        pass
