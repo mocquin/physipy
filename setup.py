@@ -20,6 +20,7 @@ setup(
     author="mocquin",
     author_email="mocquin@me.com",
     license="MIT",
+    keywords='physics physical unit units dimension quantity quantities',
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
