@@ -1,4 +1,4 @@
-from quantity import m, s, kg, A, cd, mol, K, rad, units, make_quantity, SI_units_derived
+from .quantity import m, s, kg, A, cd, mol, K, rad, units, make_quantity, SI_units_derived
 from math import pi
 
 cm = SI_units_derived["cm"]

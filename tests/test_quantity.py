@@ -2,12 +2,12 @@
 import numpy as np
 import unittest
 
-from quantity import Dimension, Quantity, DimensionError
+from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
-from quantity import SI_units, units#, custom_units
-from quantity import m, s, kg, A, cd, K, mol
-from quantity import quantify, make_quantity
+from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
+from physipy.quantity import SI_units, units#, custom_units
+from physipy.quantity import m, s, kg, A, cd, K, mol
+from physipy.quantity import quantify, make_quantity
 
 
 # from quantity import SI_units as u

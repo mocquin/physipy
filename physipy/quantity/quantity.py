@@ -147,12 +147,11 @@ import scipy
 import scipy.integrate
 import scipy.optimize
 
+import numbers as nb
 import numpy as np
 import sympy as sp
-import numbers as nb
 
-from dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
-
+from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 
 # # Constantes
 UNIT_PREFIX= " "

@@ -1,7 +1,7 @@
 import scipy.constants as csts
 
-from quantity import m, s, kg, A, K, rad, units, mol
-from quantity import make_quantity
+from .quantity import m, s, kg, A, K, rad, units, mol
+from .quantity import make_quantity
 
 Pa = units["Pa"]
 J = units['J']

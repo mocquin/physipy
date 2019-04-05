@@ -1,6 +1,6 @@
 import unittest
 
-from dimension import Dimension, DimensionError
+from physipy import Dimension, DimensionError
 
 
 class TestClassDimension(unittest.TestCase):
