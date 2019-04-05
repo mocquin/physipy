@@ -306,7 +306,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(SI_units["kg"],Quantity(1,Dimension("M")))
         self.assertEqual(SI_units["m"],Quantity(1,Dimension("L")))
         self.assertEqual(SI_units["s"],Quantity(1,Dimension("T")))
-        self.assertEqual(SI_units["K"],Quantity(1,Dimension("Θ")))
+        self.assertEqual(SI_units["K"],Quantity(1,Dimension("theta")))
         self.assertEqual(SI_units["cd"],Quantity(1,Dimension("J")))
         self.assertEqual(SI_units["A"],Quantity(1,Dimension("I")))
         self.assertEqual(SI_units["mol"],Quantity(1,Dimension("N")))
