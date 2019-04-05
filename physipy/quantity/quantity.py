@@ -106,6 +106,19 @@ From magnitude :
  - allow creating quantities with value and str of symbol of other quantity ?
  - init create oprec and oformat to None. They can be set later, and str and repr rely on the module value of oprec and oformat
 
+Set constants value hard value
+Add a handler to check if scipy is available, and update constants values verbosily
+Make a clear list of dependencies package
+Add matplotlib compatibility
+Add misu to alternatives
+https://pypi.python.org/pypi/misu
+initiate a setup.py
+initiate a manifest
+créer des entry points pour permettre la conversion de quantités en ligne de coommande
+If a result dimension is equal to one of the 22 SI derived units, make it its favunit.
+ 
+
+
 PROPOSITIONS/QUESTIONS : 
  - make sum, mean, integrate, is_dimensionless properties IO methods ?
  - add a 0 quantity to radd to allow magic function sum ?
