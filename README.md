@@ -1,3 +1,6 @@
+To run the tests : 
+ - cd to physipy-master
+ - python -m unittest discover
 
 add a quick start import
 
