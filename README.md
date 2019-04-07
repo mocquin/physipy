@@ -26,6 +26,7 @@ Other module/package :
  - pint : https://pint.readthedocs.io/en/latest/
  - pynbody : https://github.com/pynbody/pynbody
  -  : http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
+ - misu : https://github.com/cjrh/misu
 
  - [ ] : module physics.py : ipython-physics.py : 
 Adaptation python 3 de , lui même adpaté de scientificpython de KonradHinsen
