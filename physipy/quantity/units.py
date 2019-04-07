@@ -1,4 +1,11 @@
 """
+This module provides dictionnaries of units : 
+ - SI_units : all the seven base SI units
+ - SI_units_prefixed : same, with the prefixed version
+ - SI_derived_units : other accepted units
+ - other_units : other various units
+ - units : all of the above
+
 TODO : 
  - [ ] : should 'SI_units_derived' have another name ?
  - [X] : deal with prefixed kg
@@ -14,32 +21,34 @@ from numpy import pi
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
 
 
-DICT_OF_PREFIX_UNITS = {'Y': 1e24,
-                        'Z': 1e21,
-                        'E': 1e18,
-                        'P': 1e15,
-                        'T': 1e12,
-                        'G': 1e9,
-                        'M': 1e6,
-                        'k': 1e3,
-                        'h': 1e2,
-                        'da': 1e1,
-                        'd': 1e-1,
-                        'c': 1e-2,
-                        'm': 1e-3,
-                        'mu': 1e-6,
-                        'n': 1e-9,
-                        'p': 1e-12,
-                        'f': 1e-15,
-                        'a': 1e-18,
-                        'z': 1e-21,
-                        'y': 1e-24,
-                       }
+PREFIX_DICT = {
+    'Y': 1e24,
+    'Z': 1e21,
+    'E': 1e18,
+    'P': 1e15,
+    'T': 1e12,
+    'G': 1e9,
+    'M': 1e6,
+    'k': 1e3,
+    'h': 1e2,
+    'da': 1e1,
+    # skipping base unit
+    'd': 1e-1,
+    'c': 1e-2,
+    'm': 1e-3,
+    'mu': 1e-6,
+    'n': 1e-9,
+    'p': 1e-12,
+    'f': 1e-15,
+    'a': 1e-18,
+    'z': 1e-21,
+    'y': 1e-24,
+}
 
-def derive_units(prefix_dic, base_units, dic={}):
-    """Return all the combination Quantities between the prefixes and the units."""
+def CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
+    """Create the prefixed dict for the base SI units"""
     for prefix_symbol, prefix_value in prefix_dic.items():
-        for dim_symbol, unit_symbol in base_units.items():
+        for dim_symbol, unit_symbol in base_units_symbol_dim.items():
             # dealing with kg
             if unit_symbol == "kg" and dim_symbol == "M" :
                 unit_symbol = "g"
@@ -47,6 +56,16 @@ def derive_units(prefix_dic, base_units, dic={}):
             prefixed_unit_symbol = prefix_symbol + unit_symbol
             dic[prefixed_unit_symbol] = Quantity(prefix_value, Dimension(dim_symbol), symbol=prefixed_unit_symbol)
     return dic
+
+def prefix_units(prefix_dic, unit_dict, extend=False):
+    """Return a dict of unit with all combination between the input unit dict and the prefix dict."""
+    prefixed_dict = {}
+    for prefix_symbol, prefix_value in prefix_dic.items():
+        for unit_symbol, unit_quantity in unit_dict.items():
+            prefixed_symbol = prefix_symbol+ str(unit_quantity.symbol)
+            prefixed_dict[prefixed_symbol] = make_quantity(prefix_value * unit_quantity, symbol=prefixed_symbol)
+    return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
+    
 
 # Init of SI inits dict
 SI_units = {value: Quantity(1,Dimension(key), symbol=value) for (key,value) in SI_UNIT_SYMBOL.items()}
@@ -63,31 +82,54 @@ sr  = SI_units["sr"]
 
 # Derived SI units with all prefixes
 # dealing with kg for the prefixes
-SI_units_derived = derive_units(DICT_OF_PREFIX_UNITS, SI_UNIT_SYMBOL, SI_units)
-SI_units_derived["g"] = Quantity(0.001, Dimension("M"), symbol="g")
+SI_units_prefixed = CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
+SI_units_prefixed["g"] = Quantity(0.001, Dimension("M"), symbol="g")
 
 # Units
-units_raw = {"Hz"  : 1/s,
-             "N"   : m * kg * s**-2,
-             "Pa"  : kg * m**-1 * s**-2,
-             "J"   : m**2 * kg * s**-2,
-             "W"   : m**2 * kg * s**-3,
-             "C"   : s * A,
-             "V"   : m**2 * kg * s**-3 * A**-1,
-             "F"   : m**-2 * kg**-1 * s**4 * A**2,
-             # Omega ? m**2 * kg * s**-3 *A**-2
-             "Wb"  : m**2 * kg * s**-2 * A**-1,
-             "T"   : kg *s**-2 * A**-1,
-             "H"   : m**2 * kg * s**-2 * A**-2,
-             "lm"  : cd * sr,
-             "lx"  : cd * m**-2,
-             "Bq"  : 1/s,
-             "h"   : 3600*s,
-             "deg" : pi/180 *rad,
-             "liter": 0.001 * m**3
-            }
+SI_derived_units_raw = {
+    "Hz"  : 1/s,
+    "N"   : m * kg * s**-2,
+    "Pa"  : kg * m**-1 * s**-2,
+    "J"   : m**2 * kg * s**-2,
+    "W"   : m**2 * kg * s**-3,
+    "C"   : s * A,
+    "V"   : m**2 * kg * s**-3 * A**-1,
+    "F"   : m**-2 * kg**-1 * s**4 * A**2,
+    # Omega ? m**2 * kg * s**-3 *A**-2
+    "S"   : kg**-1 * m**-2 * s**3 * A**2,
+    "Wb"  : m**2 * kg * s**-2 * A**-1,
+    "T"   : kg *s**-2 * A**-1,
+    "H"   : m**2 * kg * s**-2 * A**-2,
+    "lm"  : cd * sr,
+    "lx"  : cd * m**-2,
+    "Bq"  : 1/s,
+    "Gy"  : m**2 * s**-2,
+    "Sv"  : m**2 * s**-2,
+    "kat" : mol * s**-1,
+    }
 
-units = {key: make_quantity(value, symbol=key) for key, value in units_raw.items()}
+SI_derived_units = {key: make_quantity(value, symbol=key) for key, value in SI_derived_units_raw.items()}
+SI_derived_units_prefixed = prefix_units(PREFIX_DICT, SI_derived_units, extend=True)
 
-units = {**units, **SI_units} #including base SI units to units dict
+other_accepted_units_raw = {
+    "min" : 60 * s,
+    "h"   : 3600 * s,
+    "d"   : 86400 * s,
+    "au"  : 149597870700 * m,
+    # how to deal with degree minutes seconds ?
+    "deg" : pi/180 *rad,
+    "ha"  : 10**4 * m**2,
+    "L"   : 10**-3 * m**3,
+    "t"   : 1000 * kg,
+    "Da"  : 1.660539040 * 10**-27 *kg,
+    "eV"  : 1.602176634 * 10**-19 * kg * m**2 * s**-2,
+}
 
+other_units = {key: make_quantity(value, symbol=key) for key, value in other_accepted_units_raw.items()}
+
+units = {**SI_units_prefixed, **SI_derived_units, **other_units} #including base SI units to units dict
+
+
+del pi
+del Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
+del SI_derived_units_raw, other_accepted_units_raw

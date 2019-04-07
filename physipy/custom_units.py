@@ -1,7 +1,15 @@
-from .quantity import m, s, kg, A, cd, mol, K, rad, units, make_quantity, SI_units_derived
+"""
+This module provides for now 2 dictionnaries of units : 
+ - custom_units : empty for now
+ - imperial_units : retard units
+"""
+
 from math import pi
 
-cm = SI_units_derived["cm"]
+from .quantity import make_quantity
+from .quantity import m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
+
+cm = SI_units_prefixed["cm"]
 g = units['g']
 h = units["h"]
 J = units["J"]
@@ -10,17 +18,18 @@ kJ = J * 1000
 kJ.symbol = 'kJ'
 
 
-raw_units = {
-            }
+raw_custom_units = {
+    
+}
 
+custom_units = {}
 # Extending quantity units dict
-for key, value in raw_units.items():
-    units[key] = make_quantity(value, symbol=key)
-
+for key, value in raw_custom_units.items():
+    custom_units[key] = make_quantity(value, symbol=key)
 
 
 # imperial units from astropy. This is ridiculous...
-liter = units["liter"]
+liter = units["L"]
 raw_imperial_units = {
     # LENGTHS
     "in": 2.54 * cm,
@@ -66,6 +75,8 @@ raw_imperial_units = {
 imperial_units = {}
 for key, value in raw_imperial_units.items():
     imperial_units[key] = make_quantity(value, symbol=key)
-    
-#units = {key, make_quantity(value, symbol=key) for key, value in raw_units.items()}
 
+
+del pi
+del m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
+del cm, g, h, J, W, kJ 
