@@ -32,6 +32,7 @@ TODO:
  - [X] : add a format method --> need a refactor of repr..
  - [X] : add a method to reset favunit ?
  - [ ] : better tests for complex number support
+ - [ ] : see if possible to not rely on sympy, numpy and scipy
 
 About wrapping numpy functions :
 https://odlgroup.github.io/odl/guide/numpy_guide.html
