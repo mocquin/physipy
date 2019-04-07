@@ -1,9 +1,9 @@
+import numbers as nb
+
+import numpy as np
 import scipy
 import scipy.integrate
 import scipy.optimize
-
-import numbers as nb
-import numpy as np
 import sympy as sp
 
 from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
