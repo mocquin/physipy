@@ -11,6 +11,7 @@ TODO:
  * [X] : declare truediv as equal to div (and so on).
  * [X] : make exception strings display correctly
  * [X] : char for temperatures Θ is changed to "theta" (for sympy)
+ * [ ] : try a cleaner convesrion from dict to str
 
 PROPOSITIONS:
  * method to return a latex-formated str ?
