@@ -130,7 +130,7 @@ other_units = {key: make_quantity(value, symbol=key) for key, value in other_acc
 
 units = {**SI_units_prefixed, **SI_derived_units, **other_units} #including base SI units to units dict
 
-all_units = {SI_units_prefixed, SI_derived_units_prefixed, other_units}
+all_units = {**SI_units_prefixed, **SI_derived_units_prefixed, **other_units}
 
 del pi
 del Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
