@@ -92,12 +92,13 @@ class Quantity(object):
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     
-    def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None):
+    def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None, desc=""):
         self.__array_priority__ = 100
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
         self.favunit = favunit
+        self.desc = desc
 
     def __setattr__(self, name, value):
         if name == "value":
@@ -142,6 +143,10 @@ class Quantity(object):
             else:
                 raise TypeError(("Favorite unit of Quantity must be a Quantity "
                                  "or None, not {}").format(type(value)))
+        elif name == "desc":
+            if not isinstance(value, str):
+                raise TypeError("desc attribute must be a string.")
+            super().__setattr__(name, value)
         else:
             super().__setattr__(name, value)
 
