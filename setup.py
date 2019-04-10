@@ -22,7 +22,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="physipy",
-    version=find_version("physipy", "__init__.py"),
+    version=verstr,
     description="Manipulate physical quantities in Python",
     long_description=README,
     long_description_content_type="text/markdown",
