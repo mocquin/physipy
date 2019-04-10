@@ -106,6 +106,16 @@ From magnitude :
  - should Dimension be stored within the Quantity class (Quantity(1, kg=1, m=1)) ?
  - allow creating quantities with value and str of symbol of other quantity ?
  - init create oprec and oformat to None. They can be set later, and str and repr rely on the module value of oprec and oformat
+ 
+From quantities :
+ - Should Dimension allow addition (returning the same) ?
+ - Copy ? hash ?
+ - Dimension dict can drop unit if dimension is 0, or add a new unit (when multiplicating for ex)
+ - Np.isscalar to check pow of dimension
+ - Dimension to power 0 returns 1 (dimless)
+ - Allow comparing dimension (??)
+ - All numpy function and their corresponding checks are stored in a dict
+ - Uses eval
 
 Set constants value hard value
 Add a handler to check if scipy is available, and update constants values verbosily
