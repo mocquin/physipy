@@ -373,6 +373,8 @@ class TestQuantity(unittest.TestCase):
         
         self.assertAlmostEqual(4*kg**2*m, dblquad(func2D, 0*m, 2*m, 0*kg, 2*kg)[0])
         
+    def test_410_exp_zero(self):
+        self.assertEqual(self.x_q ** 0, 1)
         
     #def test_custom_units(self):
     #    from math import pi

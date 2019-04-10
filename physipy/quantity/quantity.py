@@ -111,7 +111,6 @@ From quantities :
  - Should Dimension allow addition (returning the same) ?
  - Copy ? hash ?
  - Dimension dict can drop unit if dimension is 0, or add a new unit (when multiplicating for ex)
- - Dimension to power 0 returns 1 (dimless)
  - Allow comparing dimension (??)
  - All numpy function and their corresponding checks are stored in a dict
  - Uses eval
