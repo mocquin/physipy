@@ -111,7 +111,6 @@ From quantities :
  - Should Dimension allow addition (returning the same) ?
  - Copy ? hash ?
  - Dimension dict can drop unit if dimension is 0, or add a new unit (when multiplicating for ex)
- - Np.isscalar to check pow of dimension
  - Dimension to power 0 returns 1 (dimless)
  - Allow comparing dimension (??)
  - All numpy function and their corresponding checks are stored in a dict
@@ -340,7 +339,7 @@ class Quantity(object):
         since the quantities won't be the same dimension.
         
         """
-        if not (isinstance(power,int) or isinstance(power,float)):
+        if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
             raise TypeError(("Power must be a number, "
                             "not {}").format(type(power)))
         return Quantity(self.value ** power, 

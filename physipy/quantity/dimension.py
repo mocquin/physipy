@@ -147,7 +147,7 @@ class Dimension(object):
 
     def __pow__(self, y):
         """Allow the elevation of Dimension objects to a real power."""
-        if np.isreal(y):
+        if np.isscalar(y):
             new_dim_dict = {}
             for dim_symbol in self.dim_dict.keys():
                 new_dim_dict[dim_symbol] = (self.dim_dict[dim_symbol]
