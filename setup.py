@@ -31,7 +31,6 @@ setup(
     author_email="mocquin@me.com",
     license="MIT",
     keywords='physics physical unit units dimension quantity quantities',
-    packages=find_packages(exclude=("tests")), # a list of all Python import packages that should be included in the distribution package
+    packages=find_packages(exclude=("tests")),
     include_package_data=True,
-    install_requires=["scipy", "sympy", "numpy"],
 )
