@@ -48,9 +48,7 @@ There are plenty of python package that handle physical quantities computation. 
  - [pint](https://pint.readthedocs.io/en/latest/)
  - [Unum](https://bitbucket.org/kiv/unum/)
  - [magnitude](http://juanreyero.com/open/magnitude/)
- -  physics.py : there are actually several packages based on the same core code :
-  * [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only)
-  * [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
+ -  physics.py : there are actually several packages based on the same core code : [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only) and [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
  - [ScientificPython.Scientific.Physics.PhysicalQuantities](https://github.com/ScientificPython/ScientificPython)
  - [numericalunits](https://github.com/sbyrnes321/numericalunits)
  - [dimensions.py](https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/) (python 2 only)
@@ -72,12 +70,6 @@ Here are some functionnality/fixes/TODOs for down the road :
  - Improve numpy compatibility
  - Add [uncertainty](https://github.com/lebigot/uncertainties/) support
  - Allow changing base unit system (cgs, Planck units, etc)
- 
-## Discussions
-
-Here are some thoughts about the current implementation that could/should be discussed/improved :
-- How to properly handle radian and steradian dimensions and units ?
-- Populate modules to stor units and constants instead of dictionnaries ?
 
 ## License
 
