@@ -1,6 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Usefull calculus fonctions compatible with Quantity objects.
+
+These are basically numpy function wrapped with dimensions checks.
+"""
+
 import numbers as nb
 
 import numpy as np

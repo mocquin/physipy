@@ -1,6 +1,14 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Define common physical constants.
+
+The constants values are retrieved from scipy.constants, and are separeted in 2 dictionnaries:
+ - scipy_constants for the most commons constants
+ - scipy_constants_codata for all the others
+A third constants dictionnary merges these two.
+"""
+
 import scipy.constants as csts
 
 from .quantity import m, s, kg, A, K, rad, units, mol

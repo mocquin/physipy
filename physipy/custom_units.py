@@ -1,9 +1,10 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
+"""Define non-SI-units.
+
 This module provides for now 2 dictionnaries of units : 
- - custom_units : empty for now
+ - custom_units : for user-defined units
  - imperial_units : retard units
 """
 
@@ -12,6 +13,7 @@ from math import pi
 from .quantity import make_quantity
 from .quantity import m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
 
+# Importing base units
 cm = SI_units_prefixed["cm"]
 g = units['g']
 h = units["h"]

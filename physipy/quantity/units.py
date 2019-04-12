@@ -1,8 +1,9 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-This module provides dictionnaries of units : 
+"""Define unit dictionnaries.
+
+This module defines dictionnaries of units : 
  - SI_units : all the seven base SI units
  - SI_units_prefixed : same, with the prefixed version
  - SI_derived_units : other accepted units
