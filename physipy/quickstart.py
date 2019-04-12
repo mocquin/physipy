@@ -5,10 +5,8 @@ import numpy as np
 from numpy import pi, cos, arccos, sin, arcsin, tan, arctan, exp, log
 
 from physipy import Quantity, Dimension
-from physipy import m, kg, s, A, K, cd, mol, rad, sr, SI_units_derived
+from physipy import m, kg, s, A, K, cd, mol, rad, sr, units, SI_units_prefixed, SI_derived_units, other_units
 from physipy.constants import constants
-from physipy.units import units
-
 
 Hz = units["Hz"]
 J = units["J"]
@@ -17,7 +15,8 @@ h = units["h"]
 lm = units["lm"]
 lx = units["lx"]
 
-km = SI_units_derived["km"]
+km = SI_units_prefixed["km"]
+nm = SI_units_prefixed["nm"]
 
 hp = constants["h"]
 c = constants["c"]
