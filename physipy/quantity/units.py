@@ -1,3 +1,6 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 This module provides dictionnaries of units : 
  - SI_units : all the seven base SI units

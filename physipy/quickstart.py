@@ -1,3 +1,6 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import numpy as np
 from numpy import pi, cos, arccos, sin, arcsin, tan, arctan, exp, log
 

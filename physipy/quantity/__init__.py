@@ -1,3 +1,6 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from .quantity import Dimension, Quantity
 from .quantity import DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, make_quantity

@@ -1,3 +1,6 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import scipy.constants as csts
 
 from .quantity import m, s, kg, A, K, rad, units, mol

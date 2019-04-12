@@ -1,3 +1,6 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 This module provides for now 2 dictionnaries of units : 
  - custom_units : empty for now
