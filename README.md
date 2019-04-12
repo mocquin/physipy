@@ -1,126 +1,88 @@
-To run the tests : 
- - cd to physipy-master
- - python -m unittest discover
+# physipy
 
-add a quick start import
+This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
 
- 
-Other module/package :
- - [X] : magnitude : http://juanreyero.com/open/magnitude/
- -  physics.py : 
-  - (2.) birkenfeld physics.py (==George Brandl) : ipython-physics : https://bitbucket.org/birkenfeld/ipython-physics
-  - [X] : (3.) : python3-physics : https://github.com/TheGrum/python3-physics
- - ScientificPython.Scientific.Physics.PhysicalQuantities (Konrad Hinsen) :
-  - (2.7) https://bitbucket.org/khinsen/scientificpython : http://dirac.cnrs-orleans.fr/ScientificPython = https://github.com/ScientificPython/ScientificPython
- - numericalunits : https://github.com/sbyrnes321/numericalunits
- - [ ] : Unum : https://bitbucket.org/kiv/unum/ (https://pypi.org/project/Unum/4.1.0/)
- - (2.) dimensions.py : https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/
- - units (Aran Donohue) :  https://bitbucket.org/adonohue/units/src
- - https://pythonhosted.org/quantities/user/tutorial.html
- - astropy : http://www.astropy.org/astropy-tutorials/Quantities.html
-    - http://learn.astropy.org/rst-tutorials/quantities.html
- - sympy.physics : https://docs.sympy.org/latest/modules/physics/units/philosophy.html
- - https://github.com/hplgit/physical-quantities
- - https://github.com/KenKundert/quantiphy
- - https://quantiphy.readthedocs.io/en/stable/index.html
- - pint : https://pint.readthedocs.io/en/latest/
- - pynbody : https://github.com/pynbody/pynbody
- -  : http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
- - misu : https://github.com/cjrh/misu
+```python
+>>> from physipy.quickstart import nm, hp, c, J
+>>> E_ph = hp * c / (500 * nm)
+>>> print(E_ph)
+3.9728916483435158e-19 kg*m**2/s**2
+>>> E_ph.favunit = J
+>>> print(E_ph)
+3.9728916483435158e-19 J
+```
 
- - [ ] : module physics.py : ipython-physics.py : 
-Adaptation python 3 de , lui même adpaté de scientificpython de KonradHinsen
-http://www.southampton.ac.uk/~fangohr/blog/physical-quantities-numerical-value-with-units-in-python.html
-Les "unités" peuvent avoir un "nom" sous forme de chaine de caractères
-méthodes tan, cos, sin pour "numpy ufunc" ?
-globale précision de 8 par défaut dans la classe
-système si avec rad et sr
-système cgs dispo
-+ extension Ipython pour écriture "1 m"
-- [ ] : scientificpython par Konrad Hinsen 
+## Installation
 
+```
+pip install physipy
+```
 
+## Goals
 
-# Known issues
-
-# Advantages:
-- Full object-oriented approach : change value attribute, change display
- 
-# Drawbacks (that could be implemented later ?)
-- No simple way to change base-unit system
-- No offset scaling (ex degC to K)
-- Dimension powers are treated as scalars – one could need them to be treated as rational fractions
-- No compatibility with uncertainties
-- No compatibility with Fractions
- 
-# Goals :
 - Few LOC
+- Simple architecture, with only 2 classes (namely Dimension and Quantity)
 - High numpy compatibility
-- Array-like behaviour
-- SI-unit base (including for printing)
-- Simple syntax (fast syntax !)
+- Human-readable syntax (fast syntax !)
  
-# Use case :
+## Use case
+
 - Define scalar and arrays of physical quantities
 - Compute operation between them : add, sub, mul, div, pow
 - Display physical quantities in various “units”.
-- Easy ability to use scalar or arrays (in functions) : easy vectorisation
  
-# Implementation approach and key mechanic:
-- Dimension object represents only the dimension, based on SI-unit. Stored as a dictionary where key is a string of SI-unit, and value is exponent of dimension.
-- Quantity object is association of value (scalar or array) and dimension object (Container approach, not subclass of np.ndarray, see TrevorBekolay)
-- By default, representation is in SI-unit. To express in any other unit, use the favunit attribute.
-- Physical units (ex : Watt), physical constants (ex : speed of light), and physical quantities (ex : 74 kg) are all Quantity objects.
-- If we a looking for a physical quantity package, then dimension analysis is needed !
- 
-# Comparing:
-- LOC
-- Dinstinguishes between constants, units, dimension, and quantities ?
-- List of available constants / units / prefixes ?
-- Possibility to declare list of prefixed unit ?
-- List of methods implemented for main quantity object
-- Presence of some kind of “unit database” ?
-- How are dimensionless units handled ? (deg, rad, sr)
-- Bench
-o    Creation :
-§  Constructor
-§  Multply a number with another quantity/unit.
-o    Repr
-§  5 m / 5 meters / 5 length / 5
-o    Implementation of units :
-§  m / meter / “m” / “meter” / length / “length”
-o    Numbers compatibility :
-§  Scalars : declaration, print
-§  Arrays : declaration, print
-o    Operations :
-§  Unary :
-·         Abs / neg / pos
-§  Binary;
-·         Add / div /eq / floordiv / ge /gt / le /lt / mod / mul / ne / pow / sub / truediv
-·         Same unit
-·         Same dimension
-·         Different dimension (hence, different unit)
-o    Ufunc :
-§  Unary
-§  Binary
-·         Same unit
-·         Same dimension
-·         Different dimension (hence, different unit)
-o    Other numpy functions
-§  Argsort / concatenate / mean / median / sort / std / where
-o    Time
-§  Comparison to pure python (and numpy – no units)
-o    Plotting a function on a given segment
-§  Ex : plot kinetic energy of a 20kg mass for speed between 0 and 20 km/h
-·         Time
-·         LOC
- 
+## Implementatoin approach
 
-# Requirements
+The implementation is pretty simple : 
+- a Dimension object represents a [physical dimension](https://en.wikipedia.org/wiki/Dimensional_analysis). For now, these dimension are based on the [SI unit](https://en.wikipedia.org/wiki/International_System_of_Units). It is basically a dictionary where the keys represent the base dimensions, and the values are the exponent these dimensions.
+- a Quantity object is simply the association of a value, scalar or array (or more!), and a Dimension object. Note that this Quantity classe does not sub-class numpy.ndarray (although Quantity objects are compatible with numpy's ufuncs). Most of the work is done by this class.
+- By default, a Quantity is displayed in term of SI untis. To express a Quantity in another unit, just set the "favunit", which stands for "favourite unit" of the Quantity : ```my_toe_length.favunit = mm```.
+- Plenty of common units (ex : Watt) and constants (ex : speed of light) are packed in. Your physical quantities (```my_toe_length```), units (```kg```), and constants (```kB```) are all Quantity objects.
 
+## Alternative packages
+
+There are plenty of python package that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
+
+ - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
+ - [sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html)
+ - [pint](https://pint.readthedocs.io/en/latest/)
+ - [Unum](https://bitbucket.org/kiv/unum/)
+ - [magnitude](http://juanreyero.com/open/magnitude/)
+ -  physics.py : there are actually several packages based on the same core code :
+  * [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only)
+  * [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
+ - [ScientificPython.Scientific.Physics.PhysicalQuantities](https://github.com/ScientificPython/ScientificPython)
+ - [numericalunits](https://github.com/sbyrnes321/numericalunits)
+ - [dimensions.py](https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/) (python 2 only)
+ - [units](https://bitbucket.org/adonohue/units/)
+ - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
+ - [physical-quantities](https://github.com/hplgit/physical-quantities)
+ - [quanitphy](https://github.com/KenKundert/quantiphy)
+ - [pynbody](https://github.com/pynbody/pynbody)
+ - [misu](https://github.com/cjrh/misu)
+
+If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40).
+
+## Future
+
+Here are some functionnality/fixes/TODOs for down the road :
+ - Add a list of main functionnalities of the package
+ - Improve the README
+ - Create a full benchmark based on an expected behaviour, and bench physical quantities packages.
+ - Improve numpy compatibility
+ - Add [uncertainty](https://github.com/lebigot/uncertainties/) support
+ - Allow changing base unit system (cgs, Planck units, etc)
+ 
+## Discussions
+
+Here are some thoughts about the current implementation that could/should be discussed/improved :
+- How to properly handle radian and steradian dimensions and units ?
+- Populate modules to stor units and constants instead of dictionnaries ?
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
+## Acknowledgment
 
+Thumbs up to phicem and his [pysics](https://bitbucket.org/Phicem/pysics) package, on which this package was higly inspired. Check it out !
