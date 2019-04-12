@@ -5,3 +5,7 @@ pycache/
 _old/
 __pycache__/
 local_test*
+dist/
+build/
+*.egg-info/
+MANIFEST
