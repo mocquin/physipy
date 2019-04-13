@@ -33,7 +33,7 @@ pip install physipy
 - Compute operation between them : add, sub, mul, div, pow
 - Display physical quantities in various “units”.
  
-## Implementatoin approach
+## Implementation approach
 
 The implementation is pretty simple : 
 - a Dimension object represents a [physical dimension](https://en.wikipedia.org/wiki/Dimensional_analysis). For now, these dimension are based on the [SI unit](https://en.wikipedia.org/wiki/International_System_of_Units). It is basically a dictionary where the keys represent the base dimensions, and the values are the exponent these dimensions.
@@ -43,7 +43,7 @@ The implementation is pretty simple :
 
 ## Alternative packages
 
-There are plenty of python package that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
+There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
 
  - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
  - [sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html)
@@ -57,7 +57,7 @@ There are plenty of python package that handle physical quantities computation. 
  - [units](https://bitbucket.org/adonohue/units/)
  - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
  - [physical-quantities](https://github.com/hplgit/physical-quantities)
- - [quanitphy](https://github.com/KenKundert/quantiphy)
+ - [quantiphy](https://github.com/KenKundert/quantiphy)
  - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
  - [misu](https://github.com/cjrh/misu)
@@ -81,4 +81,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgment
 
-Thumbs up to phicem and his [pysics](https://bitbucket.org/Phicem/pysics) package, on which this package was higly inspired. Check it out !
+Thumbs up to phicem and his [pysics](https://bitbucket.org/Phicem/pysics) package, on which this package was highly inspired. Check it out !
