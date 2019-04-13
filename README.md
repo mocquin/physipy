@@ -61,6 +61,7 @@ There are plenty of python package that handle physical quantities computation. 
  - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
  - [misu](https://github.com/cjrh/misu)
+ - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
 
 If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40).
 
