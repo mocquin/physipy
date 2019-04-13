@@ -12,7 +12,7 @@ This python package allows you to manipulate physical quantities, basically cons
 3.9728916483435158e-19 J
 ```
 
-For a quickstart, check the [quickstart notebook](quickstart.ipynb)
+For a quickstart, check the quickstart notebook on the [homepage]()
 
 ## Installation
 
