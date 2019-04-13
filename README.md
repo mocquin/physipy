@@ -12,6 +12,8 @@ This python package allows you to manipulate physical quantities, basically cons
 3.9728916483435158e-19 J
 ```
 
+For a quickstart, check the [quickstart notebook](quickstart.ipynb)
+
 ## Installation
 
 ```
@@ -56,6 +58,7 @@ There are plenty of python package that handle physical quantities computation. 
  - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
  - [physical-quantities](https://github.com/hplgit/physical-quantities)
  - [quanitphy](https://github.com/KenKundert/quantiphy)
+ - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
  - [misu](https://github.com/cjrh/misu)
 
