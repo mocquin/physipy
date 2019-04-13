@@ -77,8 +77,8 @@ UNIT_SUFFIX = ""
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
-if DISPLAY_DIGITS < EXP_THRESHOLD:
-    print("Warning: decimal display is less than exponent threshold")
+#if DISPLAY_DIGITS < EXP_THRESHOLD:
+#    print("Warning: decimal display is less than exponent threshold")
 
 # Numpy display options
 np.set_printoptions(precision=DISPLAY_DIGITS,
