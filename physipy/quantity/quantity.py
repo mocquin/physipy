@@ -538,7 +538,7 @@ no_dim_2 = ["logaddexp", "logaddexp2", ]
 angle_1 = ["cos", "sin", "tan", 
           "cosh", "sinh", "tanh"]
 # 1 in : any --> out : same
-same_out = ["ceil", "conjugate", "floor", "rint", "trunc"]
+same_out = ["ceil", "conjugate", "floor", "rint", "trunc", "fabs"]
 # 1 in : dimless -> out : dimless
 inv_angle_1 = ["arcsin", "arccos", "arctan",
               "arcsinh", "arccosh", "arctanh"]

@@ -474,6 +474,13 @@ class TestQuantity(unittest.TestCase):
                 
                 
         
+        # fabs
+        self.assertEqual(np.fabs(m), m)
+        self.assertEqual(np.fabs(-m), m)
+        self.assertTrue(np.all(np.fabs(arr_m) == arr_m))
+        self.assertTrue(np.all(np.fabs(-arr_m) == arr_m))
+        self.assertTrue(np.all(np.fabs(Quantity(np.array([-1, 0, 1]), Dimension("L"))) == Quantity(np.array([1, 0, 1]), Dimension("L"))))
+
         
 if __name__ == "__main__":
     unittest.main()
