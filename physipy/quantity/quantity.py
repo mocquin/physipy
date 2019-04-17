@@ -560,7 +560,8 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
         q = x
         q.symbol = symbol
         if favunit is None:
-            q.favunit = x.favunit
+            if not x.favunit is None:
+                q.favunit = x.favunit
         else:
             q.favunit = favunit
         return q
