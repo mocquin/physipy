@@ -470,9 +470,6 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.arcsin(zero_none) == np.arcsin(0))
         # arctan
         self.assertTrue(np.arctan(zero_none) == np.arctan(0))
-
-                
-                
         
         # fabs
         self.assertEqual(np.fabs(m), m)
@@ -481,6 +478,19 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.fabs(-arr_m) == arr_m))
         self.assertTrue(np.all(np.fabs(Quantity(np.array([-1, 0, 1]), Dimension("L"))) == Quantity(np.array([1, 0, 1]), Dimension("L"))))
 
+    def test_sum_builtin(self):
+        # on list of 2 scalar-value-quantity
+        self.assertEqual(sum([self.x_q, self.x_q], 0*self.x_q), 2*self.x_q)
+        with self.assertRaises(DimensionError):
+            sum([self.x_q, self.x_q])
+        # on array-value-quantity
+        self.assertEqual(sum(self.y_q, 0*m), sum(self.y)*m)
+        with self.assertRaises(DimensionError):
+            sum(self.y_q)
+        # mixin
+        self.assertTrue(np.all(sum([self.x_q, self.y_q], 0*m) == sum([self.x, self.y])*m))
+        with self.assertRaises(DimensionError):
+            sum([self.x_q, self.y_q])
         
 if __name__ == "__main__":
     unittest.main()
