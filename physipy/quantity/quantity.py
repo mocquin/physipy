@@ -580,6 +580,60 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
         return Quantity(x, Dimension(None), symbol=symbol, favunit=favunit)
 
 
+def check_dimension(q_dim_in=[], q_dim_out=[]):
+    def decorator(func):
+        def decorated_func(*args, **kwargs):
+            q_dim_in_list = list(q_dim_in)
+            if q_dim_in_list:
+                for arg, dim_in in zip(args, q_dim_in_list):
+                    dim_check_in = dimensionify(dim_in)
+                    dim_arg = dimensionify(arg)
+                    if not dim_arg == dim_check_in:
+                        raise DimensionError(dim_arg, dim_check_in)
+            try:
+                ress = list(func(*args, **kwargs))
+            except:
+                ress = [func(*args, **kwargs)]
+            try:
+                q_dim_out_list = list(q_dim_out)
+            except:
+                q_dim_out_list = [q_dim_out]
+            if q_dim_out_list:
+                for res, dim_out in zip(ress, q_dim_out_list):
+                    dim_check_out = dimensionify(dim_out)
+                    dim_res = dimensionify(res)
+                    if not dim_res == dim_check_out:
+                        raise DimensionError(dim_res, dim_check_out)
+            return ress if len(ress) > 1 else ress[0]
+        return decorated_func
+    return decorator
+
+
+def set_favunit(favunits_out):
+    def decorator(func):
+        try:
+            favunits_out_list = list(favunits_out)
+        except:
+            favunits_out_list = [favunits_out]
+        def decorated_func(*args, **kwargs):
+            try:
+                ress = list(func(*args, **kwargs))
+            except:
+                ress = [func(*args, **kwargs)]
+            ress_with_favunit = [make_quantity(res, favunit=favunit) for res, favunit in zip(ress, favunits_out_list)]
+            return ress_with_favunit if len(ress_with_favunit) > 1 else ress_with_favunit[0]
+        return decorated_func
+    return decorator
+
+def dimension_and_favunit(inputs=[], outputs=[]):
+    def decorator(func):
+        func = check_dimension(inputs, outputs)(func)
+        func = set_favunit(outputs)(func)
+        return func
+    return decorator
+
+
+
 def array_to_Q_array(x):
     """Converts an array of Quantity to a Quanity of array.
     
@@ -633,6 +687,7 @@ class QuantityIterator(object):
         self.value = q.value
         self.dimension = q.dimension
         self.favunit = q.favunit
+        self.symbol = q.symbol
         if isinstance(q.value, np.ndarray):
             self.length = q.value.size
         else:

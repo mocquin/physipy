@@ -8,7 +8,8 @@ from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad,
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
-
+from physipy.quantity import check_dimension, set_favunit
+from physipy import imperial_units
 
 # from quantity import SI_units as u
 
@@ -491,6 +492,43 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(sum([self.x_q, self.y_q], 0*m) == sum([self.x, self.y])*m))
         with self.assertRaises(DimensionError):
             sum([self.x_q, self.y_q])
+
+    def test_500_decorator_dimension(self):
+        
+        # To check the dimension analysis of inputs
+        def speed(l, t):
+            return l/t
+        wrapped_speed = check_dimension((m, s), m/s)(speed)
+        
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1, 1) # a scalar is interpreted as dimensionless
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1*m, 1)
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1, 1*s)
+            
+        # To check that the decorator does not alterate the returned value
+        self.assertEqual(wrapped_speed(1*m, 1*s), 1*m / (1*s))
+        
+        # To check the dimension analysis of outputs
+        def wrong_speed(l, t):
+            return l*t
+        wrappred_wrong_speed = check_dimension((m, s), m/s)(wrong_speed)    
+        with self.assertRaises(DimensionError):
+            wrappred_wrong_speed(m, s)
+        
+    def test_501_decorator_favunit(self):
+        def speed(l, t):
+            return l/t
+        mph = imperial_units["mil"] / units["h"]
+        mph.symbol = "mph"
+        mph_speed = set_favunit(mph)(speed)
+        
+        # check that the actual value is the same
+        self.assertEqual(speed(m, s), mph_speed(m, s))
+        
+        # check the favunits
+        self.assertEqual((mph_speed(m, s)).favunit, mph)
         
 if __name__ == "__main__":
     unittest.main()
