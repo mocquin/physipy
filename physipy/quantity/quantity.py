@@ -638,11 +638,13 @@ class QuantityIterator(object):
             if isinstance(self.value, np.ndarray):
                 q_out = Quantity(self.value[self.count],
                              self.dimension,
-                             favunit=self.favunit)
+                             favunit=self.favunit,
+                             symbol=self.symbol)
             else:
                 q_out = Quantity(self.value,
                              self.dimension,
-                             favunit=self.favunit)
+                             favunit=self.favunit,
+                                symbol=self.symbol)
         self.count += 1
 
         return q_out
