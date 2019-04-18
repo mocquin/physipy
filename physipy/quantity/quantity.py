@@ -553,7 +553,16 @@ def quantify(x):
         return x
     else:
         return Quantity(x,Dimension(None))
-    
+
+def dimensionify(x):
+    if isinstance(x, Dimension):
+        return x
+    elif isinstance(x, Quantity):
+        return x.dimension
+    elif np.isscalar(x):
+        return Dimension(None)
+    else:
+        return Dimension(x)
 
 def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
     if isinstance(x, Quantity):
