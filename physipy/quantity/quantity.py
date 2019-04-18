@@ -126,7 +126,9 @@ class Quantity(object):
                                  "not {}").format(type(value)))
         elif name == "favunit":
             if isinstance(value,Quantity) or value == None:
-                super().__setattr__(name,value)
+                super().__setattr__(name, value)
+            elif np.isscalar(value):
+                super().__setattr__(name, None)
             else:
                 raise TypeError(("Favorite unit of Quantity must be a Quantity "
                                  "or None, not {}").format(type(value)))
