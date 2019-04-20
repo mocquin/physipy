@@ -365,8 +365,8 @@ class Quantity(object):
     def __iter__(self):
         return QuantityIterator(self)
     
-    def std(self):
-        return Quantity(np.asarray(self.value).std(),
+    def std(self, *args, **kwargs):
+        return Quantity(np.asarray(self.value).std(*args, **kwargs),
                        self.dimension,
                        favunit=self.favunit)
     
