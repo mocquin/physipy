@@ -580,12 +580,24 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
         return Quantity(x, Dimension(None), symbol=symbol, favunit=favunit)
 
 
-def check_dimension(q_dim_in=[], q_dim_out=[]):
+def check_dimension(q_dim_in=None, q_dim_out=None):
+    try:
+        q_dim_in = list(q_dim_in)
+    except:
+        q_dim_in = [q_dim_in]  
+    try:
+        q_dim_out_list = list(q_dim_out)
+    except:
+        q_dim_out_list = [q_dim_out]
+
     def decorator(func):
         def decorated_func(*args, **kwargs):
-            q_dim_in_list = list(q_dim_in)
-            if q_dim_in_list:
-                for arg, dim_in in zip(args, q_dim_in_list):
+            try:
+                args = list(args)
+            except:
+                args = [args]
+            if  q_dim_in:
+                for arg, dim_in in zip(args, q_dim_in):
                     dim_check_in = dimensionify(dim_in)
                     dim_arg = dimensionify(arg)
                     if not dim_arg == dim_check_in:
@@ -594,10 +606,8 @@ def check_dimension(q_dim_in=[], q_dim_out=[]):
                 ress = list(func(*args, **kwargs))
             except:
                 ress = [func(*args, **kwargs)]
-            try:
-                q_dim_out_list = list(q_dim_out)
-            except:
-                q_dim_out_list = [q_dim_out]
+            
+            # perform check between ress and out
             if q_dim_out_list:
                 for res, dim_out in zip(ress, q_dim_out_list):
                     dim_check_out = dimensionify(dim_out)
