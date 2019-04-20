@@ -365,6 +365,11 @@ class Quantity(object):
     def __iter__(self):
         return QuantityIterator(self)
     
+    def std(self):
+        return Quantity(np.asarray(self.value).std(),
+                       self.dimension,
+                       favunit=self.favunit)
+    
     def _sum(self):
         """Extends numpy.sum to Quantity."""
         return Quantity(np.sum(self.value),

@@ -530,6 +530,12 @@ class TestQuantity(unittest.TestCase):
         # check the favunits
         self.assertEqual((mph_speed(m, s)).favunit, mph)
         
+    def test_np_std(cls):
+        cls.assertEqual(m.std(), 0.0 * m)
+        cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
+        cls.assertEqual(cls.z_q.std(), Quantity(cls.z.std(), Dimension("L")))
+        
+        
 if __name__ == "__main__":
     unittest.main()
         
