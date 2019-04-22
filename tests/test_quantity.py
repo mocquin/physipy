@@ -535,6 +535,18 @@ class TestQuantity(unittest.TestCase):
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
         cls.assertEqual(cls.z_q.std(), Quantity(cls.z.std(), Dimension("L")))
         
+    def test_math_sqrt(cls):
+        with cls.assertRaises(DimensionError):
+            import math
+            math.sqrt(m)
+            
+    def test_math_cos(cls):
+        import math
+        rad = units["rad"]
+        cls.assertEqual(math.cos(rad), math.cos(1))
+        
+        with cls.assertRaises(DimensionError):
+            math.cos(m)
         
 if __name__ == "__main__":
     unittest.main()
