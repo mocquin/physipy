@@ -268,22 +268,19 @@ class Quantity(object):
                         favunit = self.favunit)
 
     def __complex__(self):
-        if not self.is_dimensionless():
-            raise TypeError(("Quantity must be dimensionless "
-                            "to be converted to complex."))
+        if not self.is_dimensionless_ext():
+            raise DimensionError(self.dimension, Dimension(None), binary=False)
         return complex(self.value)
             
     def __int__(self):
-        if not self.is_dimensionless():
-            raise TypeError(("Quantity must be dimensionless "
-                            "to be converted to int."))
+        if not self.is_dimensionless_ext():
+            raise DimensionError(self.dimension, Dimension(None), binary=False)
         return int(self.value)
 
     def __float__(self):
         # This must be commented for solvers !
-        #if not self.is_dimensionless():
-        #    raise TypeError(("Quantity must be dimensionless "
-        #                    "to be converted to float."))
+        if not self.is_dimensionless_ext():
+            raise DimensionError(self.dimension, Dimension(None), binary=False)
         return float(self.value)
     
     def __round__(self, i):
