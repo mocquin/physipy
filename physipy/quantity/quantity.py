@@ -563,7 +563,7 @@ def dimensionify(x):
         return x
     elif isinstance(x, Quantity):
         return x.dimension
-    elif np.isscalar(x):
+    elif np.isscalar(x) and not type(x) == str:
         return Dimension(None)
     else:
         return Dimension(x)
