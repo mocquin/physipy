@@ -547,6 +547,10 @@ class TestQuantity(unittest.TestCase):
         
         with cls.assertRaises(DimensionError):
             math.cos(m)
+            
+    def test_check_dim(self):
+        self.assertTrue(m.check_dim(Dimension("L")))
+        self.assertFalse(m.check_dim(Dimension("RAD")))
         
 if __name__ == "__main__":
     unittest.main()

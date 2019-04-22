@@ -450,6 +450,9 @@ class Quantity(object):
 
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
+    
+    def check_dim(self, dim):
+        return self.dimension == dimensionify(dim)
 
     # TODO : make this a static function ?
     def __array_ufunc__(self, ufunc, method, *args, **kwargs):
