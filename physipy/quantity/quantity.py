@@ -218,6 +218,9 @@ class Quantity(object):
 
     def __len__(self):
         return len(self.value)
+    
+    def __bool__(self):
+        return bool(self.value)
 
     def __min__(self):
         return Quantity(min(self.value),
