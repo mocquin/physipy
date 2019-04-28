@@ -4,7 +4,7 @@
 from .quantity import Dimension, Quantity
 from .quantity import DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, make_quantity
-from .quantity import check_dimension, set_favunit, dimension_and_favunit
+from .utils import check_dimension, set_favunit, dimension_and_favunit
 
 from .calculus import interp, linspace, vectorize, integrate_trapz, qroot, qbrentq
 from .calculus import trapz, quad, dblquad, tplquad
