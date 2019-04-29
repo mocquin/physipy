@@ -106,18 +106,19 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     outputs_str = _iterify(ouputs)
     def decorator(func):
         def decorated(*args, **kwargs):
-            
-            # Dictionnaire qui décrit les noms en terme de quantity unitaire
-            dict_of_units = {input_name: arg._SI_unitary_quantity() for arg, input_name in zip(args, inputs_str)}
-            print("Dictionnaire des unités d'entrée : " + str(dict_of_units))
-            
-            # Dropping units
-            list_inputs_value = [quantify(q).value for q in args]
-            print("Liste des valeurs SI en entrée")
-            
+            dict_of_units = {}
+            list_inputs_value = [] 
+            for arg, input_name in zip(args, inputs_str):
+                arg = quantify(arg)
+                si_unit = arg._SI_unitary_quantity()
+                list_inputs_value.append(arg.value)
+                if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
+                    raise DimensionError((arg._SI_unitary_quantity()).dimension, (dict_of_units[input_name]).dimension)
+                else:
+                    dict_of_units[input_name] = arg._SI_unitary_quantity()
+                        
             list_outputs_units = [eval(out_str, dict_of_units) for out_str in outputs_str]
-            
-            # Calcul des résultats bruts
+                        
             res_brute = func(*list_inputs_value, **kwargs)
             
             res_brute = _iterify(res_brute)
