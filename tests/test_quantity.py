@@ -264,7 +264,7 @@ class TestQuantity(unittest.TestCase):
     def test_120_linspace(self):
         
         m = Quantity(1,Dimension("L"))
-        self.assertTrue(np.all(Quantity(np.linspace(1, 2, 8), Dimension('L')) == linspace(1*m, 2*m, 8)))
+        self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), Dimension('L')) == linspace(1*m, 2*m, num=8)))
         with self.assertRaises(DimensionError):
             linspace(1*m, 2)
     
