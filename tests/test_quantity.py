@@ -493,9 +493,10 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             sum([self.x_q, self.y_q])
 
-    def test_500_decorator_dimension(self):
+    def test_500_decorator_check_dimension(self):
         
         # To check the dimension analysis of inputs
+        # Two inputs, one output
         def speed(l, t):
             return l/t
         wrapped_speed = check_dimension((m, s), m/s)(speed)
