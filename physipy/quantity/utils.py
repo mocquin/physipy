@@ -82,7 +82,7 @@ def drop_dimension(func):
         args = _iterify(args)
         value_args = []
         for arg in args:
-            value_args.append(arg.value)
+            value_args.append(quantify(arg).value)
         return func(*value_args, **kwargs)
     return dimension_dropped
 
@@ -109,13 +109,16 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
             dict_of_units = {}
             list_inputs_value = [] 
             for arg, input_name in zip(args, inputs_str):
-                arg = quantify(arg)
-                si_unit = arg._SI_unitary_quantity()
-                list_inputs_value.append(arg.value)
-                if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
-                    raise DimensionError((arg._SI_unitary_quantity()).dimension, (dict_of_units[input_name]).dimension)
+                if input_name == "pass":
+                    pass
                 else:
-                    dict_of_units[input_name] = arg._SI_unitary_quantity()
+                    arg = quantify(arg)
+                    si_unit = arg._SI_unitary_quantity()
+                    list_inputs_value.append(arg.value)
+                    if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
+                        raise DimensionError((arg._SI_unitary_quantity()).dimension, (dict_of_units[input_name]).dimension)
+                    else:
+                        dict_of_units[input_name] = arg._SI_unitary_quantity()
                         
             list_outputs_units = [eval(out_str, dict_of_units) for out_str in outputs_str]
                         
