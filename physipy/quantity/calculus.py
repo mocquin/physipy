@@ -215,14 +215,29 @@ def qroot(func_cal, start):
         return func_cal(Quantity(x_float,start_dim))
     return Quantity(scipy.optimize.root(func_cal_float, start_val).x[0], start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
 
-def qbrentq(func_cal, start, stop):
-    start_val = start.value
-    stop_val = stop.value
-    start_dim = start.dimension
-    def func_cal_float(x_float):
-        return func_cal(Quantity(x_float,start_dim))
-    return Quantity(scipy.optimize.brentq(func_cal_float, start_val, stop_val), start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
 
+#def qbrentq(func_cal, start, stop):
+#    start_val = start.value
+#    stop_val = stop.value
+#    start_dim = start.dimension
+#    def func_cal_float(x_float):
+#        return func_cal(Quantity(x_float,start_dim))
+#    return Quantity(scipy.optimize.brentq(func_cal_float, start_val, stop_val), start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
+
+def qbrentq(func_cal, target, start, stop):
+    start = quantify(start)
+    stop = quantify(stop)
+    if not start.dimension == stop.dimension:
+        raise DimensionError(start.dimension, stop.dimension)
+        
+    start_val = start.value
+    start_dim = start.dimension
+    stop_val = stop.value
+    
+    def func_float(x):
+        return quantify(func_cal(Quantity(x, start_dim))).value - target.value
+    res = scipy.optimize.brentq(func_float, start_val, stop.value)
+    return Quantity(res, start_dim) # Quantity(fsolve(func_cal_float, 
 
 
 def main():
