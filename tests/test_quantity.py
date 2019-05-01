@@ -340,17 +340,17 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(str(units["N"].symbol),"N")
         
     def test_make_quantity(self):
-        q = self.x_q
+        q = self.x_q.__copy__()
         q.symbol = 'jojo'
-        self.assertEqual(q,make_quantity(self.x_q, symbol='jojo'))
-        self.assertEqual(str(q),str(make_quantity(self.x_q, symbol='jojo')))
+        self.assertEqual(q, make_quantity(self.x_q, symbol='jojo'))
+        self.assertEqual(str(q), str(make_quantity(self.x_q, symbol='jojo')))
         self.assertEqual(str(q.symbol), 'jojo')
         
-        q = self.x_q
+        q = self.x_q.__copy__()
         mum = Quantity(0.000001,Dimension("L"), symbol="mum")
         q.favunit = mum
         self.assertEqual(q,make_quantity(self.x_q, favunit=mum))
-        self.assertEqual(str(q),str(make_quantity(self.x_q, favunit=mum)))
+        self.assertEqual(str(q), str(make_quantity(self.x_q, favunit=mum)))
         self.assertEqual(str(q.symbol), 'UndefinedSymbol')
         
     def test_quad(self):
