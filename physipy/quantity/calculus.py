@@ -38,23 +38,25 @@ from .utils import array_to_Q_array, decorate_with_various_unit
 #                    favunit=favunit_out)#.remove_dimension_if_dimensionless()
 linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 
-def interp(x, tab_x, tab_y):
-    """Interpolate the value of x in tab_y based on tab_x.
-    
-    This function aims to extend numpy.interp to Quantity.
-    
-    """
-    x = quantify(x)
-    tab_x = quantify(tab_x)
-    tab_y = quantify(tab_y)
-    if not x.dimension == tab_x.dimension:
-        raise DimensionError(x, tab_x)
-    val_interp = np.interp(x.value, tab_x.value, tab_y.value)
-    dim_interp = tab_y.dimension
-    favunit_interp = tab_y.favunit
-    return Quantity(val_interp,
-                    dim_interp,
-                    favunit=favunit_interp)#.remove_dimension_if_dimensionless()
+#def interp(x, tab_x, tab_y):
+#    """Interpolate the value of x in tab_y based on tab_x.
+#    
+#    This function aims to extend numpy.interp to Quantity.
+#    
+#    """
+#    x = quantify(x)
+#    tab_x = quantify(tab_x)
+#    tab_y = quantify(tab_y)
+#    if not x.dimension == tab_x.dimension:
+#        raise DimensionError(x, tab_x)
+#    val_interp = np.interp(x.value, tab_x.value, tab_y.value)
+#    dim_interp = tab_y.dimension
+#    favunit_interp = tab_y.favunit
+#    return Quantity(val_interp,
+#                    dim_interp,
+#                    favunit=favunit_interp)#.remove_dimension_if_dimensionless()
+interp = decorate_with_various_unit(("A", "A", "B"), ("B"))(np.interp)
+
 
 
 def vectorize(func):
