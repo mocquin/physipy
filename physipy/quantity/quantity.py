@@ -144,7 +144,7 @@ class Quantity(object):
         if not self.dimension == y.dimension:                                                                                               
             raise DimensionError(self.dimension, y.dimension)                          
         return Quantity(self.value + y.value,
-                        self.dimension)#, symbole = self.symbole)    
+                        self.dimension)    
 
     def __radd__(self, x):
         return self + x
@@ -261,8 +261,6 @@ class Quantity(object):
 
     def __le__(self,y):
         return (self < y) | (self == y) # or bitwise
-
-    #def __and__()
     
     def __abs__(self):
         return Quantity(abs(self.value),
@@ -281,7 +279,6 @@ class Quantity(object):
         return int(self.value)
 
     def __float__(self):
-        # This must be commented for solvers !
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, Dimension(None), binary=False)
         return float(self.value)
