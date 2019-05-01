@@ -560,7 +560,7 @@ ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
 
 def quantify(x):
     if isinstance(x, Quantity):
-        return x
+        return x.__copy__()
     else:
         return Quantity(x,Dimension(None))
 
@@ -576,7 +576,7 @@ def dimensionify(x):
 
 def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
     if isinstance(x, Quantity):
-        q = x
+        q = x.__copy__()
         q.symbol = symbol
         if favunit is None:
             if not x.favunit is None:
