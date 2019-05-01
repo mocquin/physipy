@@ -20,23 +20,23 @@ from .utils import array_to_Q_array, decorate_with_various_unit
 
 
 # Generiques
-def linspace(Q_1, Q_2, nb_points=100):
-    """Generate a lineary-spaced vector of Quantity.
-    
-    This function aims to extend numpy.linspace to Quantity objects.
-    
-    """
-    Q_1 = quantify(Q_1)
-    Q_2 = quantify(Q_2)
-    if not Q_1.dimension == Q_2.dimension:
-        raise DimensionError(Q_1.dimension, Q_2.dimension)
-    val_out = np.linspace(Q_1.value, Q_2.value, nb_points)
-    dim_out = Q_1.dimension
-    favunit_out = Q_1.favunit
-    return Quantity(val_out,
-                    dim_out,
-                    favunit=favunit_out)#.remove_dimension_if_dimensionless()
-
+#def linspace(Q_1, Q_2, nb_points=100):
+#    """Generate a lineary-spaced vector of Quantity.
+#    
+#    This function aims to extend numpy.linspace to Quantity objects.
+#    
+#    """
+#    Q_1 = quantify(Q_1)
+#    Q_2 = quantify(Q_2)
+#    if not Q_1.dimension == Q_2.dimension:
+#        raise DimensionError(Q_1.dimension, Q_2.dimension)
+#    val_out = np.linspace(Q_1.value, Q_2.value, nb_points)
+#    dim_out = Q_1.dimension
+#    favunit_out = Q_1.favunit
+#    return Quantity(val_out,
+#                    dim_out,
+#                    favunit=favunit_out)#.remove_dimension_if_dimensionless()
+linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 
 def interp(x, tab_x, tab_y):
     """Interpolate the value of x in tab_y based on tab_x.
