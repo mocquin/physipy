@@ -290,7 +290,10 @@ class Quantity(object):
         return Quantity(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit)
-
+    
+    def __copy__(self):
+        return Quantity(self.value, self.dimension, favunit=self.favunit, symbol= self.symbol)
+    
     def __repr__(self):
         return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
 
