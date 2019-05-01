@@ -102,6 +102,7 @@ def add_back_unit_param(*unit_out):
 
 
 def decorate_with_various_unit(inputs=[], ouputs=[]):
+    """TODO : get rid of eval with a expression parser"""
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
     def decorator(func):
