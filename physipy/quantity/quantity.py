@@ -408,7 +408,7 @@ class Quantity(object):
         """return quantity with another favunit."""
         if not isinstance(y, Quantity):
             raise TypeError("Cannot express Quantity in not Quantity")
-        q = self
+        q = self.__copy__()
         q.favunit = y
         return q
 
