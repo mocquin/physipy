@@ -513,7 +513,7 @@ class Quantity(object):
         elif ufunc_name in same_dim_in_2_nodim_out:
             other = quantify(args[1])
             if not left.dimension == other.dimension:
-                raise DimensionError(left.dimension, other.dimenion)
+                raise DimensionError(left.dimension, other.dimension)
             res = ufunc.__call__(left.value, other.value)    
             return res
         elif ufunc_name in inv_angle_1:
