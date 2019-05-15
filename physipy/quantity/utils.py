@@ -114,12 +114,12 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
                     pass
                 else:
                     arg = quantify(arg)
-                    si_unit = arg._SI_unitary_quantity()
+                    si_unit = arg._SI_unitary_quantity
                     list_inputs_value.append(arg.value)
                     if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
-                        raise DimensionError((arg._SI_unitary_quantity()).dimension, (dict_of_units[input_name]).dimension)
+                        raise DimensionError((arg._SI_unitary_quantity).dimension, (dict_of_units[input_name]).dimension)
                     else:
-                        dict_of_units[input_name] = arg._SI_unitary_quantity()
+                        dict_of_units[input_name] = arg._SI_unitary_quantity
                         
             list_outputs_units = [eval(out_str, dict_of_units) for out_str in outputs_str]
                         

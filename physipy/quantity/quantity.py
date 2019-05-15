@@ -336,12 +336,14 @@ class Quantity(object):
             return self.dimension.str_SI_unit()
 
     # Didn't found what to do with this
+    @property
     def _SI_unitary_quantity(self):
         """Return a one-value quantity with same dimension.
         
         Such that self = self.value * self._SI_unitary_quantity
         """
         return Quantity(1, self.dimension)
+
     
     def __getitem__(self, idx):
         if isinstance(self.value, np.ndarray):
