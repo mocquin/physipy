@@ -88,9 +88,9 @@ class TestClassDimension(unittest.TestCase):
         cls.assertTrue(cls.m == Dimension({"L": 1}))
         cls.assertTrue(cls.m != cls.none)
 
-    def test_080_inv(cls):
-        m_inv = cls.m.__inv__()
-        cls.assertEqual(m_inv, Dimension({"L": -1}))
+    def test_080_inverse(cls):
+        m_inverse = cls.m.inverse()
+        cls.assertEqual(m_inverse, Dimension({"L": -1}))
         
     def test_090_str_SI_unit(cls):
         cls.assertEqual(cls.m.str_SI_unit(), "m")
