@@ -108,8 +108,8 @@ class Dimension(object):
         if isinstance(y, Dimension):
             new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
-        elif y == 1:  # allowing division by one
-            return self
+        #elif y == 1:  # allowing division by one
+        #    return self
         else:
             raise TypeError(("A dimension can only be divided "
                              "by another dimension, not {}.").format(y))
