@@ -80,7 +80,8 @@ class Dimension(object):
         elif definition in list(self.dim_dict.keys()):
             self.dim_dict[definition] = 1
         elif (isinstance(definition, dict) and
-              set(list(definition.keys())).issubset(SI_SYMBOL_LIST)):
+              set(list(definition.keys())).issubset(SI_SYMBOL_LIST) and
+             all([np.isscalar(v) for v in definition.values()])):
             for dim_symbol, dim_power in definition.items():
                 self.dim_dict[dim_symbol] = dim_power
         else:
