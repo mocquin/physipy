@@ -26,21 +26,17 @@ rad and sr are not base SI-units, but were added for convenience.
 They can be deleted if not needed, but update tests in consequence.
 
 """
+import json
+import os
 
 import sympy as sp
 import numpy as np
 
-SI_UNIT_SYMBOL = {
-    'L': 'm',
-    'M': 'kg',
-    'T': 's',
-    'I': 'A',
-    'theta': 'K',
-    'N': 'mol',
-    'J': 'cd',
-    'RAD': 'rad',
-    'SR': 'sr',
-}
+
+dirname = os.path.dirname(__file__)
+with open(os.path.join(dirname, "dimension.txt")) as file:
+    SI_UNIT_SYMBOL = json.load(file)
+
 
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
