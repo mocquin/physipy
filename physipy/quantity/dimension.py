@@ -92,15 +92,7 @@ class Dimension(object):
 
     def __str__(self):
         """Concatenate symbol-wise the content of the dim_dict attribute."""
-        dim_symbol_list = self.dim_dict.items()
-        output_init = 1
-        output = output_init
-        for (dim_symbol, dim_power) in dim_symbol_list:
-            output *= sp.Symbol(dim_symbol)**dim_power
-        if output == output_init:
-            return NO_DIMENSION_STR
-        else:
-            return str(output)
+        return compute_str(self.dim_dict, NO_DIMENSION_STR)
 
     def __repr__(self):
         """Return the dim_dict into a <Dimension : ...> tag."""
@@ -170,13 +162,17 @@ class Dimension(object):
         return Dimension({key: -value for (key, value) in self.dim_dict.items()})
 
     def str_SI_unit(self):
-        """Concatenate symbol-wise the unit."""
-        dim_symbol_list = self.dim_dict.items()
-        output_init = 1
-        output = output_init
-        for (dim_symbol, dim_power) in dim_symbol_list:
-            output *= sp.Symbol(SI_UNIT_SYMBOL[dim_symbol])**dim_power
-        if output == output_init:
-            return ""
-        else:
-            return str(output)
+        """Compute the symbol-wise SI unit."""
+        return compute_str({SI_UNIT_SYMBOL[key]:value for key, value in self.dim_dict.items()}, "")
+
+
+def compute_str(dic, default):
+    """Compute the product-concatenation of the dict as key**value."""
+    output_init = 1
+    output = output_init
+    for (key, value) in dic.items():
+        output *= sp.Symbol(key)**value
+    if output == output_init:
+        return default
+    else:
+        return str(output)
