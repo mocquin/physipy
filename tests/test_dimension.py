@@ -97,6 +97,7 @@ class TestClassDimension(unittest.TestCase):
         cls.assertEqual(cls.none.str_SI_unit(),"")
 
     #def test_pycodestyle(cls):
+    #    import pycodestyle
     #    style = pycodestyle.StyleGuide(quiet=True)
     #    result = style.check_files(['dimension.py', 'test_dimension.py'])
     #    cls.assertEqual(result.total_errors, 0,
