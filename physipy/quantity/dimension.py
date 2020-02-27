@@ -42,7 +42,7 @@ SI_UNIT_SYMBOL = {
     'SR': 'sr',
 }
 
-SI_SYMBOL_LIST = SI_UNIT_SYMBOL.keys()
+SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
 
