@@ -95,10 +95,7 @@ class Dimension(object):
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
         if isinstance(y, Dimension):
-            new_dim_dict = {}
-            for dim_symbol in self.dim_dict.keys():
-                new_dim_dict[dim_symbol] = (self.dim_dict[dim_symbol]
-                                            + y.dim_dict[dim_symbol])
+            new_dim_dict = {d: self.dim_dict[d] + y.dim_dict[d] for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         else:
             raise TypeError(("A dimension can only be multiplied "
@@ -109,10 +106,7 @@ class Dimension(object):
     def __div__(self, y):
         """Allow the division of Dimension objects."""
         if isinstance(y, Dimension):
-            new_dim_dict = {}
-            for dim_symbol in self.dim_dict.keys():
-                new_dim_dict[dim_symbol] = (self.dim_dict[dim_symbol]
-                                            - y.dim_dict[dim_symbol])
+            new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         elif y == 1:  # allowing division by one
             return self
