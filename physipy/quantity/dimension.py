@@ -65,11 +65,9 @@ class Dimension(object):
 
     def __init__(self, definition):
         """Allow the creation of Dimension object with 3 possibile ways."""
-        self.dim_dict = {}
-        for dim_symbol in SI_SYMBOL_LIST:
-            self.dim_dict[dim_symbol] = 0
+        self.dim_dict = {dim: 0 for dim in SI_SYMBOL_LIST}
         if definition is None:
-            pass  # dimension_symbol_dict already initialized
+            pass  # dim_dict already initialized
         elif definition in list(self.dim_dict.keys()):
             self.dim_dict[definition] = 1
         elif (isinstance(definition, dict) and
