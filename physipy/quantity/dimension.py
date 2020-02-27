@@ -11,19 +11,27 @@ TODO:
  * [X] : declare truediv as equal to div (and so on).
  * [X] : make exception strings display correctly
  * [X] : char for temperatures Θ is changed to "theta" (for sympy)
- * [ ] : try a cleaner convesrion from dict to str
+ * [X] : try a cleaner conversion from dict to str
+ * [X] : try to make SI_SYMBOL_LIST a list
+ * [X] : move base dimension dict to a file
 
 PROPOSITIONS:
  * method to return a latex-formated str ?
  * change the str/repr style to a table-view of the dimension content ?
  * should sr be just a unit with dimension rad**2 ?
  * add a full-named repr ? (ex: "length/time")
- * change the dimension representation from dict to array (faster)
+ * should Dimension implement add/sub operation (allowed when dims are equal) ?
+ * change the dimension representation from dict to array (faster) ?
  * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
+ * could define a contains method to check if a dimension is not 0
+ * try to not relie on numpy/sympy
 
 PLEASE NOTE :
-rad and sr are not base SI-units, but were added for convenience.
-They can be deleted if not needed, but update tests in consequence.
+- rad and sr are not base SI-units, but were added for convenience. They can be
+    deleted if not needed, but update tests in consequence.
+- this modules relies on :
+ - sympy to compute the concatenated representation of the Dimension object
+ - numpy to check if the dimension powers are scalars
 
 """
 import json
