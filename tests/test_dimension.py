@@ -79,6 +79,7 @@ class TestClassDimension(unittest.TestCase):
 
         cls.assertEqual(cls.m ** 2, Dimension({"L": 2}))
         cls.assertEqual(cls.m ** (1/2), Dimension({"L": 1/2}))
+        cls.assertEqual(cls.m ** 1.2, Dimension({"L": 1.2}))
 
         # TODO
         cls.assertRaises(TypeError, lambda: cls.m ** 1.2j)
