@@ -159,18 +159,20 @@ class Dimension(object):
 
     def inverse(self):
         """Inverse the dimension by taking the negative of the powers."""
-        return Dimension({key: -value for (key, value) in self.dim_dict.items()})
+        inv_dict = {key: -value for key, value in self.dim_dict.items()}
+        return Dimension(inv_dict)
 
     def str_SI_unit(self):
         """Compute the symbol-wise SI unit."""
-        return compute_str({SI_UNIT_SYMBOL[key]:value for key, value in self.dim_dict.items()}, "")
+        str_dict = {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
+        return compute_str(str_dict, "")
 
 
 def compute_str(dic, default):
     """Compute the product-concatenation of the dict as key**value."""
     output_init = 1
     output = output_init
-    for (key, value) in dic.items():
+    for key, value in dic.items():
         output *= sp.Symbol(key)**value
     if output == output_init:
         return default
