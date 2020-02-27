@@ -103,7 +103,7 @@ class Dimension(object):
 
     __rmul__ = __mul__
 
-    def __div__(self, y):
+    def __truediv__(self, y):
         """Allow the division of Dimension objects."""
         if isinstance(y, Dimension):
             new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()}
@@ -114,16 +114,12 @@ class Dimension(object):
             raise TypeError(("A dimension can only be divided "
                              "by another dimension, not {}.").format(y))
 
-    def __rdiv__(self, x):
+    def __rtruediv__(self, x):
         """Only used to raise a TypeError."""
         if x == 1:   # allowing one-divion
             return self.inverse()
         else:
             raise TypeError("A Dimension can only divide 1 to be inverted.")
-
-    __truediv__ = __div__
-
-    __rtruediv__ = __rdiv__
 
     def __pow__(self, y):
         """Allow the elevation of Dimension objects to a real power."""
