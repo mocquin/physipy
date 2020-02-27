@@ -28,8 +28,8 @@ class TestClassDimension(unittest.TestCase):
                                'RAD': 0,
                                'SR': 0}
         cls.assertEqual(none_dimenion_dict, dico_dimension_none)
-        
-        cls.assertRaises(TypeError,lambda: Dimension({"m":1}))
+
+        cls.assertRaises(TypeError, lambda: Dimension({"m": 1}))
 
     def test_020_str(cls):
 
