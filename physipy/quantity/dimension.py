@@ -124,10 +124,7 @@ class Dimension(object):
     def __pow__(self, y):
         """Allow the elevation of Dimension objects to a real power."""
         if np.isscalar(y):
-            new_dim_dict = {}
-            for dim_symbol in self.dim_dict.keys():
-                new_dim_dict[dim_symbol] = (self.dim_dict[dim_symbol]
-                                            * y)
+            new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         else:
             raise TypeError(("The power of a dimension must be real,"
