@@ -167,8 +167,7 @@ class Dimension(object):
 
     def inverse(self):
         """Inverse the dimension by taking the negative of the powers."""
-        new_dim_dict = {key: -value for (key, value) in self.dim_dict.items()}
-        return Dimension(new_dim_dict)
+        return Dimension({key: -value for (key, value) in self.dim_dict.items()})
 
     def str_SI_unit(self):
         """Concatenate symbol-wise the unit."""
