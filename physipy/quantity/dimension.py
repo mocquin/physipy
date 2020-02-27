@@ -25,6 +25,7 @@ PROPOSITIONS:
  * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
  * could define a contains method to check if a dimension is not 0
  * try to not relie on numpy/sympy
+ * should allow complex exponent ?
 
 PLEASE NOTE :
 - rad and sr are not base SI-units, but were added for convenience. They can be
@@ -81,8 +82,6 @@ class Dimension(object):
         elif (isinstance(definition, dict) and
               set(list(definition.keys())).issubset(SI_SYMBOL_LIST)):
             for dim_symbol, dim_power in definition.items():
-                if dim_power == int(dim_power):
-                    dim_power = int(dim_power)
                 self.dim_dict[dim_symbol] = dim_power
         else:
             raise TypeError(("Dimension can be constructed with either a "
