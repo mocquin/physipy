@@ -6,14 +6,19 @@
 This module provides for now 2 dictionnaries of units : 
  - custom_units : for user-defined units
  - imperial_units : retard units
+ 
+TODO :
+ - create a function wrapper for dict creation ?
+ - Should custom units and constants be in the same module ?
+
 """
 
+# setupe
 from math import pi
 
 from .quantity import make_quantity
 from .quantity import m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
 
-# Importing base units
 cm = SI_units_prefixed["cm"]
 g = units['g']
 h = units["h"]
@@ -21,20 +26,16 @@ J = units["J"]
 W = units["W"]
 kJ = J * 1000
 kJ.symbol = 'kJ'
+liter = units["L"]
 
 
+# Define here you custom units : key=symbol and value=quantity
 raw_custom_units = {
-    
-}
 
-custom_units = {}
-# Extending quantity units dict
-for key, value in raw_custom_units.items():
-    custom_units[key] = make_quantity(value, symbol=key)
+}
 
 
 # imperial units from astropy. This is ridiculous...
-liter = units["L"]
 raw_imperial_units = {
     # LENGTHS
     "in": 2.54 * cm,
@@ -77,11 +78,19 @@ raw_imperial_units = {
     # not dealing with farheneiht unit
 }
 
+
+# custom units dict
+custom_units = {}
+for key, value in raw_custom_units.items():
+    custom_units[key] = make_quantity(value, symbol=key)
+
+
+# imperial unit dict
 imperial_units = {}
 for key, value in raw_imperial_units.items():
     imperial_units[key] = make_quantity(value, symbol=key)
 
-
+# cleanup
 del pi
 del m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
 del cm, g, h, J, W, kJ 
