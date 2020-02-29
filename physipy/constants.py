@@ -8,6 +8,10 @@ The constants values are retrieved from scipy.constants, and are separeted in 2 
  - "scipy_constants_codata" for all the others
 A third "constants" dictionnary merges these two.
 
+TODO : 
+ - create a function to wrap dict creation ?
+ - should constants and units be in the same module ?
+
 """
 
 import scipy.constants as csts
