@@ -181,6 +181,10 @@ class Quantity(object):
     __rtruediv__ = __rdiv__
 
     def __floordiv__(self, y):
+        """
+        Any returned quantity should be dimensionless, but leaving the 
+        Quantity().remove() because more intuitive
+        """
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
