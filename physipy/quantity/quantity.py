@@ -403,7 +403,7 @@ class Quantity(object):
             return self
         
     def has_integer_dimension_power(self):
-        return all(is_integer(value) for value in self.dim.values())
+        return all(value == int(value) for value in self.dimension.dim_dict.values())
     
     def to(self, y):
         """return quantity with another favunit."""

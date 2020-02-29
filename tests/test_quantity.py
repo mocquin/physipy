@@ -331,8 +331,12 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(self.x_q > 0.5*self.x_q))
         self.assertTrue(np.all(self.y_q > 0.5*self.y_q))
         
+    def test_has_integer_dimension_power(self):
+        self.assertTrue(Quantity(1, Dimension("L")).has_integer_dimension_power())
+        self.assertTrue(Quantity(1, Dimension({"L":-2, "M":2})).has_integer_dimension_power())
+        self.assertTrue(Quantity(1, Dimension(None)).has_integer_dimension_power())
         
-        
+        self.assertFalse(Quantity(1, Dimension({"L":1.2})).has_integer_dimension_power())
     
     def test_units(self):
         Newton = (1 * kg) * (m * s**-2)
