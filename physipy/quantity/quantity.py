@@ -168,17 +168,15 @@ class Quantity(object):
     
     __rmul__ = __mul__
 
-    def __div__(self, y):
+    def __truediv__(self, y):
         y = quantify(y)
         return Quantity(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol / y.symbol).remove_dimension_if_dimensionless()
-    __truediv__ = __div__
 
-    def __rdiv__(self, x):
+    def __rtruediv__(self, x):
         x = quantify(x)
         return x / self
-    __rtruediv__ = __rdiv__
 
     def __floordiv__(self, y):
         """
