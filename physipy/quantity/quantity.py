@@ -141,7 +141,7 @@ class Quantity(object):
         
     def __add__(self, y):
         y = quantify(y)
-        if not self.dimension == y.dimension:                                                                                               
+        if not self.dimension == y.dimension:                                                               
             raise DimensionError(self.dimension, y.dimension)                          
         return Quantity(self.value + y.value,
                         self.dimension)    
@@ -289,7 +289,7 @@ class Quantity(object):
                        favunit = self.favunit)
     
     def __copy__(self):
-        return Quantity(self.value, self.dimension, favunit=self.favunit, symbol= self.symbol)
+        return Quantity(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
     
     def __repr__(self):
         return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
@@ -451,7 +451,7 @@ class Quantity(object):
         return self.dimension == Dimension("SR")
 
     def is_temperature(self):
-        return self.dimension == Dimension("Θ")
+        return self.dimension == Dimension("theta")
 
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
@@ -564,7 +564,7 @@ def quantify(x):
     if isinstance(x, Quantity):
         return x.__copy__()
     else:
-        return Quantity(x,Dimension(None))
+        return Quantity(x, Dimension(None))
 
 def dimensionify(x):
     if isinstance(x, Dimension):
@@ -575,6 +575,7 @@ def dimensionify(x):
         return Dimension(None)
     else:
         return Dimension(x)
+
 
 def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
     if isinstance(x, Quantity):
