@@ -4,13 +4,15 @@
 """Define common physical constants.
 
 The constants values are retrieved from scipy.constants, and are separeted in 2 dictionnaries:
- - scipy_constants for the most commons constants
- - scipy_constants_codata for all the others
-A third constants dictionnary merges these two.
+ - "scipy_constants" for the most commons constants
+ - "scipy_constants_codata" for all the others
+A third "constants" dictionnary merges these two.
+
 """
 
 import scipy.constants as csts
 
+# setup
 from .quantity import m, s, kg, A, K, rad, units, mol
 from .quantity import make_quantity
 
@@ -19,7 +21,7 @@ J = units['J']
 W = units["W"]
 N = units["N"]
 
-
+# Raw mapping for scipy constants
 scipy_constants_raw = {
     "c"                      : (csts.c                     , m/s),
     "speed_of_light"         : (csts.speed_of_light        , m/s),   	
@@ -53,7 +55,7 @@ scipy_constants_raw = {
     "neutron_mass"           : (csts.neutron_mass          , kg),          
 }
 
-
+# Raw mapping for scipy constants codata
 scipy_constants_codata_raw = {
     # SI prefixes
     'yotta': (csts.yotta, 1), 	
@@ -204,12 +206,18 @@ scipy_constants_codata_raw = {
 }
 
 
-scipy_constants_codata = {key: make_quantity(value[0]*value[1], symbol=key) for key, value in scipy_constants_codata_raw.items()}
+# scipy constants codata
+scipy_constants_codata = {key: make_quantity(value[0]*value[1],
+                                             symbol=key) for key, value in scipy_constants_codata_raw.items()}
 
-scipy_constants = {key: make_quantity(value[0]*value[1], symbol=key) for key, value in scipy_constants_raw.items()}
+# scipy constants
+scipy_constants = {key: make_quantity(value[0]*value[1],
+                                      symbol=key) for key, value in scipy_constants_raw.items()}
 
+# constants : concatenation of the two dicts
 constants = {**scipy_constants, **scipy_constants_codata}
 
+# clean up
 del csts
 del units
 del make_quantity
