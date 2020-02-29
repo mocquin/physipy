@@ -20,12 +20,14 @@ TODO :
 Questions : 
  - should the definition of other packages units be fixed or relative ?
  - should other packages units/constants be in the same dict ?
+ - should make a proper data structure, where a new unit added is checked if already taken ?
 """
 
 from numpy import pi
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
 
 
+# Dictionnary of prefixes
 PREFIX_DICT = {
     'Y': 1e24,
     'Z': 1e21,
@@ -50,17 +52,26 @@ PREFIX_DICT = {
     'y': 1e-24,
 }
 
+
 def CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
-    """Create the prefixed dict for the base SI units"""
+    """Create the prefixed dict for the base SI units
+    
+    Extends the dic by adding the combination between prefix_dic and base_units
+    """
     for prefix_symbol, prefix_value in prefix_dic.items():
         for dim_symbol, unit_symbol in base_units_symbol_dim.items():
             # dealing with kg
             if unit_symbol == "kg" and dim_symbol == "M" :
                 unit_symbol = "g"
                 prefix_value = prefix_value/1000
+            # Concatenate prefix symbol and unit symbol
             prefixed_unit_symbol = prefix_symbol + unit_symbol
-            dic[prefixed_unit_symbol] = Quantity(prefix_value, Dimension(dim_symbol), symbol=prefixed_unit_symbol)
+            # Update dic
+            dic[prefixed_unit_symbol] = Quantity(prefix_value,
+                                                 Dimension(dim_symbol),
+                                                 symbol=prefixed_unit_symbol)
     return dic
+
 
 def prefix_units(prefix_dic, unit_dict, extend=False):
     """Return a dict of unit with all combination between the input unit dict and the prefix dict."""
@@ -68,7 +79,8 @@ def prefix_units(prefix_dic, unit_dict, extend=False):
     for prefix_symbol, prefix_value in prefix_dic.items():
         for unit_symbol, unit_quantity in unit_dict.items():
             prefixed_symbol = prefix_symbol+ str(unit_quantity.symbol)
-            prefixed_dict[prefixed_symbol] = make_quantity(prefix_value * unit_quantity, symbol=prefixed_symbol)
+            prefixed_dict[prefixed_symbol] = make_quantity(prefix_value * unit_quantity,
+                                                           symbol=prefixed_symbol)
     return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
     
 
@@ -90,7 +102,7 @@ sr  = SI_units["sr"]
 SI_units_prefixed = CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
 SI_units_prefixed["g"] = Quantity(0.001, Dimension("M"), symbol="g")
 
-# Units
+# SI derived units
 SI_derived_units_raw = {
     "Hz"  : 1/s,
     "N"   : m * kg * s**-2,
@@ -116,6 +128,8 @@ SI_derived_units_raw = {
 SI_derived_units = {key: make_quantity(value, symbol=key) for key, value in SI_derived_units_raw.items()}
 SI_derived_units_prefixed = prefix_units(PREFIX_DICT, SI_derived_units, extend=True)
 
+
+# Other units
 other_accepted_units_raw = {
     "min" : 60 * s,
     "h"   : 3600 * s,
@@ -132,6 +146,8 @@ other_accepted_units_raw = {
 
 other_units = {key: make_quantity(value, symbol=key) for key, value in other_accepted_units_raw.items()}
 
+
+# Concatenating units
 units = {**SI_units_prefixed, **SI_derived_units, **other_units} #including base SI units to units dict
 
 all_units = {**SI_units_prefixed, **SI_derived_units_prefixed, **other_units}
