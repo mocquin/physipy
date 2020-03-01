@@ -213,11 +213,7 @@ class Quantity(object):
 
     def __neg__(self):
         return self * (-1)
-
-    def __invert__(self):
-        return 1. / self
-    __inv__ = __invert__
-
+    
     def __len__(self):
         return len(self.value)
     
@@ -373,6 +369,13 @@ class Quantity(object):
         return Quantity(np.asarray(self.value).std(*args, **kwargs),
                        self.dimension,
                        favunit=self.favunit)
+    
+    #def __invert__(self):
+    #    return 1. / self
+    #__inv__ = __invert__
+    def inverse(self):
+        """is this method usefull ?"""
+        return 1. / self
     
     def _sum(self):
         """Extends numpy.sum to Quantity."""

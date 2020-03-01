@@ -228,6 +228,8 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.y_qsu ** (self.y_qsu/self.y_qsu) == self.y_qsu       
     
+    def test_inverse(self):
+        self.assertTrue(Quantity(1, Dimension("M")).inverse() == Quantity(1, Dimension({"M":-1})))
     
     def test_90_getteur(self):
         # Sans unité favorite
