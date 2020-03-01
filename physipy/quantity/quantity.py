@@ -154,7 +154,7 @@ class Quantity(object):
         if not self.dimension == y.dimension: 
             raise DimensionError(self.dimension, y.dimension)
         return Quantity(self.value - y.value,
-                self.dimension)
+                        self.dimension)
 
     def __rsub__(self, x):
         x = quantify(x)
