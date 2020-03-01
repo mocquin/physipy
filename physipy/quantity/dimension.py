@@ -26,6 +26,7 @@ PROPOSITIONS:
  * could define a contains method to check if a dimension is not 0
  * try to not relie on numpy/sympy
  * should allow complex exponent ?
+ * move has_integer_dimension from Quantity to Dimension ?
 
 PLEASE NOTE :
 - rad and sr are not base SI-units, but were added for convenience. They can be
