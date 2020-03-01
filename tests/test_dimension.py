@@ -97,6 +97,20 @@ class TestClassDimension(unittest.TestCase):
         cls.assertEqual(cls.m.str_SI_unit(), "m")
         cls.assertEqual(cls.none.str_SI_unit(),"")
 
+    def test_100_expr_parsing(cls):
+        cls.assertEqual(cls.m, Dimension("L"))
+        cls.assertEqual(cls.m, Dimension("L**1"))
+        cls.assertEqual(cls.m * cls.m, Dimension("L**2"))
+        cls.assertEqual(cls.m * cls.dim_complexe, Dimension("L*J/theta**3"))
+        
+        cls.assertEqual(cls.m, Dimension("m"))
+        cls.assertEqual(cls.m * cls.m, Dimension("m**2"))
+        cls.assertEqual(cls.m * cls.dim_complexe, Dimension("m*cd/K**3"))
+        
+        with cls.assertRaises(AttributeError):
+            # sympy parsing not good with ^ char
+            cls.assertEqual(cls.m * cls.m, Dimension("m^2"))
+    
     #def test_pycodestyle(cls):
     #    import pycodestyle
     #    style = pycodestyle.StyleGuide(quiet=True)
