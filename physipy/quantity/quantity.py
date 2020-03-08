@@ -472,10 +472,25 @@ class Quantity(object):
 
     # TODO : make this a static function ?
     def __array_ufunc__(self, ufunc, method, *args, **kwargs):
+        """
+        https://numpy.org/doc/1.18/user/basics.dispatch.html?highlight=array%20interface
+        
+        The __array_ufunc__ receives:
+         - ufunc, a function like numpy.multiply
+         - method, a string, differentiating between numpy.multiply(...) and variants like numpy.multiply.outer, numpy.multiply.accumulate, and so on. For the common case, numpy.multiply(...), method == '__call__'.
+         - inputs, which could be a mixture of different types
+         - kwargs, keyword arguments passed to the function
+
+        This doesn't need __getattr__ nor __array__
+
+        """
         #print(args)
         ufunc_name = ufunc.__name__
         left = quantify(args[0])
-
+        
+        if not method == "__call__":
+            raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        
         if ufunc_name in same_dim_out_2:
             other = quantify(args[1])
             if not left.dimension == other.dimension:
