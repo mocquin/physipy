@@ -28,6 +28,7 @@ PROPOSITIONS:
  * try to not relie on numpy/sympy
  * should allow complex exponent ?
  * move has_integer_dimension from Quantity to Dimension ?
+ * allow None definition with Dimension() ?
 
 PLEASE NOTE :
 - rad and sr are not base SI-units, but were added for convenience. They can be
