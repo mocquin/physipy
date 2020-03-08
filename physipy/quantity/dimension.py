@@ -164,7 +164,7 @@ class Dimension(object):
             new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         else:
-            raise TypeError(("The power of a dimension must be real,"
+            raise TypeError(("The power of a dimension must be a scalar,"
                              "not {}").format(type(y)))
 
     def __eq__(self, y):
