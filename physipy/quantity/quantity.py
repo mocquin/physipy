@@ -33,6 +33,7 @@ TODO:
  - [X] : add a method to reset favunit ?
  - [ ] : better tests for complex number support
  - [ ] : see if possible to not rely on sympy, numpy and scipy
+ - [ ] : improve code for __array_ufunc__
 
 
 PROPOSITIONS/QUESTIONS : 
