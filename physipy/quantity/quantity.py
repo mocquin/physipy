@@ -190,11 +190,16 @@ class Quantity(object):
                        self.dimension).remove_dimension_if_dimensionless()
     
     def __mod__(self,y):
+        """
+        There is no remove_dimension_if_dimensionless() because a 
+        modulo operation would not change the dimension.
+        
+        """
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return Quantity(self.value % y.value,
-                       self.dimension).remove_dimension_if_dimensionless()
+                        self.dimension)#.remove_dimension_if_dimensionless()
 
     def __pow__(self,power):
         """
