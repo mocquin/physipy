@@ -165,7 +165,7 @@ class Quantity(object):
         y = quantify(y)
         return Quantity(self.value * y.value, 
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol).remove_dimension_if_dimensionless() 
+                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
 
@@ -173,7 +173,7 @@ class Quantity(object):
         y = quantify(y)
         return Quantity(self.value / y.value,
                         self.dimension / y.dimension,
-                        symbol = self.symbol / y.symbol).remove_dimension_if_dimensionless()
+                        symbol = self.symbol / y.symbol).rm_dim_if_dimless()
 
     def __rtruediv__(self, x):
         x = quantify(x)
@@ -188,11 +188,11 @@ class Quantity(object):
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return Quantity(self.value // y.value,
-                       self.dimension).remove_dimension_if_dimensionless()
+                       self.dimension).rm_dim_if_dimless()
     
     def __mod__(self,y):
         """
-        There is no remove_dimension_if_dimensionless() because a 
+        There is no rm_dim_if_dimless() because a 
         modulo operation would not change the dimension.
         
         """
@@ -200,7 +200,7 @@ class Quantity(object):
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return Quantity(self.value % y.value,
-                        self.dimension)#.remove_dimension_if_dimensionless()
+                        self.dimension)#.rm_dim_if_dimless()
 
     def __pow__(self,power):
         """
@@ -215,7 +215,7 @@ class Quantity(object):
                             "not {}").format(type(power)))
         return Quantity(self.value ** power, 
                         self.dimension ** power,
-                        symbol = self.symbol ** power).remove_dimension_if_dimensionless()
+                        symbol = self.symbol ** power).rm_dim_if_dimless()
 
     def __neg__(self):
         return self * (-1)
@@ -405,7 +405,7 @@ class Quantity(object):
     def is_dimensionless(self):
         return self.dimension == Dimension(None)
 
-    def remove_dimension_if_dimensionless(self):
+    def rm_dim_if_dimless(self):
         if self.is_dimensionless():
             return self.value          
         else:                           
@@ -503,7 +503,7 @@ class Quantity(object):
             if ufunc_name == "multiply":
                 return Quantity(res, left.dimension * other.dimension)
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
-                return Quantity(res, left.dimension / other.dimension).remove_dimension_if_dimensionless()
+                return Quantity(res, left.dimension / other.dimension).rm_dim_if_dimless()
         elif ufunc_name in no_dim_1:
             if not left.dimension == Dimension(None):
                 raise DimensionError(left.dimension, Dimension(None))
@@ -513,10 +513,10 @@ class Quantity(object):
             if not left.is_dimensionless_ext():
                 raise DimensionError(left.dimension, Dimension(None), binary=True)
             res = ufunc.__call__(left.value)
-            return Quantity(res, Dimension(None)).remove_dimension_if_dimensionless()
+            return Quantity(res, Dimension(None)).rm_dim_if_dimless()
         elif ufunc_name in same_out:
             res = ufunc.__call__(left.value)
-            return Quantity(res, left.dimension).remove_dimension_if_dimensionless()
+            return Quantity(res, left.dimension).rm_dim_if_dimless()
         elif ufunc_name in special_dict:
             if ufunc_name == "sqrt":
                 res = ufunc.__call__(left.value)
@@ -529,7 +529,7 @@ class Quantity(object):
                 res = ufunc.__call__(left.value, power_num)
                 return Quantity(res, 
                         left.dimension ** power_num,
-                        symbol = left.symbol ** power_num).remove_dimension_if_dimensionless()
+                        symbol = left.symbol ** power_num).rm_dim_if_dimless()
             elif ufunc_name == "reciprocal":
                 res = ufunc.__call__(left.value)
                 return Quantity(res, 1/left.dimension)

@@ -35,7 +35,7 @@ from .utils import array_to_Q_array, decorate_with_various_unit
 #    favunit_out = Q_1.favunit
 #    return Quantity(val_out,
 #                    dim_out,
-#                    favunit=favunit_out)#.remove_dimension_if_dimensionless()
+#                    favunit=favunit_out)#.rm_dim_if_dimless()
 linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 
 #def interp(x, tab_x, tab_y):
@@ -54,7 +54,7 @@ linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 #    favunit_interp = tab_y.favunit
 #    return Quantity(val_interp,
 #                    dim_interp,
-#                    favunit=favunit_interp)#.remove_dimension_if_dimensionless()
+#                    favunit=favunit_interp)#.rm_dim_if_dimless()
 interp = decorate_with_various_unit(("A", "A", "B"), ("B"))(np.interp)
 
 
@@ -86,7 +86,7 @@ def trapz(y, x=None, dx=1.0, *args):
         value_trapz = np.trapz(y.value, x=x, dx=dx.value, *args)
         dim_trapz = y.dimension * dx.dimension
     return Quantity(value_trapz, 
-                    dim_trapz).remove_dimension_if_dimensionless()
+                    dim_trapz).rm_dim_if_dimless()
 
 
 def integrate_trapz(Q_min, Q_max, Q_func):
@@ -114,7 +114,7 @@ def integrate_trapz(Q_min, Q_max, Q_func):
     dim_in = quantify(Q_func(Q_min)).dimension
     dim_out = dim_in * Q_min.dimension
     integral = np.trapz(Q_ech_y.value, x=ech_x_val)
-    return Quantity(integral, dim_out)#.remove_dimension_if_dimensionless()
+    return Quantity(integral, dim_out)#.rm_dim_if_dimless()
 
 
 def quad(func, x0, x1, *args, **kwargs):
@@ -140,7 +140,7 @@ def quad(func, x0, x1, *args, **kwargs):
                                       *args, **kwargs)
     
     return Quantity(quad_value,
-                   res_dim * x0.dimension).remove_dimension_if_dimensionless(), prec
+                   res_dim * x0.dimension).rm_dim_if_dimless(), prec
 
 
 def dblquad(func, x0, x1, y0, y1, *args):
@@ -170,7 +170,7 @@ def dblquad(func, x0, x1, y0, y1, *args):
                                            y0.value, y1.value,
                                            args=args)
     return Quantity(dblquad_value,
-                   res_dim * x0.dimension * y0.dimension).remove_dimension_if_dimensionless(), prec
+                   res_dim * x0.dimension * y0.dimension).rm_dim_if_dimless(), prec
 
 
 def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
@@ -206,7 +206,7 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
                                            z0.value, z1.value,
                                            args=args)
     return Quantity(tplquad_value,
-                   res_dim * x0.dimension * y0.dimension * z0.dimension).remove_dimension_if_dimensionless(), prec    
+                   res_dim * x0.dimension * y0.dimension * z0.dimension).rm_dim_if_dimless(), prec    
 
 
 # Generique 
