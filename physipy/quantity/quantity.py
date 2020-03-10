@@ -78,6 +78,8 @@ UNIT_SUFFIX = ""
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
+HANDLED_FUNCTIONS = {}
+
 
 class Quantity(object):
     """Quantity class : """
@@ -372,9 +374,7 @@ class Quantity(object):
         return QuantityIterator(self)
     
     def std(self, *args, **kwargs):
-        return Quantity(np.asarray(self.value).std(*args, **kwargs),
-                       self.dimension,
-                       favunit=self.favunit)
+        return np.std(self, *args, **kwargs)
     
     #def __invert__(self):
     #    return 1. / self
@@ -382,25 +382,25 @@ class Quantity(object):
     def inverse(self):
         """is this method usefull ?"""
         return 1. / self
-    
-    def _sum(self):
-        """Extends numpy.sum to Quantity."""
-        return Quantity(np.sum(self.value),
-                       self.dimension,
-                       favunit=self.favunit)
 
+    def sum(self, **kwargs):
+        """Extends numpy.sum to Quantity."""
+        return np.sum(self, **kwargs)
+    
     def mean(self, **kwargs):
         """Extends numpy.mean to Quantity."""
-        return Quantity(np.mean(self.value, **kwargs),
-                       self.dimension,
-                       favunit=self.favunit)
+        return np.mean(self, **kwargs)
+        #return Quantity(np.mean(self.value, **kwargs),
+        #               self.dimension,
+        #               favunit=self.favunit)
     
     def integrate(self, **kwargs):
-        if not isinstance(self.value,np.ndarray):
-            raise TypeError("Quantity value must be array-like to integrate.")
-        return Quantity(np.trapz(self.value, **kwargs),
-                       self.dimension,
-                       favunit = self.favunit)
+        return np.trapz(self, **kwargs)
+    #    if not isinstance(self.value,np.ndarray):
+    #        raise TypeError("Quantity value must be array-like to integrate.")
+    #    return Quantity(np.trapz(self.value, **kwargs),
+    #                   self.dimension,
+    #                   favunit = self.favunit)
     
     def is_dimensionless(self):
         return self.dimension == Dimension(None)
@@ -470,6 +470,45 @@ class Quantity(object):
     def check_dim(self, dim):
         return self.dimension == dimensionify(dim)
 
+    # this breaks vectorize
+    #def __getattr__(self,name):
+    #    return self.value.__getattribute__(name)
+    def __getattr__(self, item):
+        #print(f"getattr with : {item}")
+        if item.startswith('__array_'):
+            #warnings.warn("The unit of the quantity is stripped.")
+            if isinstance(self.value, np.ndarray):
+                return getattr(self.value, item)
+            else:
+                # If an `__array_` attributes is requested but the magnitude is not an ndarray,
+                # we convert the magnitude to a numpy ndarray.
+                self.value = np.array(self.value)
+                return getattr(self.value, item)
+        try:
+            res = getattr(self.value, item)
+            return res
+        except AttributeError as ex:
+            raise AttributeError("Neither Quantity object nor its value ({}) "
+                                 "has attribute '{}'".format(self.value, item))
+    
+    #def __array__(self):
+    #    """
+    #    With __getattr__, this is not called on np.asarray(arr_m). Instead __getattr__ with item=
+    #     __array_struct__ is called.
+    #    Without, this is used to convert np.asarray(arr_m) to array([1000., 3000.])
+    #    """
+    #    #print("Through __array__")
+    #    return np.asarray(self.value)
+    
+    def __array_function__(self, func, types, args, kwargs):
+        if func not in HANDLED_FUNCTIONS:
+            return NotImplemented
+        # Note: this allows subclasses that don't override
+        # __array_function__ to handle DiagonalArray objects.
+        if not all(issubclass(t, self.__class__) for t in types):
+            return NotImplemented
+        return HANDLED_FUNCTIONS[func](*args, **kwargs)
+    
     # TODO : make this a static function ?
     def __array_ufunc__(self, ufunc, method, *args, **kwargs):
         """
@@ -555,7 +594,51 @@ class Quantity(object):
         else:
             raise ValueError
 
-            
+
+# Override functions - used with __array_function__
+def implements(np_function):
+    def decorator(func):
+        HANDLED_FUNCTIONS[np_function] = func
+        return func
+    return decorator            
+
+@implements(np.sum)
+def np_sum(q):
+    return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.mean)
+def np_mean(q):
+    return Quantity(np.mean(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.std)
+def np_std(q):
+    return Quantity(np.std(q.value), q.dimension)
+
+@implements(np.average)
+def np_average(q):
+    return Quantity(np.average(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.median)
+def np_average(q):
+    return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.var)
+def np_var(q):
+    return Quantity(np.var(q.value), q.dimension)
+
+@implements(np.trapz)
+def np_trapz(q, **kwargs):
+    if not isinstance(q.value,np.ndarray):
+            raise TypeError("Quantity value must be array-like to integrate.")
+    return Quantity(np.trapz(q.value, **kwargs),
+                       q.dimension,
+                       favunit = q.favunit)
+
+# TODO with decorate with various units
+# also linspace
+#@implements(np.interp)
+#def np_interp(q, x):
+#    pass
 
 
 

@@ -262,7 +262,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(integrate_trapz(l_min, l_max, Q_func_x),
                         1.5 * mum**2)
         # TODO : xmin = xmax
-        
+
     def test_120_linspace(self):
         
         m = Quantity(1,Dimension("L"))
@@ -289,7 +289,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(self.z_q.mean(),Quantity(1,Dimension("L")))
 
     def test_160_sum(self):
-        self.assertEqual(self.z_q._sum(),Quantity(3,Dimension("L")))
+        self.assertEqual(self.z_q.sum(),Quantity(3,Dimension("L")))
 
     def test_170_str(self):
         self.assertEqual(str(Quantity(np.array([1,2,3]),Dimension(None))),
@@ -396,7 +396,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
         self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
         
-    def test_500_numpy(self):
+    def test_500_numpy_ufuncs(self):
         
         arr = np.array([1,2,3])
         arr_m = Quantity(arr, Dimension("L"))
@@ -484,6 +484,32 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.fabs(arr_m) == arr_m))
         self.assertTrue(np.all(np.fabs(-arr_m) == arr_m))
         self.assertTrue(np.all(np.fabs(Quantity(np.array([-1, 0, 1]), Dimension("L"))) == Quantity(np.array([1, 0, 1]), Dimension("L"))))
+        
+    def test_510_numpy_functions(self):
+        
+        arr = np.array([1,2,3])
+        arr_m = Quantity(arr, Dimension("L"))
+        
+        self.assertEqual(np.sum(arr_m), 6 * m)
+        self.assertEqual(np.sum(5*m), 5 * m)
+        
+        self.assertEqual(np.mean(arr_m), 2*m)
+        self.assertEqual(np.mean(5*m), 5*m)
+        
+        self.assertEqual(np.std(arr_m), 0.816496580927726*m)
+        self.assertEqual(np.std(5*m), 0*m)
+        
+        self.assertEqual(np.average(arr_m), 2*m)
+        self.assertEqual(np.average(5*m), 5*m)
+        
+        self.assertEqual(np.median(arr_m), 2*m)
+        self.assertEqual(np.median(5*m), 5*m)
+        
+        self.assertEqual(np.var(arr_m), 0.6666666666666666*m)
+        self.assertEqual(np.var(5*m), 0*m)
+        
+        self.assertEqual(np.trapz(arr_m), 4*m)
+        
 
     def test_sum_builtin(self):
         # on list of 2 scalar-value-quantity
@@ -537,7 +563,7 @@ class TestQuantity(unittest.TestCase):
         # check the favunits
         self.assertEqual((mph_speed(m, s)).favunit, mph)
         
-    def test_np_std(cls):
+    def test_std(cls):
         cls.assertEqual(m.std(), 0.0 * m)
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
         cls.assertEqual(cls.z_q.std(), Quantity(cls.z.std(), Dimension("L")))
