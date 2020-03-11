@@ -237,31 +237,31 @@ class TestQuantity(unittest.TestCase):
         # Avec unité favorite
         self.assertEqual(str(self.y_qu[2]),"3000.0 mm")
         
-    def test_100_vectorizateur(self):
-        mm = Quantity(0.001,Dimension("L"),symbol="mm")
-        f_cymm = 2/mm
-        f_cymm_array = np.array([1,2,3,4,5])/mm
-        @vectorize
-        def calcul_FTM_test(fcymm):
-            if fcymm > 1/Quantity(1,Dimension("L")):
-                return 1-fcymm/(10*1/mm)
-            else:
-                return 0
-        self.assertEqual(calcul_FTM_test(f_cymm),0.8)
-        self.assertEqual(list(calcul_FTM_test(f_cymm_array)),
-                         list(np.array([0.90,0.80,0.70,0.60,0.50])))
+    #def test_100_vectorizateur(self):
+    #    mm = Quantity(0.001,Dimension("L"),symbol="mm")
+    #    f_cymm = 2/mm
+    #    f_cymm_array = np.array([1,2,3,4,5])/mm
+    #    @vectorize
+    #    def calcul_FTM_test(fcymm):
+    #        if fcymm > 1/Quantity(1,Dimension("L")):
+    #            return 1-fcymm/(10*1/mm)
+    #        else:
+    #            return 0
+    #    self.assertEqual(calcul_FTM_test(f_cymm),0.8)
+    #    self.assertEqual(list(calcul_FTM_test(f_cymm_array)),
+    #                     list(np.array([0.90,0.80,0.70,0.60,0.50])))
         
-    def test_110_integrate_trapz(self):
-        mum = Quantity(0.000001,Dimension("L"), symbol="mum")
-        l_min = 1 * mum
-        l_max = 2 * mum
-        def Q_func_1(x):return 1
-        self.assertEqual(integrate_trapz(l_min, l_max, Q_func_1),
-                         1 * mum)
-        def Q_func_x(x): return x
-        self.assertEqual(integrate_trapz(l_min, l_max, Q_func_x),
-                        1.5 * mum**2)
-        # TODO : xmin = xmax
+    #def test_110_integrate_trapz(self):
+    #    mum = Quantity(0.000001,Dimension("L"), symbol="mum")
+    #    l_min = 1 * mum
+    #    l_max = 2 * mum
+    #    def Q_func_1(x):return 1
+    #    self.assertEqual(integrate_trapz(l_min, l_max, Q_func_1),
+    #                     1 * mum)
+    #    def Q_func_x(x): return x
+    #    self.assertEqual(integrate_trapz(l_min, l_max, Q_func_x),
+    #                    1.5 * mum**2)
+    #    # TODO : xmin = xmax
 
     def test_120_linspace(self):
         
