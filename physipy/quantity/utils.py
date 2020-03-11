@@ -5,37 +5,48 @@ from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantif
 
 
 def _iterify(x):
+    """make x iterable"""
     return [x] if not isinstance(x, (list, tuple)) else x
 
 
 def check_dimension(units_in=None, units_out=None):
     """Check dimensions of inputs and ouputs of func"""
+    # reading args and making them iterable
     if units_in:
         units_in = _iterify(units_in)
     if units_out:
         units_out = _iterify(units_out)
+    
+    # define the decorator
     def decorator(func):
+        # create a decorated func
         def decorated_func(*args, **kwargs):
             
             # Checking dimension of inputs
             args = _iterify(args)
             if units_in:
                 for arg, unit_in in zip(args, units_in):
+                    # make everything dimensions
                     dim_check_in = dimensionify(unit_in)
                     dim_arg = dimensionify(arg)
+                    # and checking dimensions
                     if not dim_arg == dim_check_in:
                         raise DimensionError(dim_arg, dim_check_in)
             
-            # Making outputs iterable
+            # Compute outputs and iterify it
             ress = _iterify(func(*args, **kwargs))
 
             # Checking dimension of outputs
             if units_out:
                 for res, unit_out in zip(ress, units_out):
+                    # make everythin dimensions
                     dim_check_out = dimensionify(unit_out)
                     dim_res = dimensionify(res)
+                    # and checking dimensions
                     if not dim_res == dim_check_out:
                         raise DimensionError(dim_res, dim_check_out)
+
+            # still return funcntion outputs
             return tuple(ress) if len(ress) > 1 else ress[0]
         return decorated_func
     return decorator
