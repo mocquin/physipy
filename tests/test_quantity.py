@@ -550,6 +550,20 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             wrappred_wrong_speed(m, s)
         
+        
+        # with Dimension notation
+        def speed(l, t):
+            return l/t
+        wrapped_speed = check_dimension(("L", "T"), 'L/T')(speed)
+
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1, 1) # a scalar is interpreted as dimensionless
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1*m, 1)
+        with self.assertRaises(DimensionError):
+            wrapped_speed(1, 1*s)
+        self.assertEqual(wrapped_speed(1*m, 1*s), 1*m / (1*s))
+        
     def test_501_decorator_favunit(self):
         def speed(l, t):
             return l/t
