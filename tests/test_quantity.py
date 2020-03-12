@@ -8,8 +8,10 @@ from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad,
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
-from physipy.quantity import check_dimension, set_favunit
+from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param
 from physipy import imperial_units
+
+km = units["km"]
 
 # from quantity import SI_units as u
 
@@ -577,6 +579,54 @@ class TestQuantity(unittest.TestCase):
         # check the favunits
         self.assertEqual((mph_speed(m, s)).favunit, mph)
         
+    def test_502_decorator_dimension_and_favunit(self):
+        def speed(l, t):
+            return l/t
+        mph = imperial_units["mil"] / units["h"]
+        mph.symbol = "mph"
+        
+        # value
+        self.assertEqual(dimension_and_favunit((km, s), mph)(speed)(5*m, 2*s), speed(5*m, 2*s))
+        
+        # favunit
+        self.assertEqual(dimension_and_favunit((km, s), mph)(speed)(5*m, 2*s).favunit, mph)
+        
+        # dimension check
+        with self.assertRaises(DimensionError):
+            dimension_and_favunit((km, s), mph)(speed)(5*s, 2*s)
+            
+    def test_503_decorator_drop_dimension(self):
+        # this function will always compare inputs to ints
+        # so the inputs must be scalar of dimless Quantitys
+        def speed_dimless(l, t):
+            if not t==0 and not l<0:
+                return l/t
+            else:
+                return 0
+
+        # check that it indeed fails
+        with self.assertRaises(DimensionError):
+            speed_dimless(m, s)
+            
+        # if dimensions are dropped, should work
+        # the output is scalar
+        self.assertEqual(drop_dimension(speed_dimless)(1*m, 1*s), 1)
+        self.assertEqual(drop_dimension(speed_dimless)(5*m, 1*s), 5)
+            
+    def test_504_decorator_add_back_unit_param(self):
+        def speed_dimless(l, t):
+            if not t==0 and not l<0:
+                return l/t
+            else:
+                return 0
+            
+        # inputs must be dimless, but we want to add dimension to output
+        with self.assertRaises(DimensionError):
+            speed_dimless(5, 1) > 5*m/s
+            
+        # will multiplu each raw output by m/s
+        self.assertEqual(add_back_unit_param(m/s)(speed_dimless)(5, 1), 5*m/s)
+    
     def test_std(cls):
         cls.assertEqual(m.std(), 0.0 * m)
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
