@@ -115,33 +115,47 @@ def add_back_unit_param(*unit_out):
 
 
 def decorate_with_various_unit(inputs=[], ouputs=[]):
-    """TODO : get rid of eval with a expression parser"""
+    """
+    allow abitrary specification of dimension and unit: 
+    @decorate_with_various_unit(("A", "A"), "A")
+    def func(x, y):
+        return x+y
+        
+    It will do 2 things : 
+        - check that the inputs have coherent units vs each others
+        - set the specified unit to the output
+    
+    TODO : get rid of eval with a expression parser"""
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
     def decorator(func):
         def decorated(*args, **kwargs):
             dict_of_units = {}
             list_inputs_value = [] 
-            for arg, input_name in zip(args, inputs_str):
+            # loop over function's inputs and decorator's inputs
+            for arg, input_name in zip(args, inputs_str): 
                 if input_name == "pass":
                     pass
+                #
                 else:
+                    # turn input into quantity
                     arg = quantify(arg)
                     si_unit = arg._SI_unitary_quantity
+                    # store input value 
                     list_inputs_value.append(arg.value)
+                    # check if input name (=unit or expression) already exists
                     if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
-                        raise DimensionError((arg._SI_unitary_quantity).dimension, (dict_of_units[input_name]).dimension)
+                        raise DimensionError((arg._SI_unitary_quantity).dimension,
+                                             (dict_of_units[input_name]).dimension)
+                    # if input_name is new, add it's unit to dict
                     else:
                         dict_of_units[input_name] = arg._SI_unitary_quantity
-                        
+            # compute expression using decorator ouputs
             list_outputs_units = [eval(out_str, dict_of_units) for out_str in outputs_str]
-                        
-            res_brute = func(*list_inputs_value, **kwargs)
-            
-            res_brute = _iterify(res_brute)
-            
+            # compute function res on values
+            res_brute = _iterify(func(*list_inputs_value, **kwargs))
+            # turn back raw outputs into quantities
             res_q = [res * unit for res, unit in zip(res_brute, list_outputs_units)]
-                        
             return tuple(res_q) if len(res_q) > 1 else res_q[0]
         return decorated
     return decorator
