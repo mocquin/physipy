@@ -12,7 +12,7 @@ from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad,
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
-from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param
+from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit
 from physipy import imperial_units
 
 
@@ -632,6 +632,31 @@ class TestQuantity(unittest.TestCase):
             
         # will multiplu each raw output by m/s
         self.assertEqual(add_back_unit_param(m/s)(speed_dimless)(5, 1), 5*m/s)
+    
+    def test_505_decorator_decorate_with_various_unit(self):
+        
+        #interp = decorate_with_various_unit(("A", "A", "B"), ("B"))(np.interp)
+        def func(x, y):
+            return x+y
+
+        d_func = decorate_with_various_unit(("A", "A"), "A")(func)
+        
+        # when ok
+        self.assertEqual(d_func(1*m, 1*m), 
+                        2*m)
+        
+        # when incoherent inputs
+        with self.assertRaises(DimensionError):
+            d_func(1*m, 1*s)
+            
+        def func2(x, y): return x*y
+        # this will set the output unit to "A"
+        d_func2 = decorate_with_various_unit(("A", "A"), "A")(func2)
+        self.assertEqual(d_func2(1*m, 1*m), 
+                        1*m)
+        
+        
+        
     
     def test_std(cls):
         cls.assertEqual(m.std(), 0.0 * m)
