@@ -2,6 +2,10 @@
 import numpy as np
 import unittest
 
+import matplotlib
+import matplotlib.pyplot
+
+
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
@@ -10,6 +14,8 @@ from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param
 from physipy import imperial_units
+
+
 
 km = units["km"]
 
@@ -649,6 +655,15 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(m.check_dim(Dimension("L")))
         self.assertFalse(m.check_dim(Dimension("RAD")))
         
+
+    def test_matplotlib(self):
+
+        arr_m = np.linspace(1, 3, 2)*1000 * m
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+    
+
+
 if __name__ == "__main__":
     unittest.main()
         

@@ -472,9 +472,9 @@ class Quantity(object):
 
     # this breaks vectorize
     #def __getattr__(self,name):
+    #    print(f"{self}, {name}")
     #    return self.value.__getattribute__(name)
     def __getattr__(self, item):
-        #print(f"getattr with : {item}")
         if item.startswith('__array_'):
             #warnings.warn("The unit of the quantity is stripped.")
             if isinstance(self.value, np.ndarray):
