@@ -161,47 +161,27 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
-    
 
 def array_to_Q_array(x):
-    """Converts an array of Quantity to a Quanity of array.
+    """Converts an array of Quantity to a Quantity with array value.
     
     First aim to be used with the vectorize.
     
     """
-    #if isinstance(x, Quantity):
-    #    return x
-    #elif type(x) == np.ndarray:
-    #    if x.size == 1:
-    #        return x.item(0)
-    #    if isinstance(x[0], Quantity):
-    #        liste_val = []
-    #        for qu in x:
-    #            liste_val = liste_val + [qu.value]
-    #        valeur_ = np.asarray(liste_val)
-    #        dimension_ = x[0].dimension
-    #        unite_favorite_ = x[0].favunit
-    #        return Quantity(valeur_, dimension_, favunit=unite_favorite_)
-    #    else:
-    #        return Quantity(x, Dimension(None))                          
-    #elif isinstance(x, int) or isinstance(x, float):
-    #    return x
-    #else:
-    #    raise TypeError("Vectorizateur : doit être ")
-    
+    # aim to deal with np.ndarray
     if type(x) == np.ndarray:
+        # if array is size 1
         if x.size == 1:
             return quantify(x.item(0))
+        # when size>1 and Quantity
         elif isinstance(x[0], Quantity):
-            liste_val = []
-            for qu in x:
-                liste_val = liste_val + [qu.value]
-            val_out = np.asarray(liste_val)
-            dim_out = x[0].dimension
-            favunit_out = x[0].favunit
+            # extract values into an array
+            val_out = np.asarray([qu.value for qu in x])
+            # send in a new Quantity
             return Quantity(val_out, 
-                            dim_out, 
-                            favunit=favunit_out)
+                            x[0].dimension, 
+                            favunit=x[0].favunit)
+        # otherwise create a dimless quantity
         else:
             return Quantity(x, Dimension(None))            
     else:

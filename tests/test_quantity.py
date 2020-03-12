@@ -12,7 +12,7 @@ from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad,
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
-from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit
+from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
 from physipy import imperial_units
 
 
@@ -655,9 +655,16 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(d_func2(1*m, 1*m), 
                         1*m)
         
+    def test_600_array_to_Q_array(self):
+        arr = np.array([m, m, m], dtype=object)
+        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1, 1, 1]), Dimension("L"))))
         
+        arr = np.asarray([m], dtype=object)
+        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1]), Dimension("L"))))
         
-    
+        arr = np.array([1, 2, 3])
+        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(arr, Dimension(None))))
+
     def test_std(cls):
         cls.assertEqual(m.std(), 0.0 * m)
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
