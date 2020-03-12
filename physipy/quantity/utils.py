@@ -107,6 +107,7 @@ def add_back_unit_param(*unit_out):
     def decorator(func):
         def dimension_added_back_func(*args, **kwargs):
             ress = _iterify(func(*args, **kwargs))
+            # multiply each output by the unit
             ress_q = [res * unit for res, unit in zip(ress, unit_out)]
             return tuple(ress_q) if len(ress_q) > 1 else ress_q[0]
         return dimension_added_back_func
