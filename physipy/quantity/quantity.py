@@ -303,8 +303,8 @@ class Quantity(object):
         else: 
             return str(self._compute_value()) + UNIT_SUFFIX
 
-    def __format_raw__(self, format_spec):
-        return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
+    #def __format_raw__(self, format_spec):
+    #    return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
     def __format__(self, format_spec):
         complement_value_for_repr = self._compute_complement_value()
