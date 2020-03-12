@@ -137,11 +137,7 @@ class Quantity(object):
                                  "or None, not {}").format(type(value)))
         else:
             super().__setattr__(name, value)
-    
-    # this breaks vectorize
-    #def __getattr__(self,name):
-    #    return self.value.__getattribute__(name)
-        
+
     def __add__(self, y):
         y = quantify(y)
         if not self.dimension == y.dimension:                                                               
