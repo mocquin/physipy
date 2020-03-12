@@ -54,19 +54,27 @@ def check_dimension(units_in=None, units_out=None):
 
 def set_favunit(*favunits_out):
     """Sets favunit to outputs"""
+    # make favunits iterable
     favunits_out = _iterify(favunits_out)
+    # make decorator
     def decorator(func):
+        # make decorated function
         def decorated_func(*args, **kwargs):
+            # compute outputs and iterable it
             ress = _iterify(func(*args, **kwargs))
+            # turn outputs to quantity with favunit 
             ress_with_favunit = [make_quantity(res, favunit=favunit) for res, favunit in zip(ress, favunits_out)]
             return tuple(ress_with_favunit) if len(ress_with_favunit) > 1 else ress_with_favunit[0]
         return decorated_func
     return decorator
 
+
 def dimension_and_favunit(inputs=[], outputs=[]):
+    """check dimensions of outputs and inputs, and add favunit to outputs"""
     def decorator(func):
         return set_favunit(outputs)(check_dimension(inputs, outputs)(func))
     return decorator
+
 
 def convert_to_unit(*unit_in, keep_dim=False):
     """Convert inputs into units - must be same dimension"""
@@ -84,16 +92,12 @@ def convert_to_unit(*unit_in, keep_dim=False):
     return decorator
 
 
-            
-
 #### Dropping and adding dimension
 def drop_dimension(func):
     """Basically sends the si value to function"""
     def dimension_dropped(*args, **kwargs):
         args = _iterify(args)
-        value_args = []
-        for arg in args:
-            value_args.append(quantify(arg).value)
+        value_args = [quantify(arg).value for arg in args]
         return func(*value_args, **kwargs)
     return dimension_dropped
 
@@ -102,12 +106,9 @@ def add_back_unit_param(*unit_out):
     unit_out = _iterify(unit_out)
     def decorator(func):
         def dimension_added_back_func(*args, **kwargs):
-            ress = func(*args, **kwargs)            
-            ress = _iterify(ress)
-            ress_q = []
-            for res, unit in zip(ress, unit_out):
-                ress_q.append(res * unit)
-            return tuple(ress_q) if isinstance(ress_q, Iterable) else ress_q
+            ress = _iterify(func(*args, **kwargs))
+            ress_q = [res * unit for res, unit in zip(ress, unit_out)]
+            return tuple(ress_q) if len(ress_q) > 1 else ress_q[0]
         return dimension_added_back_func
     return decorator
 
