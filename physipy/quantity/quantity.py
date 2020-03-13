@@ -337,7 +337,6 @@ class Quantity(object):
         else:
             return self.dimension.str_SI_unit()
 
-    # Didn't found what to do with this
     @property
     def _SI_unitary_quantity(self):
         """Return a one-value quantity with same dimension.
