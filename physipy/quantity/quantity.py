@@ -145,8 +145,7 @@ class Quantity(object):
         return Quantity(self.value + y.value,
                         self.dimension)    
 
-    def __radd__(self, x):
-        return self + x
+    def __radd__(self, x): return self + x
 
     def __sub__(self, y):
         y = quantify(y)
@@ -155,9 +154,7 @@ class Quantity(object):
         return Quantity(self.value - y.value,
                         self.dimension)
 
-    def __rsub__(self, x):
-        x = quantify(x)
-        return x - self
+    def __rsub__(self, x): return quantify(x) - self
 
     def __mul__(self,y):
         y = quantify(y)
@@ -173,9 +170,7 @@ class Quantity(object):
                         self.dimension / y.dimension,
                         symbol = self.symbol / y.symbol).rm_dim_if_dimless()
 
-    def __rtruediv__(self, x):
-        x = quantify(x)
-        return x / self
+    def __rtruediv__(self, x): return quantify(x) / self
 
     def __floordiv__(self, y):
         """
@@ -215,14 +210,11 @@ class Quantity(object):
                         self.dimension ** power,
                         symbol = self.symbol ** power).rm_dim_if_dimless()
 
-    def __neg__(self):
-        return self * (-1)
+    def __neg__(self): return self * (-1)
     
-    def __len__(self):
-        return len(self.value)
+    def __len__(self): return len(self.value)
     
-    def __bool__(self):
-        return bool(self.value)
+    def __bool__(self): return bool(self.value)
 
     def __min__(self):
         return Quantity(min(self.value),
@@ -258,11 +250,9 @@ class Quantity(object):
         else:
             raise DimensionError(self.dimension,y.dimension)        
 
-    def __ge__(self,y):
-        return (self > y) | (self == y) # or bitwise
+    def __ge__(self,y): return (self > y) | (self == y) # or bitwise
 
-    def __le__(self,y):
-        return (self < y) | (self == y) # or bitwise
+    def __le__(self,y): return (self < y) | (self == y) # or bitwise
     
     def __abs__(self):
         return Quantity(abs(self.value),
@@ -343,7 +333,7 @@ class Quantity(object):
         
         Such that self = self.value * self._SI_unitary_quantity
         """
-        return Quantity(1, self.dimension)
+        return Quantity(1, self.dimension, symbol=self.dimension.str_SI_unit())
 
     
     def __getitem__(self, idx):
@@ -371,31 +361,15 @@ class Quantity(object):
     def std(self, *args, **kwargs):
         return np.std(self, *args, **kwargs)
     
-    #def __invert__(self):
-    #    return 1. / self
-    #__inv__ = __invert__
     def inverse(self):
         """is this method usefull ?"""
         return 1. / self
 
-    def sum(self, **kwargs):
-        """Extends numpy.sum to Quantity."""
-        return np.sum(self, **kwargs)
+    def sum(self, **kwargs): return np.sum(self, **kwargs)
     
-    def mean(self, **kwargs):
-        """Extends numpy.mean to Quantity."""
-        return np.mean(self, **kwargs)
-        #return Quantity(np.mean(self.value, **kwargs),
-        #               self.dimension,
-        #               favunit=self.favunit)
+    def mean(self, **kwargs): return np.mean(self, **kwargs)
     
-    def integrate(self, **kwargs):
-        return np.trapz(self, **kwargs)
-    #    if not isinstance(self.value,np.ndarray):
-    #        raise TypeError("Quantity value must be array-like to integrate.")
-    #    return Quantity(np.trapz(self.value, **kwargs),
-    #                   self.dimension,
-    #                   favunit = self.favunit)
+    def integrate(self, **kwargs): return np.trapz(self, **kwargs)
     
     def is_dimensionless(self):
         return self.dimension == Dimension(None)
@@ -435,28 +409,21 @@ class Quantity(object):
         return self.ito(y)
 
     # Shortcut for checking dimension
-    def is_length(self):
-        return self.dimension == Dimension("L")
+    def is_length(self): return self.dimension == Dimension("L")
 
-    def is_surface(self):
-        return self.dimension == Dimension("L")**2
+    def is_surface(self): return self.dimension == Dimension("L")**2
 
-    def is_volume(self):
-        return self.dimension == Dimension("L")**3
+    def is_volume(self): return self.dimension == Dimension("L")**3
 
-    def is_time(self):
-        return self.dimension == Dimension("T")
+    def is_time(self): return self.dimension == Dimension("T")
 
-    def is_mass(self):
-        return self.dimension == Dimension("M")
+    def is_mass(self): return self.dimension == Dimension("M")
 
-    def is_angle(self):
-        return self.dimension == Dimension("RAD")
+    def is_angle(self): return self.dimension == Dimension("RAD")
 
-    def is_solid_angle(self):
-        return self.dimension == Dimension("SR")
+    def is_solid_angle(self): return self.dimension == Dimension("SR")
 
-    def is_temperature(self):
+    def is_temperature(self): 
         return self.dimension == Dimension("theta")
 
     def is_dimensionless_ext(self):
@@ -485,15 +452,6 @@ class Quantity(object):
         except AttributeError as ex:
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
-    
-    #def __array__(self):
-    #    """
-    #    With __getattr__, this is not called on np.asarray(arr_m). Instead __getattr__ with item=
-    #     __array_struct__ is called.
-    #    Without, this is used to convert np.asarray(arr_m) to array([1000., 3000.])
-    #    """
-    #    #print("Through __array__")
-    #    return np.asarray(self.value)
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
@@ -629,12 +587,8 @@ def np_trapz(q, **kwargs):
                        q.dimension,
                        favunit = q.favunit)
 
-# TODO with decorate with various units
-# also linspace
-#@implements(np.interp)
-#def np_interp(q, x):
-#    pass
 
+    
 
 
 # 2 in : same dimension ---> out : same dim as in
