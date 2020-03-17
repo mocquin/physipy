@@ -68,6 +68,8 @@ import numbers as nb
 import numpy as np
 import sympy as sp
 
+import warnings
+
 from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 
 # # Constantes
@@ -109,6 +111,8 @@ class Quantity(object):
                 super().__setattr__("size",1)
             elif isinstance(value,list):
                 super().__setattr__(name,np.array(value))
+            elif value is None:
+                super().__setattr__(name, value)
             else: 
                 raise TypeError(("Value of Quantity must be a number "
                                  "or numpy array, not {}").format(type(value)))
@@ -327,6 +331,7 @@ class Quantity(object):
         else:
             return self.dimension.str_SI_unit()
 
+    #used for plotting
     @property
     def _SI_unitary_quantity(self):
         """Return a one-value quantity with same dimension.
@@ -432,10 +437,27 @@ class Quantity(object):
     def check_dim(self, dim):
         return self.dimension == dimensionify(dim)
 
-    # this breaks vectorize
-    #def __getattr__(self,name):
-    #    print(f"{self}, {name}")
-    #    return self.value.__getattribute__(name)
+    # for munits support
+    def _plot_get_value_for_plot(self, q_unit):  
+        q_unit = quantify(q_unit)
+        if not self.dimension == q_unit.dimension:
+            raise DimensionError(self.dimension, q_unit.dimension)
+        return self/q_unit
+    
+    # for munits support
+    def _plot_extract_q_for_axe(self):
+        favunit = self.favunit
+        if isinstance(favunit, Quantity):
+            ratio_favunit = make_quantity(self/favunit)
+            dim_SI = ratio_favunit.dimension
+            if dim_SI == Dimension(None):
+                return favunit
+            else:
+                return make_quantity(favunit * ratio_favunit._SI_unitary_quantity, 
+                                     symbol=str(favunit.symbol) + "*" + ratio_favunit._SI_unitary_quantity.dimension.str_SI_unit())
+        else:
+            return self._SI_unitary_quantity
+
     def __getattr__(self, item):
         if item.startswith('__array_'):
             #warnings.warn("The unit of the quantity is stripped.")

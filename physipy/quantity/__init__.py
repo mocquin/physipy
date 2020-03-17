@@ -6,6 +6,8 @@ from .quantity import DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, make_quantity
 from .utils import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
 
+from .plot import setup_matplotlib
+
 from .calculus import interp, linspace, vectorize, integrate_trapz, qroot, qbrentq
 from .calculus import trapz, quad, dblquad, tplquad
 

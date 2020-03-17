@@ -13,11 +13,12 @@ from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
-from physipy import imperial_units
+from physipy import imperial_units, setup_matplotlib
 
 
 
 km = units["km"]
+sr = units["sr"]
 
 # from quantity import SI_units as u
 
@@ -694,8 +695,82 @@ class TestQuantity(unittest.TestCase):
         fig, ax = matplotlib.pyplot.subplots()
         ax.plot(np.linspace(1, 3, 2), arr_m, "o")
     
-
-
+    
+    def test_matplotlib_units(self):
+        
+        setup_matplotlib()
+        arr_m = np.linspace(1, 3, 2)*1000 * m
+        
+        # simple plot without favunit
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        # axis unit should be SI unit : m
+        self.assertEqual(ax.yaxis.units, 
+                        m)
+        self.assertEqual(ax.yaxis.label.get_text(), 
+                         "m")
+        
+        # plot with same dimension favunit (value 1)
+        arr_m.favunit = km
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        # axis unit should be favunit : km
+        self.assertEqual(ax.yaxis.units, 
+                        km)
+        self.assertEqual(ax.yaxis.label.get_text(), 
+                         "km")
+        
+        
+        # plot with non-unitary, same dimension
+        twokm = 2*km
+        twokm.symbol = "2km"
+        arr_m.favunit = twokm
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        self.assertEqual(ax.yaxis.units, 
+                        twokm)
+        self.assertEqual(ax.yaxis.label.get_text(), 
+                         "2km")
+        
+        # plot with unitary, different dimension
+        #km_per_sr = km/sr
+        #km_per_sr.symbol = "km/sr"
+        #arr_m.favunit = km_per_sr
+        #fig, ax = matplotlib.pyplot.subplots()
+        #ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        #self.assertEqual(ax.yaxis.units, 
+        #                km_per_sr)
+        #self.assertEqual(ax.yaxis.label.get_text(), 
+        #                 "km/sr")
+        
+        
+        # plot with non unitary, different dimension
+        #two_km_per_sr = 2*km/sr
+        #two_km_per_sr.symbol = "2km/sr"
+        #arr_m.favunit = two_km_per_sr
+        #fig, ax = matplotlib.pyplot.subplots()
+        #ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        #self.assertEqual(ax.yaxis.units, 
+        #                two_km_per_sr)
+        #self.assertEqual(ax.yaxis.label.get_text(), 
+        #                 "2km/sr")
+        
+        
+        # trying to plot something with different dimension
+        # m, then m**2
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
+        with self.assertRaises(DimensionError):
+            ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
+        
+        
+        # Dim-less then m**2
+        arr_m = np.linspace(1, 3, 2)*1000 * m
+        fig, ax = matplotlib.pyplot.subplots()
+        ax.plot(np.linspace(1, 3, 2), Quantity(np.linspace(1, 3, 2), Dimension(None), "o"))
+        with self.assertRaises(DimensionError):
+            ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
+        
 if __name__ == "__main__":
     unittest.main()
         
