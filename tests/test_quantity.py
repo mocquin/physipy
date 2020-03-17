@@ -12,7 +12,7 @@ from physipy.quantity import Dimension, Quantity, DimensionError
 from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
-from physipy.quantity import quantify, make_quantity
+from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
 from physipy import imperial_units, setup_matplotlib
 
@@ -361,6 +361,12 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(q,make_quantity(self.x_q, favunit=mum))
         self.assertEqual(str(q), str(make_quantity(self.x_q, favunit=mum)))
         self.assertEqual(str(q.symbol), 'UndefinedSymbol')
+        
+    def test_dimensionify(self):
+        self.assertEqual(dimensionify(Dimension("L")), Dimension("L"))
+        self.assertEqual(dimensionify(km), Dimension("L"))
+        self.assertEqual(dimensionify(1), Dimension(None))
+        self.assertEqual(dimensionify(np.array([1, 2, 3])), Dimension(None))
         
     def test_quad(self):
         
