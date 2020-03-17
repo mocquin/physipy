@@ -34,6 +34,7 @@ TODO:
  - [ ] : better tests for complex number support
  - [ ] : see if possible to not rely on sympy, numpy and scipy
  - [ ] : improve code for __array_ufunc__
+ - [ ] : better tests for Fraction support
 
 
 PROPOSITIONS/QUESTIONS : 

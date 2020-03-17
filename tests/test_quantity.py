@@ -1,6 +1,7 @@
 ###############################################################################
 import numpy as np
 import unittest
+from fractions import Fraction
 
 import matplotlib
 import matplotlib.pyplot
@@ -15,15 +16,8 @@ from physipy.quantity import quantify, make_quantity
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
 from physipy import imperial_units, setup_matplotlib
 
-
-
 km = units["km"]
 sr = units["sr"]
-
-# from quantity import SI_units as u
-
-#m = SI_units["m"]
-
 
 class TestQuantity(unittest.TestCase):
     
@@ -400,10 +394,23 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.cos(self.x_q)
     
+    def test_300_define_fraction(self):
+        self.assertEqual(Fraction(1, 2) * m, Quantity(Fraction(1,2), Dimension("L")))
+    
+    def test_310_fraction_operation(self):
+        self.assertEqual(Fraction(1, 2) * m * 2, Fraction(1, 1) * m)
+        self.assertEqual(Fraction(1, 2) * m + Fraction(1, 2) * m, Fraction(1, 1) * m)
+        self.assertEqual(Fraction(1, 2) * m / 2, Fraction(1, 4) * m)
+        self.assertEqual(2 / (Fraction(1, 2) * m), 4 * 1/m)
+        with self.assertRaises(DimensionError):
+            Fraction(1, 2) * m + 1
+        self.assertTrue(Fraction(1, 2) * m <= Fraction(3, 2) * m)
+
     def test_400_complex(self):
         self.assertEqual((1j+1) * m, Quantity((1j+1), Dimension("L")))
         self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
         self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
+
         
     def test_500_numpy_ufuncs(self):
         
