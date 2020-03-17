@@ -12,4 +12,4 @@ from .calculus import interp, linspace, vectorize, integrate_trapz, qroot, qbren
 from .calculus import trapz, quad, dblquad, tplquad
 
 from .units import m, s, kg, A, cd, K, mol, rad, sr
-from .units import SI_units, SI_units_prefixed, SI_derived_units, other_units, units
+from .units import SI_units, SI_units_prefixed, SI_derived_units, other_units, units, all_units
