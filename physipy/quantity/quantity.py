@@ -654,6 +654,8 @@ def dimensionify(x):
         return x.dimension
     elif np.isscalar(x) and not type(x) == str:
         return Dimension(None)
+    elif isinstance(x, np.ndarray):
+        return Dimension(None)
     else:
         return Dimension(x)
 
