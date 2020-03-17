@@ -40,6 +40,20 @@ class TestQuantity(unittest.TestCase):
         cls.x_qsu = Quantity(cls.x, cls.dim, symbol="x_qsu", favunit=cls.mm)
         cls.y_qsu = Quantity(cls.y, cls.dim, symbol="y_qsu", favunit=cls.mm)
         
+    def test_05_test_units(self):
+        self.assertEqual(units["m"],  Quantity(1, Dimension("L")))
+        self.assertEqual(units["mm"], Quantity(0.001, Dimension("L")))
+        self.assertEqual(units["km"], Quantity(1000, Dimension("L")))
+        self.assertEqual(units["Mm"], Quantity(1000000, Dimension("L")))
+        
+        self.assertEqual(units["kg"],  Quantity(1, Dimension("M")))
+        self.assertEqual(units["g"], Quantity(0.001, Dimension("M")))
+        
+        self.assertEqual(units["K"],  Quantity(1, Dimension("theta")))
+        self.assertEqual(units["mK"], Quantity(0.001, Dimension("theta")))
+        self.assertEqual(units["kK"], Quantity(1000, Dimension("theta")))
+        self.assertEqual(units["MK"], Quantity(1000000, Dimension("theta")))
+        
     def test_10_test_produit_division(self):
         self.assertEqual(2 * self.x_q, Quantity(2 * self.x, self.dim))
         self.assertEqual(self.x_q * 2, Quantity(self.x * 2, self.dim))

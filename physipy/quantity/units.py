@@ -60,16 +60,11 @@ def CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
     """
     for prefix_symbol, prefix_value in prefix_dic.items():
         for dim_symbol, unit_symbol in base_units_symbol_dim.items():
-            # dealing with kg
-            if unit_symbol == "kg" and dim_symbol == "M" :
-                unit_symbol = "g"
-                prefix_value = prefix_value/1000
-            # Concatenate prefix symbol and unit symbol
             prefixed_unit_symbol = prefix_symbol + unit_symbol
+            if prefixed_unit_symbol == "mkg":
+                dic["g"] = Quantity(0.001, Dimension("M"), symbol="g")
             # Update dic
-            dic[prefixed_unit_symbol] = Quantity(prefix_value,
-                                                 Dimension(dim_symbol),
-                                                 symbol=prefixed_unit_symbol)
+            dic[prefixed_unit_symbol] = Quantity(prefix_value,Dimension(dim_symbol),symbol=prefixed_unit_symbol)
     return dic
 
 
@@ -87,6 +82,7 @@ def prefix_units(prefix_dic, unit_dict, extend=False):
 # Init of SI inits dict
 SI_units = {value: Quantity(1,Dimension(key), symbol=value) for (key,value) in SI_UNIT_SYMBOL.items()}
 
+
 kg  = SI_units["kg"]
 m   = SI_units["m"]
 s   = SI_units["s"]
@@ -98,9 +94,8 @@ rad = SI_units["rad"]
 sr  = SI_units["sr"]
 
 # Derived SI units with all prefixes
-# dealing with kg for the prefixes
 SI_units_prefixed = CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
-SI_units_prefixed["g"] = Quantity(0.001, Dimension("M"), symbol="g")
+
 
 # SI derived units
 SI_derived_units_raw = {
