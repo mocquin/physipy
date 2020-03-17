@@ -12,7 +12,7 @@ This python package allows you to manipulate physical quantities, basically cons
 3.9728916483435158e-19 J
 ```
 
-For a quickstart, check the quickstart notebook on the [homepage]()
+For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
 
 ## Installation
 
@@ -30,8 +30,8 @@ pip install physipy
 ## Use case
 
 - Define scalar and arrays of physical quantities
-- Compute operation between them : add, sub, mul, div, pow
-- Display physical quantities in various “units”.
+- Compute operation between them : add, sub, mul, div, pow, and so on
+- Display physical quantities in various “units”
  
 ## Implementation approach
 
@@ -48,6 +48,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
  - [sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html)
  - [pint](https://pint.readthedocs.io/en/latest/)
+ - [unyt](https://github.com/yt-project/unyt)
  - [Unum](https://bitbucket.org/kiv/unum/)
  - [magnitude](http://juanreyero.com/open/magnitude/)
  -  physics.py : there are actually several packages based on the same core code : [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only) and [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
