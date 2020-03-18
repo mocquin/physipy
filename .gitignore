@@ -10,3 +10,4 @@ build/
 *.egg-info/
 MANIFEST
 physipy_venv/
+tutorials/
