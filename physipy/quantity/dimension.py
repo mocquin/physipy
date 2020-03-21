@@ -224,4 +224,6 @@ DIMENSIONALITY = {
     "force":              Dimension({"M":1, "L":1, "T":-2}),
     "energy":             Dimension({"M":1, "L":2, "T":-2}),
     "power":              Dimension({"M":1, "L":2, "T":-3}),
+    "capacitance":        Dimension({"M":-1, "L":-2, "T":4, "I":2}),
+    "voltage":            Dimension({"M":1, "L":2, "T":-3, "I":-1}),
 }
