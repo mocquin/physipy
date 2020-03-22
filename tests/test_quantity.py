@@ -287,6 +287,14 @@ class TestQuantity(unittest.TestCase):
                                         Dimension('L')) == linspace(1*m, 2*m, num=8)))
         with self.assertRaises(DimensionError):
             linspace(1*m, 2)
+            
+            
+        # COMPARE TO np.linspace
+        m = Quantity(1,Dimension("L"))
+        self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), 
+                                        Dimension('L')) == np.linspace(1*m, 2*m, num=8)))
+        with self.assertRaises(DimensionError):
+            np.linspace(1*m, 2)
     
     def test_130_sum(self):
         #self.assertEqual(sum(cls.x_q), 
@@ -546,6 +554,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.var(5*m), 0*m)
         
         self.assertEqual(np.trapz(arr_m), 4*m)
+        
+        self.assertTrue(np.all(np.linspace(0*m, 5*m) == Quantity(np.linspace(0, 5), Dimension("L"))))
         
 
     def test_sum_builtin(self):

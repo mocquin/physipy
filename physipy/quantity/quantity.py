@@ -611,6 +611,16 @@ def np_trapz(q, **kwargs):
                        favunit = q.favunit)
 
 
+#_linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
+@implements(np.linspace)
+def np_linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):
+    start = quantify(start)
+    stop = quantify(stop)
+    if not start.dimension == stop.dimension:
+        raise DimensionError(start.dimension, stop.dimension)
+    return Quantity(np.linspace(start.value, stop.value, num=num, endpoint=endpoint, retstep=retstep, dtype=dtype, axis=axis),
+                  start.dimension)
+
     
 
 
