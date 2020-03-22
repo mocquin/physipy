@@ -373,6 +373,20 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(max(self.y_q), Quantity(max(self.y_q.value), self.y_q.dimension))
         self.assertEqual(min(self.y_q), Quantity(min(self.y_q.value), self.y_q.dimension))
         
+        # Numpy's min/max
+        self.assertEqual(np.max(self.y_q),
+                         Quantity(np.max(self.y_q.value),
+                                  self.y_q.dimension))
+        self.assertEqual(np.min(self.y_q),
+                         Quantity(np.min(self.y_q.value),
+                                  self.y_q.dimension))
+        self.assertEqual(np.amax(self.y_q),
+                         Quantity(np.amax(self.y_q.value),
+                                 self.y_q.dimension))
+        self.assertEqual(np.amin(self.y_q),
+                         Quantity(np.amin(self.y_q.value),
+                                  self.y_q.dimension))
+        
     def test_has_integer_dimension_power(self):
         self.assertTrue(Quantity(1, Dimension("L")).has_integer_dimension_power())
         self.assertTrue(Quantity(1, Dimension({"L":-2, "M":2})).has_integer_dimension_power())
@@ -571,6 +585,18 @@ class TestQuantity(unittest.TestCase):
         
         self.assertTrue(np.all(np.linspace(0*m, 5*m) == Quantity(np.linspace(0, 5), Dimension("L"))))
         
+        self.assertEqual(np.max(self.y_q),
+                         Quantity(np.max(self.y_q.value),
+                                  self.y_q.dimension))
+        self.assertEqual(np.min(self.y_q),
+                         Quantity(np.min(self.y_q.value),
+                                  self.y_q.dimension))
+        self.assertEqual(np.amax(self.y_q),
+                         Quantity(np.amax(self.y_q.value),
+                                 self.y_q.dimension))
+        self.assertEqual(np.amin(self.y_q),
+                         Quantity(np.amin(self.y_q.value),
+                                  self.y_q.dimension))
 
     def test_sum_builtin(self):
         # on list of 2 scalar-value-quantity

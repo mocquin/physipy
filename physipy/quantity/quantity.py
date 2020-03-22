@@ -579,6 +579,12 @@ def implements(np_function):
         return func
     return decorator            
 
+@implements(np.amax)
+def np_amax(q): return Quantity(np.amax(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.amin)
+def np_amax(q): return Quantity(np.amin(q.value), q.dimension, favunit=q.favunit)
+
 @implements(np.sum)
 def np_sum(q):
     return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
