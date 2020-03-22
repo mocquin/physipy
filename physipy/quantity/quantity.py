@@ -221,15 +221,16 @@ class Quantity(object):
     
     def __bool__(self): return bool(self.value)
 
-    def __min__(self):
-        return Quantity(min(self.value),
-                        self.dimension,
-                        favunit=self.favunit)
+    # min and max uses the iterator
+    #def __min__(self):
+    #    return Quantity(min(self.value),
+    #                    self.dimension,
+    #                    favunit=self.favunit)
 
-    def __max__(self):
-        return Quantity(max(self.value),
-                        self.dimension,
-                        favunit=self.favunit)
+    #def __max__(self):
+    #    return Quantity(max(self.value),
+    #                    self.dimension,
+    #                    favunit=self.favunit)
 
     def __eq__(self,y):
         y = quantify(y)
