@@ -621,6 +621,14 @@ def np_linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, a
     return Quantity(np.linspace(start.value, stop.value, num=num, endpoint=endpoint, retstep=retstep, dtype=dtype, axis=axis),
                   start.dimension)
 
+
+
+@implements(np.meshgrid)
+def np_meshgrid(x, y):
+    x = quantify(x)
+    y = quantify(y)
+    res_x, res_y = np.meshgrid(x.value, y.value)
+    return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
     
 
 
