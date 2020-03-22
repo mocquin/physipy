@@ -359,6 +359,20 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(self.x_q > 0.5*self.x_q))
         self.assertTrue(np.all(self.y_q > 0.5*self.y_q))
         
+    def test_min_max(self):
+        
+        # max uses iterator, not __max__
+        # this should raise smthing like TypeError: 'int' object is not iterable because value is int
+        #with self.assertRaises(ValueError):
+        #    min(self.x_q)
+        #with self.assertRaises(ValueError):
+        #    max(self.x_q)
+        
+
+        # Python's min/max
+        self.assertEqual(max(self.y_q), Quantity(max(self.y_q.value), self.y_q.dimension))
+        self.assertEqual(min(self.y_q), Quantity(min(self.y_q.value), self.y_q.dimension))
+        
     def test_has_integer_dimension_power(self):
         self.assertTrue(Quantity(1, Dimension("L")).has_integer_dimension_power())
         self.assertTrue(Quantity(1, Dimension({"L":-2, "M":2})).has_integer_dimension_power())
