@@ -572,6 +572,8 @@ class Quantity(object):
             raise ValueError
 
 
+
+# Numpy functions            
 # Override functions - used with __array_function__
 def implements(np_function):
     def decorator(func):
@@ -592,13 +594,13 @@ def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
 def np_mean(q): return Quantity(np.mean(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.std)
-def np_std(q): return Quantity(np.std(q.value), q.dimension)
+def np_std(q): return Quantity(np.std(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.average)
 def np_average(q): return Quantity(np.average(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.median)
-def np_average(q): return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
+def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.var)
 def np_var(q): return Quantity(np.var(q.value), q.dimension)
