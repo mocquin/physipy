@@ -31,7 +31,8 @@ setup(
     author_email="mocquin@me.com",
     license="MIT",
     keywords='physics physical unit units dimension quantity quantities',
-    packages=find_packages(exclude=("tests")),
+    packages=find_packages(exclude=("test", )),
+    # add content of MANIFEST
     include_package_data=True,
     install_requires=["numpy", 
                       "scipy", 
