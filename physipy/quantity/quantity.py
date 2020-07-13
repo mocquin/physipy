@@ -603,7 +603,7 @@ def np_average(q): return Quantity(np.average(q.value), q.dimension, favunit=q.f
 def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.var)
-def np_var(q): return Quantity(np.var(q.value), q.dimension)
+def np_var(q): return Quantity(np.var(q.value), q.dimension**2)
 
 @implements(np.trapz)
 def np_trapz(q, **kwargs):
