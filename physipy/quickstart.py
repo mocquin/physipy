@@ -7,7 +7,7 @@ Aims to be used with a star import.
 """
 
 import numpy as np
-from numpy import pi, cos, arccos, sin, arcsin, tan, arctan, exp, log
+from numpy import pi, cos, arccos, sin, arcsin, tan, arctan, exp, log, sqrt
 
 from physipy import Quantity, Dimension
 from physipy import m, kg, s, A, K, cd, mol, rad, sr, units, SI_units_prefixed, SI_derived_units, other_units
