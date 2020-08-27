@@ -569,7 +569,7 @@ class Quantity(object):
             res = ufunc.__call__(left.value)
             return res
         else:
-            raise ValueError
+            raise ValueError("ufunc not implemented ?")
 
 
 
