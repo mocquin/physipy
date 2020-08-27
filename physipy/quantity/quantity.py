@@ -568,6 +568,12 @@ class Quantity(object):
         elif ufunc_name in same_dim_in_1_nodim_out:
             res = ufunc.__call__(left.value)
             return res
+        elif ufunc_name in no_dim_2:
+            other = quantify(args[1])
+            if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
+                raise DimensionError(left.dimension, Dimension(None))
+            res = ufunc.__call__(left.value, other.value)
+            return res
         else:
             raise ValueError("ufunc not implemented ?")
 
