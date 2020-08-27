@@ -503,6 +503,9 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.divide(arr_m, m) == np.array([1.,2.,3.])))
         self.assertTrue(np.all(np.divide(arr_m, arr_m) == np.array([1.,1.,1.])))
         
+        #logaddexp
+        self.assertTrue(np.logaddexp(1, 2) == np.logaddexp(Quantity(1, Dimension(None)), Quantity(2, Dimension(None))))
+        
         # pow
         with self.assertRaises(TypeError):
             np.power(m, arr_m)
