@@ -578,8 +578,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.median(arr_m), 2*m)
         self.assertEqual(np.median(5*m), 5*m)
         
-        self.assertEqual(np.var(arr_m), 0.6666666666666666*m)
-        self.assertEqual(np.var(5*m), 0*m)
+        self.assertEqual(np.var(arr_m), 0.6666666666666666*m**2)
+        self.assertEqual(np.var(5*m), 0*m**2)
         
         self.assertEqual(np.trapz(arr_m), 4*m)
         
