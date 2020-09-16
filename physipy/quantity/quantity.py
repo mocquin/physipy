@@ -650,14 +650,15 @@ skip_2 = ["multiply", "divide", "true_divide"]
 # 1 in : any ---> out : depends
 special_dict = ["sqrt", "power", "reciprocal", "square"]
 # 1 in : no dim ---> out : no dim
-no_dim_1 = ["exp", "log"]
+no_dim_1 = ["exp", "log", "exp2", "log2", "log10",
+           "expm1", "log1p"]
 # 2 in : no dim ---> out : no dim
 no_dim_2 = ["logaddexp", "logaddexp2", ]
 # 1 in : dimless or angle ---> out : dimless
 angle_1 = ["cos", "sin", "tan", 
           "cosh", "sinh", "tanh"]
 # 1 in : any --> out : same
-same_out = ["ceil", "conjugate", "floor", "rint", "trunc", "fabs", "negative", "absolute"]
+same_out = ["ceil", "conjugate", "conj", "floor", "rint", "trunc", "fabs", "negative", "absolute"]
 # 1 in : dimless -> out : dimless
 inv_angle_1 = ["arcsin", "arccos", "arctan",
               "arcsinh", "arccosh", "arctanh"]

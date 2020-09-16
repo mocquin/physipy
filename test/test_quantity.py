@@ -545,6 +545,69 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.rint(np.array([1.1, 2.3, 3.5, 4.6])*m) == np.array([1, 2, 4, 5])*m))
         
         # sign
+        self.assertEqual(np.sign(-3*m), -1)
+        self.assertEqual(np.sign(3*m), 1)
+        
+        self.assertTrue(np.all(np.sign(np.array([-1, 0, 1])*m)==np.array([-1, 0, 1])))
+        
+        # conj and conjugate : conj is an alias for conjugate
+        self.assertEqual(np.conj(3*m), 3*m)
+        self.assertEqual(np.conj(3*m+2j*m), 3*m-2j*m)
+        self.assertEqual(np.conjugate(3*m), 3*m)
+        self.assertEqual(np.conjugate(3*m+2j*m), 3*m-2j*m)
+        self.assertTrue(np.all(np.conj(np.arange(3)*m+1j*m)==np.arange(3)*m-1j*m))
+        self.assertTrue(np.all(np.conjugate(np.arange(3)*m+1j*m)==np.arange(3)*m-1j*m))
+        
+        # exp
+        with self.assertRaises(DimensionError):
+            np.exp(3*m)
+        with self.assertRaises(DimensionError):
+            np.exp(np.arange(3)*m)
+            
+        self.assertEqual(np.exp(3*m/m), np.exp(3))
+        
+        # exp2
+        with self.assertRaises(DimensionError):
+            np.exp2(3*m)
+        with self.assertRaises(DimensionError):
+            np.exp2(np.arange(3)*m)
+        
+        
+        # log
+        with self.assertRaises(DimensionError):
+            np.log(3*m)
+        with self.assertRaises(DimensionError):
+            np.log(np.arange(3)*m)
+        
+        # log2
+        with self.assertRaises(DimensionError):
+            np.log2(3*m)
+        with self.assertRaises(DimensionError):
+            np.log2(np.arange(3)*m)
+        
+        # log10
+        with self.assertRaises(DimensionError):
+            np.log10(3*m)
+        with self.assertRaises(DimensionError):
+            np.log10(np.arange(3)*m)
+        
+        # expm1
+        with self.assertRaises(DimensionError):
+            np.expm1(3*m)
+        with self.assertRaises(DimensionError):
+            np.expm1(np.arange(3)*m)
+        
+        
+        # logp1
+        with self.assertRaises(DimensionError):
+            np.log1p(3*m)
+        with self.assertRaises(DimensionError):
+            np.log1p(np.arange(3)*m)
+        
+        # square
+        self.assertEqual(np.square(3*m), (3*m)**2)
+        self.assertTrue(np.all(np.square(np.arange(3)*m) ==(np.arange(3)*m)**2))
+        
         
         
         # pow
