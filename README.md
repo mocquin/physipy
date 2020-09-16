@@ -74,6 +74,8 @@ Here are some functionnality/fixes/TODOs for down the road :
  - Create a full benchmark based on an expected behaviour, and bench physical quantities packages.
  - Improve numpy compatibility
  - Add [uncertainty](https://github.com/lebigot/uncertainties/) support
+ - Extend numpy's support : FFT, etc
+ - Extend scipy's support : stats, etc
  - Allow changing base unit system (cgs, Planck units, etc)
 
 ## License
