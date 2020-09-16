@@ -506,6 +506,47 @@ class TestQuantity(unittest.TestCase):
         #logaddexp
         self.assertTrue(np.logaddexp(1, 2) == np.logaddexp(Quantity(1, Dimension(None)), Quantity(2, Dimension(None))))
         
+        # true_divide
+        self.assertTrue(np.true_divide(3*m, 2*m) == np.true_divide(3, 2))
+        self.assertTrue(np.true_divide(3*m, 2*s) == np.true_divide(3*m, 2*s))
+        self.assertTrue(np.true_divide(3*m, 2) == np.true_divide(3, 2)*m)
+
+        # floor_divide
+        self.assertTrue(np.floor_divide(3*m, 2*m) == np.floor_divide(3, 2))
+        with self.assertRaises(DimensionError):
+            np.floor_divide(3*m, 2*s)
+            
+        # negative
+        self.assertTrue(np.negative(3*m) == np.negative(3)*m)
+        self.assertTrue(np.negative(Quantity(3, Dimension(None))) == np.negative(3)*Quantity(1, Dimension(None)))
+        
+        # remainder
+        self.assertEqual(np.remainder(5*m, 2*m),
+                         1*m)
+        self.assertTrue(np.all(np.remainder(np.arange(7)*m,
+                                      5*m) == np.array([0, 1, 2, 3, 4, 0, 1])*m))
+        
+        # mod is an alias of remainder
+        self.assertEqual(np.mod(5*m, 2*m),
+                         1*m)
+        self.assertTrue(np.all(np.mod(np.arange(7)*m,
+                                      5*m) == np.array([0, 1, 2, 3, 4, 0, 1])*m))
+        
+        # fmod
+        self.assertTrue(np.all(np.fmod([5, 3]*m, [2, 2.]*m)==np.array([1, 1])*m))
+        
+        # absolute
+        self.assertEqual(np.absolute(5*m), 5*m)
+        self.assertEqual(np.absolute(-5*m), 5*m)
+        self.assertTrue(np.all(np.absolute(np.arange(-5, 5)*m)==np.array([5, 4, 3, 2, 1, 0, 1, 2, 3, 4])*m))
+        
+        # rint
+        self.assertEqual(np.rint(5.3*m), 5*m)
+        self.assertTrue(np.all(np.rint(np.array([1.1, 2.3, 3.5, 4.6])*m) == np.array([1, 2, 4, 5])*m))
+        
+        # sign
+        
+        
         # pow
         with self.assertRaises(TypeError):
             np.power(m, arr_m)

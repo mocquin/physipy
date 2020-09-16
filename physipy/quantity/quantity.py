@@ -641,9 +641,9 @@ def np_meshgrid(x, y):
 
 
 # 2 in : same dimension ---> out : same dim as in
-same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin"]
+same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]
 # 2 in : same dim ---> out : not a quantity
-same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal"] # , "logical_and", "logical_or", "logical_xor", "logical_not"]
+same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal", "floor_divide"] # , "logical_and", "logical_or", "logical_xor", "logical_not"]
 same_dim_in_1_nodim_out = ["sign"]
 # 2 in : any ---> out : depends
 skip_2 = ["multiply", "divide", "true_divide"]
@@ -657,7 +657,7 @@ no_dim_2 = ["logaddexp", "logaddexp2", ]
 angle_1 = ["cos", "sin", "tan", 
           "cosh", "sinh", "tanh"]
 # 1 in : any --> out : same
-same_out = ["ceil", "conjugate", "floor", "rint", "trunc", "fabs"]
+same_out = ["ceil", "conjugate", "floor", "rint", "trunc", "fabs", "negative", "absolute"]
 # 1 in : dimless -> out : dimless
 inv_angle_1 = ["arcsin", "arccos", "arctan",
               "arcsinh", "arccosh", "arctanh"]
