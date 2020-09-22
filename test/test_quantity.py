@@ -535,6 +535,16 @@ class TestQuantity(unittest.TestCase):
         # fmod
         self.assertTrue(np.all(np.fmod([5, 3]*m, [2, 2.]*m)==np.array([1, 1])*m))
         
+        # floor
+        self.assertTrue(np.floor(3.4*m)==np.floor(3.4)*m)
+        
+        # ceil
+        self.assertTrue(np.ceil(3.4*m)==np.ceil(3.4)*m)
+        
+        # trunc
+        self.assertTrue(np.trunc(3.4*m)==np.trunc(3.4)*m)
+        
+        
         # absolute
         self.assertEqual(np.absolute(5*m), 5*m)
         self.assertEqual(np.absolute(-5*m), 5*m)
@@ -608,6 +618,17 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.square(3*m), (3*m)**2)
         self.assertTrue(np.all(np.square(np.arange(3)*m) ==(np.arange(3)*m)**2))
         
+        # cbrt
+        self.assertEqual(np.cbrt((3*m)),
+                        (3*m)**(1/3))
+        self.assertTrue(np.all(np.cbrt((np.arange(3)*m))== (np.arange(3)*m)**(1/3)))
+        
+        # reciprocal
+        self.assertEqual(np.reciprocal(3.1*m),
+                        1/(3.1*m))
+        self.assertTrue(np.all(np.reciprocal(np.array([1.1, 2.3])*m)==
+                        1/(np.array([1.1, 2.3])*m)))
+        
         
         
         # pow
@@ -635,6 +656,60 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.greater_equal(arr_m, m) == np.array([True, True, True])))
         self.assertTrue(np.all(np.greater_equal(arr_m, arr_m) == np.array([True, True, True])))
         
+        # less
+        self.assertTrue(np.all(np.less(m, m) == False))
+        self.assertTrue(np.all(np.less(m, arr_m) == np.array([False, True, True])))
+        self.assertTrue(np.all(np.less(arr_m, m) == np.array([False, False, False])))
+        self.assertTrue(np.all(np.less(arr_m, arr_m) == np.array([False, False, False])))
+        
+        # less_or_equal
+        self.assertTrue(np.all(np.less_equal(m, m) == True))
+        self.assertTrue(np.all(np.less_equal(m, arr_m) == np.array([True, True, True])))
+        self.assertTrue(np.all(np.less_equal(arr_m, m) == np.array([True, False, False])))
+        self.assertTrue(np.all(np.less_equal(arr_m, arr_m) == np.array([True, True, True])))
+        
+        # equal
+        self.assertTrue(np.all(np.equal(arr_m, arr_m)))
+        self.assertTrue(np.all(np.equal(m, m)))
+        
+        # not_equal
+        self.assertTrue(np.all(np.not_equal(arr_m, 0*m)))
+        self.assertTrue(np.all(np.not_equal(m, 0*m)))
+        
+        # isreal
+        #self.assertTrue(np.isreal(m))
+        #self.assertTrue(np.all(np.isreal(arr_m)))
+        
+        # isfinite
+        self.assertTrue(np.isfinite(m))
+        self.assertTrue(np.all(np.isfinite(arr_m)))
+        
+        # isinf
+        self.assertFalse(np.isinf(m))
+        self.assertFalse(np.all(np.isinf(arr_m)))
+        
+        # isnan
+        self.assertFalse(np.isnan(m))
+        self.assertFalse(np.all(np.isnan(arr_m)))
+        
+        # copysign
+        self.assertEqual(np.copysign(m, 1), m)
+        self.assertEqual(np.copysign(m, -1), -m)
+        
+        self.assertTrue(np.all(np.copysign(m, arr_m) == np.array([1,1,1])*m))
+        self.assertTrue(np.all(np.copysign(m, -arr_m) == -np.array([1,1,1])*m))
+        
+        # nextafter
+        eps = np.finfo(np.float64).eps
+        self.assertTrue(np.nextafter(1*m, 2*m)== eps*m+1*m)
+        
+        # modf
+        res_modf = np.modf([0, 3.5]*m)
+        frac, integ = res_modf
+        self.assertTrue(np.all(frac == np.array([0, 0.5])*m))
+        self.assertTrue(np.all(integ == np.array([0, 3])*m))
+        
+        
         # sqrt
         self.assertEqual(np.sqrt(m), Quantity(1, Dimension({"L":1/2})))
         self.assertTrue(np.all(np.sqrt(arr_m) == Quantity(np.sqrt(np.array([1.,2.,3.])), Dimension({"L":1/2}))))
@@ -642,21 +717,39 @@ class TestQuantity(unittest.TestCase):
         ## Trigo
         zero_rad = Quantity(0, Dimension("RAD"))
         zero_none = Quantity(0, Dimension(None))
+        one_none  = Quantity(1, Dimension(None))
         # cos
         self.assertTrue(np.cos(zero_none) == np.cos(zero_rad))
         self.assertTrue(np.cos(zero_none) == np.cos(0))
+        # cosh
+        self.assertTrue(np.cosh(zero_none) == np.cosh(zero_rad))
+        self.assertTrue(np.cosh(zero_none) == np.cosh(0))
         # sin
         self.assertTrue(np.sin(zero_none) == np.sin(zero_rad))
         self.assertTrue(np.sin(zero_none) == np.sin(0))
+        # sinh
+        self.assertTrue(np.sinh(zero_none) == np.sinh(zero_rad))
+        self.assertTrue(np.sinh(zero_none) == np.sinh(0))
         # tan
         self.assertTrue(np.tan(zero_none) == np.tan(zero_rad))
         self.assertTrue(np.tan(zero_none) == np.tan(0))
+        # tanh
+        self.assertTrue(np.tanh(zero_none) == np.tanh(zero_rad))
+        self.assertTrue(np.tanh(zero_none) == np.tanh(0))
         # arccos
         self.assertTrue(np.arccos(zero_none) == np.arccos(0))
+        # arccosh
+        self.assertTrue(np.arccosh(one_none) == np.arccosh(1))
         # arcsin
         self.assertTrue(np.arcsin(zero_none) == np.arcsin(0))
+        # arcsinh
+        self.assertTrue(np.arcsinh(zero_none) == np.arcsinh(0))
         # arctan
         self.assertTrue(np.arctan(zero_none) == np.arctan(0))
+        # arctanh
+        self.assertTrue(np.arctanh(zero_none) == np.arctanh(0))
+        # arctan2
+        self.assertTrue(np.arctan2(one_none, one_none) == np.arctan2(1, 1))
         
         # fabs
         self.assertEqual(np.fabs(m), m)

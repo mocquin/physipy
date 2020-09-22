@@ -503,7 +503,7 @@ class Quantity(object):
         #print(args)
         ufunc_name = ufunc.__name__
         left = quantify(args[0])
-        
+
         if not method == "__call__":
             raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
         
@@ -520,6 +520,8 @@ class Quantity(object):
                 return Quantity(res, left.dimension * other.dimension)
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
                 return Quantity(res, left.dimension / other.dimension).rm_dim_if_dimless()
+            elif ufunc_name == "copysign" or ufunc_name == "nextafter":
+                return Quantity(res, left.dimension)
         elif ufunc_name in no_dim_1:
             if not left.dimension == Dimension(None):
                 raise DimensionError(left.dimension, Dimension(None))
@@ -552,6 +554,14 @@ class Quantity(object):
             elif ufunc_name == "square":
                 res = ufunc.__call__(left.value)
                 return Quantity(res, left.dimension**2)
+            elif ufunc_name == "cbrt":
+                res = ufunc.__call__(left.value)
+                return Quantity(res, left.dimension**(1/3))
+            elif ufunc_name == "modf":
+                res = ufunc.__call__(left.value)
+                frac, integ = res
+                return (Quantity(frac, left.dimension),
+                       Quantity(integ, left.dimension))
             else:
                 raise ValueError
         elif ufunc_name in same_dim_in_2_nodim_out:
@@ -564,6 +574,12 @@ class Quantity(object):
             if not left.dimension == Dimension(None):
                 raise DimensionError(left.dimension, Dimension(None))
             res = ufunc.__call__(left.value)
+            return res
+        elif ufunc_name in inv_angle_2:
+            other = quantify(args[1])
+            if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
+                raise DimensionError(left.dimension, Dimension(None))
+            res = ufunc.__call__(left.value, other.value)
             return res
         elif ufunc_name in same_dim_in_1_nodim_out:
             res = ufunc.__call__(left.value)
@@ -643,12 +659,12 @@ def np_meshgrid(x, y):
 # 2 in : same dimension ---> out : same dim as in
 same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]
 # 2 in : same dim ---> out : not a quantity
-same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal", "floor_divide"] # , "logical_and", "logical_or", "logical_xor", "logical_not"]
-same_dim_in_1_nodim_out = ["sign"]
+same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal", "floor_divide"] 
+same_dim_in_1_nodim_out = ["sign", "isfinite", "isinf", "isnan"]
 # 2 in : any ---> out : depends
-skip_2 = ["multiply", "divide", "true_divide"]
+skip_2 = ["multiply", "divide", "true_divide", "copysign", "nextafter"]
 # 1 in : any ---> out : depends
-special_dict = ["sqrt", "power", "reciprocal", "square"]
+special_dict = ["sqrt", "power", "reciprocal", "square", "cbrt", "modf"]
 # 1 in : no dim ---> out : no dim
 no_dim_1 = ["exp", "log", "exp2", "log2", "log10",
            "expm1", "log1p"]
@@ -661,9 +677,17 @@ angle_1 = ["cos", "sin", "tan",
 same_out = ["ceil", "conjugate", "conj", "floor", "rint", "trunc", "fabs", "negative", "absolute"]
 # 1 in : dimless -> out : dimless
 inv_angle_1 = ["arcsin", "arccos", "arctan",
-              "arcsinh", "arccosh", "arctanh"]
+              "arcsinh", "arccosh", "arctanh",
+              ]
+# 2 in : dimless -> out : dimless
+inv_angle_2 = ["arctan2"]
 # dimless -> dimless
 deg_rad = ["deg2rad", "rad2deg"]
+
+
+not_implemented_yet = ["isreal", "iscomplex", "signbit", "ldexp", "frexp"]
+cant_be_implemented = ["logical_and", "logical_or", "logical_xor", "logical_not"]
+
 
 ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
 
