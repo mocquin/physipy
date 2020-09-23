@@ -283,10 +283,10 @@ class TestQuantity(unittest.TestCase):
     def test_120_linspace(self):
         
         m = Quantity(1,Dimension("L"))
-        self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), 
-                                        Dimension('L')) == linspace(1*m, 2*m, num=8)))
-        with self.assertRaises(DimensionError):
-            linspace(1*m, 2)
+        #self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), 
+        #                                Dimension('L')) == linspace(1*m, 2*m, num=8)))
+        #with self.assertRaises(DimensionError):
+        #    linspace(1*m, 2)
             
             
         # COMPARE TO np.linspace
@@ -763,40 +763,154 @@ class TestQuantity(unittest.TestCase):
         arr = np.array([1,2,3])
         arr_m = Quantity(arr, Dimension("L"))
         
-        self.assertEqual(np.sum(arr_m), 6 * m)
-        self.assertEqual(np.sum(5*m), 5 * m)
+        # np.alen
+        self.assertEqual(np.alen(3*m), np.alen(3))
+        self.assertEqual(np.alen(np.arange(3)*m), np.alen(np.arange(3)))
         
-        self.assertEqual(np.mean(arr_m), 2*m)
-        self.assertEqual(np.mean(5*m), 5*m)
+        # np.all
         
-        self.assertEqual(np.std(arr_m), 0.816496580927726*m)
-        self.assertEqual(np.std(5*m), 0*m)
+        # np.allclose
         
-        self.assertEqual(np.average(arr_m), 2*m)
-        self.assertEqual(np.average(5*m), 5*m)
-        
-        self.assertEqual(np.median(arr_m), 2*m)
-        self.assertEqual(np.median(5*m), 5*m)
-        
-        self.assertEqual(np.var(arr_m), 0.6666666666666666*m**2)
-        self.assertEqual(np.var(5*m), 0*m**2)
-        
-        self.assertEqual(np.trapz(arr_m), 4*m)
-        
-        self.assertTrue(np.all(np.linspace(0*m, 5*m) == Quantity(np.linspace(0, 5), Dimension("L"))))
-        
-        self.assertEqual(np.max(self.y_q),
-                         Quantity(np.max(self.y_q.value),
-                                  self.y_q.dimension))
-        self.assertEqual(np.min(self.y_q),
-                         Quantity(np.min(self.y_q.value),
-                                  self.y_q.dimension))
+        # np.amax
         self.assertEqual(np.amax(self.y_q),
                          Quantity(np.amax(self.y_q.value),
                                  self.y_q.dimension))
+        
+        # np.amin
         self.assertEqual(np.amin(self.y_q),
                          Quantity(np.amin(self.y_q.value),
                                   self.y_q.dimension))
+        
+        # np.any
+        self.assertTrue(np.all(np.append(3*m, 4*m) == np.array([3, 4])*m))
+        with self.assertRaises(DimensionError):
+            np.append(3*m, 4*kg)
+        
+        # np.argmax
+        self.assertEqual(np.argmax(np.arange(5)*m), 4*m)
+        
+        # np.argmin
+        self.assertEqual(np.argmin(np.arange(5)*m), 0*m)
+        
+        # np.argsort
+        self.assertTrue(np.all(np.argsort(np.arange(5)*m)==np.arange(5)))
+
+        # np.around
+        self.assertTrue(np.all(np.around(np.linspace(2.2, 3.656, 10)*m) == np.around(np.linspace(2.2, 3.656, 10))*m))
+        
+        # np.atleast_1d
+        self.assertTrue(np.all(np.atleast_1d(4*m) == np.array([4])*m))
+        self.assertTrue(np.all(np.atleast_1d(np.arange(3)*m) == np.arange(3)*m))
+        left_in = np.arange(5)*m
+        right_in = 4*m
+        res_in1, res_in2 = np.atleast_1d(left_in, right_in)
+        self.assertTrue(np.all(res_in1 == np.arange(5)*m))
+        self.assertTrue(np.all(res_in2 == np.array([4])*m))
+        
+        # np.average
+        self.assertEqual(np.average(arr_m), 2*m)
+        self.assertEqual(np.average(5*m), 5*m)
+        
+        # np.block
+        #A = np.eye(2) * 2 * m
+        #B = np.eye(3) * 3
+        #res = np.block([
+        #    [A,               np.zeros((2, 3))*m],
+        #    [np.ones((3, 2))*m, B*m               ]
+        #])
+        #exp = array(
+        #    [[2., 0., 0., 0., 0.],
+        #    [0., 2., 0., 0., 0.],
+        #    [1., 1., 3., 0., 0.],
+        #    [1., 1., 0., 3., 0.],
+        #    [1., 1., 0., 0., 3.]
+        #    ])*m
+        #self.assertTrue(np.all(res, exp))
+        
+        # np.clip
+        self.assertTrue(np.all(np.clip(np.arange(10)*m,
+                                       2*m, 
+                                       7*m) == np.array([2, 2, 2, 3, 4, 5, 6, 7, 7, 7])*m))
+        with self.assertRaises(DimensionError):
+            np.clip(np.arange(10)*m, 2, 3)
+        with self.assertRaises(DimensionError):
+            np.clip(np.arange(10)*m, 2*m, 3)
+        with self.assertRaises(DimensionError):
+            np.clip(np.arange(10)*m, 2, 3*kg)
+        
+        
+        # np.column_stack
+        a = np.array([1, 2, 3])*m
+        b = np.array([2, 3, 4])*m
+        self.assertTrue(np.all(np.column_stack((a, b))==np.array([[1, 2],
+        [2, 3],
+        [3, 4]])*m))
+        
+        # np.compress
+        a = np.array([[1, 2], [3, 4], [5, 6]])*m
+        res = np.compress([0, 1], a, axis=0)
+        exp = np.array([[3, 4]])*m
+        self.assertTrue(np.all(res == exp))
+        
+        # np.concatenate
+        a = np.array([[1, 2], [3, 4]])*m
+        b = np.array([[5, 6]])*m
+        self.assertTrue(np.all(np.concatenate((a, b), axis=0)==np.array([[1, 2],
+       [3, 4],
+       [5, 6]])*m))
+        
+        # np.copy
+        self.assertTrue(np.all(np.copy(np.arange(3)*m) == np.arange(3)*m))
+        
+        # np.cross
+        self.assertTrue(np.all(np.cross(np.array([[1, 2, 3]])*m,
+                                       np.array([[4, 5, 6]])*m)== np.array([-3, 6, -3])*m**2))
+        
+
+        # np.cumprod
+        
+        # np.cumsum
+        self.assertTrue(np.all(np.cumsum(np.arange(3)*m)==np.array([0, 1, 3])*m))
+        
+        
+        # np.sum
+        self.assertEqual(np.sum(arr_m), 6 * m)
+        self.assertEqual(np.sum(5*m), 5 * m)
+        
+        # np.mean
+        self.assertEqual(np.mean(arr_m), 2*m)
+        self.assertEqual(np.mean(5*m), 5*m)
+        
+        # np.std
+        self.assertEqual(np.std(arr_m), 0.816496580927726*m)
+        self.assertEqual(np.std(5*m), 0*m)
+
+        
+        # np.median
+        self.assertEqual(np.median(arr_m), 2*m)
+        self.assertEqual(np.median(5*m), 5*m)
+        
+        # np.var
+        self.assertEqual(np.var(arr_m), 0.6666666666666666*m**2)
+        self.assertEqual(np.var(5*m), 0*m**2)
+        
+        # np.trapz
+        self.assertEqual(np.trapz(arr_m), 4*m)
+        
+        # np.linspace
+        self.assertTrue(np.all(np.linspace(0*m, 5*m) == Quantity(np.linspace(0, 5), Dimension("L"))))
+        
+        # np.max
+        self.assertEqual(np.max(self.y_q),
+                         Quantity(np.max(self.y_q.value),
+                                  self.y_q.dimension))
+        
+        # np.min
+        self.assertEqual(np.min(self.y_q),
+                         Quantity(np.min(self.y_q.value),
+                                  self.y_q.dimension))
+        
+
 
     def test_sum_builtin(self):
         # on list of 2 scalar-value-quantity

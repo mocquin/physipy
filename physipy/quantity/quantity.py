@@ -594,7 +594,6 @@ class Quantity(object):
             raise ValueError("ufunc not implemented ?")
 
 
-
 # Numpy functions            
 # Override functions - used with __array_function__
 def implements(np_function):
@@ -607,7 +606,118 @@ def implements(np_function):
 def np_amax(q): return Quantity(np.amax(q.value), q.dimension, favunit=q.favunit)
 
 @implements(np.amin)
-def np_amax(q): return Quantity(np.amin(q.value), q.dimension, favunit=q.favunit)
+def np_amin(q): return Quantity(np.amin(q.value), q.dimension, favunit=q.favunit)
+
+@implements(np.append)
+def np_append(arr, values, **kwargs):
+    if not arr.dimension == values.dimension:
+        raise DimensionError(arr.dimension, values.dimension)
+    return Quantity(np.append(arr.value, values.value, **kwargs), arr.dimension)
+
+@implements(np.argmax)
+def np_argmax(a, **kwargs):
+    return Quantity(np.argmax(a.value, **kwargs), a.dimension)
+
+
+@implements(np.argsort)
+def np_argsort(a, **kwargs):
+    return np.argsort(a.value, **kwargs)
+
+
+@implements(np.argmin)
+def np_argmax(a, **kwargs):
+    return Quantity(np.argmin(a.value, **kwargs), a.dimension)
+
+
+@implements(np.around)
+def np_around(a, **kwargs):
+    return Quantity(np.around(a.value, **kwargs), a.dimension)
+
+
+@implements(np.atleast_1d)
+def np_atleast_1d(*arys):
+    res = [Quantity(np.atleast_1d(arr.value), arr.dimension) for arr in arys] 
+    return res if len(res)>1 else res[0]
+
+
+@implements(np.atleast_2d)
+def np_atleast_2d(*arys):
+    res = [Quantity(np.atleast_2d(arr.value), arr.dimension) for arr in arys] 
+    return res if len(res)>1 else res[0]
+
+
+@implements(np.atleast_3d)
+def np_atleast_3d(*arys):
+    res = [Quantity(np.atleast_3d(arr.value), arr.dimension) for arr in arys] 
+    return res if len(res)>1 else res[0]
+
+
+@implements(np.average)
+def np_average(q): return Quantity(np.average(q.value), q.dimension, favunit=q.favunit)
+
+# np.block : todo
+
+@implements(np.broadcast_to)
+def np_broadcast_to(array, *args, **kwargs):
+    return Quantity(np.broadcast_to(array.value, *args, **kwargs), array.dimension)
+
+
+@implements(np.clip)
+def np_clip(a, a_min, a_max, *args, **kwargs):
+    a_min = quantify(a_min)
+    a_max = quantify(a_max)
+    if a.dimension != a_min.dimension:
+        raise DimensionError(a.dimension, a_min.dimension)
+    if a.dimension != a_max.dimension:
+        raise DimensionError(a.dimension, a_max.dimension)
+    return Quantity(np.clip(a.value, a_min.value,
+                            a_max.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.column_stack)
+def np_column_stack(tup):
+    dim = tup[0].dimension
+    for arr in tup:
+        if arr.dimension != dim:
+            raise DimensionError(arr.dimension, dim)
+    return Quantity(np.column_stack(tuple(arr.value for arr in tup)), dim)
+
+
+@implements(np.compress)
+def np_compress(condition, a, **kwargs):
+    return Quantity(np.compress(condition, a.value, **kwargs), a.dimension)
+
+
+@implements(np.concatenate)
+def np_concatenate(tup, axis=0, out=None):
+    dim = tup[0].dimension
+    for arr in tup:
+        if arr.dimension != dim:
+            raise DimensionError(arr.dimension, dim)
+    return Quantity(np.concatenate(tuple(arr.value for arr in tup)), dim)
+
+
+@implements(np.copy)
+def np_copy(a, **kwargs):
+    return Quantity(np.copy(a.value, **kwargs), a.dimension)
+
+
+# np.copyto todo
+# np.count_nonzero
+
+
+@implements(np.cross)
+def np_cross(a, b, **kwargs):
+    return Quantity(np.cross(a.value, b.value),
+                    a.dimension*b.dimension)
+
+
+# np.cumprod : cant have an array with different dimensions
+
+@implements(np.cumsum)
+def np_cumsum(a, **kwargs):
+    return Quantity(np.cumsum(a.value), a.dimension)
+
 
 @implements(np.sum)
 def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
@@ -618,8 +728,7 @@ def np_mean(q): return Quantity(np.mean(q.value), q.dimension, favunit=q.favunit
 @implements(np.std)
 def np_std(q): return Quantity(np.std(q.value), q.dimension, favunit=q.favunit)
 
-@implements(np.average)
-def np_average(q): return Quantity(np.average(q.value), q.dimension, favunit=q.favunit)
+
 
 @implements(np.median)
 def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
@@ -634,6 +743,11 @@ def np_trapz(q, **kwargs):
     return Quantity(np.trapz(q.value, **kwargs),
                        q.dimension,
                        favunit = q.favunit)
+
+@implements(np.alen)
+def np_alen(a):
+    return np.alen(a.value)
+
 
 
 #_linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
