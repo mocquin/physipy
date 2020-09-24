@@ -719,22 +719,67 @@ def np_cumsum(a, **kwargs):
     return Quantity(np.cumsum(a.value), a.dimension)
 
 
+@implements(np.diagonal)
+def np_diagonal(a, **kwargs):
+    return Quantity(np.diagonal(a.value, **kwargs), a.dimension)
+
+
+#@implements(np.diff)
+#def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
+#    if prepend != np._NoValue:
+#        if prepend.dimension != a.dimension:
+#            raise DimensionError(a.dimension, prepend.dimension)
+#    if append != np._NoValue:
+#        if append.dimension != a.dimension:
+#            raise DimensionError(a.dimension, append.dimension)
+#    return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
+
+
+@implements(np.dot)
+def np_dot(a, b, **kwargs):
+    a = quantify(a)
+    b = quantify(b)
+    return Quantity(np.dot(a.value, b.value), a.dimension * b.dimension)
+
+
+@implements(np.dstack)
+def np_dstack(tup):
+    dim = tup[0].dimension
+    for arr in tup:
+        if arr.dimension != dim:
+            raise DimensionError(arr.dimension, dim)
+    return Quantity(np.dstack(tuple(arr.value for arr in tup)), dim)
+
+
+#@implements(np.ediff1d)
+#def np_ediff1d(ary, to_end=None, to_begin=None):
+#    if not ary.dimension == to_end.dimension:
+#        raise DimensionError(ary.dimension, to_end.dimension)
+#    if not to_begin is None:
+#        if not ary.dimension == to_begin.dimension:
+#             raise DimensionError(ary.dimension, to_begin.dimension)
+#    return Quantity(np.ediff1d(ary.value, to_end, to_begin))
+
+
 @implements(np.sum)
 def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
 
+
 @implements(np.mean)
 def np_mean(q): return Quantity(np.mean(q.value), q.dimension, favunit=q.favunit)
+
 
 @implements(np.std)
 def np_std(q): return Quantity(np.std(q.value), q.dimension, favunit=q.favunit)
 
 
-
 @implements(np.median)
 def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.favunit)
 
+
 @implements(np.var)
 def np_var(q): return Quantity(np.var(q.value), q.dimension**2)
+
 
 @implements(np.trapz)
 def np_trapz(q, **kwargs):
@@ -743,6 +788,7 @@ def np_trapz(q, **kwargs):
     return Quantity(np.trapz(q.value, **kwargs),
                        q.dimension,
                        favunit = q.favunit)
+
 
 @implements(np.alen)
 def np_alen(a):

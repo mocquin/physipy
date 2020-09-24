@@ -872,6 +872,29 @@ class TestQuantity(unittest.TestCase):
         # np.cumsum
         self.assertTrue(np.all(np.cumsum(np.arange(3)*m)==np.array([0, 1, 3])*m))
         
+        # np.diagonal
+        a = np.arange(4).reshape(2,2)*m
+        self.assertTrue(np.all(np.diagonal(a)== np.array([0,3])*m))
+        
+        # np.diff
+        # a = np.array([1, 2, 4, 7, 0])*m
+        # self.assertTrue(np.all(np.diff(a)==np.array([1, 2, 3, -7])*m))
+        
+        
+        # np.dot
+        a = np.array([[1, 0], [0, 1]])*m
+        b = np.array([[4, 1], [2, 2]])*m
+        self.assertTrue(np.all(np.dot(a, b)==np.array([[4, 1],
+       [2, 2]])*m**2))
+        
+        # np.dstack
+        a = np.array((1,2,3))*m
+        b = np.array((2,3,4))*m
+        self.assertTrue(np.all(np.dstack((a, b)) == np.array([[1, 2],
+        [2, 3],
+        [3, 4]])*m))
+        
+        # np.ediff1d
         
         # np.sum
         self.assertEqual(np.sum(arr_m), 6 * m)
