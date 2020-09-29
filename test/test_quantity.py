@@ -1186,6 +1186,35 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
         
+    
+    def test_flat(self):
+
+        # indexing
+        arr_m = np.arange(5)*m
+        self.assertEqual(arr_m.flat[0],
+                        0*m)
+        self.assertEqual(arr_m.flat[-1],
+                        4*m)
+        
+        arr_m = np.arange(6).reshape(3, 2)*m
+        self.assertEqual(arr_m.flat[0],
+                        0*m)
+        self.assertEqual(arr_m.flat[-1],
+                        5*m)
+        
+        # iteration
+        res = [x for x in np.arange(5)*m]
+        for fx, x in zip(arr_m.flat, res):
+            self.assertEqual(fx, x)
+            
+        res = [x for x in np.arange(6)*m]
+        for fx, x in zip((np.arange(6).reshape(3, 2)*m).flat, res):
+            self.assertEqual(fx, x)
+        
+        
+        
+        
+        
 if __name__ == "__main__":
     unittest.main()
         

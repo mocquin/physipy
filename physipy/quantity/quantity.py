@@ -365,6 +365,15 @@ class Quantity(object):
     def __iter__(self):
         return QuantityIterator(self)
     
+    @property
+    def flat(self):
+        # pint implementation
+        #for v in self.value.flat:
+        #    yield Quantity(v, self.dimension)
+        
+        # astropy
+        return FlatQuantityIterator(self)
+    
     def std(self, *args, **kwargs):
         return np.std(self, *args, **kwargs)
     
@@ -471,11 +480,17 @@ class Quantity(object):
                 self.value = np.array(self.value)
                 return getattr(self.value, item)
         try:
+            res = getattr(self, item)
+            return res
+        except:
+            pass
+        try:
             res = getattr(self.value, item)
             return res
         except AttributeError as ex:
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
+    
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
@@ -888,7 +903,7 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
 
 
 class QuantityIterator(object):
-
+    """General Quantity iterator (as opposed to flat iterator)"""
     def __init__(self, q):
         if not isinstance(q, Quantity):
             raise TypeError("QuantityIterator: must be Quantity object.")
@@ -923,6 +938,25 @@ class QuantityIterator(object):
 
         return q_out
 
+    
+class FlatQuantityIterator(object):
+    def __init__(self, q):
+        self.value = q.value
+        self.dimension = q.dimension
+        self._flatiter = q.value.flat
+        
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        value = next(self._flatiter)
+        return Quantity(value, self.dimension)
+    
+    def __getitem__(self, indx):
+        value = self._flatiter.__getitem__(indx)
+        return Quantity(value, self.dimension)
+        
+    
 
 def main():
     pass
