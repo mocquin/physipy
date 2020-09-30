@@ -374,6 +374,19 @@ class Quantity(object):
         # astropy
         return FlatQuantityIterator(self)
     
+    @property
+    def real(self):
+        return Quantity(self.value.real, self.dimension)
+    
+    @property
+    def imag(self):
+        return Quantity(self.value.imag, self.dimension)
+    
+    @property
+    def T(self):
+        return Quantity(self.value.T, self.dimension)
+    
+    
     def std(self, *args, **kwargs):
         return np.std(self, *args, **kwargs)
     
