@@ -619,7 +619,7 @@ class Quantity(object):
             res = ufunc.__call__(left.value, other.value)
             return res
         else:
-            raise ValueError("ufunc not implemented ?")
+            raise ValueError("ufunc not implemented ?: ", str(ufunc))
 
 
 # Numpy functions            
