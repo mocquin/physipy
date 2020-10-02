@@ -934,6 +934,21 @@ class TestQuantity(unittest.TestCase):
                                   self.y_q.dimension))
         
 
+    def test_real(self):
+        self.assertEqual(m.real, 1*m)
+        a = np.array([1, 2, 3])*m
+        self.assertTrue(np.all(a.real == np.array([1, 2, 3])*m))
+        
+        
+    def test_imag(self):
+        self.assertEqual(m.imag, 0*m)
+        a = np.array([1, 2, 3])*m
+        self.assertTrue(np.all(a.imag == np.array([0, 0, 0])*m))
+        
+    def test_transpose(self):
+        a = np.array([[1, 0], [0, 1]])*m
+        self.assertTrue(np.all(a.T == np.array([[1, 0], [0, 1]]).T*m))
+    
 
     def test_sum_builtin(self):
         # on list of 2 scalar-value-quantity
