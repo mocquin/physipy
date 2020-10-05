@@ -73,6 +73,17 @@ def vectorize(func):
     return func_Q_vec
 
 
+def xvectorize(func):
+    def vec_func(x):
+        res = []
+        for i in x:
+            res.append(func(i))
+        res = np.array(res, dtype=object)
+        res = array_to_Q_array(res)
+        return res
+    return vec_func
+
+
 # Integrate
 def trapz(y, x=None, dx=1.0, *args):
     """Starting from an array of quantity.
