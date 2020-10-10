@@ -10,6 +10,7 @@ import matplotlib.pyplot
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
+from physipy.quantity.calculus import xvectorize, ndvectorize
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
@@ -1226,9 +1227,35 @@ class TestQuantity(unittest.TestCase):
         for fx, x in zip((np.arange(6).reshape(3, 2)*m).flat, res):
             self.assertEqual(fx, x)
         
+    def test_xvectorize(self):
+        arr_m = np.arange(5)*m
         
+        def thresh(x):
+            if x >3*m:
+                return x
+            else:
+                return 3*m
+        vec_thresh = xvectorize(thresh)
         
+        res = vec_thresh(arr_m)
+        exp = np.array([3, 3, 3, 3, 4])*m
+        self.assertTrue(np.all(res == exp))
         
+    def test_ndvectorize(self):
+        arr_m = np.arange(6).reshape(3,2)*m
+        
+        def thresh(x):
+            if x >3*m:
+                return x
+            else:
+                return 3*m
+        vec_thresh = ndvectorize(thresh)
+        
+        res = vec_thresh(arr_m)
+        exp = np.array([[3, 3],[3, 3], [4, 5]])*m
+        self.assertTrue(np.all(res == exp))
+                
+                
         
 if __name__ == "__main__":
     unittest.main()
