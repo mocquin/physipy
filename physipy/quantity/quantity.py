@@ -365,6 +365,9 @@ class Quantity(object):
     def __iter__(self):
         return QuantityIterator(self)
     
+    def _to_json_dict(self):
+        return {"Quantity":True, "value":self.value, "dim_dict":self.dimension.dim_dict}
+    
     @property
     def flat(self):
         # pint implementation

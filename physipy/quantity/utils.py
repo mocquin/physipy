@@ -186,3 +186,24 @@ def array_to_Q_array(x):
             return Quantity(x, Dimension(None))            
     else:
         return quantify(x)
+
+
+def quantity_json_encoder(q):
+    """function to dump quantity in json
+    >>> jss = json.dumps(q, default=quantity_json_encoder)
+
+    """
+    if isinstance(q, Quantity):
+        return q._to_json_dict()
+    else:
+        type_name = q.__class__.__name__
+        raise TypeError(f"Object of type '{type_name}' is not JSON seralizable")
+
+
+def quantity_json_decoder(dct):
+    """function to load quantity from json
+    >>> q2 = json.loads(jss, object_hook=quantity_json_decoder)
+    """
+    if "Quantity" in dct:
+        return Quantity(dct['value'], Dimension(dct['dim_dict']))
+    return dct
