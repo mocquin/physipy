@@ -48,6 +48,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
  - [sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html)
  - [pint](https://pint.readthedocs.io/en/latest/)
+ - [forallpeople](https://github.com/connorferster/forallpeople)
  - [unyt](https://github.com/yt-project/unyt)
  - [Unum](https://bitbucket.org/kiv/unum/)
  - [magnitude](http://juanreyero.com/open/magnitude/)
