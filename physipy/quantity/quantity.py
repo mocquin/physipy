@@ -233,10 +233,13 @@ class Quantity(object):
     #                    favunit=self.favunit)
 
     def __eq__(self,y):
-        y = quantify(y)
-        if self.dimension == y.dimension:
-            return self.value == y.value # comparing arrays returns array of bool
-        else:
+        try:
+            y = quantify(y)
+            if self.dimension == y.dimension:
+                return self.value == y.value # comparing arrays returns array of bool
+            else:
+                return False
+        except Exception as e:
             return False
 
     def __ne__(self,y):
