@@ -363,8 +363,11 @@ class Quantity(object):
             self.value[idx] = q.value
 
     def __iter__(self):
-        return QuantityIterator(self)
-    
+        if isinstance(self.value,np.ndarray):
+            return QuantityIterator(self)
+        else:
+            return iter(self.value)
+        
     @property
     def flat(self):
         # pint implementation

@@ -141,9 +141,16 @@ class TestQuantity(unittest.TestCase):
         u.unite_favorite = Quantity(0.001,Dimension("L"),symbol="mm")
         self.assertEqual(u[2],3*m)
         
+        
+        # set item
         with self.assertRaises(DimensionError):
             u[4] = 35*Quantity(1,Dimension("M"))  
             
+        # scalar quantity shouldn't be iterable
+        with self.assertRaises(TypeError):
+            for i in 5*s: print("i")
+            
+        
     def test_60_add_sub(self):
         with self.assertRaises(DimensionError):
             self.x_q + 1
@@ -1254,7 +1261,7 @@ class TestQuantity(unittest.TestCase):
         res = vec_thresh(arr_m)
         exp = np.array([[3, 3],[3, 3], [4, 5]])*m
         self.assertTrue(np.all(res == exp))
-                
+
                 
         
 if __name__ == "__main__":
