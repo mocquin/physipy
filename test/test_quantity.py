@@ -356,6 +356,9 @@ class TestQuantity(unittest.TestCase):
         #self.assertFalse(np.all(self.y_q != self.y_q))        
         self.assertFalse(np.all(self.x_q == self.y_q))
         self.assertTrue(np.all(self.x_q != self.y_q))
+        
+        # comparison to non-quantifiables
+        self.assertFalse(self.x_q == "a")
     
     def test_lt_gt_le_ge(self):
         self.assertTrue(self.x_q <= self.x_q)
