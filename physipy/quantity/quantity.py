@@ -249,6 +249,7 @@ class Quantity(object):
         else:
             raise DimensionError(self.dimension,y.dimension)
 
+
     def __lt__(self,y):
         y = quantify(y)
         if self.dimension == y.dimension:
@@ -256,39 +257,48 @@ class Quantity(object):
         else:
             raise DimensionError(self.dimension,y.dimension)        
 
+
     def __ge__(self,y): return (self > y) | (self == y) # or bitwise
 
+
     def __le__(self,y): return (self < y) | (self == y) # or bitwise
-    
+
+
     def __abs__(self):
         return Quantity(abs(self.value),
                         self.dimension,
                         symbol = self.symbol,
                         favunit = self.favunit)
 
+
     def __complex__(self):
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, Dimension(None), binary=False)
         return complex(self.value)
-            
+
+
     def __int__(self):
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, Dimension(None), binary=False)
         return int(self.value)
 
+
     def __float__(self):
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, Dimension(None), binary=False)
         return float(self.value)
-    
+
+
     def __round__(self, i):
         return Quantity(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit)
-    
+
+
     def __copy__(self):
         return Quantity(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
     
+
     def __repr__(self):
         return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
 
