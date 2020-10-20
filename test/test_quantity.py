@@ -337,6 +337,21 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual("{!s}".format(Quantity(1, Dimension("L"))), "1 m")
         self.assertEqual("{!r}".format(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
 
+        
+    def test_round(self):
+        self.assertEqual(round(1*s), 1*s)
+        self.assertEqual(round(1.0*s), 1.0*s)
+        self.assertEqual(round(1.1*s), 1*s)
+        self.assertEqual(round(1.9*s), 2*s)
+        self.assertEqual(round(1.5*s), 2*s)
+        
+        self.assertEqual(round(1.123456789*s, 0), 1.0*s)
+        self.assertEqual(round(1.123456789*s, 2), 1.12*s)
+        
+        self.assertEqual(round(1.123456789*s, -0), 1.0*s)
+        self.assertEqual(round(1.123456789*s, -1), 0*s)
+        
+        
     def test_init_SI_init(self):
         # Not checking symbols
         self.assertEqual(SI_units["kg"],Quantity(1,Dimension("M")))

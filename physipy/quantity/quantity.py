@@ -292,7 +292,7 @@ class Quantity(object):
         return float(self.value)
 
 
-    def __round__(self, i):
+    def __round__(self, i=None):
         return Quantity(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit)
