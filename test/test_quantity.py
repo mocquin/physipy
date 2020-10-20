@@ -647,7 +647,7 @@ class TestQuantity(unittest.TestCase):
         # cbrt
         self.assertEqual(np.cbrt((3*m)),
                         (3*m)**(1/3))
-        self.assertTrue(np.all(np.cbrt((np.arange(3)*m))== (np.arange(3)*m)**(1/3)))
+        self.assertTrue(np.allclose(np.cbrt((np.arange(3)*m)).value, ((np.arange(3)*m)**(1/3)).value))        
         
         # reciprocal
         self.assertEqual(np.reciprocal(3.1*m),
