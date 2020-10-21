@@ -509,11 +509,6 @@ class Quantity(object):
                 self.value = np.array(self.value)
                 return getattr(self.value, item)
         try:
-            res = getattr(self, item)
-            return res
-        except:
-            pass
-        try:
             res = getattr(self.value, item)
             return res
         except AttributeError as ex:
