@@ -59,6 +59,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [units](https://bitbucket.org/adonohue/units/)
  - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
  - [physical-quantities](https://github.com/hplgit/physical-quantities)
+ - [brian](https://brian2.readthedocs.io/en/stable/user/units.html)
  - [quantiphy](https://github.com/KenKundert/quantiphy)
  - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
