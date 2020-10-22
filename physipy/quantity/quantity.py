@@ -312,6 +312,33 @@ class Quantity(object):
         else: 
             return str(self._compute_value()) + UNIT_SUFFIX
 
+    #@property
+    #def latex(self):
+    #    return self._repr_latex_()
+
+    #@property
+    #def html(self):
+    #    return self._repr_html_()
+
+    #def _repr_pretty_(self, p, cycle):
+    #    """Markdown hook for ipython repr.
+    #    See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
+    #    print("repr_pretty")
+    #    return p.text(self._repr_latex_())
+    
+    def _repr_latex_(self):
+        """Markdown hook for ipython repr in latex.
+        See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
+        return "$" + str(self._compute_value()) + " \cdot " + str(self._compute_complement_value()) + "$"
+
+    #def _repr_markdown_(self):
+    #    """Markdown hook for ipython repr in markdown.
+    #    this seems to take precedence over _repr_latex_"""
+    #    return self.__repr__()
+
+    #def _repr_html(self):
+    #    return self._repr_latex_()
+
     #def __format_raw__(self, format_spec):
     #    return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
@@ -852,7 +879,140 @@ def np_meshgrid(x, y):
     y = quantify(y)
     res_x, res_y = np.meshgrid(x.value, y.value)
     return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
-    
+
+
+@implements(np.fft.fft)
+def np_fft_fft(a, *args, **kwargs):
+    """Numpy fft.fft wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.fft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.ifft)
+def np_fft_ifft(a, *args, **kwargs):
+    """Numpy fft.ifft wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.ifft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.fft2)
+def np_fft_fft2(a, *args, **kwargs):
+    """Numpy fft.fft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.fft2(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.ifft2)
+def np_fft_ifft2(a, *args, **kwargs):
+    """Numpy fft.ifft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.ifft2(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.fftn)
+def np_fft_fftn(a, *args, **kwargs):
+    """Numpy fft.fftn wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.fftn(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.ifftn)
+def np_fft_ifftn(a, *args, **kwargs):
+    """Numpy fft.ifftn wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.ifftn(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.rfft)
+def np_fft_rfft(a, *args, **kwargs):
+    """Numpy fft.rfft wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.rfft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.irfft)
+def np_fft_irfft(a, *args, **kwargs):
+    """Numpy fft.irfft wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.irfft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.rfft2)
+def np_fft_rfft2(a, *args, **kwargs):
+    """Numpy fft.rfft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.rfft2(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.irfft2)
+def np_fft_irfft2(a, *args, **kwargs):
+    """Numpy fft.irfft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.irfft2(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.rfftn)
+def np_fft_rfftn(a, *args, **kwargs):
+    """Numpy fft.ifft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.rfftn(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.irfftn)
+def np_fft_irfftn(a, *args, **kwargs):
+    """Numpy fft.irfftn wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.irfftn(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.hfft)
+def np_fft_hfft(a, *args, **kwargs):
+    """Numpy fft.httf wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.hfft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.ihfft)
+def np_fft_ihfft(a, *args, **kwargs):
+    """Numpy fft.ihfft2 wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.ihfft(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+#@implements(np.fft.fftfreq)
+#def np_fft_fftfreq(n, d=1.0):
+#    """No need because fftfreq is only a division which is already handled by quantities"""
+#    
+
+@implements(np.fft.fftshift)
+def np_fft_fftshift(a, *args, **kwargs):
+    """Numpy fft.fftshift wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.fftshift(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
+
+@implements(np.fft.ifftshift)
+def np_fft_fftshift(a, *args, **kwargs):
+    """Numpy fft.ifftshift wrapper for Quantity objects.
+    Drop dimension, compute result and add it back."""
+    res = np.fft.ifftshift(a.value, *args, **kwargs)
+    return Quantity(res, a.dimension)
+
 
 
 # 2 in : same dimension ---> out : same dim as in
