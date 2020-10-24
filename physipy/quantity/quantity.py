@@ -1007,7 +1007,7 @@ def np_fft_fftshift(a, *args, **kwargs):
 
 
 @implements(np.fft.ifftshift)
-def np_fft_fftshift(a, *args, **kwargs):
+def np_fft_ifftshift(a, *args, **kwargs):
     """Numpy fft.ifftshift wrapper for Quantity objects.
     Drop dimension, compute result and add it back."""
     res = np.fft.ifftshift(a.value, *args, **kwargs)
