@@ -1280,6 +1280,27 @@ class TestQuantity(unittest.TestCase):
         exp = np.array([[3, 3],[3, 3], [4, 5]])*m
         self.assertTrue(np.all(res == exp))
 
+
+    def test_np_fft_fftshift(self):
+        exp = np.fft.fftshift(np.arange(10))*s
+        self.assertTrue(np.all(np.fft.fftshift(np.arange(10)*s)==exp))
+
+
+    def test_np_fft_ifftshift(self):
+        exp = np.fft.ifftshift(np.arange(10))*s
+        self.assertTrue(np.all(np.fft.ifftshift(np.arange(10)*s)==exp))
+    
+        
+    def test_np_fft_fft(self):
+        exp = np.fft.fft(np.arange(10))*s
+        self.assertTrue(np.all(np.fft.fft(np.arange(10)*s)==exp))
+        
+        
+    def test_np_fft_ifft(self):
+        exp = np.fft.ifft(np.arange(10))*s
+        self.assertTrue(np.all(np.fft.ifft(np.arange(10)*s)==exp))
+        
+        
                 
         
 if __name__ == "__main__":
