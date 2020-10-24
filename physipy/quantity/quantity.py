@@ -576,7 +576,7 @@ class Quantity(object):
         if ufunc_name in same_dim_out_2:
             other = quantify(args[1])
             if not left.dimension == other.dimension:
-                raise DimensionError(left.dimension, other.dimenion)
+                raise DimensionError(left.dimension, other.dimension)
             res = ufunc.__call__(left.value,other.value)    
             return Quantity(res, left.dimension)
         elif ufunc_name in skip_2:
