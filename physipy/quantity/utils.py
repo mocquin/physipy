@@ -3,13 +3,13 @@ import numpy as np
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
 
 
-def qarange(start_or_stop, stop=None, step=None, *args, **kwargs):
+def qarange(start_or_stop, stop=None, step=None, **kwargs):
     """Wrapper around np.arange"""
     # start_or_stop param
     final_start_or_stop = quantify(start_or_stop)
     in_dim = final_start_or_stop.dimension
     
-    qargs = list()
+    qwargs = dict()
     
     # stop param
     if stop is None:
@@ -18,7 +18,7 @@ def qarange(start_or_stop, stop=None, step=None, *args, **kwargs):
         final_stop = quantify(stop)
         if not final_stop.dimension == final_start_or_stop.dimension:
             raise DimensionError(final_start_or_stop.dimension, final_stop.dimension)
-        qargs.append(final_stop.value)
+        qwargs["stop"] = final_stop.value
     
     # step param
     if step is None:
@@ -27,10 +27,10 @@ def qarange(start_or_stop, stop=None, step=None, *args, **kwargs):
         final_step = quantify(step)
         if not final_step.dimension == final_start_or_stop.dimension:
             raise DimensionError(final_start_or_stop.dimension, final_step.dimension)
-        qargs.append(final_step.value)
+        qwargs["step"] = final_step.value
 
     # final call
-    val = np.arange(final_start_or_stop.value, *tuple(qargs), *args, **kwargs)
+    val = np.arange(final_start_or_stop.value, **qwargs, **kwargs)
     res = Quantity(val, in_dim)
     return res
 
