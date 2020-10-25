@@ -16,6 +16,7 @@ from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
 from physipy import imperial_units, setup_matplotlib
+from physipy.quantity.utils import qarange
 
 km = units["km"]
 sr = units["sr"]
@@ -1301,7 +1302,14 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.fft.ifft(np.arange(10)*s)==exp))
         
         
-                
+    def test_qarange(self):
+        self.assertTrue(np.all(qarange(0*s, 1*s, 0.1*s) == np.arange(0, 1, 0.1)*s))
+        self.assertTrue(np.all(qarange(0*s, 0.1*s)      == np.arange(0, 0.1)*s))        
+        self.assertTrue(np.all(qarange(0*s, step=0.1*s) == np.arange(0, step=0.1)*s))
+        self.assertTrue(np.all(qarange(0*s, stop=0.1*s) == np.arange(0, stop=0.1)*s))
+        self.assertTrue(np.all(qarange(0*s, step=0.1*s,
+                                       stop=2*s)        == np.arange(0, step=0.1, stop=2)*s))
+
         
 if __name__ == "__main__":
     unittest.main()

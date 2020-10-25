@@ -3,6 +3,37 @@ import numpy as np
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
 
 
+def qarange(start_or_stop, stop=None, step=None, *args, **kwargs):
+    """Wrapper around np.arange"""
+    # start_or_stop param
+    final_start_or_stop = quantify(start_or_stop)
+    in_dim = final_start_or_stop.dimension
+    
+    qargs = list()
+    
+    # stop param
+    if stop is None:
+        pass#final_stop = Quantity(1, in_dim)
+    else:
+        final_stop = quantify(stop)
+        if not final_stop.dimension == final_start_or_stop.dimension:
+            raise DimensionError(final_start_or_stop.dimension, final_stop.dimension)
+        qargs.append(final_stop.value)
+    
+    # step param
+    if step is None:
+        pass#final_step = Quantity(0.1, in_dim)
+    else:
+        final_step = quantify(step)
+        if not final_step.dimension == final_start_or_stop.dimension:
+            raise DimensionError(final_start_or_stop.dimension, final_step.dimension)
+        qargs.append(final_step.value)
+
+    # final call
+    val = np.arange(final_start_or_stop.value, *tuple(qargs), *args, **kwargs)
+    res = Quantity(val, in_dim)
+    return res
+
 
 def _iterify(x):
     """make x iterable"""
