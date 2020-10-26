@@ -832,7 +832,7 @@ def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
 
 
 @implements(np.mean)
-def np_mean(q): return Quantity(np.mean(q.value), q.dimension, favunit=q.favunit)
+def np_mean(q, **kwargs): return Quantity(np.mean(q.value, **kwargs), q.dimension, favunit=q.favunit)
 
 
 @implements(np.std)
