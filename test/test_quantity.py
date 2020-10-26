@@ -930,6 +930,7 @@ class TestQuantity(unittest.TestCase):
         # np.mean
         self.assertEqual(np.mean(arr_m), 2*m)
         self.assertEqual(np.mean(5*m), 5*m)
+        self.assertTrue(np.all(np.mean(np.arange(6).reshape(3,2)*s, axis=1) == np.mean(np.arange(6).reshape(3,2), axis=1)*s))
         
         # np.std
         self.assertEqual(np.std(arr_m), 0.816496580927726*m)
