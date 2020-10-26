@@ -548,8 +548,8 @@ class Quantity(object):
             return NotImplemented
         # Note: this allows subclasses that don't override
         # __array_function__ to handle DiagonalArray objects.
-        if not all(issubclass(t, self.__class__) for t in types):
-            return NotImplemented
+        #if not all(issubclass(t, self.__class__) for t in types):
+        #    return NotImplemented
         return HANDLED_FUNCTIONS[func](*args, **kwargs)
     
     # TODO : make this a static function ?
@@ -1014,6 +1014,12 @@ def np_fft_ifftshift(a, *args, **kwargs):
     return Quantity(res, a.dimension)
 
 
+@implements(np.convolve)
+def np_convolve(a, v, *args, **kwargs):
+    a = quantify(a)
+    v = quantify(v)
+    res = np.convolve(a.value, v.value, **kwargs)
+    return Quantity(res, a.dimension * v.dimension)
 
 # 2 in : same dimension ---> out : same dim as in
 same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]
