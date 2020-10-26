@@ -1310,6 +1310,13 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(qarange(0*s, step=0.1*s,
                                        stop=2*s)        == np.arange(0, step=0.1, stop=2)*s))
 
+    def test_np_convolve(self):
+        arr_s = np.ones(10)*s
+        arr = np.ones(10)
+        
+        self.assertTrue(np.all(np.convolve(arr_s, arr) == np.convolve(np.ones(10), np.ones(10))*s))
+        self.assertTrue(np.all(np.convolve(arr_s, arr_s) == np.convolve(np.ones(10), np.ones(10))*s**2))
+        
         
 if __name__ == "__main__":
     unittest.main()
