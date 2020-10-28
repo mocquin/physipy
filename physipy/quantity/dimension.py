@@ -87,6 +87,8 @@ class DimensionError(Exception):
 
 class Dimension(object):
     """Allows to manipulate physical dimensions."""
+    
+    DEFAULT_REPR_LATEX = "dim_dict" # "SI_unit"
 
     def __init__(self, definition):
         """Allow the creation of Dimension object with 3 possibile ways."""
@@ -133,8 +135,11 @@ class Dimension(object):
 
     def _repr_latex_(self):
         """Latex repr hook for IPython."""
-        expr_dim = expand_dict_to_expr(self.dim_dict)
-        return "$" + latex(expr_dim) + "$"
+        if self.DEFAULT_REPR_LATEX == "dim_dict":
+            expr_dim = expand_dict_to_expr(self.dim_dict)
+            return "$" + latex(expr_dim) + "$"
+        elif self.DEFAULT_REPR_LATEX == "SI_unit":
+            return self.latex_SI_unit()
     
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
