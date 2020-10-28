@@ -44,6 +44,7 @@ import os
 import sympy as sp
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
+import sympy.printing.latex as latex
 
 
 dirname = os.path.dirname(__file__)
@@ -130,6 +131,11 @@ class Dimension(object):
         """Return the dim_dict into a <Dimension : ...> tag."""
         return "<Dimension : " + str(self.dim_dict) + ">"
 
+    def _repr_latex_(self):
+        """Latex repr hook for IPython."""
+        expr_dim = expand_dict_to_expr(self.dim_dict)
+        return "$" + latex(expr_dim) + "$"
+    
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
         if isinstance(y, Dimension):
@@ -181,26 +187,38 @@ class Dimension(object):
         inv_dict = {key: -value for key, value in self.dim_dict.items()}
         return Dimension(inv_dict)
 
+    def siunit_dict(self):
+        return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
+    
     def str_SI_unit(self):
         """Compute the symbol-wise SI unit."""
-        str_dict = {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
+        str_dict = self.siunit_dict()
         return compute_str(str_dict, "")
 
+    def latex_SI_unit(self):
+        """Latex repr of SI unit form."""
+        expr_SI = expand_dict_to_expr(self.siunit_dict())
+        return "$" + latex(expr_SI) + "$"
+    
     @property
     def dimensionality(self):
         return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
 
 
-def compute_str(dic, default):
+def compute_str(dic, default_str, output_init=1):
     """Compute the product-concatenation of the dict as key**value."""
-    output_init = 1
+    output = expand_dict_to_expr(dic, output_init)
+    if output == output_init:
+        return default_str
+    else:
+        return str(output)
+
+    
+def expand_dict_to_expr(dic, output_init=1):
     output = output_init
     for key, value in dic.items():
         output *= sp.Symbol(key)**value
-    if output == output_init:
-        return default
-    else:
-        return str(output)
+    return output
 
 
 DIMENSIONALITY = {
