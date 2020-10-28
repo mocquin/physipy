@@ -188,6 +188,8 @@ class Dimension(object):
         return Dimension(inv_dict)
 
     def siunit_dict(self):
+        """Return a dict where keys are SI unit
+        string, and value are powers."""
         return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
     
     def str_SI_unit(self):
@@ -202,11 +204,14 @@ class Dimension(object):
     
     @property
     def dimensionality(self):
+        """Return the first dimensionality with same 
+        dimension found in DIMENSIONALITY"""
         return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
 
 
 def compute_str(dic, default_str, output_init=1):
-    """Compute the product-concatenation of the dict as key**value."""
+    """Compute the product-concatenation of the 
+    dict as key**value."""
     output = expand_dict_to_expr(dic, output_init)
     if output == output_init:
         return default_str
@@ -215,6 +220,8 @@ def compute_str(dic, default_str, output_init=1):
 
     
 def expand_dict_to_expr(dic, output_init=1):
+    """Compute the sympy expression from exponent dict,
+    starting the product with ouptput=1."""
     output = output_init
     for key, value in dic.items():
         output *= sp.Symbol(key)**value
