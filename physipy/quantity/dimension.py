@@ -88,6 +88,8 @@ class DimensionError(Exception):
 class Dimension(object):
     """Allows to manipulate physical dimensions."""
     
+    # DEFAULT REPR LATEX can be used to change the way a Dimension
+    # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict" # "SI_unit"
 
     def __init__(self, definition):
