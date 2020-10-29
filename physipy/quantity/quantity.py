@@ -343,6 +343,8 @@ class Quantity(object):
     #    return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
     def __format__(self, format_spec):
+        """This method is used when using format or f-string. 
+        The format is applied to the numerical value part only."""
         complement_value_for_repr = self._compute_complement_value()
         if not complement_value_for_repr == "":
             return format(self._compute_value(), format_spec) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
