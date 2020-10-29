@@ -87,8 +87,8 @@ HANDLED_FUNCTIONS = {}
 class Quantity(object):
     """Quantity class : """
     
-    #DIGITS = DISPLAY_DIGITS
-    #EXP_THRESH = EXP_THRESHOLD
+    DIGITS = DISPLAY_DIGITS
+    EXP_THRESH = EXP_THRESHOLD
     
     def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None):
         self.__array_priority__ = 100
@@ -329,8 +329,25 @@ class Quantity(object):
     def _repr_latex_(self):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
-        return "$" + str(self._compute_value()) + " \cdot " + str(self._compute_complement_value()) + "$"
+        formatted_value = self._format_value()
+        return "$" + formatted_value + " \cdot " + str(self._compute_complement_value()) + "$"
 
+
+    def _format_value(self):
+        """Used to format the value on repr.
+        If the value is > to 10**self.EXP_THRESH, it is displayed with scientific notation.
+        Else floating point notation is used.
+        """
+        value = self._compute_value()
+        if not np.isscalar(value):
+            return str(value)
+        else:
+            if abs(value) >= 10**self.EXP_THRESH or abs(value) < 10**(-self.EXP_THRESH):
+                return ("{:." + str(self.DIGITS) + "e}").format(value)
+            else:
+                return ("{:." + str(self.DIGITS) + "f}").format(value)
+
+    
     #def _repr_markdown_(self):
     #    """Markdown hook for ipython repr in markdown.
     #    this seems to take precedence over _repr_latex_"""
