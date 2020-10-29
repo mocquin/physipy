@@ -330,7 +330,7 @@ class Quantity(object):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
         formatted_value = self._format_value()
-        return "$" + formatted_value + " \cdot " + str(self._compute_complement_value()) + "$"
+        return "$" + formatted_value + " \cdot " + self._compute_complement_value() + "$"
 
 
     def _format_value(self):
