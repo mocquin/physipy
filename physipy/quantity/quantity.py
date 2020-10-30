@@ -76,7 +76,7 @@ from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 # # Constantes
 UNIT_PREFIX= " "
 DISPLAY_DIGITS = 2
-EXP_THRESHOLD = 3
+EXP_THRESHOLD = 2
 UNIT_SUFFIX = ""
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
