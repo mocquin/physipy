@@ -217,3 +217,19 @@ def array_to_Q_array(x):
             return Quantity(x, Dimension(None))            
     else:
         return quantify(x)
+    
+    
+def list_of_Q_to_Q_array(Q_list):
+    """Convert list of Quantity's object to a Quantity with array value.
+    All Quantity must have the same dimension."""
+    first = quantify(Q_list[0])
+    dim = first.dimension
+    val_list = []
+    for q in Q_list:
+        q = quantify(q)
+        if q.dimension == dim:
+            val_list.append(q.value)
+        else:
+            raise ValueError
+    return Quantity(np.array(val_list), dim)
+
