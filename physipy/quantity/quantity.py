@@ -329,11 +329,15 @@ class Quantity(object):
     def _repr_latex_(self):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
-        formatted_value = self._format_value()
+        # create a copy
+        q = self.__copy__()
+        # to set a favunit for display purpose
+        q.favunit = self._pick_smart_favunit()
+        
+        formatted_value = q._format_value()
         value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(formatted_value))
-        complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(self._compute_complement_value()))
+        complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(q._compute_complement_value()))
         return "$" + value_str + " \cdot " + complement_value_str + "$"
-
     
     
     def _pick_smart_favunit(self):
