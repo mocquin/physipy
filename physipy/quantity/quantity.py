@@ -334,6 +334,17 @@ class Quantity(object):
         complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(self._compute_complement_value()))
         return "$" + value_str + " \cdot " + complement_value_str + "$"
 
+    
+    
+    def _pick_smart_favunit(self):
+        from .units import units
+        from .utils import list_of_Q_to_Q_array
+        same_dim_unit_list = [value for value in units.values() if self.dimension == value.dimension]
+        same_dim_unit_arr = list_of_Q_to_Q_array(same_dim_unit_list)
+        best_ixd = np.abs(same_dim_unit_arr - self).argmin()
+        best_favunit = same_dim_unit_list[best_ixd]
+        return best_favunit
+    
 
     def _format_value(self):
         """Used to format the value on repr as a str.
