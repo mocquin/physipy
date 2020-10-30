@@ -335,7 +335,7 @@ class Quantity(object):
 
 
     def _format_value(self):
-        """Used to format the value on repr.
+        """Used to format the value on repr as a str.
         If the value is > to 10**self.EXP_THRESH, it is displayed with scientific notation.
         Else floating point notation is used.
         """
