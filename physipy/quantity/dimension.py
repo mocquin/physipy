@@ -3,19 +3,6 @@
 
 """allows manipulating physical Dimension objects.
 
-TODO:
- * [ ] : add a docstring.
- * [X] : better define what pow method accepts : leaving isreal for now...
- * [X] : add a method to invert the Dimension
- * [X] : rename the method without the dunders (not for special methods)
- * [X] : declare truediv as equal to div (and so on).
- * [X] : make exception strings display correctly
- * [X] : char for temperatures Θ is changed to "theta" (for sympy)
- * [X] : try a cleaner conversion from dict to str
- * [X] : try to make SI_SYMBOL_LIST a list
- * [X] : move base dimension dict to a file
- * [X] : allow construction with strings Dimension("m**2") and Dimension("L**2")
-
 PROPOSITIONS:
  * method to return a latex-formated str ?
  * change the str/repr style to a table-view of the dimension content ?
