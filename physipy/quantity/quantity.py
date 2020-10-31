@@ -340,12 +340,19 @@ class Quantity(object):
         return "$" + value_str + " \cdot " + complement_value_str + "$"
     
     
-    def _pick_smart_favunit(self):
+    def _pick_smart_favunit(self, array_to_scal=np.mean):
+        """Method to pick the best favunit among the units dict.
+        A smart favunit always have the same dimension as self.
+        The 'best' favunit is the one minimizing the difference with self.
+        In case self.value is an array, array_to_scal is 
+        used to convert the array to a single value.
+        """
         from .units import units
         from .utils import list_of_Q_to_Q_array
         same_dim_unit_list = [value for value in units.values() if self.dimension == value.dimension]
         same_dim_unit_arr = list_of_Q_to_Q_array(same_dim_unit_list)
-        best_ixd = np.abs(same_dim_unit_arr - self).argmin()
+        self_val = self if not isinstance(self.value, np.ndarray) else array_to_scal(self)
+        best_ixd = np.abs(same_dim_unit_arr - self_val).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
         return best_favunit
     
