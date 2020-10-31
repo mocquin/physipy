@@ -1,4 +1,5 @@
 import unittest
+from fractions import Fraction
 
 from physipy import Dimension, DimensionError
 
@@ -80,7 +81,8 @@ class TestClassDimension(unittest.TestCase):
         cls.assertEqual(cls.m ** 2, Dimension({"L": 2}))
         cls.assertEqual(cls.m ** (1/2), Dimension({"L": 1/2}))
         cls.assertEqual(cls.m ** 1.2, Dimension({"L": 1.2}))
-
+        cls.assertEqual(cls.m ** Fraction(1/2), Dimension({"L":Fraction(1/2)}))
+        
         # complex
         #cls.assertRaises(TypeError, lambda: cls.m ** 1.2j)
 
