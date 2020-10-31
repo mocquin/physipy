@@ -192,6 +192,21 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
+def latex_eq(r):
+    """add a 'latex' attribute representation (a string most likely)
+    to a function"""
+    def wrapper(f):
+        f.latex = r
+        return f
+    return wrapper
+
+def name_eq(n):
+    """add a 'name' attribute (a string most likely) to a function"""
+    def wrapper(f):
+        f.name = r
+        return f
+    return wrapper
+
 
 def array_to_Q_array(x):
     """Converts an array of Quantity to a Quantity with array value.
