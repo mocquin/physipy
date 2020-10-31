@@ -135,6 +135,10 @@ class Dimension(object):
         """Concatenate symbol-wise the content of the dim_dict attribute."""
         return compute_str(self.dim_dict, NO_DIMENSION_STR)
 
+    def __format__(self, format_spec):
+        raw = self.__str__()
+        return format(raw, format_spec)
+    
     def __repr__(self):
         """Return the dim_dict into a <Dimension : ...> tag."""
         return "<Dimension : " + str(self.dim_dict) + ">"
