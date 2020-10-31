@@ -335,7 +335,9 @@ class Quantity(object):
         # create a copy
         q = self.__copy__()
         # to set a favunit for display purpose
-        q.favunit = self._pick_smart_favunit()
+        # only change the favunit if not already defined
+        if q.favunit == None:
+            q.favunit = self._pick_smart_favunit()
         formatted_value = q._format_value()
         complemented = q._compute_complement_value()
         complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(complemented))
