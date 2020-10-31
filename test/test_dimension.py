@@ -114,6 +114,91 @@ class TestClassDimension(unittest.TestCase):
     def test_101_dimensionality(cls):
         cls.assertEqual(cls.m.dimensionality, 'length')
     
+    
+    def test_110_siunit_dict(cls):
+        cls.assertEqual(Dimension(None).siunit_dict(), 
+                        {'m': 0, 
+                         'kg': 0, 
+                         's': 0, 
+                         'A': 0, 
+                         'K': 0, 
+                         'mol': 0, 
+                         'cd': 0, 
+                         'rad': 0, 
+                         'sr': 0})
+        cls.assertEqual(Dimension({"L":1}).siunit_dict(), 
+                        {'m': 1, 
+                         'kg': 0, 
+                         's': 0, 
+                         'A': 0, 
+                         'K': 0, 
+                         'mol': 0, 
+                         'cd': 0, 
+                         'rad': 0, 
+                         'sr': 0})
+        cls.assertEqual(Dimension({"L":1.2}).siunit_dict(), 
+                        {'m': 1.2, 
+                         'kg': 0, 
+                         's': 0, 
+                         'A': 0, 
+                         'K': 0, 
+                         'mol': 0, 
+                         'cd': 0, 
+                         'rad': 0, 
+                         'sr': 0})
+        cls.assertEqual(Dimension({"L":1/2}).siunit_dict(), 
+                        {'m': 1/2, 
+                         'kg': 0, 
+                         's': 0, 
+                         'A': 0, 
+                         'K': 0, 
+                         'mol': 0, 
+                         'cd': 0, 
+                         'rad': 0, 
+                         'sr': 0})
+        
+        cls.assertEqual(Dimension({"J": -1, 
+                                   "L": 1, 
+                                   "theta": 3}).siunit_dict(), 
+                        {'m': 1, 
+                         'kg': 0, 
+                         's': 0, 
+                         'A': 0, 
+                         'K': 3, 
+                         'mol': 0, 
+                         'cd': -1, 
+                         'rad': 0, 
+                         'sr': 0}
+                       )
+        
+        
+    def test_repr_latex(cls):
+        cls.assertEqual(Dimension(None)._repr_latex_(),
+                       "$1$")
+        cls.assertEqual(Dimension({"L":1})._repr_latex_(),
+                       "$L$")
+        cls.assertEqual(Dimension({"L":2})._repr_latex_(),
+                       "$L^{2}$")
+        cls.assertEqual(Dimension({"J": -1, 
+                                   "L": 1, 
+                                   "theta": 3})._repr_latex_(),
+                       r"$\frac{L \theta^{3}}{J}$")
+
+
+    def test_latex_SI_unit(cls):
+        cls.assertEqual(Dimension(None).latex_SI_unit(),
+                       "$1$")
+        cls.assertEqual(Dimension({"L":1}).latex_SI_unit(),
+                       "$m$")
+        cls.assertEqual(Dimension({"L":2}).latex_SI_unit(),
+                       "$m^{2}$")
+        cls.assertEqual(Dimension({"J": -1, 
+                                   "L": 1, 
+                                   "theta": 3}).latex_SI_unit(),
+                        r"$\frac{K^{3} m}{cd}$")
+        
+        
+    
     #def test_pycodestyle(cls):
     #    import pycodestyle
     #    style = pycodestyle.StyleGuide(quiet=True)
