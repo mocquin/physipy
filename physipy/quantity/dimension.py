@@ -140,8 +140,9 @@ class Dimension(object):
         if self.DEFAULT_REPR_LATEX == "dim_dict":
             expr_dim = expand_dict_to_expr(self.dim_dict)
             return "$" + latex(expr_dim) + "$"
-        elif self.DEFAULT_REPR_LATEX == "SI_unit":
+        else:# self.DEFAULT_REPR_LATEX == "SI_unit":
             return self.latex_SI_unit()
+
     
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
