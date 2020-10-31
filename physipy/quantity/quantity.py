@@ -78,6 +78,7 @@ UNIT_PREFIX= " "
 DISPLAY_DIGITS = 2
 EXP_THRESHOLD = 2
 UNIT_SUFFIX = ""
+LATEX_VALUE_UNIT_SEPARATOR = "\,"#" \cdot "
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
@@ -89,6 +90,7 @@ class Quantity(object):
     
     DIGITS = DISPLAY_DIGITS
     EXP_THRESH = EXP_THRESHOLD
+    LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     
     def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None):
         self.__array_priority__ = 100
@@ -329,15 +331,20 @@ class Quantity(object):
     def _repr_latex_(self):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
+
         # create a copy
         q = self.__copy__()
         # to set a favunit for display purpose
         q.favunit = self._pick_smart_favunit()
-        
         formatted_value = q._format_value()
+        complemented = q._compute_complement_value()
+        complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(complemented))
+        # if self.value is an array, only wrap the complement in latex
+        if isinstance(self.value, np.ndarray):
+            return formatted_value + "$" + self.LATEX_SEP + complement_value_str + "$"
+        # if self.value is a scalar, use sympy to parse expression
         value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(formatted_value))
-        complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(q._compute_complement_value()))
-        return "$" + value_str + " \cdot " + complement_value_str + "$"
+        return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
     
     
     def _pick_smart_favunit(self, array_to_scal=np.mean):
