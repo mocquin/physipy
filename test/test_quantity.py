@@ -9,7 +9,7 @@ import matplotlib.pyplot
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from physipy.quantity import interp, vectorize, integrate_trapz, linspace, quad, dblquad, tplquad #turn_scalar_to_str
+from physipy.quantity import vectorize, quad, dblquad, tplquad #turn_scalar_to_str
 from physipy.quantity.calculus import xvectorize, ndvectorize
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
@@ -82,6 +82,7 @@ class TestQuantity(unittest.TestCase):
         
     
     def test_40_interpolateur(self):
+        interp = np.interp
         # liste réels interpole liste réels
         tab_x = [1, 2,3,4,5,6,7,8,9,10]
         tab_y = [10,9,8,7,6,5,4,3,2,1]
