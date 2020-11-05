@@ -19,45 +19,6 @@ from .quantity import quantify, Quantity
 from .utils import array_to_Q_array, decorate_with_various_unit
 
 
-# Generiques
-#def linspace(Q_1, Q_2, nb_points=100):
-#    """Generate a lineary-spaced vector of Quantity.
-#    
-#    This function aims to extend numpy.linspace to Quantity objects.
-#    
-#    """
-#    Q_1 = quantify(Q_1)
-#    Q_2 = quantify(Q_2)
-#    if not Q_1.dimension == Q_2.dimension:
-#        raise DimensionError(Q_1.dimension, Q_2.dimension)
-#    val_out = np.linspace(Q_1.value, Q_2.value, nb_points)
-#    dim_out = Q_1.dimension
-#    favunit_out = Q_1.favunit
-#    return Quantity(val_out,
-#                    dim_out,
-#                    favunit=favunit_out)#.rm_dim_if_dimless()
-linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
-
-#def interp(x, tab_x, tab_y):
-#    """Interpolate the value of x in tab_y based on tab_x.
-#    
-#    This function aims to extend numpy.interp to Quantity.
-#    
-#    """
-#    x = quantify(x)
-#    tab_x = quantify(tab_x)
-#    tab_y = quantify(tab_y)
-#    if not x.dimension == tab_x.dimension:
-#        raise DimensionError(x, tab_x)
-#    val_interp = np.interp(x.value, tab_x.value, tab_y.value)
-#    dim_interp = tab_y.dimension
-#    favunit_interp = tab_y.favunit
-#    return Quantity(val_interp,
-#                    dim_interp,
-#                    favunit=favunit_interp)#.rm_dim_if_dimless()
-interp = decorate_with_various_unit(("A", "A", "B"), ("B"))(np.interp)
-
-
 
 def vectorize(func):
     """Allow vectorize a function of Quantity.
