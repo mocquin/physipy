@@ -56,21 +56,6 @@ def ndvectorize(func):
         return res
     return vec_func
 
-# Integrate
-def trapz(y, x=None, dx=1.0, *args):
-    """Starting from an array of quantity.
-    x and dx are exclusifs """
-    y = quantify(y)
-    if isinstance(x,Quantity):
-        value_trapz = np.trapz(y.value, x=x.value, *args)
-        dim_trapz = y.dimension * x.dimension
-    else:
-        dx = quantify(dx)
-        value_trapz = np.trapz(y.value, x=x, dx=dx.value, *args)
-        dim_trapz = y.dimension * dx.dimension
-    return Quantity(value_trapz, 
-                    dim_trapz).rm_dim_if_dimless()
-
 
 
 def quad(func, x0, x1, *args, **kwargs):
