@@ -933,6 +933,32 @@ def np_meshgrid(x, y):
     return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
 
 
+@implements(np.interp)
+def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
+    x = quantify(x)
+    xp = quantify(xp)
+    fp = quantify(fp)
+    if not x.dimension == xp.dimension:
+        raise DimensionError(x.dimension, xp.dimension)
+    if left is not None:
+        left = quantify(left)
+        if not left.dimension == fp.dimension:
+            raise DimensionError(left.dimension, xp.dimension)
+        left_v = left.value
+    else:
+        left_v = left
+    if right is not None:
+        right = quantify(right)
+        if not left.dimension == fp.dimension:
+            raise DimensionError(right.dimension, xp.dimension)
+        right_v = right.value
+    else:
+        right_v = right
+    
+    res = np.interp(x.value, xp.value, fp.value, left_v, right_v, *args, **kwargs)
+    return Quantity(res, fp.dimension)
+
+
 @implements(np.fft.fft)
 def np_fft_fft(a, *args, **kwargs):
     """Numpy fft.fft wrapper for Quantity objects.

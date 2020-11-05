@@ -961,7 +961,21 @@ class TestQuantity(unittest.TestCase):
                          Quantity(np.min(self.y_q.value),
                                   self.y_q.dimension))
         
-
+        # np.interp
+        self.assertEqual(np.interp(1*m, arr_m, arr_m**2), 
+                         1*m**2)
+        self.assertEqual(np.interp(1.5*m, arr_m, arr_m**2), 
+                         (2.5)*m**2)
+        self.assertEqual(np.interp(1.5*m, arr_m, arr_m**2, left=0*m**2), 
+                         2.5*m**2)
+        
+        with self.assertRaises(DimensionError):
+            np.interp(1*m, arr_m, arr_m**2, left=0*m)
+        
+        with self.assertRaises(DimensionError):
+            np.interp(1*s, arr_m, arr_m**2)
+            
+        
     def test_real(self):
         self.assertEqual(m.real, 1*m)
         a = np.array([1, 2, 3])*m
