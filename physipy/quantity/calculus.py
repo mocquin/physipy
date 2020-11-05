@@ -72,33 +72,6 @@ def trapz(y, x=None, dx=1.0, *args):
                     dim_trapz).rm_dim_if_dimless()
 
 
-def integrate_trapz(Q_min, Q_max, Q_func):
-    """Integrate Q_func between Q_min and Q_max.
-    
-    We start by creating a np.linspace vector between the min and max values.
-    Then a Quantity vector with this linspace vector and th corresponding 
-    dimension is created.
-    
-    The dimension's are calculted :
-        - the function's output dimension : evaluating the function at Q_min,
-            giving the dimension of the
-        - the integral's output dimension : multipliying the function ouput
-            dimension, by the dimension of the integral's starting point.
-    
-    """
-    Q_min = quantify(Q_min)
-    Q_max = quantify(Q_max)
-    if not Q_min.dimension == Q_max.dimension:
-        raise DimensionError(Q_min.dimension, Q_max.dimension)
-    ech_x_val = np.linspace(Q_min.value, Q_max.value, 100)
-    Q_ech_x = Quantity(ech_x_val, Q_min.dimension)
-    Q_func = vectorize(Q_func)
-    Q_ech_y = quantify(Q_func(Q_ech_x))  # quantify for dimensionless cases
-    dim_in = quantify(Q_func(Q_min)).dimension
-    dim_out = dim_in * Q_min.dimension
-    integral = np.trapz(Q_ech_y.value, x=ech_x_val)
-    return Quantity(integral, dim_out)#.rm_dim_if_dimless()
-
 
 def quad(func, x0, x1, *args, **kwargs):
     x0 = quantify(x0)
