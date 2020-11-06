@@ -58,7 +58,7 @@ def ndvectorize(func):
 
 
 
-def quad(func, x0, x1, *args, **kwargs):
+def quad(func, x0, x1, *oargs, args=(), **kwargs):
     """A wrapper on scipy.integrate.quad : 
          - will check dimensions of x0 and x1 bounds
          - returned value's dimension is infered by calling func(x0)
@@ -75,7 +75,7 @@ def quad(func, x0, x1, *args, **kwargs):
     res_dim = res.dimension
     
     # define a float-version for inputs and outputs
-    def func_value(x_value, *args):
+    def func_value(x_value, *oargs):
         # cast back in Quantity
         x = Quantity(x_value, x0.dimension)
         # compute Quantity result
@@ -87,7 +87,7 @@ def quad(func, x0, x1, *args, **kwargs):
     # compute integral with float-value version
     quad_value, prec = scipy.integrate.quad(func_value,
                                       x0.value, x1.value,
-                                      *args, **kwargs)
+                                      *oargs, **kwargs)
     # cast back in Quantity with dimension f(x)dx
     return Quantity(quad_value,
                    res_dim * x0.dimension).rm_dim_if_dimless(), prec

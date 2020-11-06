@@ -432,6 +432,22 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(1, quad(func_1, 0, 1)[0])
         self.assertEqual(1*m, quad(func_1, 0*m, 1*m)[0])
         self.assertEqual(1*m*kg, quad(func_2, 0*m, 1*m)[0])
+        
+        
+        def toto(x, y):
+            return x
+        self.assertEqual(0.5,
+                        quad(toto, 0, 1, args=(3,))[0])
+        self.assertEqual(0.5*m**2,
+                        quad(toto, 0*m, 1*m, args=(3,))[0])
+        
+        def toto(x, y):
+            return x*y
+        self.assertEqual(1.5,
+                        quad(toto, 0, 1, args=(3,))[0])
+        self.assertEqual(1.5*m**2*s,
+                        quad(toto, 0*m, 1*m, args=(3*s,))[0])
+        
 
     def test_dblquad(self):
         def func2D(y,x):
