@@ -913,6 +913,9 @@ def np_alen(a):
     return np.alen(a.value)
 
 
+@implements(np.shape)
+def np_shape(a):
+    return np.shape(a.value)
 
 #_linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 @implements(np.linspace)
