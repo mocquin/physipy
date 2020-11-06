@@ -168,16 +168,8 @@ def root(func_cal, start, args=(), **kwargs):
         q = Quantity(x_float,start_dim)
         return func_cal(q, *args)
     res = scipy.optimize.root(func_cal_float, start_val, **kwargs).x[0]
-    return Quantity(res, start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
+    return Quantity(res, start_dim)
 
-
-#def qbrentq(func_cal, start, stop):
-#    start_val = start.value
-#    stop_val = stop.value
-#    start_dim = start.dimension
-#    def func_cal_float(x_float):
-#        return func_cal(Quantity(x_float,start_dim))
-#    return Quantity(scipy.optimize.brentq(func_cal_float, start_val, stop_val), start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
 
 def brentq(func_cal, start, stop, *oargs, args=(), **kwargs):
     start = quantify(start)
@@ -195,7 +187,7 @@ def brentq(func_cal, start, stop, *oargs, args=(), **kwargs):
 
     res = scipy.optimize.brentq(func_float, start_val, stop.value, *oargs)
     
-    return Quantity(res, start_dim) # Quantity(fsolve(func_cal_float, 
+    return Quantity(res, start_dim)
 
 
 def main():
