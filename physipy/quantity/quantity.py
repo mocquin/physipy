@@ -359,6 +359,9 @@ class Quantity(object):
         from .units import units
         from .utils import list_of_Q_to_Q_array
         same_dim_unit_list = [value for value in units.values() if self.dimension == value.dimension]
+        # if no unit with same dim already exists
+        if len(same_dim_unit_list) == 0:
+            return None
         same_dim_unit_arr = list_of_Q_to_Q_array(same_dim_unit_list)
         self_val = self if not isinstance(self.value, np.ndarray) else array_to_scal(self)
         best_ixd = np.abs(same_dim_unit_arr - self_val).argmin()
