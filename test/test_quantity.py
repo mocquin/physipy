@@ -9,8 +9,8 @@ import matplotlib.pyplot
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from physipy.quantity import vectorize, quad, dblquad, tplquad #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize
+from physipy.quantity import vectorize, quad, dblquad, tplquad, brentq #turn_scalar_to_str
+from physipy.quantity.calculus import xvectorize, ndvectorize, root
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
@@ -448,7 +448,28 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(1.5*m**2*s,
                         quad(toto, 0*m, 1*m, args=(3*s,))[0])
         
-
+    def test_root(self):
+        
+        def toto(t):
+            return -10*s + t
+        self.assertEqual(root(toto, 0*s),
+                        10*s)
+        def tata(t, p):
+            return -10*s*p + t
+        self.assertEqual(root(tata, 0*s, args=(0.5,)),
+                        5*s)
+        
+    def test_brentq(self):
+        def toto(t):
+            return -10*s + t
+        self.assertEqual(10*s,
+                         brentq(toto, -10*s, 10*s))
+        
+        def tata(t, p):
+            return -10*s*p + t
+        self.assertEqual(5*s,
+                         brentq(tata, -10*s, 10*s, args=(0.5,)))
+        
     def test_dblquad(self):
         def func2D(y,x):
             #testing dimensions awareness

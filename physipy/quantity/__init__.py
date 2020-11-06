@@ -8,7 +8,7 @@ from .utils import check_dimension, set_favunit, dimension_and_favunit, drop_dim
 
 from .plot import setup_matplotlib
 
-from .calculus import vectorize, qroot, qbrentq
+from .calculus import vectorize, root, brentq
 from .calculus import quad, dblquad, tplquad
 
 from .units import m, s, kg, A, cd, K, mol, rad, sr

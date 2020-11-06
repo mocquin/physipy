@@ -93,7 +93,7 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
                    res_dim * x0.dimension).rm_dim_if_dimless(), prec
 
 
-def dblquad(func, x0, x1, y0, y1, *args):
+def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
     x0 = quantify(x0)
     x1 = quantify(x1)
     y0 = quantify(y0)
@@ -104,21 +104,21 @@ def dblquad(func, x0, x1, y0, y1, *args):
     if not y0.dimension == y1.dimension:
         raise DimensionError(y0.dimension, y1.dimension)
     
-    res = func(y0,x0, *args)
+    res = func(y0, x0, *args)
     res = quantify(res)
     res_dim = res.dimension
     
-    def func_value(y_value,x_value, *args):
+    def func_value(y_value, x_value, *args):
         x = Quantity(x_value, x0.dimension)
         y = Quantity(y_value, y0.dimension)
-        res_raw = func(y,x, *args)
+        res_raw = func(y, x, *args)
         raw = quantify(res_raw)
         return raw.value
     
     dblquad_value, prec = scipy.integrate.dblquad(func_value,
                                            x0.value, x1.value,
                                            y0.value, y1.value,
-                                           args=args)
+                                           *oargs, **kwargs)
     return Quantity(dblquad_value,
                    res_dim * x0.dimension * y0.dimension).rm_dim_if_dimless(), prec
 
@@ -160,12 +160,15 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
 
 
 # Generique 
-def qroot(func_cal, start):
+def root(func_cal, start, args=(), **kwargs):
+    start = quantify(start)
     start_val = start.value
     start_dim = start.dimension
     def func_cal_float(x_float):
-        return func_cal(Quantity(x_float,start_dim))
-    return Quantity(scipy.optimize.root(func_cal_float, start_val).x[0], start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
+        q = Quantity(x_float,start_dim)
+        return func_cal(q, *args)
+    res = scipy.optimize.root(func_cal_float, start_val, **kwargs).x[0]
+    return Quantity(res, start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
 
 
 #def qbrentq(func_cal, start, stop):
@@ -176,7 +179,7 @@ def qroot(func_cal, start):
 #        return func_cal(Quantity(x_float,start_dim))
 #    return Quantity(scipy.optimize.brentq(func_cal_float, start_val, stop_val), start_dim) #♦Quantity(fsolve(func_cal_float, start_val), start_dim)
 
-def qbrentq(func_cal, target, start, stop):
+def brentq(func_cal, start, stop, *oargs, args=(), **kwargs):
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:
@@ -187,8 +190,11 @@ def qbrentq(func_cal, target, start, stop):
     stop_val = stop.value
     
     def func_float(x):
-        return quantify(func_cal(Quantity(x, start_dim))).value - target.value
-    res = scipy.optimize.brentq(func_float, start_val, stop.value)
+        res = func_cal(Quantity(x, start_dim), *args)
+        return quantify(res).value
+
+    res = scipy.optimize.brentq(func_float, start_val, stop.value, *oargs)
+    
     return Quantity(res, start_dim) # Quantity(fsolve(func_cal_float, 
 
 
