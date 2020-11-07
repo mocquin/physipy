@@ -1305,6 +1305,19 @@ class TestQuantity(unittest.TestCase):
         res = [x for x in np.arange(6)*m]
         for fx, x in zip((np.arange(6).reshape(3, 2)*m).flat, res):
             self.assertEqual(fx, x)
+            
+    def test_flatten(self):
+        q = 5*m
+        arr = np.arange(10).reshape(5,2)
+        qarr = arr*m
+        
+        self.assertTrue(np.all(
+        qarr.flatten() == np.arange(10)*m
+        ))
+        
+        with self.assertRaises(AttributeError):
+            q.flatten()
+        
         
     def test_xvectorize(self):
         arr_m = np.arange(5)*m

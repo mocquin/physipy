@@ -472,6 +472,9 @@ class Quantity(object):
         # astropy
         return FlatQuantityIterator(self)
     
+    def flatten(self):
+        return Quantity(self.value.flatten(), self.dimension, favunit=self.favunit)
+    
     @property
     def real(self):
         return Quantity(self.value.real, self.dimension)
