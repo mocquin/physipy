@@ -11,3 +11,10 @@ build/
 MANIFEST
 physipy_venv/
 tutorials/
+docs/Calculus.ipynb
+docs/Decorators.ipynb
+docs/Dimension.ipynb
+docs/Numpy.ipynb
+docs/Performance.ipynb
+docs/Plotting.ipynb
+docs/Repr.ipynb
