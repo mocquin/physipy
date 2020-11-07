@@ -15,6 +15,7 @@ from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
+from physipy.quantity.utils import asqarray
 from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
 
@@ -1151,6 +1152,30 @@ class TestQuantity(unittest.TestCase):
         arr = np.array([1, 2, 3])
         self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(arr, Dimension(None))))
 
+    def test_610_qasarray(self):
+        self.assertTrue(np.all(
+            asqarray([1*s, 2*s]) == Quantity([1, 2], Dimension("T"))
+        ))
+        
+        self.assertTrue(np.all(
+            (asqarray([1., 2.]) == Quantity([1, 2], Dimension(None)))
+        ))
+        
+        self.assertTrue(np.all(
+            asqarray( np.array([1*s, 2*s] , dtype=object)) == Quantity([1, 2], Dimension("T"))
+        ))
+        
+        self.assertTrue(np.all(
+            asqarray(np.asarray([1*m], dtype=object)) == Quantity([1], Dimension("L"))
+        ))
+        
+        self.assertTrue(np.all(
+            asqarray(np.array([1., 2.])) == Quantity([1, 2], Dimension(None))
+        ))
+        
+        
+    
+        
     def test_std(cls):
         cls.assertEqual(m.std(), 0.0 * m)
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))

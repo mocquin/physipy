@@ -248,3 +248,34 @@ def list_of_Q_to_Q_array(Q_list):
             raise ValueError
     return Quantity(np.array(val_list), dim)
 
+
+def asqarray(array_like):
+    """The value returned will always be a Quantity with array value"""
+    if isinstance(array_like, list):
+        if isinstance(array_like[0], Quantity):
+            dim = array_like[0].dimension
+            val_list = []
+            for q in array_like:
+                if q.dimension == dim:    
+                    val_list.append(q.value)
+                    res_val = np.array(val_list)
+                else:
+                    raise DimensionError(q.dim, dim)
+            return Quantity(res_val, dim)
+        else:
+            return quantify(array_like)
+    elif isinstance(array_like, np.ndarray):
+        if isinstance(array_like[0], Quantity):
+            dim = array_like[0].dimension
+            val_list = []
+            for q in array_like:
+                if q.dimension == dim:    
+                    val_list.append(q.value)
+                    res_val = np.array(val_list)
+                else:
+                    raise DimensionError(q.dim, dim)
+            return Quantity(res_val, dim)
+        else:
+            return quantify(array_like)
+    else:
+        raise ValueError("Type {type(array_like)} not supported")
