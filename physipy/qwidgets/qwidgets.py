@@ -75,6 +75,7 @@ class FDQuantityText(QuantityText):
             res = quantify(res)
             # update text 
             if res.dimension == self.qvalue.dimension:
+                res.favunit = self.qvalue.favunit
                 self.qvalue = res
                 # update text 
                 self.text.value = str(self.qvalue)
@@ -83,7 +84,7 @@ class FDQuantityText(QuantityText):
                 #self.text.value="Result must have same dim"
                 self.text.value = str(self.qvalue)
         except:
-            self.text.value = "Python expr only from FDQuantityText"
+            self.text.value = str(self.qvalue)
 
             
             
@@ -185,10 +186,6 @@ class FDQuantitySlider():
             self.qvalue = Quantity(change.new, self.qvalue.dimension, favunit=self.qvalue.favunit)
             self.label.value = str(self.qvalue)
         self.floatslider.observe(update_label_on_slider_change, names="value")
-
-
- 
-    
     
     
     def __repr__(self):
