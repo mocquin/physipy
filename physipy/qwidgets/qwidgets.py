@@ -1,6 +1,6 @@
 import ipywidgets as ipyw
 import physipy
-from ipywidgets import Layout
+from ipywidgets import Layout, ValueWidget
 
 
 import numpy as np
@@ -16,12 +16,12 @@ TODO :
 
 
 
-class QuantityText():
+class QuantityText(ValueWidget):
     
-    def __init__(self, qvalue=0.0, disabled=False, continuous_update=True):
+    def __init__(self, value=0.0, disabled=False, continuous_update=True):
         
-        self.qvalue = quantify(qvalue)
-        self.text = ipyw.Text(value=str(self.qvalue),
+        self.value = quantify(value)
+        self.text = ipyw.Text(value=str(self.value),
                               placeholder='Type python exp',
                               description='',#'Set to:',
                               disabled=disabled,
@@ -33,6 +33,7 @@ class QuantityText():
         
         self.text.on_submit(self.text_update_values)
         self.context = {**units, "pi":pi}
+        self.description = "QuantityText description"
 
     def text_update_values(self, wdgt):
         # get expression entered
@@ -41,9 +42,9 @@ class QuantityText():
         try:
             res = eval(expression, self.context)
             res = quantify(res)
-            self.qvalue = res
+            self.value = res
             # update text 
-            self.text.value = str(self.qvalue)
+            self.text.value = str(self.value)
         except:
             self.text.value = "Python expr only from QuantityText"
         
@@ -60,9 +61,9 @@ class QuantityText():
 class FDQuantityText(QuantityText):
     """Fixed Dimension Quantity"""
     
-    def __init__(self, qvalue=0.0, disabled=False, continuous_update=True):
+    def __init__(self, value=0.0, disabled=False, continuous_update=True):
         
-        super().__init__(qvalue, disabled, continuous_update)
+        super().__init__(value, disabled, continuous_update)
         self.text.on_submit(self.text_update_values)
 
     # override text_update to check if input has same dim
@@ -74,25 +75,25 @@ class FDQuantityText(QuantityText):
             res = eval(expression, self.context)
             res = quantify(res)
             # update text 
-            if res.dimension == self.qvalue.dimension:
-                res.favunit = self.qvalue.favunit
-                self.qvalue = res
+            if res.dimension == self.value.dimension:
+                res.favunit = self.value.favunit
+                self.value = res
                 # update text 
-                self.text.value = str(self.qvalue)
+                self.text.value = str(self.value)
                 #self.label.value = str(self.value_q)
             else:
                 #self.text.value="Result must have same dim"
-                self.text.value = str(self.qvalue)
+                self.text.value = str(self.value)
         except:
-            self.text.value = str(self.qvalue)
+            self.text.value = str(self.value)
 
             
             
 class abs_QuantityText():
     
-    def __init__(self, qvalue=0.0, disabled=False, continuous_update=True):
-        self.qvalue = quantify(qvalue)
-        self.text = ipyw.Text(value=str(self.qvalue),
+    def __init__(self, value=0.0, disabled=False, continuous_update=True):
+        self.value = quantify(value)
+        self.text = ipyw.Text(value=str(self.value),
                               placeholder='Type python exp',
                               description='',#'Set to:',
                               disabled=disabled,
@@ -115,41 +116,41 @@ class abs_QuantityText():
     
             
             
-class FDQuantitySlider():
+class FDQuantitySlider(ValueWidget):
     
-    def __init__(self, qvalue=0.0, min=None, max=None, step=None, description="", disabled=False,
+    def __init__(self, value=0.0, min=None, max=None, step=None, description="", disabled=False,
                 continuous_update=True, orientation="horizontal", readout=True, readout_format=".1f", 
                 constraint_dimension=True):
         
         #### READ PARAMS
         # turn value into a Quantity object (if not already)
-        self.qvalue = quantify(qvalue)
+        self.value = quantify(value)
         
         ## Turn min, max and step into Quantity objects, and check dimensions
         # min value
         if min is not None:
             qmin = quantify(min)
-            if not qmin.dimension == self.qvalue.dimension:
-                raise DimensionError(qmin.dimension, self.qvalue.dimension)
+            if not qmin.dimension == self.value.dimension:
+                raise DimensionError(qmin.dimension, self.value.dimension)
         else:
-            qmin = Quantity(0.0, self.qvalue.dimension)
+            qmin = Quantity(0.0, self.value.dimension)
         # max value
         if max is not None:
             qmax = quantify(max)
-            if not qmax.dimension == self.qvalue.dimension:
-                raise DimensionError(qmax.dimension, self.qvalue.dimension)
+            if not qmax.dimension == self.value.dimension:
+                raise DimensionError(qmax.dimension, self.value.dimension)
         else:
-            qmax = Quantity(100.0, self.qvalue.dimension)        
+            qmax = Quantity(100.0, self.value.dimension)        
         # step value
         if step is not None:
             self.qstep = quantify(step)
-            if not self.qstep.dimension == self.qvalue.dimension:
-                raise DimensionError(self.qstep.dimension, self.qvalue.dimension)
+            if not self.qstep.dimension == self.value.dimension:
+                raise DimensionError(self.qstep.dimension, self.value.dimension)
         else:
-            self.qstep = Quantity(0.1, self.qvalue.dimension)     
+            self.qstep = Quantity(0.1, self.value.dimension)     
             
-        qmin.favunit = self.qvalue.favunit
-        qmax.favunit = self.qvalue.favunit
+        qmin.favunit = self.value.favunit
+        qmax.favunit = self.value.favunit
         
         self.context = {**units, "pi":pi}
 
@@ -157,7 +158,7 @@ class FDQuantitySlider():
     
         ####### WIDGETS
         # FloatSlider with values (Float values, not Quantity objects)
-        self.floatslider = ipyw.FloatSlider(value=self.qvalue.value,
+        self.floatslider = ipyw.FloatSlider(value=self.value.value,
                                             min=qmin.value,
                                             max=qmax.value,
                                             step=self.qstep.value,
@@ -171,7 +172,7 @@ class FDQuantitySlider():
                                                           margin="0px",
                                                           border="solid #3295a8"))
 
-        self.label = ipyw.Label(value=str(self.qvalue))
+        self.label = ipyw.Label(value=str(self.value))
 
         self.slider_box = ipyw.HBox([
             self.floatslider,
@@ -183,8 +184,8 @@ class FDQuantitySlider():
                          margin="0px"))
     
         def update_label_on_slider_change(change):
-            self.qvalue = Quantity(change.new, self.qvalue.dimension, favunit=self.qvalue.favunit)
-            self.label.value = str(self.qvalue)
+            self.value = Quantity(change.new, self.value.dimension, favunit=self.value.favunit)
+            self.label.value = str(self.value)
         self.floatslider.observe(update_label_on_slider_change, names="value")
     
     
@@ -204,39 +205,39 @@ class FDQuantitySlider():
     
 class FDQuantitySliderWithBounds():
     
-    def __init__(self, qvalue=0.0, min=None, max=None, step=None, description="", disabled=False,
+    def __init__(self, value=0.0, min=None, max=None, step=None, description="", disabled=False,
                 continuous_update=True, orientation="horizontal", readout=True, readout_format=".1f", 
                 constraint_dimension=True):
         
         #### READ PARAMS
         # turn value into a Quantity object (if not already)
-        self.qvalue = quantify(qvalue)
+        self.value = quantify(value)
         
         ## Turn min, max and step into Quantity objects, and check dimensions
         # min value
         if min is not None:
             qmin = quantify(min)
-            if not qmin.dimension == self.qvalue.dimension:
-                raise DimensionError(qmin.dimension, self.qvalue.dimension)
+            if not qmin.dimension == self.value.dimension:
+                raise DimensionError(qmin.dimension, self.value.dimension)
         else:
-            qmin = Quantity(0.0, self.qvalue.dimension)
+            qmin = Quantity(0.0, self.value.dimension)
         # max value
         if max is not None:
             qmax = quantify(max)
-            if not qmax.dimension == self.qvalue.dimension:
-                raise DimensionError(qmax.dimension, self.qvalue.dimension)
+            if not qmax.dimension == self.value.dimension:
+                raise DimensionError(qmax.dimension, self.value.dimension)
         else:
-            qmax = Quantity(100.0, self.qvalue.dimension)        
+            qmax = Quantity(100.0, self.value.dimension)        
         # step value
         if step is not None:
             self.qstep = quantify(step)
-            if not self.qstep.dimension == self.qvalue.dimension:
-                raise DimensionError(self.qstep.dimension, self.qvalue.dimension)
+            if not self.qstep.dimension == self.value.dimension:
+                raise DimensionError(self.qstep.dimension, self.value.dimension)
         else:
-            self.qstep = Quantity(0.1, self.qvalue.dimension)     
+            self.qstep = Quantity(0.1, self.value.dimension)     
             
-        qmin.favunit = self.qvalue.favunit
-        qmax.favunit = self.qvalue.favunit
+        qmin.favunit = self.value.favunit
+        qmax.favunit = self.value.favunit
         
         self.context = {**units, "pi":pi}
 
@@ -244,7 +245,7 @@ class FDQuantitySliderWithBounds():
     
         ####### WIDGETS
         # FloatSlider with values (Float values, not Quantity objects)
-        self.floatslider = ipyw.FloatSlider(value=self.qvalue.value,
+        self.floatslider = ipyw.FloatSlider(value=self.value.value,
                                             min=qmin.value,
                                             max=qmax.value,
                                             step=self.qstep.value,
@@ -260,7 +261,7 @@ class FDQuantitySliderWithBounds():
 
         self.minw = abs_QuantityText(qmin)
         self.maxw = abs_QuantityText(qmax)
-        self.label = ipyw.Label(value=str(self.qvalue))
+        self.label = ipyw.Label(value=str(self.value))
 
         self.slider_box = ipyw.HBox([
             self.minw.text,
@@ -274,11 +275,9 @@ class FDQuantitySliderWithBounds():
                          margin="0px"))
     
         def update_label_on_slider_change(change):
-            self.qvalue = Quantity(change.new, self.qvalue.dimension, favunit=self.qvalue.favunit)
-            self.label.value = str(self.qvalue)
+            self.value = Quantity(change.new, self.value.dimension, favunit=self.value.favunit)
+            self.label.value = str(self.value)
         self.floatslider.observe(update_label_on_slider_change, names="value")
-
-        
         
         self.maxw.text.on_submit(self.check_max)
         self.minw.text.on_submit(self.check_min)
@@ -290,16 +289,16 @@ class FDQuantitySliderWithBounds():
         try:
             res = eval(expression, self.context)
             res = quantify(res)
-            if res < self.minw.qvalue:
+            if res < self.minw.value:
                 # forbiden : reset to old value 
-                self.maxw.text.value = str(self.maxw.qvalue)
+                self.maxw.text.value = str(self.maxw.value)
             else:
-                self.maxw.qvalue = res
+                self.maxw.value = res
                 # update text 
-                self.maxw.text.value = str(self.maxw.qvalue)
-                self.floatslider.max = self.maxw.qvalue.value
+                self.maxw.text.value = str(self.maxw.value)
+                self.floatslider.max = self.maxw.value.value
         except:
-            self.maxw.text.value = str(self.maxw.qvalue)
+            self.maxw.text.value = str(self.maxw.value)
     def check_min(self, wdgt):
         # get expression entered
         expression = wdgt.value
@@ -307,17 +306,17 @@ class FDQuantitySliderWithBounds():
         try:
             res = eval(expression, self.context)
             res = quantify(res)
-            if res > self.maxw.qvalue:
+            if res > self.maxw.value:
                 # forbiden : reset to old value 
-                self.minw.text.value = str(self.minw.qvalue)
+                self.minw.text.value = str(self.minw.value)
             else:
-                self.minw.qvalue = res
+                self.minw.value = res
                 # update text 
-                self.minw.text.value = str(self.minw.qvalue)
-                self.floatslider.min = self.minw.qvalue.value
+                self.minw.text.value = str(self.minw.value)
+                self.floatslider.min = self.minw.value.value
 
         except:
-            self.minw.text.value = str(self.minw.qvalue)
+            self.minw.text.value = str(self.minw.value)
 
     
     def __repr__(self):
@@ -347,35 +346,35 @@ class FDQuantitySliderWithBounds():
 
 #       #### READ PARAMS
 #       # turn value into a Quantity object (if not already)
-#       self.qvalue = quantify(value)
+#       self.value = quantify(value)
 #       
 #       ## Turn min, max and step into Quantity objects, and check dimensions
 #       # min value
 #       if min is not None:
 #           self.qmin = quantify(min)
-#           if not self.qmin.dimension == self.qvalue.dimension:
-#               raise DimensionError(self.qmin.dimension, self.qvalue.dimension)
+#           if not self.qmin.dimension == self.value.dimension:
+#               raise DimensionError(self.qmin.dimension, self.value.dimension)
 #       else:
-#           self.qmin = Quantity(0.0, self.qvalue.dimension)
+#           self.qmin = Quantity(0.0, self.value.dimension)
 #       # max value
 #       if max is not None:
 #           self.qmax = quantify(max)
-#           if not self.qmax.dimension == self.qvalue.dimension:
-#               raise DimensionError(self.qmax.dimension, self.qvalue.dimension)
+#           if not self.qmax.dimension == self.value.dimension:
+#               raise DimensionError(self.qmax.dimension, self.value.dimension)
 #       else:
-#           self.qmax = Quantity(100.0, self.qvalue.dimension)        
+#           self.qmax = Quantity(100.0, self.value.dimension)        
 #       # step value
 #       if step is not None:
 #           self.qstep = quantify(step)
-#           if not self.qstep.dimension == self.qvalue.dimension:
-#               raise DimensionError(self.qstep.dimension, self.qvalue.dimension)
+#           if not self.qstep.dimension == self.value.dimension:
+#               raise DimensionError(self.qstep.dimension, self.value.dimension)
 #       else:
-#           self.qstep = Quantity(0.1, self.qvalue.dimension)       
+#           self.qstep = Quantity(0.1, self.value.dimension)       
 #       
 #       
 #       ####### WIDGETS
 #       # FloatSlider with values (Float values, not Quantity objects)
-#       self.floatslider = ipyw.FloatSlider(value=self.qvalue.value,
+#       self.floatslider = ipyw.FloatSlider(value=self.value.value,
 #                                           min=self.qmin.value,
 #                                           max=self.qmax.value,
 #                                           step=self.qstep.value,
