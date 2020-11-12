@@ -1318,6 +1318,17 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(AttributeError):
             q.flatten()
         
+    def test_ravel(self):
+        
+        exp = np.array([1, 2, 3, 4, 5, 6])*m
+        res = np.ravel(np.array([[1, 2, 3], [4, 5, 6]])*m)
+        self.assertTrue(np.all(exp == res))
+        
+        
+    def test_reshape(self):
+        exp = np.array([1, 2, 3, 4, 5, 6])*m
+        res = np.reshape(np.array([[1, 2, 3], [4, 5, 6]])*m, (1, 6))
+        self.assertTrue(np.all(exp == res))     
         
     def test_xvectorize(self):
         arr_m = np.arange(5)*m

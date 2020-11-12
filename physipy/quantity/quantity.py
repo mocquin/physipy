@@ -947,6 +947,14 @@ def np_meshgrid(x, y):
     return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
 
 
+@implements(np.ravel)
+def np_ravel(a, *args, **kwargs):
+    return Quantity(np.ravel(a.value, *args, **kwargs), a.dimension)
+    
+@implements(np.reshape)
+def np_reshape(a, *args, **kwargs):
+    return Quantity(np.reshape(a.value, *args, **kwargs), a.dimension)
+
 @implements(np.interp)
 def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
     x = quantify(x)
