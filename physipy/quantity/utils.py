@@ -108,7 +108,15 @@ def dimension_and_favunit(inputs=[], outputs=[]):
 
 
 def convert_to_unit(*unit_in, keep_dim=False):
-    """Convert inputs into units - must be same dimension"""
+    """Convert inputs into units - must be same dimension
+    
+    @convert_to_unit(mm, mm)
+    def sum_length_from_floats(x_mm, y_mm):
+        "Expects values as floats in mm"
+        return x_mm + y_mm + 1
+    print(sum_length_from_floats(1.2*m, 2*m))
+    
+    """
     unit_in = _iterify(unit_in)
     def decorator(func):
         def decorated(*args, **kwargs):
@@ -125,7 +133,15 @@ def convert_to_unit(*unit_in, keep_dim=False):
 
 #### Dropping and adding dimension
 def drop_dimension(func):
-    """Basically sends the si value to function"""
+    """Basically sends the si value to function
+    
+    @drop_dimension
+    def sum_length_from_floats(x, y):
+        "Expect dimensionless objects"
+        return x + y + 1
+    print(sum_length_from_floats(1.2*m, 2*m))
+    
+    """
     def dimension_dropped(*args, **kwargs):
         args = _iterify(args)
         value_args = [quantify(arg).value for arg in args]
@@ -133,7 +149,15 @@ def drop_dimension(func):
     return dimension_dropped
 
 def add_back_unit_param(*unit_out):
-    """Multiply outputs of function by the units_out"""
+    """Multiply outputs of function by the units_out
+    
+    @add_back_unit_param(m, s)
+    def timed_sum(x_m, y_m):
+        time_s = 10
+        return x_m + y_m + 1, time_s
+    print(timed_sum(1, 2))
+    
+    """
     unit_out = _iterify(unit_out)
     def decorator(func):
         def dimension_added_back_func(*args, **kwargs):
