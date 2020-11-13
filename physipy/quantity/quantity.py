@@ -369,7 +369,7 @@ class Quantity(object):
             return None
         same_dim_unit_arr = list_of_Q_to_Q_array(same_dim_unit_list)
         self_val = self if not isinstance(self.value, np.ndarray) else array_to_scal(self)
-        best_ixd = np.abs(same_dim_unit_arr - self_val).argmin()
+        best_ixd = np.abs(same_dim_unit_arr - np.abs(self_val)).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
         return best_favunit
     
