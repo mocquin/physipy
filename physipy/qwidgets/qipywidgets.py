@@ -44,10 +44,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                               description=self.description,#'Set to:',
                               disabled=disabled,
                               continuous_update=continuous_update,
-                              layout=Layout(width='25%',
+                              layout=Layout(width='auto',
                                             margin="0px 0px 0px 0px",
                                             padding="0px 0px 0px 0px",
-                                            border="solid gray"))
+                                            border="solid gray"),
+                             style={'description_width': '130px'})
         
         # link text value and display_val unicode trait
         traitlets.link((self.text, "value"), (self, "display_val"))
@@ -96,3 +97,36 @@ class FDQuantityText(QuantityText):
                          fixed_dimension=True, 
                          *args, 
                          **kwargs)
+
+
+    
+    
+        
+def ui_widget_decorate(inits_values):
+    """inits_values contains list of tuples : 
+     - quantity init value
+     - str description
+     - name from signature"""
+
+    def decorator_func(func):
+        qwidget_list = []
+        for initq in inits_values:
+            qwidget_list.append(QuantityText(initq[1], description=initq[2]))
+        def display_func(*args, **kwargs):
+            res = func(*args, **kwargs)
+            display(res)
+            return res
+        input_ui = ipyw.VBox(qwidget_list)
+        out = ipyw.interactive_output(display_func,
+                                     {k:qwidget_list[i] for i, k in enumerate([l[0] for l in inits_values])})
+        if hasattr(func, "name"):
+            wlabel = ipyw.Label(func.name)
+        else:
+            wlabel = ipyw.Label(func._name__)
+        if hasattr(func, "latex"):
+            wlabel = ipyw.HBox([wlabel, ipyw.Label(func.latex)])
+        ui = ipyw.VBox([wlabel, input_ui, out])
+        return ui        
+    return decorator_func
+    
+            

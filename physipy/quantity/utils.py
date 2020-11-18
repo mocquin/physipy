@@ -227,7 +227,7 @@ def latex_eq(r):
 def name_eq(n):
     """add a 'name' attribute (a string most likely) to a function"""
     def wrapper(f):
-        f.name = r
+        f.name = n
         return f
     return wrapper
 
