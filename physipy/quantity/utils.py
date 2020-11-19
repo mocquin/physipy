@@ -216,18 +216,18 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
-def latex_eq(r):
+def latex_eq(eqn):
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
     def wrapper(f):
-        f.latex = r
+        f.latex = eqn
         return f
     return wrapper
 
-def name_eq(n):
+def name_eq(name):
     """add a 'name' attribute (a string most likely) to a function"""
     def wrapper(f):
-        f.name = r
+        f.name = name
         return f
     return wrapper
 
