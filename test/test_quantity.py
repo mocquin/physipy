@@ -43,6 +43,46 @@ class TestQuantity(unittest.TestCase):
         cls.x_qsu = Quantity(cls.x, cls.dim, symbol="x_qsu", favunit=cls.mm)
         cls.y_qsu = Quantity(cls.y, cls.dim, symbol="y_qsu", favunit=cls.mm)
         
+    def test_03_test_Quantity_creation(self):
+        
+        
+        # creation
+        # from list
+        self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
+                               np.array([1, 2, 3])*m))
+        # from tuple
+        self.assertTrue(np.all(Quantity((1, 2, 3), Dimension("L")) ==
+                               np.array([1, 2, 3])*m))
+        # from ndarray
+        self.assertTrue(np.all(Quantity(np.array([1, 2, 3]), Dimension("L")) ==
+                               np.array([1, 2, 3])*m))
+        
+        # equivalence
+        self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
+                               Quantity((1, 2, 3), Dimension("L"))))
+        self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
+                                Quantity(np.array([1, 2, 3]), Dimension("L"))))
+        
+        
+        # by multiplicatin value with unit
+        self.assertEqual(3*m, 
+                        Quantity(3, Dimension("L")))
+        self.assertEqual(3.0*m, 
+                        Quantity(3.0, Dimension("L")))
+        self.assertEqual(Fraction(1, 2)*m,
+                        Quantity(Fraction(1, 2), Dimension("L")))
+        
+        self.assertTrue(np.all([1, 2, 3]*m ==
+                              Quantity([1, 2, 3], Dimension("L"))))
+               
+        self.assertTrue(np.all((1, 2, 3)*m ==
+                              Quantity((1, 2, 3), Dimension("L"))))
+        
+        self.assertTrue(np.all(np.array([1, 2, 3])*m ==
+                              Quantity(np.array([1, 2, 3]), Dimension("L"))))
+        
+        
+        
     def test_05_test_units(self):
         self.assertEqual(units["m"],  Quantity(1, Dimension("L")))
         self.assertEqual(units["mm"], Quantity(0.001, Dimension("L")))
