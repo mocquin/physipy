@@ -42,8 +42,65 @@ def _iterify(x):
     return [x] if not isinstance(x, (list, tuple)) else x
 
 
+
+    
+    
+    
+    
+    
+    
 def check_dimension(units_in=None, units_out=None):
-    """Check dimensions of inputs and ouputs of func"""
+    """Check dimensions of inputs and ouputs of function.
+    
+    Will check that all inputs and outputs have the same dimension 
+    than the passed units/quantities. Dimensions for inputs and 
+    outputs expects a tuple.
+    
+    Parameters
+    ----------
+    units_in : quantity_like or tuple of quantity_like
+        quantity_like means an Quantity object or a 
+        numeric value (that will be treated as dimensionless Quantity).
+        The inputs dimension will be checked with the units_in.
+        Defaults to None to skip any check.
+    units_out : quantity_like or tuple of quantity_like
+        quantity_like means an Quantity object or a 
+        numeric value (that will be treated as dimensionless Quantity).
+        The outputs dimension will be checked with the units_out.
+        Default to None to skip any check.
+        
+    Returns
+    -------
+    func:
+        decorated function with dimension-checked inputs and outputs.
+        
+    See Also
+    --------
+    Other decorators (TODO)
+    
+    
+    Notes
+    -----
+    Notes about the implementation algorithm (if needed).
+
+    This can have multiple paragraphs.
+
+    You may include some math:
+
+    .. math:: X(e^{j\omega } ) = x(n)e^{ - j\omega n}
+
+    And even use a Greek symbol like :math:`\omega` inline.
+
+    Examples (written in doctest format)
+    --------
+    >>> def add_meter(x): return x + 1*m
+    >>> add_meter = check_dimension((m), (m))(add_meter)
+    >>> add_meter(1*m)
+    2 m
+    >>> add_meter(1*s)
+    raise DimensionError
+    """
+
     # reading args and making them iterable
     if units_in:
         units_in = _iterify(units_in)
@@ -55,7 +112,6 @@ def check_dimension(units_in=None, units_out=None):
         # create a decorated func
         @functools.wraps(func)
         def decorated_func(*args, **kwargs):
-            
             # Checking dimension of inputs
             args = _iterify(args)
             if units_in:
@@ -87,7 +143,34 @@ def check_dimension(units_in=None, units_out=None):
 
 
 def set_favunit(*favunits_out):
-    """Sets favunit to outputs"""
+    """Sets favunit to outputs.
+    
+    Sets favunit for the function outputs.
+    
+    Parameters
+    ----------
+    favunits_out : quantity_like or tuple of quantity_like
+        quantity_like means an Quantity object or a 
+        numeric value (that will be treated as dimensionless Quantity).
+        `favunits_out` should be a list of Quantity object that have a defined symbol,
+        hence making them suitables favunits.
+        
+    Returns
+    -------
+    func:
+        decorated function with outputs with a favunit.
+        
+    See Also
+    --------
+    Other decorators (TODO)
+
+    Examples (written in doctest format)
+    --------
+    >>> def add_meter(x): return x + 1*m
+    >>> add_meter_favmm = set_favunit(mm)(add_meter)
+    >>> add_meter(1*m)
+    2000 mm
+    """
     # make favunits iterable
     favunits_out = _iterify(favunits_out)
     # make decorator
@@ -105,21 +188,38 @@ def set_favunit(*favunits_out):
 
 
 def dimension_and_favunit(inputs=[], outputs=[]):
-    """check dimensions of outputs and inputs, and add favunit to outputs"""
+    """Check dimensions of outputs and inputs, and add favunit to outputs.
+    
+    A wrapper of `check_dimension` and `set_favunit` decorators. The inputs will 
+    be dimension-checked, and the output will be both dimension-checked and have
+    a favunit. The outputs favunit hence must have same dimension than the
+    expected outputs.
+    
+    See Also
+    --------
+    set_favunit : Decorator to add favunit to outputs.
+    check_dimension : Decorator to check dimension of inputs and outputs.
+    """
     def decorator(func):
         return set_favunit(outputs)(check_dimension(inputs, outputs)(func))
     return decorator
 
 
 def convert_to_unit(*unit_in, keep_dim=False):
-    """Convert inputs into units - must be same dimension
+    """Convert inputs to values in terms of specified units.
     
-    @convert_to_unit(mm, mm)
-    def sum_length_from_floats(x_mm, y_mm):
-        "Expects values as floats in mm"
-        return x_mm + y_mm + 1
-    print(sum_length_from_floats(1.2*m, 2*m))
+    Decorator to convert the function's inputs values in terms
+    of specified units.
     
+    
+    Examples (written in doctest format)
+    --------
+    >>> @convert_to_unit(mm, mm)
+        def add_one_mm(x_mm, y_mm):
+            "Expects values as floats in mm"
+            return x_mm + y_mm + 1
+    >>> print(add_one_mm(1.2*m, 2*m))
+    2201
     """
     unit_in = _iterify(unit_in)
     def decorator(func):
@@ -136,16 +236,21 @@ def convert_to_unit(*unit_in, keep_dim=False):
     return decorator
 
 
-#### Dropping and adding dimension
 def drop_dimension(func):
-    """Basically sends the si value to function
+    """Drop the inputs dimension and sends the SI-value.
     
-    @drop_dimension
-    def sum_length_from_floats(x, y):
-        "Expect dimensionless objects"
-        return x + y + 1
-    print(sum_length_from_floats(1.2*m, 2*m))
+    Decorator to drop inputs dimensions, quantity value is passed
+    in terms of SI-value.
     
+    
+    Examples
+    --------
+    >>> @drop_dimension
+        def sum_length_from_floats(x, y):
+           "Expect dimensionless objects"
+           return x + y
+    >>> print(sum_length_from_floats(1.2*m, 2*m))
+    2.2
     """
     @functools.wraps(func)
     def dimension_dropped(*args, **kwargs):
@@ -153,6 +258,7 @@ def drop_dimension(func):
         value_args = [quantify(arg).value for arg in args]
         return func(*value_args, **kwargs)
     return dimension_dropped
+
 
 def add_back_unit_param(*unit_out):
     """Multiply outputs of function by the units_out
