@@ -45,23 +45,53 @@ class TestQuantity(unittest.TestCase):
         
     def test_03_test_Quantity_creation(self):
         
-        
         # creation
         # from list
         self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
                                np.array([1, 2, 3])*m))
+        self.assertTrue(np.all(Quantity([1], Dimension("L")) ==
+                              np.array([1])*m))
         # from tuple
         self.assertTrue(np.all(Quantity((1, 2, 3), Dimension("L")) ==
                                np.array([1, 2, 3])*m))
+        self.assertTrue(np.all(Quantity((1,), Dimension("L")) ==
+                               np.array([1])*m))
+        
         # from ndarray
         self.assertTrue(np.all(Quantity(np.array([1, 2, 3]), Dimension("L")) ==
                                np.array([1, 2, 3])*m))
+        self.assertTrue(np.all(Quantity(np.array([1]), Dimension("L")) ==
+                               np.array([1])*m))
+        self.assertTrue(np.all(Quantity(np.array(1), Dimension("L")) ==
+                               np.array(1)*m))
+        
+        
         
         # equivalence
         self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
                                Quantity((1, 2, 3), Dimension("L"))))
         self.assertTrue(np.all(Quantity([1, 2, 3], Dimension("L")) ==
                                 Quantity(np.array([1, 2, 3]), Dimension("L"))))
+        
+        # one-element array
+        left_np = np.array([1])
+        right_np = np.array(1)
+        left = Quantity(left_np, Dimension("L"))
+        right = Quantity(right_np, Dimension("L"))
+        self.assertTrue(np.all((left_np == right_np) == (left == right)))
+        
+        # scalar (not array)
+        left_np = 1
+        right_np = np.array(1)
+        type_np = type(left_np == right_np)
+        eq_np = left_np == right_np
+        left = Quantity(left_np, Dimension("L"))
+        right = Quantity(right_np, Dimension("L"))
+        type_q = type(left == right)
+        eq_q = left == right
+        self.assertEqual(type_np, type_q)
+        self.assertEqual(eq_np, eq_q)
+        
         
         
         # by multiplicatin value with unit
