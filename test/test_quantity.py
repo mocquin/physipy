@@ -1224,13 +1224,12 @@ class TestQuantity(unittest.TestCase):
         arr = np.array([m, m, m], dtype=object)
         self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1, 1, 1]), Dimension("L"))))
         
-        arr = np.asarray([m], dtype=object)
+        arr = np.array([m], dtype=object)
         self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1]), Dimension("L"))))
         
         arr = np.array([1, 2, 3])
         self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(arr, Dimension(None))))
 
-    def test_610_qasarray(self):
         self.assertTrue(np.all(
             asqarray([1*s, 2*s]) == Quantity([1, 2], Dimension("T"))
         ))
@@ -1244,14 +1243,113 @@ class TestQuantity(unittest.TestCase):
         ))
         
         self.assertTrue(np.all(
-            asqarray(np.asarray([1*m], dtype=object)) == Quantity([1], Dimension("L"))
+            asqarray(np.array([1*m], dtype=object)) == Quantity([1], Dimension("L"))
         ))
         
         self.assertTrue(np.all(
             asqarray(np.array([1., 2.])) == Quantity([1, 2], Dimension(None))
         ))
         
+
+        arrq_1 = np.array([1, 2, 3]) * m
+        out = asqarray(arrq_1)
+        exp = Quantity(np.array([1, 2, 3]), Dimension("L"))
+        self.assertTrue(np.all(out == exp))
         
+        arrq_2 = np.array([1*m, 2*m, 3*m], dtype=object)
+        out = asqarray(arrq_2)
+        exp = Quantity(np.array([1, 2, 3]), Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+
+        
+        arrq_3 = [1*m, 2*m, 3*m]
+        out = asqarray(arrq_3)
+        exp = Quantity(np.array([1, 2, 3]), Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+
+        
+        arrq_4 = (1*m, 2*m, 3*m)
+        out = asqarray(arrq_4)
+        exp = Quantity(np.array([1, 2, 3]), Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+        
+        
+        arrq_5 = np.array(1) * m
+        out = asqarray(arrq_5)
+        exp = Quantity(1, Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+            
+        arrq_7 = [1*m]
+        out = asqarray(arrq_7)
+        exp = Quantity([1], Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+            
+        arrq_8 = (1*m, )
+        out = asqarray(arrq_8)
+        exp = Quantity([1], Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+        
+        arrq_9 = np.array([m], dtype=object)
+        out = asqarray(arrq_9)
+        exp = Quantity(np.array([1]), Dimension("L"))
+        self.assertTrue(np.all(out == exp))
+        
+        arrq_10 = np.array([1, 2, 3])
+        out = asqarray(arrq_10)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+
+
+        arrq_1 = np.array([1, 2, 3]) 
+        out = asqarray(arrq_1)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        arrq_2 = np.array([1, 2, 3], dtype=object)
+        out = asqarray(arrq_2)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        
+        arrq_3 = [1, 2, 3]
+        out = asqarray(arrq_3)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        
+        arrq_4 = (1, 2, 3)
+        out = asqarray(arrq_4)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        
+        arrq_5 = np.array(1)
+        out = asqarray(arrq_5)
+        exp = Quantity(1, Dimension(None))
+        self.assertTrue(np.all(out == exp))
+            
+        arrq_7 = [1]
+        out = asqarray(arrq_7)
+        exp = Quantity([1], Dimension(None))
+        self.assertTrue(np.all(out == exp))
+            
+        arrq_8 = (1, )
+        out = asqarray(arrq_8)
+        exp = Quantity([1], Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        arrq_9 = np.array([1], dtype=object)
+        out = asqarray(arrq_9)
+        exp = Quantity(np.array([1]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+        
+        arrq_10 = np.array([1, 2, 3])
+        out = asqarray(arrq_10)
+        exp = Quantity(np.array([1, 2, 3]), Dimension(None))
+        self.assertTrue(np.all(out == exp))
+
+    
+    
     
         
     def test_std(cls):
