@@ -1221,14 +1221,7 @@ class TestQuantity(unittest.TestCase):
                         1*m)
         
     def test_600_array_to_Q_array(self):
-        arr = np.array([m, m, m], dtype=object)
-        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1, 1, 1]), Dimension("L"))))
-        
-        arr = np.array([m], dtype=object)
-        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(np.array([1]), Dimension("L"))))
-        
-        arr = np.array([1, 2, 3])
-        self.assertTrue(np.all(array_to_Q_array(arr) == Quantity(arr, Dimension(None))))
+
 
         self.assertTrue(np.all(
             asqarray([1*s, 2*s]) == Quantity([1, 2], Dimension("T"))
