@@ -345,7 +345,10 @@ class Quantity(object):
             q.favunit = self._pick_smart_favunit()
         formatted_value = q._format_value()
         complemented = q._compute_complement_value()
-        complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(complemented))
+        if complemented != "":
+            complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(complemented))
+        else:
+            complement_value_str = ""
         # if self.value is an array, only wrap the complement in latex
         if isinstance(self.value, np.ndarray):
             return formatted_value + "$" + self.LATEX_SEP + complement_value_str + "$"
@@ -362,12 +365,12 @@ class Quantity(object):
         used to convert the array to a single value.
         """
         from .units import units
-        from .utils import list_of_Q_to_Q_array
+        from .utils import asqarray
         same_dim_unit_list = [value for value in units.values() if self.dimension == value.dimension]
         # if no unit with same dim already exists
         if len(same_dim_unit_list) == 0:
             return None
-        same_dim_unit_arr = list_of_Q_to_Q_array(same_dim_unit_list)
+        same_dim_unit_arr = asqarray(same_dim_unit_list)
         self_val = self if not isinstance(self.value, np.ndarray) else array_to_scal(self)
         best_ixd = np.abs(same_dim_unit_arr - np.abs(self_val)).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
