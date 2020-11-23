@@ -389,7 +389,10 @@ def list_of_Q_to_Q_array(Q_list):
 
 def asqarray(array_like):
     """The value returned will always be a Quantity with array value"""
-    if isinstance(array_like, list):
+    
+    # tuple or list
+    if isinstance(array_like, list) or isinstance(array_like, tuple):
+        # here should test if any is quantity, not the first one
         if isinstance(array_like[0], Quantity):
             dim = array_like[0].dimension
             val_list = []
@@ -400,20 +403,35 @@ def asqarray(array_like):
                 else:
                     raise DimensionError(q.dim, dim)
             return Quantity(res_val, dim)
+        # list/tuple of non-quantity value
         else:
             return quantify(array_like)
+    # object is array
     elif isinstance(array_like, np.ndarray):
-        if isinstance(array_like[0], Quantity):
-            dim = array_like[0].dimension
-            val_list = []
-            for q in array_like:
-                if q.dimension == dim:    
-                    val_list.append(q.value)
-                    res_val = np.array(val_list)
-                else:
-                    raise DimensionError(q.dim, dim)
-            return Quantity(res_val, dim)
+        # non mono-element
+        if array_like.size > 1:
+            # check all value for dim consistency
+            if isinstance(array_like[0], Quantity):
+                dim = array_like[0].dimension
+                val_list = []
+                for q in array_like:
+                    if q.dimension == dim:    
+                        val_list.append(q.value)
+                        res_val = np.array(val_list)
+                    else:
+                        raise DimensionError(q.dim, dim)
+                return Quantity(res_val, dim)
+            else:
+                return quantify(array_like)
+        # array is mono element
         else:
-            return quantify(array_like)
+            # array has one d
+            if len(array_like.shape)==1:
+                return quantify(array_like[0])
+            else:
+                return quantify(array_like)
+    # object is already a Quanity
+    elif isinstance(array_like, Quantity):
+        return array_like
     else:
         raise ValueError("Type {type(array_like)} not supported")
