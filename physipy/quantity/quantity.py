@@ -113,8 +113,8 @@ class Quantity(object):
             #or numpy.isrealobj(valeur):
                 super().__setattr__(name,value)
                 super().__setattr__("size",1)
-            elif isinstance(value,list) or isinstance(value, tuple):
-                super().__setattr__(name,np.array(value))
+            elif isinstance(value, list) or isinstance(value, tuple):
+                super().__setattr__(name, np.array(value))
             elif value is None:
                 super().__setattr__(name, value)
             else: 
