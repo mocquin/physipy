@@ -16,7 +16,7 @@ import sympy as sp
 
 from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, Quantity
-from .utils import array_to_Q_array, decorate_with_various_unit
+from .utils import array_to_Q_array, decorate_with_various_unit, asqarray
 
 
 
@@ -29,7 +29,7 @@ def vectorize(func):
     func_vec = np.vectorize(func)
     def func_Q_vec(*args, **kwargs):
         res_brute = func_vec(*args, **kwargs)
-        res = array_to_Q_array(res_brute)
+        res = asqarray(res_brute)
         return res
     return func_Q_vec
 
@@ -40,7 +40,7 @@ def xvectorize(func):
         for i in x:
             res.append(func(i))
         res = np.array(res, dtype=object)
-        res = array_to_Q_array(res)
+        res = asqarray(res)
         return res
     return vec_func
 
@@ -51,7 +51,7 @@ def ndvectorize(func):
         for i in x.flat:
             res.append(func(i))
         res = np.array(res, dtype=object)
-        res = array_to_Q_array(res)
+        res = asqarray(res)
         res.value = res.value.reshape(x.shape)
         return res
     return vec_func
