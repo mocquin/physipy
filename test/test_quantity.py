@@ -1074,6 +1074,14 @@ class TestQuantity(unittest.TestCase):
     def test_transpose(self):
         a = np.array([[1, 0], [0, 1]])*m
         self.assertTrue(np.all(a.T == np.array([[1, 0], [0, 1]]).T*m))
+        
+        
+        with self.assertRaises(AttributeError):
+            # a = 5
+            # a.T raises AttributeError
+            q = 5*m
+            q.T
+
     
 
     def test_sum_builtin(self):
