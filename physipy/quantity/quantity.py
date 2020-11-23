@@ -103,7 +103,7 @@ class Quantity(object):
     def __setattr__(self, name, value):
         if name == "value":
             if isinstance(value,np.ndarray):
-                super().__setattr__(name,np.atleast_1d(value))
+                super().__setattr__(name, value)
                 super().__setattr__("size",self.value.size)
             elif (isinstance(value,nb.Number) or type(value) == np.int64 or
                   type(value) == np.int32):
