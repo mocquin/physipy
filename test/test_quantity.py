@@ -1384,6 +1384,37 @@ class TestQuantity(unittest.TestCase):
         exp = np.array([3, 3, 3, 3, 4])*m
         self.assertTrue(np.all(res == exp))
         
+    #def test_vectorize(self):
+    #    
+    #    # 1D array
+    #    arr_m = np.arange(5)*m
+#
+    #    def thresh(x):
+    #        if x >3*m:
+    #            return x
+    #        else:
+    #            return 3*m
+    #    vec_thresh = vectorize(thresh)
+    #    
+    #    res = vec_thresh(arr_m)
+    #    exp = np.array([3, 3, 3, 3, 4])*m
+    #    self.assertTrue(np.all(res == exp))
+    #    
+    #    # nD array
+    #    arr_m = np.arange(6).reshape(3,2)*m
+    #    
+    #    def thresh(x):
+    #        if x >3*m:
+    #            return x
+    #        else:
+    #            return 3*m
+    #    vec_thresh = vectorize(thresh)
+    #    
+    #    res = vec_thresh(arr_m)
+    #    exp = np.array([[3, 3],[3, 3], [4, 5]])*m
+    #    self.assertTrue(np.all(res == exp))        
+        
+        
     def test_ndvectorize(self):
         arr_m = np.arange(6).reshape(3,2)*m
         
