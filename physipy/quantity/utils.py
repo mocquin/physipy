@@ -41,13 +41,6 @@ def _iterify(x):
     """make x iterable"""
     return [x] if not isinstance(x, (list, tuple)) else x
 
-
-
-    
-    
-    
-    
-    
     
 def check_dimension(units_in=None, units_out=None):
     """Check dimensions of inputs and ouputs of function.
