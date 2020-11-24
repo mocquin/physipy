@@ -909,6 +909,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.append(3*m, 4*m) == np.array([3, 4])*m))
         with self.assertRaises(DimensionError):
             np.append(3*m, 4*kg)
+        self.assertTrue(np.all(np.append(Quantity(1, Dimension(None)), 1) == Quantity([1, 1], Dimension(None))) )
         
         # np.argmax
         self.assertEqual(np.argmax(np.arange(5)*m), 4*m)
