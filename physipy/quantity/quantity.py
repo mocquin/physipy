@@ -310,7 +310,9 @@ class Quantity(object):
     
 
     def __repr__(self):
-        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + ">"        
+        if self.symbol != "UndefinedSymbol":
+            sym = ", symbol="+str(self.symbol)
+        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"        
 
     def __str__(self):
         complement_value_for_repr = self._compute_complement_value() 
