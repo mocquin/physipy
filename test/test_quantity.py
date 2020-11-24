@@ -424,10 +424,16 @@ class TestQuantity(unittest.TestCase):
         
         # comparison to non-quantifiables
         self.assertFalse(self.x_q == "a")
+        
     def test_none_comparison(self):
         self.assertTrue(m is not None)
         self.assertTrue(m != None)
         self.assertTrue(Quantity(1, Dimension(None)) != None)
+        
+    #def test_np_all(self):
+    #    self.assertTrue(np.all(Quantity([1, 2, 3], Dimension(None))))
+    #    self.assertTrue(np.all(Quantity([0, 0, 0], Dimension(None))))
+        
         
     
     def test_lt_gt_le_ge(self):
