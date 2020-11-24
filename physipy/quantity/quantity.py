@@ -746,6 +746,7 @@ def np_amin(q): return Quantity(np.amin(q.value), q.dimension, favunit=q.favunit
 
 @implements(np.append)
 def np_append(arr, values, **kwargs):
+    values = quantify(values)
     if not arr.dimension == values.dimension:
         raise DimensionError(arr.dimension, values.dimension)
     return Quantity(np.append(arr.value, values.value, **kwargs), arr.dimension)
@@ -929,6 +930,11 @@ def np_trapz(q, **kwargs):
 @implements(np.alen)
 def np_alen(a):
     return np.alen(a.value)
+
+#@implements(np.all)
+#def np_all(a, *args, **kwargs):
+#    # should dimension also be checked ?
+#    return np.all(a.value)
 
 
 @implements(np.shape)
