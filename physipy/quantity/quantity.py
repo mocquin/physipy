@@ -310,8 +310,10 @@ class Quantity(object):
     
 
     def __repr__(self):
-        if self.symbol != "UndefinedSymbol":
+        if str(self.symbol) != "UndefinedSymbol":
             sym = ", symbol="+str(self.symbol)
+        else:
+            sym = ""
         return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"        
 
     def __str__(self):

@@ -378,8 +378,10 @@ class TestQuantity(unittest.TestCase):
                          "[1 2 3]")
 
     def test_180_repr(self):
-        self.assertEqual(repr(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
-        self.assertEqual(repr(Quantity(np.array([1,2,3]), Dimension("L"))), "<Quantity : [1 2 3] m>")
+        self.assertEqual(repr(Quantity(1, Dimension("L"))), 
+                         "<Quantity : 1 m>")
+        self.assertEqual(repr(Quantity(np.array([1,2,3]), Dimension("L"))),
+                         "<Quantity : [1 2 3] m>")
 
     def test_190_format(self):
         self.assertEqual("{!s}".format(Quantity(1, Dimension("L"))), "1 m")
