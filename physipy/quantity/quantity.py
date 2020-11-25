@@ -1212,7 +1212,6 @@ class QuantityIterator(object):
         self.value = q.value
         self.dimension = q.dimension
         self.favunit = q.favunit
-        self.symbol = q.symbol
         if isinstance(q.value, np.ndarray):
             self.length = q.value.size
         else:
