@@ -1241,7 +1241,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(d_func2(1*m, 1*m), 
                         1*m)
         
-    def test_600_array_to_Q_array(self):
+    def test_600_asqarray(self):
 
 
         self.assertTrue(np.all(
