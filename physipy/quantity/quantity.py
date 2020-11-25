@@ -504,7 +504,7 @@ class Quantity(object):
     
     def inverse(self):
         """is this method usefull ?"""
-        return 1. / self
+        return Quantity(1/self.value, 1/self.dimension)
 
     def sum(self, **kwargs): return np.sum(self, **kwargs)
     
