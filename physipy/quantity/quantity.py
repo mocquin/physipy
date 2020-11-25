@@ -277,7 +277,6 @@ class Quantity(object):
     def __abs__(self):
         return Quantity(abs(self.value),
                         self.dimension,
-                        symbol = self.symbol,
                         favunit = self.favunit)
 
 

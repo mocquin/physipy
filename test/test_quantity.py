@@ -133,6 +133,13 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(2 / self.x_q, Quantity(2 / self.x, 1/ self.dim))
         self.assertEqual(self.x_q / 2, Quantity(self.x / 2, self.dim))
         
+    def test_15_abs(self):
+        left = Quantity(-1, Dimension("L"))
+        right = m
+        self.assertTrue(abs(left) == right)
+        self.assertFalse(abs(left).symbol == right.symbol)
+        
+        
     def test_20_test_inv(self):
         pass
         
