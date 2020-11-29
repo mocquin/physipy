@@ -160,4 +160,35 @@ def ui_widget_decorate(inits_values):
         return ui        
     return decorator_func
     
+    
+    
+
+            
+        
+def ui_widget_decorate_from_annotations(func):
+    """
+     Example
+     -------
+     def disk_PSA_cart(x:mm, y:mm, R:mm, h:mm)-> msr:
+         return x*y*R/h
+     
+     ui = ui_widget_decorate_from_annotations(disk_PSA_carth)
+     ui
+
+     """
+    
+    # recreating an inits_values list based on annotations
+    # then reusing ui_widget_decorate
+    
+    import inspect
+    sig = inspect.signature(func)
+    inits_values = []
+    
+    for k,v in sig.parameters.items():
+        inits_values.append((v.name, v.annotation, v.name))
+
+    # fyi : to get retun annotation
+    #sig.return_annotation
+    
+    return ui_widget_decorate(inits_values)(func)
             
