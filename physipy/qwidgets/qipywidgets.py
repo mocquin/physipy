@@ -21,14 +21,13 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     
     def __init__(self, value=0.0, disabled=False, 
                  continuous_update=True, description="Quantity:",
-                 fixed_dimension=False,
+                 fixed_dimension=False, placeholder="Type python expr"
                  **kwargs):
         
         # context for parsing
         self.context = {**units, "pi":pi}
         self.description = description
         
-
         # quantity work
         # set dimension
         value = quantify(value)
@@ -40,7 +39,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         self.value = value
         # set text widget
         self.text = ipyw.Text(value=str(self.value),
-                              placeholder='Type python exp',
+                              placeholder=placeholder
                               description=self.description,#'Set to:',
                               disabled=disabled,
                               continuous_update=continuous_update,
