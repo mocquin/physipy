@@ -1,3 +1,5 @@
+import functools
+
 import numpy as np
 
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
@@ -51,6 +53,7 @@ def check_dimension(units_in=None, units_out=None):
     # define the decorator
     def decorator(func):
         # create a decorated func
+        @functools.wraps(func)
         def decorated_func(*args, **kwargs):
             
             # Checking dimension of inputs
@@ -90,6 +93,7 @@ def set_favunit(*favunits_out):
     # make decorator
     def decorator(func):
         # make decorated function
+        @functools.wraps(func)
         def decorated_func(*args, **kwargs):
             # compute outputs and iterable it
             ress = _iterify(func(*args, **kwargs))
@@ -119,6 +123,7 @@ def convert_to_unit(*unit_in, keep_dim=False):
     """
     unit_in = _iterify(unit_in)
     def decorator(func):
+        @functools.wraps(func)
         def decorated(*args, **kwargs):
             arg_unitless = []
             for arg, unit in zip(args, unit_in):
@@ -142,6 +147,7 @@ def drop_dimension(func):
     print(sum_length_from_floats(1.2*m, 2*m))
     
     """
+    @functools.wraps(func)
     def dimension_dropped(*args, **kwargs):
         args = _iterify(args)
         value_args = [quantify(arg).value for arg in args]
@@ -160,6 +166,7 @@ def add_back_unit_param(*unit_out):
     """
     unit_out = _iterify(unit_out)
     def decorator(func):
+        @functools.wraps(func)
         def dimension_added_back_func(*args, **kwargs):
             ress = _iterify(func(*args, **kwargs))
             # multiply each output by the unit
@@ -184,6 +191,7 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
     def decorator(func):
+        @functools.wraps(func)
         def decorated(*args, **kwargs):
             dict_of_units = {}
             list_inputs_value = [] 
@@ -219,17 +227,23 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
 def latex_eq(r):
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
-    def wrapper(f):
-        f.latex = r
-        return f
-    return wrapper
+    def decorator(func):
+        @functools.wraps(func)
+        def decorated(*args, **kwargs):
+            return func(*args, **kwargs)
+        decorated.latex = r
+        return decorated
+    return decorator
 
 def name_eq(n):
     """add a 'name' attribute (a string most likely) to a function"""
-    def wrapper(f):
-        f.name = n
-        return f
-    return wrapper
+    def decorator(func):
+        @functools.wraps(func)
+        def decorated(*args, **kwargs):
+            return func(*args, **kwargs)
+        decorated.name = n
+        return decorated
+    return decorator    
 
 
 def array_to_Q_array(x):
