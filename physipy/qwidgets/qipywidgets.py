@@ -106,7 +106,8 @@ class FDQuantityText(QuantityText):
         
         
 def ui_widget_decorate(inits_values):
-    """inits_values contains list of tuples : 
+    """
+    inits_values contains list of tuples : 
      - quantity init value
      - str description
      - name from signature
