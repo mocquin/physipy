@@ -340,7 +340,6 @@ def name_eq(name):
     return wrapper
 
 
-
 def array_to_Q_array(x):
     raise ImplementedError
 #    """Converts an array of Quantity to a Quantity with array value.
