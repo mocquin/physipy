@@ -331,12 +331,14 @@ def latex_eq(eqn):
         return f
     return wrapper
 
+
 def name_eq(name):
     """add a 'name' attribute (a string most likely) to a function"""
     def wrapper(f):
         f.name = name
         return f
     return wrapper
+
 
 
 def array_to_Q_array(x):
