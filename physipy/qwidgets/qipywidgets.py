@@ -102,30 +102,61 @@ class FDQuantityText(QuantityText):
     
     
         
+
+        
+        
 def ui_widget_decorate(inits_values):
     """inits_values contains list of tuples : 
      - quantity init value
      - str description
-     - name from signature"""
+     - name from signature
+     
+     Example
+     -------
+     
+     def disk_PSA_cart(x, y, R, h):
+         return x*y*R/h
+     
+     ui = ui_widget_decorate([("x", 1*m, "x"),
+                              ("y", 1*m, "y"),
+                              ("R", 1*m, "Radius"),
+                              ("h", 1*m, "distance")])(disk_PSA_carth)
+     
+     """
 
     def decorator_func(func):
+        
+        # create a widget list for all inputs
         qwidget_list = []
         for initq in inits_values:
             qwidget_list.append(QuantityText(initq[1], description=initq[2]))
+
+        # wrap function to display result
         def display_func(*args, **kwargs):
             res = func(*args, **kwargs)
             display(res)
             return res
+
+        # wrap all inputs widgets in a VBox
         input_ui = ipyw.VBox(qwidget_list)
+
+        # create output widget, using inputs widgets
         out = ipyw.interactive_output(display_func,
                                      {k:qwidget_list[i] for i, k in enumerate([l[0] for l in inits_values])})
+
+        # if func has a "name" attribute, create a Label for display, else use default function __name__
         if hasattr(func, "name"):
             wlabel = ipyw.Label(func.name)
         else:
             wlabel = ipyw.Label(func._name__)
+            
+        # if func has a "latex" attribute, append it to Label
         if hasattr(func, "latex"):
             wlabel = ipyw.HBox([wlabel, ipyw.Label(func.latex)])
+            
+        # wrap all ui with Labels, inputs, and result
         ui = ipyw.VBox([wlabel, input_ui, out])
+
         return ui        
     return decorator_func
     
