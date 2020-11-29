@@ -227,24 +227,34 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
 def latex_eq(r):
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
+    #def decorator(func):
+    #    @functools.wraps(func)
+    #    def decorated(*args, **kwargs):
+    #        return func(*args, **kwargs)
+    #    decorated.latex = r
+    #    return decorated
+    #return decorator
+    
     def decorator(func):
-        @functools.wraps(func)
-        def decorated(*args, **kwargs):
-            return func(*args, **kwargs)
-        decorated.latex = r
-        return decorated
+        func.latex = r
+        return func
     return decorator
 
 def name_eq(n):
     """add a 'name' attribute (a string most likely) to a function"""
-    def decorator(func):
-        @functools.wraps(func)
-        def decorated(*args, **kwargs):
-            return func(*args, **kwargs)
-        decorated.name = n
-        return decorated
-    return decorator    
+    #def decorator(func):
+    #    @functools.wraps(func)
+    #    def decorated(*args, **kwargs):
+    #        return func(*args, **kwargs)
+    #    decorated.name = n
+    #    return decorated
+    #return decorator    
 
+    
+    def decorator(func):
+        func.name = n
+        return func
+    return decorator
 
 def array_to_Q_array(x):
     """Converts an array of Quantity to a Quantity with array value.
