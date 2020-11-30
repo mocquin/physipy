@@ -21,7 +21,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     
     def __init__(self, value=0.0, disabled=False, 
                  continuous_update=True, description="Quantity:",
-                 fixed_dimension=False, placeholder="Type python expr"
+                 fixed_dimension=False, placeholder="Type python expr",
                  **kwargs):
         
         # context for parsing
@@ -39,7 +39,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         self.value = value
         # set text widget
         self.text = ipyw.Text(value=str(self.value),
-                              placeholder=placeholder
+                              placeholder=placeholder,
                               description=self.description,#'Set to:',
                               disabled=disabled,
                               continuous_update=continuous_update,
@@ -113,7 +113,6 @@ def ui_widget_decorate(inits_values):
      
      Example
      -------
-     
      def disk_PSA_cart(x, y, R, h):
          return x*y*R/h
      
