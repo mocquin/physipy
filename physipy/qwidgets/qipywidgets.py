@@ -152,7 +152,7 @@ def ui_widget_decorate(inits_values):
         if hasattr(func, "name"):
             wlabel = ipyw.Label(func.name)
         else:
-            wlabel = ipyw.Label(func._name__)
+            wlabel = ipyw.Label(func.__name__)
             
         # if func has a "latex" attribute, append it to Label
         if hasattr(func, "latex"):
