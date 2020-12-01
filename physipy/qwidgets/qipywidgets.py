@@ -193,6 +193,8 @@ def ui_widget_decorate_from_annotations(func):
 
     # fyi : to get retun annotation
     #sig.return_annotation
+    if not sig.return_annotation == inspect._empty:
+        func = set_favunit(sig.return_annotation)(func)
     
     return ui_widget_decorate(inits_values)(func)
             
