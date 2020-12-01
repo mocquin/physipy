@@ -107,7 +107,7 @@ SI_derived_units_raw = {
     "C"   : s * A,
     "V"   : m**2 * kg * s**-3 * A**-1,
     "F"   : m**-2 * kg**-1 * s**4 * A**2,
-    # Omega ? m**2 * kg * s**-3 *A**-2
+    "ohm" : m**2 * kg * s**-3 *A**-2,
     "S"   : kg**-1 * m**-2 * s**3 * A**2,
     "Wb"  : m**2 * kg * s**-2 * A**-1,
     "T"   : kg *s**-2 * A**-1,
