@@ -116,8 +116,8 @@ def ui_widget_decorate(inits_values):
      def disk_PSA_cart(x, y, R, h):
          return x*y*R/h
      
-     ui = ui_widget_decorate([("x", 1*m, "x"),
-                              ("y", 1*m, "y"),
+     ui = ui_widget_decorate([("x", 1*m),
+                              ("y", 1*m),
                               ("R", 1*m, "Radius"),
                               ("h", 1*m, "distance")])(disk_PSA_carth)
      
@@ -128,8 +128,13 @@ def ui_widget_decorate(inits_values):
         # create a widget list for all inputs
         qwidget_list = []
         for initq in inits_values:
-            qwidget_list.append(QuantityText(initq[1], description=initq[2]))
-
+            # if provided, use alias for param
+            if len(initq) == 3:
+                qwidget_list.append(QuantityText(initq[1], description=initq[2]))
+            # else use param name
+            else:
+                qwidget_list.append(QuantityText(initq[1], description=initq[0]))
+                
         # wrap function to display result
         def display_func(*args, **kwargs):
             res = func(*args, **kwargs)
