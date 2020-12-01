@@ -1,6 +1,6 @@
 from ipywidgets import Layout
 from traitlets import TraitError
-from physipy import quantify, Dimension, Quantity, units
+from physipy import quantify, Dimension, Quantity, units, set_favunit
 import ipywidgets as ipyw
 import traitlets
 from numpy import pi
