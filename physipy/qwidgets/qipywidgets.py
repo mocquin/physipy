@@ -98,12 +98,12 @@ class FDQuantityText(QuantityText):
                          **kwargs)
 
 
-    
-    
+        
+        
+        
+        
         
 
-        
-        
 def ui_widget_decorate(inits_values):
     """
     inits_values contains list of tuples : 
@@ -198,3 +198,29 @@ def ui_widget_decorate_from_annotations(func):
     
     return ui_widget_decorate(inits_values)(func)
             
+    
+def FunctionUI(tab_name, function_dict):
+    acc = ipyw.Accordion()
+    
+    sections_uis = []
+    i = 0
+    for section_name, section_functions_list in function_dict.items():
+        function_uis = []
+        # loop over all functions in section and generate ui
+        for func in section_functions_list:
+            ui = ui_widget_decorate_from_annotations(func)
+            function_uis.append(ui)
+        box = ipyw.VBox(function_uis)
+        sections_uis.append(box)
+        acc.set_title(i, section_name)
+        i+=1
+        
+    acc.children = sections_uis
+
+    
+    
+    tab = ipyw.Tab()
+    tab.children = [acc]
+    tab.set_title(0, tab_name)
+
+    return tab
