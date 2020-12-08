@@ -1,6 +1,7 @@
 import functools
 
 import numpy as np
+import sympy as sp
 
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
 
@@ -323,11 +324,29 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
+
+def latex_parse_eq(eq):
+    """Tests cases :  
+     - v = d/t
+     - 2piRC
+     - 1/(2piRC)
+     - use of sqrt, quad
+    """
+    if "$" in eq:
+        return eq
+    if "=" in eq:
+        left, right = eq.split("=")
+        res = "=".join([str(sp.latex(sp.sympify(left))), str(sp.latex(sp.sympify(right)))])
+        return "$" + res + "$"
+    else:
+        return "$" + str(sp.sympify(sp.latex(eq))) + "$"
+
+    
 def latex_eq(eqn):
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
     def wrapper(f):
-        f.latex = eqn
+        f.latex = latex_parse_eq(eqn)
         return f
     return wrapper
 
