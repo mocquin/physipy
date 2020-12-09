@@ -1,10 +1,9 @@
 from ipywidgets import Layout
 from traitlets import TraitError
-from physipy import quantify, Dimension, Quantity, units, set_favunit
+from physipy import quantify, Dimension, Quantity, units, set_favunit, DimensionError
 import ipywidgets as ipyw
 import traitlets
 from numpy import pi
-
 
 
 class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
@@ -98,10 +97,109 @@ class FDQuantityText(QuantityText):
                          **kwargs)
 
 
+
+
+class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
+    # dimension trait : a Dimension instance
+    dimension = traitlets.Instance(Dimension, allow_none=False)
+    # value trait : a Quantity instance
+    value = traitlets.Instance(Quantity, allow_none=False)
+    qmin = traitlets.Instance(Quantity, allow_none=False)
+    qmax = traitlets.Instance(Quantity, allow_none=False)
+    qstep = traitlets.Instance(Quantity, allow_none=False)
+    # value_number : float value of quantity
+    value_number = traitlets.Float(allow_none=True)
+    # description
+    description = traitlets.Unicode(allow_none=True)
+    
+    def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
+                 continuous_update=True, description="Quantity:",
+                 fixed_dimension=False, #placeholder="Type python expr",
+                 **kwargs):
         
+        super().__init__(**kwargs)
+
         
+        # context for parsing
+        #self.context = {**units, "pi":pi}
+        self.description = description
         
+        # quantity work
+        # set dimension
+        value = quantify(value)
+        self.dimension = value.dimension
+        # if true, any change in value must have same dimension as initial dimension
+        self.fixed_dimension = fixed_dimension
         
+        # set quantity
+        self.value = value
+        
+
+        if min is not None:
+            qmin = quantify(min)
+            if not qmin.dimension == self.value.dimension:
+                raise DimensionError(qmin.dimension, self.value.dimension)
+        else:
+            qmin = Quantity(0.0, self.value.dimension)
+        # max value
+        if max is not None:
+            qmax = quantify(max)
+            if not qmax.dimension == self.value.dimension:
+                raise DimensionError(qmax.dimension, self.value.dimension)
+        else:
+            qmax = Quantity(100.0, self.value.dimension)        
+        # step value
+        if step is not None:
+            qstep = quantify(step)
+            if not qstep.dimension == self.value.dimension:
+                raise DimensionError(qstep.dimension, self.value.dimension)
+        else:
+            qstep = Quantity(0.1, self.value.dimension)     
+        
+        self.qstep = qstep
+        self.qmin = qmin
+        self.qmax = qmax
+        
+        # set text widget
+        self.slider = ipyw.FloatSlider(value=self.value.value,
+                                       min=self.qmin.value,
+                                       max=self.qmax.value,
+                                       step=self.qstep.value,
+                                       description=description,
+                                       disabled=disabled,
+                                       continuous_update=continuous_update,
+                                       #orientation=orientation,
+                                       readout=False,  # to disable displaying readout value
+                                       #readout_format=readout_format,
+                                       #layout=Layout(width="50%",
+                                       #              margin="0px",
+                                       #              border="solid red"),
+                                      )
+    
+        def update_label_on_slider_change(change):
+            self.value = Quantity(change.new, self.value.dimension, favunit=self.value.favunit)
+            self.label.value = str(self.value)
+        self.slider.observe(update_label_on_slider_change, names="value")
+    
+    
+        # display the quantity value of the slider in label
+        self.label = ipyw.Label(value=str(self.value))
+        
+        self.children = [
+            self.slider,
+            self.label,
+        ]
+
+
+
+
+
+
+
+
+
+
+
         
 
 def ui_widget_decorate(inits_values):
