@@ -324,6 +324,13 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
+def composed_decs(*decs):
+    """A wrapper to combine multiple decorators"""
+    def deco(f):
+        for dec in reversed(decs):
+            f = dec(f)
+        return f
+    return deco
 
 def latex_parse_eq(eq):
     """Tests cases :  
