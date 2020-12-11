@@ -332,14 +332,15 @@ def latex_parse_eq(eq):
      - 1/(2piRC)
      - use of sqrt, quad
     """
-    if "$" in eq:
-        return eq
-    if "=" in eq:
-        left, right = eq.split("=")
-        res = "=".join([str(sp.latex(sp.sympify(left))), str(sp.latex(sp.sympify(right)))])
-        return "$" + res + "$"
-    else:
-        return "$" + str(sp.sympify(sp.latex(eq))) + "$"
+    #if "$" in eq:
+    #    return eq
+    #if "=" in eq:
+    #    left, right = eq.split("=")
+    #    res = "=".join([str(sp.latex(sp.sympify(left))), str(sp.latex(sp.sympify(right)))])
+    #    return "$" + res + "$"
+    #else:
+    #    return "$" + str(sp.sympify(sp.latex(eq))) + "$"
+    return eq
 
     
 def latex_eq(eqn):
