@@ -71,18 +71,6 @@ There are plenty of python packages that handle physical quantities computation.
 
 If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40).
 
-## Future
-
-Here are some functionnality/fixes/TODOs for down the road :
- - Add a list of main functionnalities of the package
- - Improve the README
- - Create a full benchmark based on an expected behaviour, and bench physical quantities packages.
- - Improve numpy compatibility
- - Add [uncertainty](https://github.com/lebigot/uncertainties/) support
- - Extend numpy's support : FFT, etc
- - Extend scipy's support : stats, etc
- - Allow changing base unit system (cgs, Planck units, etc)
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
