@@ -338,6 +338,7 @@ def latex_parse_eq(eq):
      - 2piRC
      - 1/(2piRC)
      - use of sqrt, quad
+     - parse lmbda, nu, exp
     """
     #if "$" in eq:
     #    return eq
