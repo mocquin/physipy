@@ -115,7 +115,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     
     def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
-                 fixed_dimension=False, #placeholder="Type python expr",
+                 fixed_dimension=False, label=True,#placeholder="Type python expr",
                  **kwargs):
         
         super().__init__(**kwargs)
@@ -189,12 +189,15 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # display the quantity value of the slider in label
         self.label = ipyw.Label(value=str(self.value))
         
-        self.children = [
-            self.slider,
-            self.label,
-        ]
-
-
+        if label:        
+            self.children = [
+                self.slider,
+                self.label,
+            ]
+        else:
+            self.children = [
+                self.slider,
+            ]
 
 
 
