@@ -204,7 +204,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
 
 
-class QuantityTextSlider_(QuantityText):
+class QuantityTextSlider(QuantityText):
     """A QuantitySlider where the value is displayed and can be changed using a QuantityText
     
     Both widgets are merged in the QuantiyText VBox as children
