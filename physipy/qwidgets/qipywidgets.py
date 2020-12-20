@@ -57,6 +57,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         def text_update_values(wdgt):
             # get expression entered
             expression = wdgt.value
+            expression = expression.replace(" ", "*")
             # eval expression with unit context
             try:
                 res = eval(expression, self.context)
