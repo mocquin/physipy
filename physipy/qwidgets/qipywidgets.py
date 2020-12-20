@@ -204,6 +204,34 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
 
 
+class QuantityTextSlider_(QuantityText):
+    """A QuantitySlider where the value is displayed and can be changed using a QuantityText
+    
+    Both widgets are merged in the QuantiyText VBox as children
+    We drop the Quantityslider's label
+    We drop the QuantityText's description
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, description="", **kwargs)
+        
+        self.qslider = QuantitySlider(*args,
+                                      label=False, 
+                                     **kwargs)
+        
+        
+        # both widgets have a value trait that is a Quantity instance : we want them to be the
+        # same at all time : no processing is needed so we use a link
+        link = ipyw.link(
+            (self, "value"), 
+            (self.qslider, "value")
+        )
+        
+        # set the QuantityText HBox children with just the slider and the text
+        self.children = [
+            self.qslider,
+            self.text, 
+        ]
 
 
 
