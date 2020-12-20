@@ -180,7 +180,10 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             self.value = Quantity(change.new, self.value.dimension, favunit=self.value.favunit)
             self.label.value = str(self.value)
         self.slider.observe(update_label_on_slider_change, names="value")
-    
+
+        def update_slider_value(change):
+            self.slider.value = change.new.value
+        self.observe(update_slider_value, names="value")
     
         # display the quantity value of the slider in label
         self.label = ipyw.Label(value=str(self.value))
