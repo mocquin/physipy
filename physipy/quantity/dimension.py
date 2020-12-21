@@ -183,9 +183,9 @@ class Dimension(object):
         """Dimensions are equal if their dim_dict are equal."""
         return self.dim_dict == y.dim_dict
 
-    def __ne__(self, y):
-        """Return not (self == y)."""
-        return not self.__eq__(y)
+    #def __ne__(self, y):
+    #    """Return not (self == y)."""
+    #    return not self.__eq__(y)
 
     #def inverse(self):
     #    """Inverse the dimension by taking the negative of the powers."""
