@@ -85,15 +85,15 @@ class Dimension(object):
         self.dim_dict = {dim: 0 for dim in SI_SYMBOL_LIST}
         if definition is None:
             pass  # dim_dict already initialized
-        # example : "L"
-        elif definition in list(self.dim_dict.keys()):
-            self.dim_dict[definition] = 1
         # example : {"L":1, "T":-2}
         elif (isinstance(definition, dict) and
               set(list(definition.keys())).issubset(SI_SYMBOL_LIST) and
              all([np.isscalar(v) for v in definition.values()])):
             for dim_symbol, dim_power in definition.items():
                 self.dim_dict[dim_symbol] = dim_power
+        # example : "L"
+        elif definition in list(self.dim_dict.keys()):
+            self.dim_dict[definition] = 1
         # example : "L**2/T**3"
         elif (isinstance(definition, str) and check_pattern(definition, SI_UNIT_SYMBOL.keys())):
             definition = parse_str_to_dic(definition)
