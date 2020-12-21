@@ -234,6 +234,111 @@ class QuantityTextSlider(QuantityText):
         ]
 
 
+        
+        
+from ipywidgets import Layout
+from traitlets import TraitError
+from physipy import quantify, Dimension, Quantity, units, set_favunit, DimensionError
+import ipywidgets as ipyw
+import traitlets
+from numpy import pi
+
+
+class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
+    """
+    TODO : 
+     - value_left and value_right are useless, could be done with only value (and should be)
+    
+    """
+    # dimension trait : a Dimension instance
+    dimension = traitlets.Instance(Dimension, allow_none=False)
+    # value trait : a Quantity instance
+    vale = (traitlets.Instance(Quantity, allow_none=False), traitlets.Instance(Quantity, allow_none=False))
+    value_left = traitlets.Instance(Quantity, allow_none=False)
+    value_right = traitlets.Instance(Quantity, allow_none=False)
+    qmin = traitlets.Instance(Quantity, allow_none=False)
+    qmax = traitlets.Instance(Quantity, allow_none=False)
+    qstep = traitlets.Instance(Quantity, allow_none=False)
+    # value_number : float value of quantity
+    value_number = traitlets.Float(allow_none=True)
+    # description
+    description = traitlets.Unicode(allow_none=True)
+    
+    def __init__(self, min=None, max=None, step=None, disabled=False, 
+                 continuous_update=True, description="Quantity:",
+                 fixed_dimension=False, label=True,#placeholder="Type python expr",
+                 **kwargs):
+        
+        super().__init__(**kwargs)
+
+        
+        # context for parsing
+        #self.context = {**units, "pi":pi}
+        self.description = description
+        
+        # quantity work
+        # set dimension
+        value = quantify(min)
+        self.dimension = value.dimension
+        # if true, any change in value must have same dimension as initial dimension
+        self.fixed_dimension = fixed_dimension
+        
+
+        qmin = quantify(min)
+        qmax = quantify(max)
+        qstep = Quantity(0.1, qmin.dimension)
+        
+        # set quantity
+        self.value_left = qmin
+        self.value_right = qmax
+        self.value = qmin, qmax
+        
+        self.qstep = qstep
+        self.qmin = qmin
+        self.qmax = qmax
+        
+        # set text widget
+        self.rslider = ipyw.FloatRangeSlider(
+            value=[self.value_left.value, self.value_right.value],
+            min=self.qmin.value,
+            max=self.qmax.value,
+            step=self.qstep.value,
+            description=description,
+            disabled=disabled,
+            continuous_update=continuous_update,
+            #orientation=orientation,
+            readout=False,  # to disable displaying readout value
+            #readout_format=readout_format,
+            #layout=Layout(width="50%",
+            #              margin="0px",
+            #              border="solid red"),
+        )
+    
+        def update_label_on_slider_change(change):
+            new_left, new_right = change.new
+            self.value_left = Quantity(new_left, self.dimension)#, favunit=self.favunit)
+            self.value_right = Quantity(new_right, self.dimension)#, favunit=self.favunit)
+            self.value = self.value_left, self.value_right
+            self.label.value = str(self.value_left) + "-" + str(self.value_right)
+        self.rslider.observe(update_label_on_slider_change, names="value")
+
+        #def update_slider_value(change):
+        #    self.slider.value = change.new.value
+        #self.observe(update_slider_value, names="value")
+    
+        # display the quantity value of the slider in label
+        self.label = ipyw.Label(value=str(self.value_left) + "-" + str(self.value_right))
+        
+        if label:        
+            self.children = [
+                self.rslider,
+                self.label,
+            ]
+        else:
+            self.children = [
+                self.rslider,
+            ]
+
 
         
 
