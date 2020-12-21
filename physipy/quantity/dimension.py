@@ -165,7 +165,8 @@ class Dimension(object):
     def __rtruediv__(self, x):
         """Only used to raise a TypeError."""
         if x == 1:   # allowing one-divion
-            return self.inverse()
+            #return self.inverse()
+            return self**-1
         else:
             raise TypeError("A Dimension can only divide 1 to be inverted.")
 
@@ -186,10 +187,10 @@ class Dimension(object):
         """Return not (self == y)."""
         return not self.__eq__(y)
 
-    def inverse(self):
-        """Inverse the dimension by taking the negative of the powers."""
-        inv_dict = {key: -value for key, value in self.dim_dict.items()}
-        return Dimension(inv_dict)
+    #def inverse(self):
+    #    """Inverse the dimension by taking the negative of the powers."""
+    #    inv_dict = {key: -value for key, value in self.dim_dict.items()}
+    #    return Dimension(inv_dict)
 
     def siunit_dict(self):
         """Return a dict where keys are SI unit
