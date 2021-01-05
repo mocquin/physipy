@@ -331,6 +331,13 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # display the quantity value of the slider in label
         self.label = ipyw.Label(value=str(self.value_left) + "-" + str(self.value_right))
         
+        # todo : add callback to update frontend on value change
+        def update_slider_value(change):
+            self.rslider.value = change.new[0].value, change.new[1].value
+        self.observe(update_slider_value, names="value")
+        
+        
+        
         if label:        
             self.children = [
                 self.rslider,
