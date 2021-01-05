@@ -344,6 +344,72 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
         
 
+#import ipywidgets as ipyw
+#import physipy
+#import traitlets
+from physipy import dimensionify, Dimension, Quantity, units
+#from ipywidgets import Layout
+
+
+class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
+    dimension = traitlets.Instance(Dimension)
+    value = traitlets.Instance(Quantity, allow_none=True)
+    strfavunit = traitlets.Unicode()
+    
+    def __init__(self, dimension=None, all_units=False,
+                 **kwargs):
+        super().__init__(**kwargs)
+        #super().__init__(**kwargs)
+        
+        # pouvoir ajouter des favunits lors de l'initiatsation dans la liste
+
+        self.dimension = dimensionify(dimension)
+        self.units = units
+        self.units["-"] = Quantity(1, Dimension(None), symbol="-")
+        
+        # list of available units
+        if self.dimension == Dimension(None) or all_units:
+            self.favunit_str_list = [u_str for u_str, u_q in self.units.items() ]
+       # elif not all_units and self.dimension is not None:
+       #     self.favunit_str_list = [u_str for u_str, u_q in self.units.items() if self.dimension == u_q.dimension]
+        else:
+            self.favunit_str_list = [u_str for u_str, u_q in self.units.items() if self.dimension == u_q.dimension ]
+        self.favunit_str_list.append("-")
+        self.value = self.units["-"]
+        
+        # dropdown
+        self.favunit_dd = ipyw.Dropdown(
+                           options=self.favunit_str_list,
+            # set init value               
+            value=str(self.value.symbol),
+                           description='Favunit:',
+                           layout=Layout(width="30%",
+                                         margin="5px 5px 5px 5px",                                         
+                                         border="solid black")
+                                   )
+        
+
+        self.children = [self.favunit_dd]
+        
+        
+        ### 3. Change favunit
+        # selection of favunit
+        def update_favunit_on_favunit_dd_change(change):
+            # retrieve new favunit q
+            self.value = self.units[change.new]
+        self.favunit_dd.observe(update_favunit_on_favunit_dd_change, names="value")
+# -
+        def update_dd_value(change):
+            self.favunit_dd.value = str(change.new.symbol)
+        self.observe(update_dd_value, names="value")
+        
+        
+        
+        
+        
+        
+        
+        
 def ui_widget_decorate(inits_values):
     """
     inits_values contains list of tuples : 
