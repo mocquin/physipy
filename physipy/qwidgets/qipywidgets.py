@@ -267,6 +267,7 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     def __init__(self, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
                  fixed_dimension=False, label=True,#placeholder="Type python expr",
+                 favunit=None,
                  **kwargs):
         
         super().__init__(**kwargs)
@@ -279,6 +280,7 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # quantity work
         # set dimension
         value = quantify(min)
+        self.favunit = value.favunit or favunit
         self.dimension = value.dimension
         # if true, any change in value must have same dimension as initial dimension
         self.fixed_dimension = fixed_dimension
@@ -316,8 +318,8 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     
         def update_label_on_slider_change(change):
             new_left, new_right = change.new
-            self.value_left = Quantity(new_left, self.dimension)#, favunit=self.favunit)
-            self.value_right = Quantity(new_right, self.dimension)#, favunit=self.favunit)
+            self.value_left = Quantity(new_left, self.dimension, favunit=self.favunit)
+            self.value_right = Quantity(new_right, self.dimension, favunit=self.favunit)
             self.value = self.value_left, self.value_right
             self.label.value = str(self.value_left) + "-" + str(self.value_right)
         self.rslider.observe(update_label_on_slider_change, names="value")
