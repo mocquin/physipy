@@ -213,10 +213,10 @@ class QuantityTextSlider(QuantityText):
     """
     
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, description="", **kwargs)
+        super().__init__(*args, description="")
         
         self.qslider = QuantitySlider(*args,
-                                      label=False, 
+                                      label=False,
                                      **kwargs)
         
         
@@ -293,11 +293,12 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # set quantity
         self.value_left = qmin
         self.value_right = qmax
-        self.value = qmin, qmax
+
         
         self.qstep = qstep
         self.qmin = qmin
         self.qmax = qmax
+        self.value = self.qmin, self.qmax
         
         # set text widget
         self.rslider = ipyw.FloatRangeSlider(
