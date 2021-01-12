@@ -418,7 +418,7 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         
         
-def ui_widget_decorate(inits_values):
+def ui_widget_decorate(inits_values, kind="Text"):
     """
     inits_values contains list of tuples : 
      - quantity init value
@@ -436,7 +436,13 @@ def ui_widget_decorate(inits_values):
                               ("h", 1*m, "distance")])(disk_PSA_carth)
      
      """
-
+    if kind == "Text":
+        w = QuantityText
+    elif kind == "TextSlider":
+        w = QuantityTextSlider
+    else:
+        raise ValueError()
+    
     def decorator_func(func):
         
         # create a widget list for all inputs
@@ -444,10 +450,10 @@ def ui_widget_decorate(inits_values):
         for initq in inits_values:
             # if provided, use alias for param
             if len(initq) == 3:
-                qwidget_list.append(QuantityText(initq[1], description=initq[2]))
+                qwidget_list.append(w(initq[1], description=initq[2]))
             # else use param name
             else:
-                qwidget_list.append(QuantityText(initq[1], description=initq[0]))
+                qwidget_list.append(w(initq[1], description=initq[0]))
                 
         # wrap function to display result
         def display_func(*args, **kwargs):
@@ -483,7 +489,7 @@ def ui_widget_decorate(inits_values):
 
             
         
-def ui_widget_decorate_from_annotations(func):
+def ui_widget_decorate_from_annotations(func, kind="Text"):
     """
      Example
      -------
@@ -510,10 +516,10 @@ def ui_widget_decorate_from_annotations(func):
     if not sig.return_annotation == inspect._empty:
         func = set_favunit(sig.return_annotation)(func)
     
-    return ui_widget_decorate(inits_values)(func)
+    return ui_widget_decorate(inits_values, kind=kind)(func)
             
     
-def FunctionUI(tab_name, function_dict):
+def FunctionUI(tab_name, function_dict, kind="Text"):
     acc = ipyw.Accordion()
     
     sections_uis = []
@@ -522,7 +528,7 @@ def FunctionUI(tab_name, function_dict):
         function_uis = []
         # loop over all functions in section and generate ui
         for func in section_functions_list:
-            ui = ui_widget_decorate_from_annotations(func)
+            ui = ui_widget_decorate_from_annotations(func, kind=kind)
             function_uis.append(ui)
         box = ipyw.VBox(function_uis)
         sections_uis.append(box)
