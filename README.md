@@ -59,6 +59,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [ScientificPython.Scientific.Physics.PhysicalQuantities](https://github.com/ScientificPython/ScientificPython)
  - [numericalunits](https://github.com/sbyrnes321/numericalunits)
  - [dimensions.py](https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/) (python 2 only)
+ - [buckingham](https://github.com/mdipierro/buckingham)
  - [units](https://bitbucket.org/adonohue/units/)
  - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
  - [physical-quantities](https://github.com/hplgit/physical-quantities)
@@ -70,7 +71,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [misu](https://github.com/cjrh/misu)
  - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
 
-If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40).
+If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40). Also check this [comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages).
 
 ## License
 
