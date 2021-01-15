@@ -896,6 +896,13 @@ def np_dstack(tup):
 #             raise DimensionError(ary.dimension, to_begin.dimension)
 #    return Quantity(np.ediff1d(ary.value, to_end, to_begin))
 
+@implements(np.may_share_memory)
+def np_may_share_memory(a, b, max_work=None):
+    if not isinstance(b, Quantity):
+        return np.may_share_memory(a.value, b, max_work=max_work)
+    if not isinstance(a, Quantity):
+        return np.may_share_memory(a, b.value, max_work=max_work)
+    return np.may_share_memory(a.value, b.value, max_work=max_work)
 
 @implements(np.sum)
 def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
