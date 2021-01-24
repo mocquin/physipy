@@ -943,6 +943,36 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.average(arr_m), 2*m)
         self.assertEqual(np.average(5*m), 5*m)
         
+        # np.broadcast_arrays
+        x = np.array([[1,2,3]])*m
+        y = np.array([[4],[5]])*K
+        res = np.broadcast_arrays(x, y)
+        self.assertTrue(
+            np.all(res[0] == np.array([[1, 2, 3],
+                                       [1, 2, 3]])*m
+                  )
+        )
+        self.assertTrue(
+            np.all(res[1] == np.array([[4, 4, 4],
+                                       [5, 5, 5]])*K
+                  )
+        )
+        
+        x = np.array([[1,2,3]])*m
+        y = np.array([[4],[5]])
+        res = np.broadcast_arrays(x, y)
+
+        self.assertTrue(
+            np.all(res[0] == np.array([[1, 2, 3],
+                                         [1, 2, 3]])*m
+                  )
+        )
+        self.assertTrue(
+            np.all(res[1] == np.array([[4, 4, 4],
+                                       [5, 5, 5]])
+                  )
+        )
+        
         # np.block
         #A = np.eye(2) * 2 * m
         #B = np.eye(3) * 3

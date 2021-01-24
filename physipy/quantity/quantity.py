@@ -798,6 +798,18 @@ def np_broadcast_to(array, *args, **kwargs):
     return Quantity(np.broadcast_to(array.value, *args, **kwargs), array.dimension)
 
 
+@implements(np.broadcast_arrays)
+def np_broadcast_arrays(*args, **kwargs):
+    qargs = [quantify(a) for a in args]
+    # get arrays values
+    arrs = [qarg.value for qarg in qargs]
+    # get broadcasted arrays
+    res = np.broadcast_arrays(*arrs, **kwargs)
+    return [Quantity(r, q.dimension) for r, q in zip(res, qargs)]
+
+
+
+
 @implements(np.clip)
 def np_clip(a, a_min, a_max, *args, **kwargs):
     a_min = quantify(a_min)
