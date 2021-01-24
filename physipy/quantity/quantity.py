@@ -808,6 +808,9 @@ def np_broadcast_arrays(*args, **kwargs):
     return [Quantity(r, q.dimension) for r, q in zip(res, qargs)]
 
 
+@implements(np.may_share_memory)
+def np_may_share_memory(a, b, **kwargs):
+    return np.may_share_memory(a.value, b.value, **kwargs)
 
 
 @implements(np.clip)
