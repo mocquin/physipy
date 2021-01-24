@@ -1,6 +1,6 @@
 # physipy
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
-
+[![PyPI version](https://badge.fury.io/py/physipy.svg)](https://badge.fury.io/py/physipy)
 
 This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
 
