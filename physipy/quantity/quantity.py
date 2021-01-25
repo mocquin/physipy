@@ -864,7 +864,7 @@ def np_cross(a, b, **kwargs):
 
 @implements(np.cumsum)
 def np_cumsum(a, **kwargs):
-    return Quantity(np.cumsum(a.value), a.dimension)
+    return Quantity(np.cumsum(a.value, **kwargs), a.dimension)
 
 
 @implements(np.diagonal)
