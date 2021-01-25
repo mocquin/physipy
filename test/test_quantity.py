@@ -1061,6 +1061,8 @@ class TestQuantity(unittest.TestCase):
         # np.sum
         self.assertEqual(np.sum(arr_m), 6 * m)
         self.assertEqual(np.sum(5*m), 5 * m)
+        self.assertTrue(np.all(np.sum(np.array([[1, 2, 3],
+                                         [1, 2, 3]])*m, axis=1) ==  np.array([6, 6])*m))
         
         # np.mean
         self.assertEqual(np.mean(arr_m), 2*m)
