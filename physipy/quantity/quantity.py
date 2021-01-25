@@ -27,7 +27,7 @@ TODO:
  - [ ] : for trigo method, prevent when unit is sr ?
  - [X] : create a Wrong dimension Error, for trigo functions for eg
  - [X] : deal with numpy slicing a[a>1]
- - [ ] : improve integration of eq, ne (ex : assertNotEqual when dealing with arrays)
+ - [ ] : improve Inration of eq, ne (ex : assertNotEqual when dealing with arrays)
  - [ ] : when uncertainties is implemented, add an automatic plotting
  - [X] : add a format method --> need a refactor of repr..
  - [X] : add a method to reset favunit ?
@@ -61,9 +61,6 @@ PROPOSITIONS/QUESTIONS :
 
 """
 
-import scipy
-import scipy.integrate
-import scipy.optimize
 
 import numbers as nb
 import numpy as np
