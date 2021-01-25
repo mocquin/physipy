@@ -917,7 +917,8 @@ def np_may_share_memory(a, b, max_work=None):
     return np.may_share_memory(a.value, b.value, max_work=max_work)
 
 @implements(np.sum)
-def np_sum(q): return Quantity(np.sum(q.value), q.dimension, favunit=q.favunit)
+def np_sum(q, **kwargs): 
+    return Quantity(np.sum(q.value, **kwargs), q.dimension, favunit=q.favunit)
 
 
 @implements(np.mean)
