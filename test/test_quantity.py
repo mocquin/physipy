@@ -1082,6 +1082,8 @@ class TestQuantity(unittest.TestCase):
         
         # np.trapz
         self.assertEqual(np.trapz(arr_m), 4*m)
+        self.assertEqual(np.trapz(arr_m, dx=1*m), 4*m**2)
+        
         
         # np.linspace
         self.assertTrue(np.all(np.linspace(0*m, 5*m) == Quantity(np.linspace(0, 5), Dimension("L"))))

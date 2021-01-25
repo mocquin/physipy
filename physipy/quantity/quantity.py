@@ -938,13 +938,19 @@ def np_var(q): return Quantity(np.var(q.value), q.dimension**2)
 
 
 @implements(np.trapz)
-def np_trapz(q, **kwargs):
+def np_trapz(q, x=None, dx=1, **kwargs):
     if not isinstance(q.value,np.ndarray):
             raise TypeError("Quantity value must be array-like to integrate.")
-    return Quantity(np.trapz(q.value, **kwargs),
-                       q.dimension,
-                       favunit = q.favunit)
-
+    if x is None:    
+        dx = quantify(dx)
+        return Quantity(np.trapz(q.value, dx=dx.value, **kwargs),
+                    q.dimension * dx.dimension,
+                    )
+    else:
+        x = quantify(x)
+        return Quantity(np.trapz(q.value, x=x.value, **kwargs),
+                    q.dimension * x.dimension,
+                    )
 
 @implements(np.alen)
 def np_alen(a):
