@@ -230,6 +230,20 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(TypeError):
             for i in 5*s: print("i")
             
+            
+    def test_51_iterator_2d(self):
+        # check that iteration works
+        # on 2d arrays
+        ech_t = np.linspace(1, 10, num=10)*s
+        ech_d = np.linspace(1, 20, num=20)*m
+     
+        T, D = np.meshgrid(ech_t, ech_d)
+        res = []
+        for i in T:
+            res.append(i)
+        for q in res:
+            self.assertTrue(np.all(q == T[0]))
+
         
     def test_60_add_sub(self):
         with self.assertRaises(DimensionError):

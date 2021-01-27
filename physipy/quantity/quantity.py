@@ -507,7 +507,7 @@ class Quantity(object):
     
     def mean(self, **kwargs): return np.mean(self, **kwargs)
     
-    def integrate(self, **kwargs): return np.trapz(self, **kwargs)
+    def integrate(self, *args, **kwargs): return np.trapz(self, *args, **kwargs)
     
     def is_dimensionless(self):
         return self.dimension == Dimension(None)
@@ -1239,7 +1239,7 @@ class QuantityIterator(object):
         self.dimension = q.dimension
         self.favunit = q.favunit
         if isinstance(q.value, np.ndarray):
-            self.length = q.value.size
+            self.length = q.value.shape[0]
         else:
             self.length = 1
         self.count = 0
