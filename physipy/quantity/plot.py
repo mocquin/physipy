@@ -41,3 +41,45 @@ def setup_matplotlib(enable=True):
         munits.registry.pop(Quantity, None)
     else:
         munits.registry[Quantity] = QuantityConverter()
+        
+def plotting_context():
+    """Context for plotting with Quantity objects
+    Based on : 
+        https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
+    """
+    
+    from matplotlib import units
+    from matplotlib import ticker
+
+    # Get all subclass for Quantity, since matplotlib checks on class,
+    # not subclass.
+    def all_issubclass(cls):
+        return {cls}.union(
+            [s for c in cls.__subclasses__() for s in all_issubclass(c)])
+
+
+    class MplQuantityConverter(QuantityConverter):
+
+        _all_issubclass_quantity = all_issubclass(Quantity)
+
+        def __init__(self):
+
+            # Keep track of original converter in case the context manager is
+            # used in a nested way.
+            self._original_converter = {}
+
+            for cls in self._all_issubclass_quantity:
+                self._original_converter[cls] = munits.registry.get(cls)
+                munits.registry[cls] = self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, type, value, tb):
+            for cls in self._all_issubclass_quantity:
+                if self._original_converter[cls] is None:
+                    del munits.registry[cls]
+                else:
+                    munits.registry[cls] = self._original_converter[cls]
+
+    return MplQuantityConverter()
