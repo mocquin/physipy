@@ -1163,6 +1163,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(a.T == np.array([[1, 0], [0, 1]]).T*m))
         
         
+    def test_transpose_fail(self):
         with self.assertRaises(AttributeError):
             # a = 5
             # a.T raises AttributeError
@@ -1563,16 +1564,17 @@ class TestQuantity(unittest.TestCase):
             self.assertEqual(fx, x)
             
     def test_flatten(self):
-        q = 5*m
         arr = np.arange(10).reshape(5,2)
         qarr = arr*m
         
         self.assertTrue(np.all(
         qarr.flatten() == np.arange(10)*m
         ))
-        
+    
+    def test_flatten_raises(self):
+        qflat = 5*m
         with self.assertRaises(AttributeError):
-            q.flatten()
+            qflat.flatten()
         
     def test_ravel(self):
         
