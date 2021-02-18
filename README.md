@@ -44,6 +44,11 @@ The implementation is pretty simple :
 - By default, a Quantity is displayed in term of SI untis. To express a Quantity in another unit, just set the "favunit", which stands for "favourite unit" of the Quantity : ```my_toe_length.favunit = mm```.
 - Plenty of common units (ex : Watt) and constants (ex : speed of light) are packed in. Your physical quantities (```my_toe_length```), units (```kg```), and constants (```kB```) are all Quantity objects.
 
+## About angles and units
+
+See : https://www.bipm.org/en/CGPM/db/20/8/.
+Astropy's base units : https://docs.astropy.org/en/stable/units/standard_units.html#enabling-other-units
+
 ## Alternative packages
 
 There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
