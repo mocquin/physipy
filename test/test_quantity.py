@@ -1003,6 +1003,24 @@ class TestQuantity(unittest.TestCase):
         #    ])*m
         #self.assertTrue(np.all(res, exp))
         
+        # np.copyto
+        a = np.array([1, 1, 1])*m
+        b = np.array([1, 2, 3])*m
+        np.copyto(a, b)
+        self.assertTrue(np.all(a == np.array([1, 2, 3])*m))
+        
+        with self.assertRaises(DimensionError):
+            a = np.array([1, 1, 1])*m
+            b = np.array([1, 2, 3])*s
+            np.copyto(a, b)
+
+        with self.assertRaises(DimensionError):
+            a = np.array([1, 1, 1])
+            b = np.array([1, 2, 3])*s
+            np.copyto(a, b)
+
+            
+            
         # np.clip
         self.assertTrue(np.all(np.clip(np.arange(10)*m,
                                        2*m, 

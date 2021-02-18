@@ -821,6 +821,14 @@ def np_clip(a, a_min, a_max, *args, **kwargs):
     return Quantity(np.clip(a.value, a_min.value,
                             a_max.value, *args, **kwargs), a.dimension)
 
+@implements(np.copyto)
+def np_copyto(dst, src, **kwargs):
+    dst = quantify(dst)
+    src = quantify(src)
+    if dst.dimension != src.dimension:
+        raise DimensionError(dst.dimension, src.dimension)
+    return np.copyto(dst.value, src.value, **kwargs)
+
 
 @implements(np.column_stack)
 def np_column_stack(tup):
