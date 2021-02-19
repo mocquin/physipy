@@ -1026,7 +1026,27 @@ def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
     res = np.interp(x.value, xp.value, fp.value, left_v, right_v, *args, **kwargs)
     return Quantity(res, fp.dimension)
 
-
+#@implements(np.asarray)
+#def np_array(a):
+#    print("np_array implm phyispy")
+#    return np.asarray(a.value)*m
+#
+#
+#@implements(np.empty)
+#def np_empty(shape, dtype=float, order='C'):
+#    return np.empty(shape,dtype=float, order=order)
+#
+#@implements(np.full)
+#def np_full(shape, fill_value, dtype=None, order='C'):
+#    print("In np_full")
+#    if dtype is None:
+#        fill_value = np.asarray(fill_value)
+#        dtype = fill_value.dtype
+#    a = np.empty(shape, dtype, order)
+#    np.copyto(a, fill_value, casting='unsafe')
+#    return a
+    
+    
 @implements(np.fft.fft)
 def np_fft_fft(a, *args, **kwargs):
     """Numpy fft.fft wrapper for Quantity objects.
