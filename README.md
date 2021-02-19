@@ -44,6 +44,19 @@ The implementation is pretty simple :
 - By default, a Quantity is displayed in term of SI untis. To express a Quantity in another unit, just set the "favunit", which stands for "favourite unit" of the Quantity : ```my_toe_length.favunit = mm```.
 - Plenty of common units (ex : Watt) and constants (ex : speed of light) are packed in. Your physical quantities (```my_toe_length```), units (```kg```), and constants (```kB```) are all Quantity objects.
 
+
+## Numpy's support
+See [NEP35](https://numpy.org/neps/nep-0035-array-creation-dispatch-with-array-function.html#nep35).
+
+## Known issues
+
+### numpy.full
+```python
+import numpy as np
+from physipy import m
+np.full((3,3), 2*m)
+```
+
 ## About angles and units
 
 See : https://www.bipm.org/en/CGPM/db/20/8/.
