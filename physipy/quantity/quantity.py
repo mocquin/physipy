@@ -810,6 +810,12 @@ def np_broadcast_arrays(*args, **kwargs):
     res = np.broadcast_arrays(*arrs, **kwargs)
     return [Quantity(r, q.dimension) for r, q in zip(res, qargs)]
 
+@implements(np.linalg.lstsq)
+def np_linalg_lstsq(a, b, **kwargs):
+    a = quantify(a)
+    b = quantify(b)
+    sol = np.linalg.lstsq(a.value, b.value, **kwargs)
+    return Quantity(sol, b.dimension/a.dimension)
 
 @implements(np.may_share_memory)
 def np_may_share_memory(a, b, **kwargs):
