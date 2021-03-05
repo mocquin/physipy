@@ -172,6 +172,12 @@ class Quantity(object):
                         symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
+    
+    def __matmul__(self, y):
+        y = quantify(y)
+        return Quantity(self.value @ y.value,
+                        self.dimension * y.dimension, 
+                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
 
     def __truediv__(self, y):
         y = quantify(y)

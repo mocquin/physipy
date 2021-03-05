@@ -276,6 +276,22 @@ class TestQuantity(unittest.TestCase):
                                  self.y_q.dimension * self.x_q.dimension)))
 
         
+    def test_75_matmul(self):
+        a = np.array([1, 1, 1])*m
+        b = np.array([1, 2, 3])*m
+        
+        self.assertEqual(a @ b,
+                        6*m**2
+                        )
+        
+        a = np.array([1, 1, 1])*m
+        b = np.array([1, 2, 3])*K
+        
+        self.assertEqual(a @ b,
+                        6*m*K
+                        )
+        
+        
     
     def test_80_pow(self):
         # x_q
