@@ -998,10 +998,10 @@ def np_linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, a
 
 
 @implements(np.meshgrid)
-def np_meshgrid(x, y):
+def np_meshgrid(x, y, **kwargs):
     x = quantify(x)
     y = quantify(y)
-    res_x, res_y = np.meshgrid(x.value, y.value)
+    res_x, res_y = np.meshgrid(x.value, y.value, **kwargs)
     return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
 
 
