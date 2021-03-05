@@ -1193,6 +1193,21 @@ def np_convolve(a, v, *args, **kwargs):
     res = np.convolve(a.value, v.value, **kwargs)
     return Quantity(res, a.dimension * v.dimension)
 
+
+@implements(np.vstack)
+def np_vstack(tup):
+    dim = tup[0].dimension
+    new_tup = []
+    for t in tup:
+        t = quantify(t)
+        if not t.dimension == dim:
+            raise DimensionError(dim, t.dimension)
+        new_tup.append(t.value)
+    return Quantity(np.vstack(new_tup), dim)
+
+
+
+
 # 2 in : same dimension ---> out : same dim as in
 same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]
 # 2 in : same dim ---> out : not a quantity

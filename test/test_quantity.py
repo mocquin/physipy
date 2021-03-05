@@ -1705,6 +1705,20 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.convolve(arr_s, arr) == np.convolve(np.ones(10), np.ones(10))*s))
         self.assertTrue(np.all(np.convolve(arr_s, arr_s) == np.convolve(np.ones(10), np.ones(10))*s**2))
         
+    def test_np_vstack(self):
+        a = np.array([[1, 1, 1], 
+                      [1, 3, 4],
+                      [4, 6, 1]])*m
+        b = np.array([1, 0.5, 3])*m
+        c = np.array([1, 0.5, 3])*K
+        
+        
+        self.assertTrue(np.all(np.vstack((a, a)) == np.vstack((a.value, a.value))*m))
+        self.assertTrue(np.all(np.vstack((a, b)) == np.vstack((a.value, b.value))*m))
+        
+        with self.assertRaises(DimensionError):
+            np.vstack((a, c))
+        
         
 if __name__ == "__main__":
     unittest.main()
