@@ -656,6 +656,12 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.multiply(arr_m, m) == Quantity(arr * 1, Dimension({"L":2}))))
         self.assertTrue(np.all(np.multiply(arr_m, arr_m) == Quantity(arr * arr, Dimension({"L":2}))))
         
+        
+        # matmul
+        self.assertTrue(np.all(np.matmul(arr_m, arr_m) == Quantity(arr @ arr, Dimension({"L":2}))))
+        
+        
+        
         # div
         self.assertTrue(np.all(m / arr_m == np.array([1/1, 1/2, 1/3])))
         self.assertTrue(np.all(arr_m / m == np.array([1.,2.,3.])))

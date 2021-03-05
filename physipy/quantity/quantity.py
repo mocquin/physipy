@@ -654,7 +654,7 @@ class Quantity(object):
         elif ufunc_name in skip_2:
             other = quantify(args[1])
             res = ufunc.__call__(left.value, other.value)    
-            if ufunc_name == "multiply":
+            if ufunc_name == "multiply" or ufunc_name == "matmul":
                 return Quantity(res, left.dimension * other.dimension)
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
                 return Quantity(res, left.dimension / other.dimension).rm_dim_if_dimless()
@@ -1199,7 +1199,7 @@ same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmi
 same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal", "floor_divide"] 
 same_dim_in_1_nodim_out = ["sign", "isfinite", "isinf", "isnan"]
 # 2 in : any ---> out : depends
-skip_2 = ["multiply", "divide", "true_divide", "copysign", "nextafter"]
+skip_2 = ["multiply", "divide", "true_divide", "copysign", "nextafter", "matmul"]
 # 1 in : any ---> out : depends
 special_dict = ["sqrt", "power", "reciprocal", "square", "cbrt", "modf"]
 # 1 in : no dim ---> out : no dim
