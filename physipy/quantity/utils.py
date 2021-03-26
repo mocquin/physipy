@@ -437,6 +437,7 @@ def asqarray(array_like):
             # check all value for dim consistency
             if isinstance(array_like[0], Quantity):
                 dim = array_like[0].dimension
+                shape = array_like.shape
                 val_list = []
                 for q in array_like:
                     if q.dimension == dim:    
@@ -444,7 +445,7 @@ def asqarray(array_like):
                         res_val = np.array(val_list)
                     else:
                         raise DimensionError(q.dim, dim)
-                return Quantity(res_val, dim)
+                return Quantity(res_val.reshape(shape), dim)
             else:
                 return quantify(array_like)
         # array is mono element
