@@ -411,22 +411,64 @@ def list_of_Q_to_Q_array(Q_list):
 #    return Quantity(np.array(val_list), dim)
 
 
+
+from collections.abc import Iterable
+
+def _flatten(x):
+    if isinstance(x, list):
+        return [a for i in x for a in _flatten(i)]
+    else:
+        return [x]
+
+def _is_nested(a):
+    return any(isinstance(i, list) for i in a)
+
+def _shape(lst):
+    def ishape(lst):
+        shapes = [ishape(x) if isinstance(x, list) else [] for x in lst]
+        shape = shapes[0]
+        if shapes.count(shape) != len(shapes):
+            raise ValueError('Ragged list')
+        shape.append(len(lst))
+        return shape
+    return tuple(reversed(ishape(lst)))
+
+def _wrap(a):
+    if _is_nested(a):
+        shape = _shape(a)
+        flatten = list(_flatten(a))
+        return flatten, shape
+    else:
+        return a
+
+
+
+
+
+
 def asqarray(array_like):
     """The value returned will always be a Quantity with array value"""
     
     # tuple or list
     if isinstance(array_like, list) or isinstance(array_like, tuple):
         # here should test if any is quantity, not the first one
-        if isinstance(array_like[0], Quantity):
-            dim = array_like[0].dimension
+        # also should test if list is flat or nested
+        if any(isinstance(i, Quantity) for i in array_like):
+            dim = quantify(array_like[0]).dimension
             val_list = []
             for q in array_like:
+                q = quantify(q)
                 if q.dimension == dim:    
                     val_list.append(q.value)
                     res_val = np.array(val_list)
                 else:
-                    raise DimensionError(q.dim, dim)
+                    raise DimensionError(q.dimension, dim)
             return Quantity(res_val, dim)
+        elif isinstance(array_like[0], list):
+            flat_array, shape = _wrap(array_like)
+            q = asqarray(flat_array)
+            q.value = q.value.reshape(shape)
+            return q
         # list/tuple of non-quantity value
         else:
             return quantify(array_like)
