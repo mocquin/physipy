@@ -1211,6 +1211,16 @@ def np_vstack(tup):
         new_tup.append(t.value)
     return Quantity(np.vstack(new_tup), dim)
 
+@implements(np.hstack)
+def np_hstack(tup):
+    dim = tup[0].dimension
+    new_tup = []
+    for t in tup:
+        t = quantify(t)
+        if not t.dimension == dim:
+            raise DimensionError(dim, t.dimension)
+        new_tup.append(t.value)
+    return Quantity(np.hstack(new_tup), dim)
 
 
 

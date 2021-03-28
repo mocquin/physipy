@@ -1719,6 +1719,20 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.vstack((a, c))
         
+    def test_np_hstack(self):
+        a = np.array([[1, 1, 1], 
+                      [1, 3, 4],
+                      [4, 6, 1]])*m
+        b = np.array([[1], [0.5], [3]])*m
+        c = np.array([[1], [0.5], [3]])*K
+        
+        
+        self.assertTrue(np.all(np.hstack((a, a)) == np.hstack((a.value, a.value))*m))
+        self.assertTrue(np.all(np.hstack((a, b)) == np.hstack((a.value, b.value))*m))
+        
+        with self.assertRaises(DimensionError):
+            np.hstack((a, c))
+        
         
 if __name__ == "__main__":
     unittest.main()
