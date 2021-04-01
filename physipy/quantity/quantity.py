@@ -339,6 +339,19 @@ class Quantity(object):
     #    print("repr_pretty")
     #    return p.text(self._repr_latex_())
     
+    def plot(self, kind="y", other=None, ax=None):
+        from physipy.quantity.plot import plotting_context
+        if ax is None:
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplots()
+        with plotting_context():
+            if kind =="y" and other is None:
+                ax.plot(self)
+            elif kind =="x" and other is not None:
+                ax.plot(self, other)
+            else:
+                raise ValueError("kind must be y of x with other")
+    
     def _repr_latex_(self):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
