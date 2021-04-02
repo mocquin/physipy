@@ -19,7 +19,10 @@ from physipy.quantity.utils import asqarray
 from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
 
+
 km = units["km"]
+m = units["m"]
+print("m value", type(m.value))
 sr = units["sr"]
 
 class TestQuantity(unittest.TestCase):
@@ -173,26 +176,26 @@ class TestQuantity(unittest.TestCase):
         variable = 4.5
         self.assertEqual(interp(variable, tab_x, tab_y),6.5)
         # Quantité interpole array
-        m = Quantity(1,Dimension("L"),symbol="m")
+        #m = Quantity(1,Dimension("L"),symbol="m")
         tab_x = np.array([1, 2,3,4,5,6,7,8,9,10])*m
         tab_y = np.array([10,9,8,7,6,5,4,3,2,1])
         variable = 4.5*m
         self.assertEqual(interp(variable, tab_x, tab_y),6.5)
         # Quantite interpole quantite
-        m = Quantity(1,Dimension("L"),symbol="m")
+        #m = Quantity(1,Dimension("L"),symbol="m")
         tab_x = np.array([1, 2,3,4,5,6,7,8,9,10])*m
         tab_y = np.array([10,9,8,7,6,5,4,3,2,1])*m**2
         variable = 4.5*m
         self.assertEqual(interp(variable, tab_x, tab_y),6.5*m**2)
         # Array interpole quantite
-        m = Quantity(1,Dimension("L"),symbol="m")
+        #m = Quantity(1,Dimension("L"),symbol="m")
         tab_x = np.array([1, 2,3,4,5,6,7,8,9,10])
         tab_y = np.array([10,9,8,7,6,5,4,3,2,1])*m
         variable = 4.5
         self.assertEqual(interp(variable, tab_x, tab_y),6.5*m)
         # Interpole quantité par réel
         with self.assertRaises(DimensionError):
-            m = Quantity(1,Dimension("L"),symbol="m")
+            #m = Quantity(1,Dimension("L"),symbol="m")
             tab_x = np.array([1, 2,3,4,5,6,7,8,9,10])*m
             tab_y = np.array([10,9,8,7,6,5,4,3,2,1])
             variable = 4.5
@@ -200,7 +203,7 @@ class TestQuantity(unittest.TestCase):
             
         # Interpole array par quantité
         with self.assertRaises(DimensionError):
-            m = Quantity(1,Dimension("L"),symbol="m")
+            #m = Quantity(1,Dimension("L"),symbol="m")
             tab_x = np.array([1, 2,3,4,5,6,7,8,9,10])
             tab_y = np.array([10,9,8,7,6,5,4,3,2,1])
             variable = 4.5*m
@@ -208,7 +211,7 @@ class TestQuantity(unittest.TestCase):
             
         # Interpole Quantité avec mauvais dimension
         with self.assertRaises(DimensionError):
-            m = Quantity(1,Dimension("L"),symbol="m")
+            #m = Quantity(1,Dimension("L"),symbol="m")
             tab_x = np.array([1,2,3,4,5,6,7,8,9,10])*Quantity(1,
                                                               Dimension("J"),
                                                               symbol="cd")
@@ -244,7 +247,7 @@ class TestQuantity(unittest.TestCase):
         for q in res:
             self.assertTrue(np.all(q == T[0]))
 
-        
+
     def test_60_add_sub(self):
         with self.assertRaises(DimensionError):
             self.x_q + 1
@@ -290,8 +293,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(a @ b,
                         6*m*K
                         )
-        
-        
+
     
     def test_80_pow(self):
         # x_q
@@ -375,7 +377,7 @@ class TestQuantity(unittest.TestCase):
 
     def test_120_linspace(self):
         
-        m = Quantity(1,Dimension("L"))
+        #m = Quantity(1,Dimension("L"))
         #self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), 
         #                                Dimension('L')) == linspace(1*m, 2*m, num=8)))
         #with self.assertRaises(DimensionError):
@@ -383,7 +385,7 @@ class TestQuantity(unittest.TestCase):
             
             
         # COMPARE TO np.linspace
-        m = Quantity(1,Dimension("L"))
+        #m = Quantity(1,Dimension("L"))
         self.assertTrue(np.all(Quantity(np.linspace(1, 2, num=8), 
                                         Dimension('L')) == np.linspace(1*m, 2*m, num=8)))
         with self.assertRaises(DimensionError):
@@ -529,6 +531,7 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(q, make_quantity(self.x_q, symbol='jojo'))
         self.assertEqual(str(q), str(make_quantity(self.x_q, symbol='jojo')))
         self.assertEqual(str(q.symbol), 'jojo')
+
         
         q = self.x_q.__copy__()
         mum = Quantity(0.000001,Dimension("L"), symbol="mum")
@@ -925,6 +928,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.fabs(-arr_m) == arr_m))
         self.assertTrue(np.all(np.fabs(Quantity(np.array([-1, 0, 1]), Dimension("L"))) == Quantity(np.array([1, 0, 1]), Dimension("L"))))
         
+
     def test_510_numpy_functions(self):
         
         arr = np.array([1,2,3])
@@ -1186,13 +1190,11 @@ class TestQuantity(unittest.TestCase):
         
         
     def test_transpose_fail(self):
+        #m = Quantity(1, Dimension("L"))
         with self.assertRaises(AttributeError):
-            # a = 5
-            # a.T raises AttributeError
-            q = 5*m
-            q.T
+            q_test = 5*m
+            q_test.T
 
-    
 
     def test_sum_builtin(self):
         # on list of 2 scalar-value-quantity
@@ -1246,6 +1248,7 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             wrapped_speed(1, 1*s)
         self.assertEqual(wrapped_speed(1*m, 1*s), 1*m / (1*s))
+        
         
     def test_501_decorator_favunit(self):
         def speed(l, t):
@@ -1332,7 +1335,6 @@ class TestQuantity(unittest.TestCase):
         
     def test_600_asqarray(self):
 
-
         self.assertTrue(np.all(
             asqarray([1*s, 2*s]) == Quantity([1, 2], Dimension("T"))
         ))
@@ -1391,12 +1393,12 @@ class TestQuantity(unittest.TestCase):
         out = asqarray(arrq_8)
         exp = Quantity([1], Dimension("L"))
         self.assertTrue(np.all(out == exp))
-        
-        arrq_9 = np.array([m], dtype=object)
+
+        arrq_9 = np.array([m.__copy__()], dtype=object)
         out = asqarray(arrq_9)
         exp = Quantity(np.array([1]), Dimension("L"))
         self.assertTrue(np.all(out == exp))
-        
+
         arrq_10 = np.array([1, 2, 3])
         out = asqarray(arrq_10)
         exp = Quantity(np.array([1, 2, 3]), Dimension(None))
@@ -1450,9 +1452,6 @@ class TestQuantity(unittest.TestCase):
         out = asqarray(arrq_10)
         exp = Quantity(np.array([1, 2, 3]), Dimension(None))
         self.assertTrue(np.all(out == exp))
-
-    
-    
     
         
     def test_std(cls):
