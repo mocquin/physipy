@@ -22,7 +22,6 @@ from physipy.quantity.utils import qarange
 
 km = units["km"]
 m = units["m"]
-print("m value", type(m.value))
 sr = units["sr"]
 
 class TestQuantity(unittest.TestCase):
