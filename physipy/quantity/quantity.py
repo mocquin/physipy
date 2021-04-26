@@ -1018,6 +1018,10 @@ def np_meshgrid(x, y, **kwargs):
     return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
 
 
+@implements(np.real)
+def np_real(a):
+    return Quantity(np.real(a.value), a.dimension)
+
 @implements(np.ravel)
 def np_ravel(a, *args, **kwargs):
     return Quantity(np.ravel(a.value, *args, **kwargs), a.dimension)

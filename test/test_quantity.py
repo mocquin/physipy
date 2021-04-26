@@ -1177,6 +1177,11 @@ class TestQuantity(unittest.TestCase):
         a = np.array([1, 2, 3])*m
         self.assertTrue(np.all(a.real == np.array([1, 2, 3])*m))
         
+    def test_np_real(self):
+        self.assertEqual(np.real(m), m)
+        self.assertTrue(np.all(np.real(np.array([1, 2, 3])*m)==np.array([1, 2, 3])*m))
+        self.assertTrue(np.all(np.real(np.array([1+0j, 2+0j, 3+0j])*m)==np.array([1, 2, 3])*m))
+        
         
     def test_imag(self):
         self.assertEqual(m.imag, 0*m)
