@@ -965,6 +965,9 @@ class TestQuantity(unittest.TestCase):
         
         # np.argsort
         self.assertTrue(np.all(np.argsort(np.arange(5)*m)==np.arange(5)))
+        
+        # np.sort
+        self.assertTrue(np.all(np.sort(np.arange(5)*m)==np.arange(5)*m))
 
         # np.around
         self.assertTrue(np.all(np.around(np.linspace(2.2, 3.656, 10)*m) == np.around(np.linspace(2.2, 3.656, 10))*m))

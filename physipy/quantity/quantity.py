@@ -775,6 +775,10 @@ def np_argmax(a, **kwargs):
 def np_argsort(a, **kwargs):
     return np.argsort(a.value, **kwargs)
 
+@implements(np.sort)
+def np_sort(a, **kwargs):
+    return Quantity(np.sort(a.value, **kwargs), a.dimension)
+
 
 @implements(np.argmin)
 def np_argmin(a, **kwargs):
