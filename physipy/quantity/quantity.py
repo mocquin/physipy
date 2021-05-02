@@ -999,6 +999,26 @@ def np_alen(a):
 #    return np.all(a.value)
 
 
+@implements(np.ones_like)
+def np_ones_like(a, **kwargs):
+    return np.ones_like(a.value, **kwargs)
+
+@implements(np.zeros_like)
+def np_zeros_like(a, **kwargs):
+    return np.zeros_like(a.value, **kwargs)
+
+@implements(np.full_like)
+def np_full_like(a, fill_value, **kwargs):
+    a = quantify(a)
+    fill_value = quantify(fill_value)
+    return Quantity(np.full_like(a.value, fill_value.value, **kwargs),
+                    fill_value.dimension)
+
+@implements(np.empty_like)
+def np_empty_like(prototype, **kwargs):
+    return np.empty_like(prototype.value, **kwargs)
+
+
 @implements(np.shape)
 def np_shape(a):
     return np.shape(a.value)
