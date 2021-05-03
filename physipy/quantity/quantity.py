@@ -140,10 +140,10 @@ class Quantity(object):
             else:
                 raise TypeError(("Favorite unit of Quantity must be a Quantity "
                                  "or None, not {}").format(type(value)))
-        elif name == "description":
-            if not isinstance(value, str):
-                raise TypeError("desc attribute must be a string.")
-            super().__setattr__(name, value)
+        #elif name == "description":
+        #    if not isinstance(value, str):
+        #        raise TypeError("desc attribute must be a string.")
+        #    super().__setattr__(name, value)
         else:
             super().__setattr__(name, value)
 
