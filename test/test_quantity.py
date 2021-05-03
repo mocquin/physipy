@@ -631,6 +631,11 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual((1j+1) * m + 1 * m, Quantity((1j+2), Dimension("L")))
         self.assertEqual((2j+4) * m + (5j-1) * m, Quantity((7j+3), Dimension("L")))
 
+    def test_pos_neg(self):
+        self.assertEqual(+m, m)
+        self.assertTrue(np.all(+np.array([1,2,3])*m == np.array([1,2,3])*m))
+        self.assertEqual(-m, Quantity(-1, Dimension("L")))
+        
         
     def test_500_numpy_ufuncs(self):
         
