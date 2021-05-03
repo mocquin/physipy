@@ -227,6 +227,8 @@ class Quantity(object):
 
     def __neg__(self): return self * (-1)
     
+    def __pos__(self): return self
+    
     def __len__(self): return len(self.value)
     
     def __bool__(self): return bool(self.value)
