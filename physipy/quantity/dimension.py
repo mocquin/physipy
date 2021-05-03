@@ -43,6 +43,8 @@ with open(os.path.join(dirname, "dimension.txt")) as file:
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
+NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST}
+
 
 def parse_str_to_dic(exp_str):
     parsed = parse_expr(exp_str)
@@ -82,7 +84,7 @@ class Dimension(object):
 
     def __init__(self, definition):
         """Allow the creation of Dimension object with 3 possibile ways."""
-        self.dim_dict = {dim: 0 for dim in SI_SYMBOL_LIST}
+        self.dim_dict = NULL_SI_DICT.copy()
         if definition is None:
             pass  # dim_dict already initialized
         # example : {"L":1, "T":-2}
