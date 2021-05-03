@@ -713,6 +713,14 @@ class Quantity(object):
                 frac, integ = res
                 return (Quantity(frac, left.dimension),
                        Quantity(integ, left.dimension))
+            elif ufunc_name == "arctan2":
+                # both x and y should have same dim such that the ratio is dimless
+                other = quantify(args[1])
+                if not left.dimension == other.dimension:
+                    raise DimensionError(left.dimension, other.dimension)
+                # use the value so that the 0-comparison works
+                res = ufunc.__call__(left.value, other.value, **kwargs)
+                return res
             else:
                 raise ValueError
         elif ufunc_name in same_dim_in_2_nodim_out:
@@ -726,12 +734,12 @@ class Quantity(object):
                 raise DimensionError(left.dimension, Dimension(None))
             res = ufunc.__call__(left.value)
             return res
-        elif ufunc_name in inv_angle_2:
-            other = quantify(args[1])
-            if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
-                raise DimensionError(left.dimension, Dimension(None))
-            res = ufunc.__call__(left.value, other.value)
-            return res
+        #elif ufunc_name in inv_angle_2:
+        #    other = quantify(args[1])
+        #    if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
+        #        raise DimensionError(left.dimension, Dimension(None))
+        #    res = ufunc.__call__(left.value, other.value)
+        #    return res
         elif ufunc_name in same_dim_in_1_nodim_out:
             res = ufunc.__call__(left.value)
             return res
@@ -1273,7 +1281,7 @@ same_dim_in_1_nodim_out = ["sign", "isfinite", "isinf", "isnan"]
 # 2 in : any ---> out : depends
 skip_2 = ["multiply", "divide", "true_divide", "copysign", "nextafter", "matmul"]
 # 1 in : any ---> out : depends
-special_dict = ["sqrt", "power", "reciprocal", "square", "cbrt", "modf"]
+special_dict = ["sqrt", "power", "reciprocal", "square", "cbrt", "modf", "arctan2"]
 # 1 in : no dim ---> out : no dim
 no_dim_1 = ["exp", "log", "exp2", "log2", "log10",
            "expm1", "log1p"]
@@ -1288,8 +1296,6 @@ same_out = ["ceil", "conjugate", "conj", "floor", "rint", "trunc", "fabs", "nega
 inv_angle_1 = ["arcsin", "arccos", "arctan",
               "arcsinh", "arccosh", "arctanh",
               ]
-# 2 in : dimless -> out : dimless
-inv_angle_2 = ["arctan2"]
 # dimless -> dimless
 deg_rad = ["deg2rad", "rad2deg"]
 

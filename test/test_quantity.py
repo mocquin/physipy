@@ -919,6 +919,14 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.arctanh(zero_none) == np.arctanh(0))
         # arctan2
         self.assertTrue(np.arctan2(one_none, one_none) == np.arctan2(1, 1))
+        self.assertTrue(np.arctan2(m, m) == np.arctan2(1, 1))
+        with self.assertRaises(DimensionError):
+            np.arctan2(m, 1)
+        with self.assertRaises(DimensionError):
+            np.arctan2(1, m)
+        self.assertTrue(np.arctan2(one_none, 1) == np.arctan2(1, 1))
+        self.assertTrue(np.arctan2(1, one_none) == np.arctan2(1, 1))
+
         
         # fabs
         self.assertEqual(np.fabs(m), m)
