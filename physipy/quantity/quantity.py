@@ -986,8 +986,9 @@ def np_var(q): return Quantity(np.var(q.value), q.dimension**2)
 
 @implements(np.trapz)
 def np_trapz(q, x=None, dx=1, **kwargs):
-    if not isinstance(q.value,np.ndarray):
-            raise TypeError("Quantity value must be array-like to integrate.")
+    #if not isinstance(q.value,np.ndarray):
+    #        raise TypeError("Quantity value must be array-like to integrate.")
+    q = quantify(q)
     if x is None:    
         dx = quantify(dx)
         return Quantity(np.trapz(q.value, dx=dx.value, **kwargs),
