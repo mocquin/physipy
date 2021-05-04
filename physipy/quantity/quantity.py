@@ -991,7 +991,7 @@ def np_trapz(q, x=None, dx=1, **kwargs):
     q = quantify(q)
     if x is None:    
         dx = quantify(dx)
-        return Quantity(np.trapz(q.value, dx=dx.value, **kwargs),
+        return Quantity(np.trapz(q.value, x=None, dx=dx.value, **kwargs),
                     q.dimension * dx.dimension,
                     )
     else:

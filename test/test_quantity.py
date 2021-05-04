@@ -1158,6 +1158,12 @@ class TestQuantity(unittest.TestCase):
         # np.trapz
         self.assertEqual(np.trapz(arr_m), 4*m)
         self.assertEqual(np.trapz(arr_m, dx=1*m), 4*m**2)
+        # q array, dx quantity --> see issue on GH
+        #self.assertEqual(np.trapz(np.arange(5), dx=1*m),
+        #                 np.trapz(np.arange(5), dx=1)*m)
+        # q array, x quantity
+        self.assertEqual(np.trapz(np.arange(5), x=np.arange(5)*m),
+                         np.trapz(np.arange(5), x=np.arange(5))*m)
         
         
         # np.linspace
