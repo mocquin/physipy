@@ -218,9 +218,9 @@ class Quantity(object):
         since the quantities won't be the same dimension.
         
         """
-        if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
-            raise TypeError(("Power must be a number, "
-                            "not {}").format(type(power)))
+        #if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
+        #    raise TypeError(("Power must be a number, "
+        #                    "not {}").format(type(power)))
         return Quantity(self.value ** power, 
                         self.dimension ** power,
                         symbol = self.symbol ** power).rm_dim_if_dimless()
