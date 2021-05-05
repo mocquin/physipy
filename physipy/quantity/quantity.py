@@ -124,10 +124,10 @@ class Quantity(object):
                 raise TypeError(("Dimension of Quantity must be a Dimension,"
                                  "not {}").format(type(value)))
         elif name == "symbol":
-            if isinstance(value,str):                       
-                super().__setattr__(name,sp.Symbol(value))       
-            elif isinstance(value,sp.Expr):                  
+            if isinstance(value,sp.Expr):                  
                 super().__setattr__(name, value)                          
+            elif isinstance(value,str):                       
+                super().__setattr__(name,sp.Symbol(value))       
             else: 
                 raise TypeError(("Symbol of Quantity must be a string "
                                  "or a sympy-symbol, "
