@@ -223,7 +223,8 @@ class Quantity(object):
         #                    "not {}").format(type(power)))
         return Quantity(self.value ** power, 
                         self.dimension ** power,
-                        symbol = self.symbol ** power).rm_dim_if_dimless()
+                        symbol = self.symbol ** power,
+                       ).rm_dim_if_dimless()
 
     def __neg__(self): return self * (-1)
     
