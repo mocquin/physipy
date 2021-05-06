@@ -2,6 +2,8 @@
 import numpy as np
 import unittest
 from fractions import Fraction
+import math
+
 
 import matplotlib
 import matplotlib.pyplot
@@ -1485,18 +1487,18 @@ class TestQuantity(unittest.TestCase):
         cls.assertEqual(cls.y_q.std(), Quantity(cls.y.std(), Dimension("L")))
         cls.assertEqual(cls.z_q.std(), Quantity(cls.z.std(), Dimension("L")))
         
-    def test_math_sqrt(cls):
-        with cls.assertRaises(DimensionError):
-            import math
-            math.sqrt(m)
-            
-    def test_math_cos(cls):
-        import math
-        rad = units["rad"]
-        cls.assertEqual(math.cos(rad), math.cos(1))
-        
-        with cls.assertRaises(DimensionError):
-            math.cos(m)
+    def test_math_ceil(self):
+        a = 5.123*m
+        self.assertEqual(math.ceil(a), math.ceil(5.123)*m)
+    
+    def test_math_floor(self):
+        a = 5.123*m
+        self.assertEqual(math.floor(a), math.floor(5.123)*m)
+
+    def test_math_trunc(self):
+        a = 5.123*m
+        self.assertEqual(math.trunc(a), math.trunc(5.123)*m)
+                
             
     def test_check_dim(self):
         self.assertTrue(m.check_dim(Dimension("L")))

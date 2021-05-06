@@ -61,7 +61,7 @@ PROPOSITIONS/QUESTIONS :
 
 """
 
-
+import math
 import numbers as nb
 import numpy as np
 import sympy as sp
@@ -328,6 +328,22 @@ class Quantity(object):
         else: 
             return str(self._compute_value()) + UNIT_SUFFIX
 
+        
+    def __ceil__(self):
+        """
+        To handle math.ceil
+        """
+        return Quantity(math.ceil(self.value), self.dimension)
+    
+    def __floor__(self):
+        """
+        To handle math.floor
+        """
+        return Quantity(math.floor(self.value), self.dimension)
+    
+    def __trunc__(self):
+        return Quantity(math.trunc(self.value), self.dimension)
+    
     #@property
     #def latex(self):
     #    return self._repr_latex_()
@@ -845,9 +861,19 @@ def np_linalg_lstsq(a, b, **kwargs):
     sol = np.linalg.lstsq(a.value, b.value, **kwargs)
     return Quantity(sol, b.dimension/a.dimension)
 
+@implements(np.random.normal)
+def np_random_normal(loc=0.0, scale=1.0, **kwargs):
+    loc = quantify(loc)
+    scale = quantify(scale)
+    if not loc.dimension == scale.dimension:
+        raise DimensionError(loc.dimension, scale.dimension)
+    return Quantity(np.random.normal(loc=loc.value, scale=scale.value,
+                                **kwargs))
+
 @implements(np.may_share_memory)
 def np_may_share_memory(a, b, **kwargs):
     return np.may_share_memory(a.value, b.value, **kwargs)
+
 
 
 @implements(np.clip)
