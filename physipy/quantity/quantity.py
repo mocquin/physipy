@@ -198,6 +198,13 @@ class Quantity(object):
         return Quantity(self.value // y.value,
                        self.dimension).rm_dim_if_dimless()
     
+    def __rfloordiv__(self, x):
+        x = quantify(x)
+        if not self.dimension == x.dimension:
+            raise DimensionError(self.dimension, x.dimension)
+        return Quantity(x.value // self.value,
+                       self.dimension).rm_dim_if_dimless()    
+
     def __mod__(self,y):
         """
         There is no rm_dim_if_dimless() because a 
