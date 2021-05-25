@@ -114,15 +114,18 @@ class Quantity(object):
                 super().__setattr__(name, np.array(value))
             elif value is None:
                 super().__setattr__(name, value)
-            else: 
-                raise TypeError(("Value of Quantity must be a number "
-                                 "or numpy array, not {}").format(type(value)))
-        elif name == "dimension":
-            if isinstance(value,Dimension) :
-                super().__setattr__(name,value)
-            else: 
-                raise TypeError(("Dimension of Quantity must be a Dimension,"
-                                 "not {}").format(type(value)))
+            else:
+                super().__setattr__(name, value)
+                super().__setattr__("size", 1)                
+            #else: 
+            #    raise TypeError(("Value of Quantity must be a number "
+            #                     "or numpy array, not {}").format(type(value)))
+        #elif name == "dimension":
+        #    if isinstance(value,Dimension) :
+        #        super().__setattr__(name,value)
+        #    else: 
+        #        raise TypeError(("Dimension of Quantity must be a Dimension,"
+        #                         "not {}").format(type(value)))
         elif name == "symbol":
             if isinstance(value,sp.Expr):                  
                 super().__setattr__(name, value)                          
