@@ -1133,6 +1133,14 @@ class TestQuantity(unittest.TestCase):
         
         # np.ediff1d
         
+        # np.histogram
+        arr = np.random.normal(1, 2)
+        arrq = arr*m
+        hist_q, bins_q = np.histogram(arrq)
+        hist, bins = np.histogram(arr)
+        self.assertTrue(np.all(hist_q == hist))
+        self.assertTrue(np.all(bins_q == bins*m))
+        
         # np.sum
         self.assertEqual(np.sum(arr_m), 6 * m)
         self.assertEqual(np.sum(5*m), 5 * m)
