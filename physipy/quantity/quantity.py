@@ -951,6 +951,16 @@ def np_cumsum(a, **kwargs):
     return Quantity(np.cumsum(a.value, **kwargs), a.dimension)
 
 
+@implements(np.histogram)
+def np_histogram(a, bins=10, range=None, normed=None, weights=None, **kwargs):
+    if range is not None:
+        range = (quantify(range[0]), quantify(range[1]))
+        if not range[0].dimension == range[1].dimension:
+            raise DimensionError(range[0].dimension, range[1].dimension)
+    hist, bin_edges = np.histogram(a.value, bins=bins, range=range, normed=normed, weights=weights)
+    return hist, Quantity(bin_edges, a.dimension)
+
+    
 @implements(np.diagonal)
 def np_diagonal(a, **kwargs):
     return Quantity(np.diagonal(a.value, **kwargs), a.dimension)
