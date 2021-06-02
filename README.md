@@ -73,6 +73,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [unyt](https://github.com/yt-project/unyt)
  - [python-measurement](https://github.com/coddingtonbear/python-measurement)
  - [Unum](https://bitbucket.org/kiv/unum/)
+ - [scipp](https://scipp.github.io/reference/units.html)
  - [magnitude](http://juanreyero.com/open/magnitude/)
  -  physics.py : there are actually several packages based on the same core code : [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only) and [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
  - [ScientificPython.Scientific.Physics.PhysicalQuantities](https://github.com/ScientificPython/ScientificPython)
