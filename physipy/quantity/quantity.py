@@ -612,6 +612,9 @@ class Quantity(object):
     def is_temperature(self): 
         return self.dimension == Dimension("theta")
 
+    def is_nan(self):
+        "For use with pandas extension"
+        return np.isnan(self.value)
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
     
