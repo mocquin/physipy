@@ -641,7 +641,7 @@ class Quantity(object):
 
     def __getattr__(self, item):
         if item.startswith('__array_'):
-            #warnings.warn("The unit of the quantity is stripped.")
+            warnings.warn("The unit of the quantity is stripped.")
             if isinstance(self.value, np.ndarray):
                 return getattr(self.value, item)
             else:
