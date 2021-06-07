@@ -643,6 +643,15 @@ class Quantity(object):
             return self._SI_unitary_quantity
 
     def __getattr__(self, item):
+        """
+        Called when an attribute lookup has not found the attribute 
+        in the usual places (i.e. it is not an instance attribute
+        nor is it found in the class tree for self). name is the 
+        attribute name. This method should return the (computed) 
+        attribute value or raise an AttributeError exception.
+        Note that if the attribute is found through the normal mechanism, 
+        __getattr__() is not called.
+        """
         if item.startswith('__array_'):
             warnings.warn("The unit of the quantity is stripped.")
             if isinstance(self.value, np.ndarray):
