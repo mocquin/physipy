@@ -668,6 +668,8 @@ class Quantity(object):
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
     
+    def to_numpy(self):
+        return np.asarray(self.value)
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
