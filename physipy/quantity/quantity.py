@@ -84,7 +84,7 @@ HANDLED_FUNCTIONS = {}
 
 class Quantity(object):
     """Quantity class : """
-    
+    __quantity_priority__ = 1000
     DIGITS = DISPLAY_DIGITS
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
