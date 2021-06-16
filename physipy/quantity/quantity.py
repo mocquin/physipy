@@ -1091,6 +1091,10 @@ def np_empty_like(prototype, **kwargs):
     return np.empty_like(prototype.value, **kwargs)
 
 
+@implements(np.expand_dims)
+def np_expand_ims(a, axis):
+    return Quantity(np.expand_dims(a.value, axis), a.dimension)
+
 @implements(np.shape)
 def np_shape(a):
     return np.shape(a.value)
