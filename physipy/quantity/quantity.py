@@ -990,6 +990,9 @@ def np_diagonal(a, **kwargs):
 #            raise DimensionError(a.dimension, append.dimension)
 #    return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
 
+@implements(np.ndim)
+def np_ndim(a):
+    return np.ndim(a.value)
 
 @implements(np.dot)
 def np_dot(a, b, **kwargs):
