@@ -815,6 +815,12 @@ def implements(np_function):
         return func
     return decorator            
 
+@implements(np.asanyarray)
+def np_asanyarray(a):
+    return Quantity(np.asanyarray(a.value), a.dimension)
+
+
+
 @implements(np.amax)
 def np_amax(q): return Quantity(np.amax(q.value), q.dimension, favunit=q.favunit)
 
