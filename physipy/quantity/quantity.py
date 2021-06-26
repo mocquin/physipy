@@ -676,8 +676,11 @@ class Quantity(object):
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
     
-    def to_numpy(self):
-        return np.asarray(self.value)
+    #def to_numpy(self):
+    #    return np.asarray(self.value)
+    
+    def reshape(self, *args, **kwargs):
+        return Quantity(self.value.reshape(*args, **kwargs), self.dimension)
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
