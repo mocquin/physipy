@@ -154,8 +154,10 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:                                                               
             raise DimensionError(self.dimension, y.dimension)                          
-        return Quantity(self.value + y.value,
-                        self.dimension)    
+        #return Quantity(self.value + y.value,
+        #                self.dimension)    
+        return type(self)(self.value + y.value,
+                        self.dimension)
 
     def __radd__(self, x): return self + x
 
@@ -163,14 +165,14 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension: 
             raise DimensionError(self.dimension, y.dimension)
-        return Quantity(self.value - y.value,
+        return type(self)(self.value - y.value,
                         self.dimension)
 
     def __rsub__(self, x): return quantify(x) - self
 
     def __mul__(self,y):
         y = quantify(y)
-        return Quantity(self.value * y.value, 
+        return type(self)(self.value * y.value, 
                         self.dimension * y.dimension, 
                         symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
     
@@ -178,13 +180,13 @@ class Quantity(object):
     
     def __matmul__(self, y):
         y = quantify(y)
-        return Quantity(self.value @ y.value,
+        return type(self)(self.value @ y.value,
                         self.dimension * y.dimension, 
                         symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
 
     def __truediv__(self, y):
         y = quantify(y)
-        return Quantity(self.value / y.value,
+        return type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol / y.symbol).rm_dim_if_dimless()
 
@@ -198,14 +200,14 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return Quantity(self.value // y.value,
+        return type(self)(self.value // y.value,
                        self.dimension).rm_dim_if_dimless()
     
     def __rfloordiv__(self, x):
         x = quantify(x)
         if not self.dimension == x.dimension:
             raise DimensionError(self.dimension, x.dimension)
-        return Quantity(x.value // self.value,
+        return type(self)(x.value // self.value,
                        self.dimension).rm_dim_if_dimless()    
 
     def __mod__(self,y):
@@ -217,7 +219,7 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return Quantity(self.value % y.value,
+        return type(self)(self.value % y.value,
                         self.dimension)#.rm_dim_if_dimless()
 
     def __pow__(self,power):
@@ -231,7 +233,7 @@ class Quantity(object):
         #if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
-        return Quantity(self.value ** power, 
+        return type(self)(self.value ** power, 
                         self.dimension ** power,
                         symbol = self.symbol ** power,
                        ).rm_dim_if_dimless()
@@ -291,7 +293,7 @@ class Quantity(object):
 
 
     def __abs__(self):
-        return Quantity(abs(self.value),
+        return type(self)(abs(self.value),
                         self.dimension,
                         favunit = self.favunit)
 
@@ -315,13 +317,13 @@ class Quantity(object):
 
 
     def __round__(self, i=None):
-        return Quantity(round(self.value, i), 
+        return type(self)(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit)
 
 
     def __copy__(self):
-        return Quantity(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
+        return type(self)(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
     
 
     def __repr__(self):
@@ -343,16 +345,16 @@ class Quantity(object):
         """
         To handle math.ceil
         """
-        return Quantity(math.ceil(self.value), self.dimension)
+        return type(self)(math.ceil(self.value), self.dimension)
     
     def __floor__(self):
         """
         To handle math.floor
         """
-        return Quantity(math.floor(self.value), self.dimension)
+        return type(self)(math.floor(self.value), self.dimension)
     
     def __trunc__(self):
-        return Quantity(math.trunc(self.value), self.dimension)
+        return type(self)(math.trunc(self.value), self.dimension)
     
     #@property
     #def latex(self):
@@ -491,12 +493,12 @@ class Quantity(object):
         
         Such that self = self.value * self._SI_unitary_quantity
         """
-        return Quantity(1, self.dimension, symbol=self.dimension.str_SI_unit())
+        return type(self)(1, self.dimension, symbol=self.dimension.str_SI_unit())
 
     
     def __getitem__(self, idx):
         if isinstance(self.value, np.ndarray):
-            return Quantity(self.value[idx],
+            return type(self)(self.value[idx],
                             self.dimension,
                             favunit=self.favunit)
         else:
@@ -529,19 +531,19 @@ class Quantity(object):
         return FlatQuantityIterator(self)
     
     def flatten(self):
-        return Quantity(self.value.flatten(), self.dimension, favunit=self.favunit)
+        return type(self)(self.value.flatten(), self.dimension, favunit=self.favunit)
     
     @property
     def real(self):
-        return Quantity(self.value.real, self.dimension)
+        return type(self)(self.value.real, self.dimension)
     
     @property
     def imag(self):
-        return Quantity(self.value.imag, self.dimension)
+        return type(self)(self.value.imag, self.dimension)
     
     @property
     def T(self):
-        return Quantity(self.value.T, self.dimension)
+        return type(self)(self.value.T, self.dimension)
     
     
     def std(self, *args, **kwargs):
@@ -549,7 +551,7 @@ class Quantity(object):
     
     def inverse(self):
         """is this method usefull ?"""
-        return Quantity(1/self.value, 1/self.dimension)
+        return type(self)(1/self.value, 1/self.dimension)
 
     def sum(self, **kwargs): return np.sum(self, **kwargs)
     
@@ -615,6 +617,7 @@ class Quantity(object):
     def is_nan(self):
         "For use with pandas extension"
         return np.isnan(self.value)
+
     def is_dimensionless_ext(self):
         return self.is_dimensionless() or self.is_angle()
     
@@ -706,56 +709,56 @@ class Quantity(object):
             if not left.dimension == other.dimension:
                 raise DimensionError(left.dimension, other.dimension)
             res = ufunc.__call__(left.value,other.value)    
-            return Quantity(res, left.dimension)
+            return type(self)(res, left.dimension)
         elif ufunc_name in skip_2:
             other = quantify(args[1])
             res = ufunc.__call__(left.value, other.value)    
             if ufunc_name == "multiply" or ufunc_name == "matmul":
-                return Quantity(res, left.dimension * other.dimension)
+                return type(self)(res, left.dimension * other.dimension)
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
-                return Quantity(res, left.dimension / other.dimension).rm_dim_if_dimless()
+                return type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless()
             elif ufunc_name == "copysign" or ufunc_name == "nextafter":
-                return Quantity(res, left.dimension)
+                return type(self)(res, left.dimension)
         elif ufunc_name in no_dim_1:
             if not left.dimension == Dimension(None):
                 raise DimensionError(left.dimension, Dimension(None))
             res = ufunc.__call__(left.value)
-            return Quantity(res, Dimension(None))
+            return type(self)(res, Dimension(None))
         elif ufunc_name in angle_1:
             if not left.is_dimensionless_ext():
                 raise DimensionError(left.dimension, Dimension(None), binary=True)
             res = ufunc.__call__(left.value)
-            return Quantity(res, Dimension(None)).rm_dim_if_dimless()
+            return type(self)(res, Dimension(None)).rm_dim_if_dimless()
         elif ufunc_name in same_out:
             res = ufunc.__call__(left.value)
-            return Quantity(res, left.dimension).rm_dim_if_dimless()
+            return type(self)(res, left.dimension).rm_dim_if_dimless()
         elif ufunc_name in special_dict:
             if ufunc_name == "sqrt":
                 res = ufunc.__call__(left.value)
-                return Quantity(res, left.dimension**(1/2))
+                return type(self)(res, left.dimension**(1/2))
             elif ufunc_name == "power":
                 power_num = args[1]
                 if not (isinstance(power_num,int) or isinstance(power_num,float)):
                     raise TypeError(("Power must be a number, "
                             "not {}").format(type(power_num)))
                 res = ufunc.__call__(left.value, power_num)
-                return Quantity(res, 
+                return type(self)(res, 
                         left.dimension ** power_num,
                         symbol = left.symbol ** power_num).rm_dim_if_dimless()
             elif ufunc_name == "reciprocal":
                 res = ufunc.__call__(left.value)
-                return Quantity(res, 1/left.dimension)
+                return type(self)(res, 1/left.dimension)
             elif ufunc_name == "square":
                 res = ufunc.__call__(left.value)
-                return Quantity(res, left.dimension**2)
+                return type(self)(res, left.dimension**2)
             elif ufunc_name == "cbrt":
                 res = ufunc.__call__(left.value)
-                return Quantity(res, left.dimension**(1/3))
+                return type(self)(res, left.dimension**(1/3))
             elif ufunc_name == "modf":
                 res = ufunc.__call__(left.value)
                 frac, integ = res
-                return (Quantity(frac, left.dimension),
-                       Quantity(integ, left.dimension))
+                return (type(self)(frac, left.dimension),
+                       type(self)(integ, left.dimension))
             elif ufunc_name == "arctan2":
                 # both x and y should have same dim such that the ratio is dimless
                 other = quantify(args[1])
