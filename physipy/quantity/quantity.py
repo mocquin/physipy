@@ -84,6 +84,42 @@ DEFAULT_SYMBOL = "UndefinedSymbol"
 
 HANDLED_FUNCTIONS = {}
 
+VALUE_PROPERTY_BACKENDS = {}
+
+def register_property_backend(klass, interface_dict=None):
+    """
+    Idea to better handle value backends, like uncertainties.
+    The idea is to provide to physipy a class and its interface dict, 
+    such that since Quantity looks at its values methods if item not found
+    in the quantity itself
+    
+    Example : 
+    # FOR NOW
+    uv = Normal(1, 0.1, size=1000) # this is from class, with attribute .median()
+    q = uv*m                       # this a quantity, with value of class
+    q.median() # will return uv.median(), loosing the unit
+    # THEN 
+    register_value_backend(Normal, {"median":lambda res:res*self.unit})
+    q.median() # will return uv.median()*m
+    """
+    if interface_dict is None:
+        VALUE_PROPERTY_BACKENDS.pop(interface_dict)
+    else:
+        VALUE_PROPERTY_BACKENDS[klass] = interface_dict
+    
+    
+VALUE_BACKENDS = {}
+
+def register_value_backend(value_klass, value_quantity_klass):
+    VALUE_BACKENDS[value_klass] = value_quantity_klass
+
+def large_quantify(x):
+    if isinstance(x, Quantity):
+        # if its a Quantity, it has a value
+        klass = VALUE_BACKENDS.get(type(x.value), Quantity)
+        return klass(x.value, x.dimension)
+    else:
+        return klass(x, Dimension(None))
 
 class Quantity(object):
     """Quantity class : """
@@ -169,18 +205,11 @@ class Quantity(object):
     def __rsub__(self, x): return quantify(x) - self
 
     def __mul__(self,y):
-        # TODO make a decorator "try_raw_then_quantify_if_fail"
-        try:
-            return type(self)(self.value * y.value, 
-                self.dimension * y.dimension, 
-                symbol=self.symbol + "*" + y.symbol,
-                 ).rm_dim_if_dimless() 
-        except:
-            y = quantify(y)
-            return type(self)(self.value * y.value, 
-                self.dimension * y.dimension, 
-                symbol=self.symbol + "*" + y.symbol,
-                 ).rm_dim_if_dimless() 
+        y = quantify(y)
+        q = Quantity(self.value * y.value, 
+                        self.dimension * y.dimension, 
+                        symbol = self.symbol * y.symbol)
+        return large_quantify(q).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
     
@@ -511,7 +540,7 @@ class Quantity(object):
         
         Such that self = self.value * self._SI_unitary_quantity
         """
-        return type(self)(1, self.dimension, symbol=self.dimension.str_SI_unit())
+        return Quantity(1, self.dimension, symbol=self.dimension.str_SI_unit())
 
     
     def __getitem__(self, idx):
@@ -723,20 +752,28 @@ class Quantity(object):
                 self.value = np.array(self.value)
                 return getattr(self.value, item)
         try:
+            if type(self.value) in VALUE_PROPERTY_BACKENDS:
+                interface = VALUE_PROPERTY_BACKENDS[type(self.value)]
+                if item in interface:
+                    res = getattr(self.value, item)
+                    return interface[item](self, res)                
             res = getattr(self.value, item)
             return res
         except AttributeError as ex:
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
     
+
     #def to_numpy(self):
     #    """
     #    Needed for plt.hist(np.arange(10)*m).
     #    """
     #    return np.asarray(self.value)
+
     
     def reshape(self, *args, **kwargs):
         return type(self)(self.value.reshape(*args, **kwargs), self.dimension)
+
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
@@ -1684,6 +1721,7 @@ implemented = (same_dim_out_2 + same_dim_in_2_nodim_out + same_dim_in_1_nodim_ou
 no_dim_1 + no_dim_2 + angle_1 + same_out + inv_angle_1 + deg_rad)
 
 
+
 def quantify(x):
     if isinstance(x, Quantity):
         return x#.__copy__()
@@ -1716,6 +1754,8 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
     else:
         return Quantity(x, DIMENSIONLESS, symbol=symbol, favunit=favunit)
 
+#def quantity_constructor(value, dimension, symbol="UndefinedSymbol", favunit=None):
+    
 
 
 
