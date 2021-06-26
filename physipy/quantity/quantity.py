@@ -515,11 +515,11 @@ class Quantity(object):
         else:
             self.value[idx] = q.value
 
-    def __iter__(self):
-        if isinstance(self.value,np.ndarray):
-            return QuantityIterator(self)
-        else:
-            return iter(self.value)
+    #def __iter__(self):
+    #    if isinstance(self.value,np.ndarray):
+    #        return QuantityIterator(self)
+    #    else:
+    #        return iter(self.value)
         
     @property
     def flat(self):
@@ -655,6 +655,11 @@ class Quantity(object):
         Note that if the attribute is found through the normal mechanism, 
         __getattr__() is not called.
         """
+        if item == '__iter__':
+            if isinstance(self.value,np.ndarray):
+                return QuantityIterator(self)
+            else:
+                return iter(self.value)
         if item.startswith('__array_'):
             warnings.warn("The unit of the quantity is stripped.")
             if isinstance(self.value, np.ndarray):
