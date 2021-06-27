@@ -325,7 +325,9 @@ class Quantity(object):
     def __copy__(self):
         return type(self)(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
     
-
+    def copy(self):
+        return self.__copy__()
+    
     def __repr__(self):
         if str(self.symbol) != "UndefinedSymbol":
             sym = ", symbol="+str(self.symbol)
