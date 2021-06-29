@@ -93,6 +93,9 @@ There are plenty of python packages that handle physical quantities computation.
 
 If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40). Also check this [comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages).
 
+Some C/C++ alternatives :  
+ - [units](https://units.readthedocs.io/en/latest/index.html)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
