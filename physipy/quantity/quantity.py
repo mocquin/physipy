@@ -1144,6 +1144,11 @@ def np_corrcoef(x, y=None, *args, **kwargs):
 @implements(np.squeeze)
 def np_squeeze(a, *args):
     return Quantity(np.squeeze(a.value, *args), a.dimension)
+
+@implements(np.repeat)
+def np_repeat(a, *args, **kwargs):
+    return Quantity(np.repeat(a.value, *args, **kwargs), a.dimension)
+
 @implements(np.meshgrid)
 def np_meshgrid(x, y, **kwargs):
     x = quantify(x)
