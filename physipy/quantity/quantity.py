@@ -1134,6 +1134,12 @@ def np_linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, a
     return Quantity(np.linspace(start.value, stop.value, num=num, endpoint=endpoint, retstep=retstep, dtype=dtype, axis=axis),
                   start.dimension)
 
+@implements(np.corrcoef)
+def np_corrcoef(x, y=None, *args, **kwargs):
+    x = quantify(x)
+    if y is not None:
+        y = quantify(y).value
+    return np.corrcoef(x.value, y, *args, **kwargs)
 
 @implements(np.meshgrid)
 def np_meshgrid(x, y, **kwargs):
