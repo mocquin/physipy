@@ -341,7 +341,10 @@ class Quantity(object):
             return str(self._compute_value()) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
         else: 
             return str(self._compute_value()) + UNIT_SUFFIX
-
+       
+    def __hash__(self):
+        return hash(str(self.value)+str(self.dimension))
+ 
         
     def __ceil__(self):
         """
