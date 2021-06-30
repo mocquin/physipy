@@ -116,7 +116,8 @@ def register_value_backend(value_klass, value_quantity_klass):
 def large_quantify(x):
     if isinstance(x, Quantity):
         # if its a Quantity, it has a value
-        klass = VALUE_BACKENDS.get(type(x.value), Quantity)
+        typ = type(x.value)
+        klass = VALUE_BACKENDS.get(typ, Quantity)
         return klass(x.value, x.dimension)
     else:
         return klass(x, Dimension(None))
@@ -222,10 +223,11 @@ class Quantity(object):
 
     def __truediv__(self, y):
         y = quantify(y)
-        return type(self)(self.value / y.value,
+        return large_quantify(type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol + "/" + y.symbol,
                          ).rm_dim_if_dimless()
+
 
     def __rtruediv__(self, x): return quantify(x) / self
 
@@ -869,9 +871,9 @@ class Quantity(object):
             other = quantify(args[1])
             res = ufunc.__call__(left.value, other.value)    
             if ufunc_name == "multiply" or ufunc_name == "matmul":
-                return type(self)(res, left.dimension * other.dimension)
+                return large_quantify(type(self)(res, left.dimension * other.dimension))
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
-                return type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless()
+                return large_quantify(type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless())
             elif ufunc_name == "copysign" or ufunc_name == "nextafter":
                 return type(self)(res, left.dimension)
         elif ufunc_name in no_dim_1:
@@ -1333,14 +1335,13 @@ def np_trapz(q, x=None, dx=1, **kwargs):
     q = quantify(q)
     if x is None:    
         dx = quantify(dx)
-        return Quantity(np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+        return large_quantify(Quantity(np.trapz(q.value, x=None, dx=dx.value, **kwargs),
                     q.dimension * dx.dimension,
-                    )
+                    ))
     else:
         x = quantify(x)
-        return Quantity(np.trapz(q.value, x=x.value, **kwargs),
-                    q.dimension * x.dimension,
-                    )
+        return large_quantify(Quantity(np.trapz(q.value, x=x.value, **kwargs),
+                    q.dimension * x.dimension)
     
 @implements(np.transpose)
 def np_transpose(a, axis=None):
