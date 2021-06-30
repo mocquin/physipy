@@ -118,9 +118,9 @@ def large_quantify(x):
         # if its a Quantity, it has a value
         typ = type(x.value)
         klass = VALUE_BACKENDS.get(typ, Quantity)
-        return klass(x.value, x.dimension)
+        return klass(x.value, x.dimension, favunit=x.favunit, symbol=x.symbol)
     else:
-        return klass(x, Dimension(None))
+        return Quantity(x, Dimension(None))
 
 class Quantity(object):
     """Quantity class : """
