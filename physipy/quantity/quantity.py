@@ -502,12 +502,9 @@ class Quantity(object):
 
     
     def __getitem__(self, idx):
-        if isinstance(self.value, np.ndarray):
-            return type(self)(self.value[idx],
+        return type(self)(self.value[idx],
                             self.dimension,
                             favunit=self.favunit)
-        else:
-            raise TypeError("Can't index on non-array value.")
 
     def __setitem__(self, idx, q):
         q = quantify(q)
