@@ -3,7 +3,54 @@ import functools
 import numpy as np
 import sympy as sp
 
+from sympy.parsing.sympy_parser import parse_expr
+
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
+
+def _parse_str_to_dic(exp_str):
+    """
+    Use sympy's parser to split a string "m/s**2"
+    to a dict {"m":1, "s":-2}.
+    """
+    parsed = parse_expr(exp_str)
+    exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
+    return exp_dic
+
+def _exp_dic_to_q(exp_dic, parsing_dict):
+    """
+    Helper to expand a dict to a quantity using :
+        q = u1**v1 * u2**v2 ...
+    where "u" are string of units, and "v" power values.
+    """
+    q = 1
+    for key, value in exp_dic.items():
+        # parse string to unit
+        u = parsing_dict[key]
+        # power up and multiply
+        q *= u**value
+    return q
+
+def expr_to_q(exp_str, parsing_dict):
+    """
+    Parse a string expression to a quantity.
+    """
+    exp_dic = _parse_str_to_dic(exp_str)
+    q = _exp_dic_to_q(exp_dic, parsing_dict)
+    return q
+
+def strunit_array_to_qunit_array(array_like_of_str, parsing_dict):
+    """
+    Converts an iterable of strings to an iterable of quantities
+    
+    Example :
+    =========
+    
+    """
+    qs = []
+    for s in array_like_of_str:
+        q = expr_to_q(s, parsing_dict)
+        qs.append(q)
+    return qs
 
 
 def qarange(start_or_stop, stop=None, step=None, **kwargs):
