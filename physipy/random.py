@@ -1,4 +1,10 @@
-"""Wrapper of numpy.random distributions"""
+"""Wrapper of numpy.random distributions
+
+Numpy's random functions cannot be wrapped by array_function/ufunc interface,
+so if we want them to be unit-aware, we have to make our own version.
+
+ - https://github.com/numpy/numpy/issues/19382
+"""
 
 import numpy as np
 from physipy import quantify, Quantity, Dimension
