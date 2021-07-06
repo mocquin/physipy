@@ -535,6 +535,9 @@ class Quantity(object):
     def flatten(self):
         return type(self)(self.value.flatten(), self.dimension, favunit=self.favunit)
     
+    def tolist(self):
+        return [Quantity(i, self.dimension) for i in self.value]
+    
     @property
     def real(self):
         return type(self)(self.value.real, self.dimension)
