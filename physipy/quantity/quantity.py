@@ -1141,6 +1141,12 @@ def np_corrcoef(x, y=None, *args, **kwargs):
         y = quantify(y).value
     return np.corrcoef(x.value, y, *args, **kwargs)
 
+
+@implements(np.take)
+def np_take(a, *args, **kwargs):
+    return Quantity(np.take(a.value, *args, **kwargs), a.dimension)
+
+
 @implements(np.squeeze)
 def np_squeeze(a, *args):
     return Quantity(np.squeeze(a.value, *args), a.dimension)
