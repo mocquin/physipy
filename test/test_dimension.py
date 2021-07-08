@@ -113,9 +113,9 @@ class TestClassDimension(unittest.TestCase):
         cls.assertEqual(cls.m * cls.m, Dimension("m**2"))
         cls.assertEqual(cls.m * cls.dim_complexe, Dimension("m*cd/K**3"))
         
-        with cls.assertRaises(AttributeError):
+        with cls.assertRaises(TypeError):
             # sympy parsing not good with ^ char
-            cls.assertEqual(cls.m * cls.m, Dimension("m^2"))
+            Dimension("m^2")
             
     def test_101_dimensionality(cls):
         cls.assertEqual(cls.m.dimensionality, 'length')
