@@ -1032,6 +1032,10 @@ def np_dstack(tup):
     return Quantity(np.dstack(tuple(arr.value for arr in tup)), dim)
 
 
+@implements(np.prod)
+def np_prod(a, **kwargs):
+    return Quantity(np.prod(a.value), a.dimension**(len(a)))
+
 #@implements(np.ediff1d)
 #def np_ediff1d(ary, to_end=None, to_begin=None):
 #    if not ary.dimension == to_end.dimension:
