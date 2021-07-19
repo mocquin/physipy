@@ -1039,6 +1039,15 @@ def np_percentile(a, *args, **kwargs):
     a = quantify(a)
     return Quantity(np.percentile(a.value, *args, **kwargs), a.dimension)
 
+
+@implements(np.searchsorted)
+def np_searchsorted(a, v, *args, **kwargs):
+    a = quantify(a)
+    v = quantify(v)
+    if not a.dimension == v.dimension:
+        raise DimensionError(a.dimension, v.dimension)
+    return np.searchsorted(a.value, v.value, *args, **kwargs)
+
 @implements(np.dstack)
 def np_dstack(tup):
     dim = tup[0].dimension
