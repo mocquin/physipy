@@ -1032,6 +1032,13 @@ def np_cov(m, y=None, *args, **kwargs):
         return Quantity(raw, m.dimension*y.dimension)
     raw = np.cov(m.value, y, *args, **kwargs)
     return Quantity(raw, m.dimension**2)
+
+
+@implements(np.percentile)
+def np_percentile(a, *args, **kwargs):
+    a = quantify(a)
+    return Quantity(np.percentile(a.value, *args, **kwargs), a.dimension)
+
 @implements(np.dstack)
 def np_dstack(tup):
     dim = tup[0].dimension
