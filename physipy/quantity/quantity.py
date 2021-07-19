@@ -1023,6 +1023,15 @@ def np_dot(a, b, **kwargs):
     return Quantity(np.dot(a.value, b.value), a.dimension * b.dimension)
 
 
+@implements(np.cov)
+def np_cov(m, y=None, *args, **kwargs):
+    m = quantify(m)
+    if y is not None:
+        y = quantify(y)
+        raw = np.cov(m.value, y.value, *args, **kwargs)
+        return Quantity(raw, m.dimension*y.dimension)
+    raw = np.cov(m.value, y, *args, **kwargs)
+    return Quantity(raw, m.dimension**2)
 @implements(np.dstack)
 def np_dstack(tup):
     dim = tup[0].dimension
