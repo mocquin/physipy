@@ -696,6 +696,8 @@ class Quantity(object):
         #    return NotImplemented
         return HANDLED_FUNCTIONS[func](*args, **kwargs)
     
+    
+    
     # TODO : make this a static function ?
     def __array_ufunc__(self, ufunc, method, *args, **kwargs):
         """
@@ -710,12 +712,48 @@ class Quantity(object):
         This doesn't need __getattr__ nor __array__
 
         """
-        #print(args)
-        ufunc_name = ufunc.__name__
-        left = quantify(args[0])
+        if method == "__call__":
+            return self._ufunc_call(ufunc, method, *args, **kwargs)
+        elif method == "reduce":
+            return self._ufunc_reduce(ufunc, method, *args, **kwargs)
+        else:
+            raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
 
+            
+    def _ufunc_reduce(self, ufunc, method, *args, **kwargs):
+        """
+        The method == "reduce" part of __array_ufunc__ interface.
+        """
+        if not method == "reduce":
+            raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        ufunc_name = ufunc.__name__
+        left = args[0] # removed quantify...
+                
+        # hypot doesn't have a reduce
+        if ufunc_name in same_dim_out_2 and ufunc_name != "hypot":
+            res = ufunc.reduce(left.value)    
+            return type(self)(res, left.dimension)
+        # only multiply seems to be possible
+        elif ufunc_name in skip_2:
+            res = ufunc.reduce(left.value)    
+            if ufunc_name == "multiply" or ufunc_name == "matmul":
+                return type(self)(res, left.dimension ** len(left.value))
+            else:
+                raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        # ValueError: reduce only supported for binary functions
+        elif ufunc_name in unary_ufuncs:
+            raise ValueError("reduce only supported for binary functions.")
+        else:
+            raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        
+    def _ufunc_call(self, ufunc, method, *args, **kwargs):
+        """
+        The method == "__call__" part of __array_ufunc__ interface.
+        """
         if not method == "__call__":
             raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        ufunc_name = ufunc.__name__
+        left = quantify(args[0])
         
         if ufunc_name in same_dim_out_2:
             other = quantify(args[1])
@@ -1419,6 +1457,7 @@ def np_hstack(tup):
 same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]
 # 2 in : same dim ---> out : not a quantity
 same_dim_in_2_nodim_out = ["greater", "greater_equal", "less", "less_equal", "not_equal", "equal", "floor_divide"] 
+# 1 in : 
 same_dim_in_1_nodim_out = ["sign", "isfinite", "isinf", "isnan"]
 # 2 in : any ---> out : depends
 skip_2 = ["multiply", "divide", "true_divide", "copysign", "nextafter", "matmul"]
@@ -1438,7 +1477,7 @@ same_out = ["ceil", "conjugate", "conj", "floor", "rint", "trunc", "fabs", "nega
 inv_angle_1 = ["arcsin", "arccos", "arctan",
               "arcsinh", "arccosh", "arctanh",
               ]
-# dimless -> dimless
+# 1 in : dimless -> dimless
 deg_rad = ["deg2rad", "rad2deg"]
 
 
@@ -1447,6 +1486,8 @@ cant_be_implemented = ["logical_and", "logical_or", "logical_xor", "logical_not"
 
 
 ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
+unary_ufuncs = no_dim_1 + angle_1 + same_out + inv_angle_1 + special_dict + deg_rad + same_dim_in_1_nodim_out
+
 
 
 def quantify(x):

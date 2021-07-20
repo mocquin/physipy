@@ -1767,6 +1767,48 @@ class TestQuantity(unittest.TestCase):
         
         with self.assertRaises(DimensionError):
             np.hstack((a, c))
+            
+            
+    def test_np_add_reduce(self):
+        res = np.add.reduce(np.arange(10)*m)
+        exp = np.add.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_subtract_reduce(self):
+        res = np.subtract.reduce(np.arange(10)*m)
+        exp = np.subtract.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_maximum_reduce(self):
+        res = np.maximum.reduce(np.arange(10)*m)
+        exp = np.maximum.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_minimum_reduce(self):
+        res = np.minimum.reduce(np.arange(10)*m)
+        exp = np.minimum.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_fmax_reduce(self):
+        res = np.fmax.reduce(np.arange(10)*m)
+        exp = np.fmax.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_fmin_reduce(self):
+        res = np.fmin.reduce(np.arange(10)*m)
+        exp = np.fmin.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_remainder_reduce(self):
+        res = np.remainder.reduce(np.arange(10)*m)
+        exp = np.remainder.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_mod_reduce(self):
+        res = np.mod.reduce(np.arange(10)*m)
+        exp = np.mod.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_fmod_reduce(self):
+        res = np.fmod.reduce(np.arange(10)*m)
+        exp = np.fmod.reduce(np.arange(10))*m
+        self.assertEqual(res, exp)
+    def test_np_multiply_reduce(self):
+        res = np.multiply.reduce(np.arange(10)*m)
+        exp = np.multiply.reduce(np.arange(10))*m**10
+        self.assertEqual(res, exp)
         
         
 if __name__ == "__main__":
