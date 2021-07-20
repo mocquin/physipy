@@ -740,6 +740,10 @@ class Quantity(object):
                 return type(self)(res, left.dimension ** len(left.value))
             else:
                 raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
+        # return booleans : 
+        elif ufunc_name in same_dim_in_2_nodim_out:
+            res =  ufunc.reduce(left.value)    
+            return res
         # ValueError: reduce only supported for binary functions
         elif ufunc_name in unary_ufuncs:
             raise ValueError("reduce only supported for binary functions.")

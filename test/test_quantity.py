@@ -1808,9 +1808,38 @@ class TestQuantity(unittest.TestCase):
     def test_np_multiply_reduce(self):
         res = np.multiply.reduce(np.arange(10)*m)
         exp = np.multiply.reduce(np.arange(10))*m**10
+        self.assertEqual(res, exp)        
+    def test_np_greater_reduce(self):
+        res = np.greater.reduce(np.arange(10)*m)
+        exp = np.greater.reduce(np.arange(10))
         self.assertEqual(res, exp)
-        
-        
+    def test_np_greater_equal_reduce(self):
+        res = np.greater_equal.reduce(np.arange(10)*m)
+        exp = np.greater_equal.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    def test_np_less_reduce(self):
+        res = np.less.reduce(np.arange(10)*m)
+        exp = np.less.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    def test_np_less_equal_reduce(self):
+        res = np.less_equal.reduce(np.arange(10)*m)
+        exp = np.less_equal.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    def test_np_not_equal_reduce(self):
+        res = np.not_equal.reduce(np.arange(10)*m)
+        exp = np.not_equal.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    def test_np_equal_reduce(self):
+        res = np.equal.reduce(np.arange(10)*m)
+        exp = np.equal.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    def test_np_floor_dividel_reduce(self):
+        res = np.floor_divide.reduce(np.arange(10)*m)
+        exp = np.floor_divide.reduce(np.arange(10))
+        self.assertEqual(res, exp)
+    
+    
+    
 if __name__ == "__main__":
     unittest.main()
         
