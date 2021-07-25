@@ -1776,6 +1776,10 @@ class TestQuantity(unittest.TestCase):
         res = np.add.reduce(np.arange(10)*m)
         exp = np.add.reduce(np.arange(10))*m
         self.assertEqual(res, exp)
+    def test_np_add_accumulate(self):
+        exp = np.add.accumulate(np.arange(10))*m
+        res = np.add.accumulate(np.arange(10)*m)
+        self.assertTrue(np.all(res==exp))
     def test_np_subtract_reduce(self):
         res = np.subtract.reduce(np.arange(10)*m)
         exp = np.subtract.reduce(np.arange(10))*m

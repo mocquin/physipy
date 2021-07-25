@@ -716,9 +716,21 @@ class Quantity(object):
             return self._ufunc_call(ufunc, method, *args, **kwargs)
         elif method == "reduce":
             return self._ufunc_reduce(ufunc, method, *args, **kwargs)
+        elif method == "accumulate":
+            return self._ufunc_accumulate(ufunc, method, *args, **kwargs)
         else:
             raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
 
+            
+    def _ufunc_accumulate(self, ufunc, method, *args, **kwargs):
+        ufunc_name = ufunc.__name__
+        left = args[0]
+        # hypot doesn't have a reduce
+        if ufunc_name in ["add"]:
+            res = ufunc.accumulate(left.value, **kwargs)    
+            return type(self)(res, left.dimension)
+        else:
+            raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
             
     def _ufunc_reduce(self, ufunc, method, *args, **kwargs):
         """
