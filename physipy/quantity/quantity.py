@@ -1226,6 +1226,10 @@ def np_squeeze(a, *args):
 def np_repeat(a, *args, **kwargs):
     return Quantity(np.repeat(a.value, *args, **kwargs), a.dimension)
 
+@implements(np.roll)
+def np_roll(a, *args, **kwargs):
+    return Quantity(np.roll(a.value, *args, **kwargs), a.dimension)
+
 @implements(np.meshgrid)
 def np_meshgrid(x, y, **kwargs):
     x = quantify(x)

@@ -1768,7 +1768,10 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.hstack((a, c))
             
-            
+    def test_np_roll(self):
+        res = np.roll(np.arange(10)*m, 2)
+        exp = [8, 9, 0, 1, 2, 3, 4, 5, 6, 7]*m
+        self.assertTrue(np.all(res==exp))
     def test_np_add_reduce(self):
         res = np.add.reduce(np.arange(10)*m)
         exp = np.add.reduce(np.arange(10))*m
