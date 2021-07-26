@@ -1142,7 +1142,7 @@ def np_mean(q, **kwargs): return Quantity(np.mean(q.value, **kwargs), q.dimensio
 
 
 @implements(np.std)
-def np_std(q): return Quantity(np.std(q.value), q.dimension, favunit=q.favunit)
+def np_std(q, *args, **kwargs): return Quantity(np.std(q.value, *args, **kwargs), q.dimension, favunit=q.favunit)
 
 
 @implements(np.median)
@@ -1150,7 +1150,7 @@ def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.fav
 
 
 @implements(np.var)
-def np_var(q): return Quantity(np.var(q.value), q.dimension**2)
+def np_var(q, *args, **kwargs): return Quantity(np.var(q.value, *args, **kwargs), q.dimension**2)
 
 
 @implements(np.trapz)
