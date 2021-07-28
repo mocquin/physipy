@@ -1204,6 +1204,19 @@ class TestQuantity(unittest.TestCase):
             np.interp(1*s, arr_m, arr_m**2)
             
         
+    def test_np_linalg_inv(self):
+
+        ohm = units["ohm"]
+        volt = units["V"]
+
+        R = np.array([[50, 0, -30],
+                      [0, 40, -20],
+                      [-30, -20, 100]])*ohm
+        V = np.array([80, 80, 0]) * volt
+        I = np.linalg.inv(R) @ V
+        self.assertTrue(I.dimension == Dimension("A"))
+        self.assertTrue(np.all(I.value == np.linalg.inv(R.value)@V.value))
+        
     def test_real(self):
         self.assertEqual(m.real, 1*m)
         a = np.array([1, 2, 3])*m

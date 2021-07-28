@@ -961,6 +961,11 @@ def np_linalg_lstsq(a, b, **kwargs):
     sol = np.linalg.lstsq(a.value, b.value, **kwargs)
     return Quantity(sol, b.dimension/a.dimension)
 
+@implements(np.linalg.inv)
+def np_inv(a):
+    return Quantity(np.linalg.inv(a.value), 1/a.dimension)
+
+
 @implements(np.random.normal)
 def np_random_normal(loc=0.0, scale=1.0, **kwargs):
     loc = quantify(loc)
