@@ -50,12 +50,7 @@ See [NEP35](https://numpy.org/neps/nep-0035-array-creation-dispatch-with-array-f
 
 ## Known issues
 
-### numpy.full
-```python
-import numpy as np
-from physipy import m
-np.full((3,3), 2*m)
-```
+See the dedicated notebook.
 
 ## About angles and units
 
