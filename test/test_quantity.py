@@ -11,8 +11,10 @@ import matplotlib.pyplot
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from physipy.quantity import vectorize, quad, dblquad, tplquad, brentq #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize, root
+from physipy.integrate import quad, dblquad, tplquad
+from physipy.optimize import root, brentq
+from physipy.quantity import vectorize #turn_scalar_to_str
+from physipy.quantity.calculus import xvectorize, ndvectorize
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
