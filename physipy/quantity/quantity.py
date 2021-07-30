@@ -583,6 +583,13 @@ class Quantity(object):
         q = self.__copy__()
         q.favunit = y
         return q
+    
+    def set_favunit(self, fav):
+        """
+        To be used as one-line declaration : (np.linspace(3, 10)*mum).set_favunit(mum)
+        """
+        self.favunit = fav
+        return self
 
     def ito(self, y):
         """in-place change of favunit."""
