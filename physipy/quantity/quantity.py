@@ -865,6 +865,12 @@ class Quantity(object):
         else:
             raise ValueError("ufunc not implemented ?: ", str(ufunc))
 
+            
+    def squeeze(self, *args, **kwargs):
+        """
+        Helper function to wrap numpy's squeeze.
+        """
+        return Quantity(self.value.squeeze(*args, **kwargs), self.dimension)
 
 # Numpy functions            
 # Override functions - used with __array_function__
