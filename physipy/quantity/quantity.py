@@ -1205,6 +1205,12 @@ def np_ones_like(a, **kwargs):
 def np_zeros_like(a, **kwargs):
     return np.zeros_like(a.value, **kwargs)
 
+@implements(np.zeros)
+def np_zeros(shape, dtype=float, order='C', *, like=None):
+    like = quantify(like)
+    return Quantity(np.zeros(shape, dtype=dtype, order=order), like.dimension)
+    
+
 @implements(np.full_like)
 def np_full_like(a, fill_value, **kwargs):
     a = quantify(a)
