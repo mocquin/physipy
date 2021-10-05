@@ -1128,6 +1128,9 @@ def np_dstack(tup):
             raise DimensionError(arr.dimension, dim)
     return Quantity(np.dstack(tuple(arr.value for arr in tup)), dim)
 
+@implements(np.tile)
+def np_tile(A, reps):
+    return Quantity(np.tile(A.value, reps), A.dimension)
 
 @implements(np.prod)
 def np_prod(a, **kwargs):
