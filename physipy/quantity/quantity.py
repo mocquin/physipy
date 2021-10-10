@@ -462,10 +462,14 @@ class Quantity(object):
         """This method is used when using format or f-string. 
         The format is applied to the numerical value part only."""
         complement_value_for_repr = self._compute_complement_value()
+        prefix = UNIT_PREFIX
+        if "~" in format_spec:
+            format_spec = format_spec.replace("~", "")
+            prefix = ""
         if not complement_value_for_repr == "":
-            return format(self._compute_value(), format_spec) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+            return format(self._compute_value(), format_spec) + prefix + complement_value_for_repr + UNIT_SUFFIX
         else: 
-            return format(self._compute_value(), format_spec) + UNIT_PREFIX
+            return format(self._compute_value(), format_spec) + prefix
     
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
