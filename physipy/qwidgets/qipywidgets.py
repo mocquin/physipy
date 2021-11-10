@@ -60,10 +60,12 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             expression = expression.replace(" ", "*")
             # eval expression with unit context
             try:
+                old_favunit = self.value.favunit
                 res = eval(expression, self.context)
                 res = quantify(res)
                 # update quantity value
                 self.value = res
+                self.value.favunit = old_favunit
                 # update display_value
                 self.display_val = str(self.value)
             except:
