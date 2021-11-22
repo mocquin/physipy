@@ -86,7 +86,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [misu](https://github.com/cjrh/misu)
  - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
 
-If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40). Also check this [comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages).
+If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40). Also check this [comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages) and [this takl](https://pyvideo.org/pycon-ca-2012/writing-self-documenting-scientific-code-using-ph.html).
 
 Some C/C++ alternatives :  
  - [units](https://units.readthedocs.io/en/latest/index.html)
