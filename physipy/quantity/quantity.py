@@ -401,6 +401,7 @@ class Quantity(object):
         formatted_value = q._format_value()
         complemented = q._compute_complement_value()
         if complemented != "":
+            # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
             complement_value_str = sp.printing.latex(sp.parsing.sympy_parser.parse_expr(complemented))
         else:
             complement_value_str = ""
