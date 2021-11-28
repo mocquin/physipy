@@ -202,8 +202,10 @@ class Dimension(object):
 
     def __eq__(self, y):
         """Dimensions are equal if their dim_dict are equal."""
-        return self.dim_dict == y.dim_dict
-
+        if type(y)==Dimension:
+            return self.dim_dict == y.dim_dict
+        else:
+            return False
     #def __ne__(self, y):
     #    """Return not (self == y)."""
     #    return not self.__eq__(y)
