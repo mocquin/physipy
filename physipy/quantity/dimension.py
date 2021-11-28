@@ -47,12 +47,31 @@ NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST}
 
 
 def parse_str_to_dic(exp_str):
+    """Parse a str expression into a power dict.
+    
+    Example:
+    ========
+    >>> parse_str_to_dic("L**2/M")
+    {"L":2, "M":1}
+    """
     parsed = parse_expr(exp_str)
     exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
     return exp_dic
 
 
 def check_pattern(exp_str, symbol_list):
+    """Check that all symbols used in exp_str are present in symbol_list.
+    
+    Start by parsing the string expression into a power_dict, then check that 
+    all the keys of the power_dict are present in the symbol_list.
+    
+    Example:
+    ========
+    >>> check_pattern("L**2*T", ["L", "T"])
+    True
+    >>> check_pattern("L**2*M", ["L", "T"])
+    False
+    """
     exp_dic = parse_str_to_dic(exp_str)
     return set(exp_dic.keys()).issubset(set(symbol_list))
 
@@ -218,7 +237,9 @@ class Dimension(object):
 
 def compute_str(dic, default_str, output_init=1):
     """Compute the product-concatenation of the 
-    dict as key**value."""
+    dict as key**value into a string.
+    Only used for 'str' and 'repr' methods.
+    """
     output = expand_dict_to_expr(dic, output_init)
     if output == output_init:
         return default_str
@@ -228,7 +249,9 @@ def compute_str(dic, default_str, output_init=1):
     
 def expand_dict_to_expr(dic, output_init=1):
     """Compute the sympy expression from exponent dict,
-    starting the product with ouptput=1."""
+    starting the product with ouptput=1.
+    Only used for 'str' and 'repr' methods.
+    """
     output = output_init
     for key, value in dic.items():
         output *= sp.Symbol(key)**value
