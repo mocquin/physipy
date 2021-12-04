@@ -541,7 +541,7 @@ class Quantity(object):
         return type(self)(self.value.flatten(), self.dimension, favunit=self.favunit)
     
     def tolist(self):
-        return [Quantity(i, self.dimension) for i in self.value]
+        return [type(self)(i, self.dimension) for i in self.value]
     
     @property
     def real(self):
@@ -697,7 +697,7 @@ class Quantity(object):
     #    return np.asarray(self.value)
     
     def reshape(self, *args, **kwargs):
-        return Quantity(self.value.reshape(*args, **kwargs), self.dimension)
+        return type(self)(self.value.reshape(*args, **kwargs), self.dimension)
     
     def __array_function__(self, func, types, args, kwargs):
         if func not in HANDLED_FUNCTIONS:
@@ -882,7 +882,7 @@ class Quantity(object):
         """
         Helper function to wrap numpy's squeeze.
         """
-        return Quantity(self.value.squeeze(*args, **kwargs), self.dimension)
+        return type(self)(self.value.squeeze(*args, **kwargs), self.dimension)
 
 # Numpy functions            
 # Override functions - used with __array_function__
