@@ -333,7 +333,7 @@ class Quantity(object):
             sym = ", symbol="+str(self.symbol)
         else:
             sym = ""
-        return '<Quantity : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"        
+        return f'<{self.__class__.__name__} : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"        
 
     def __str__(self):
         complement_value_for_repr = self._compute_complement_value() 
