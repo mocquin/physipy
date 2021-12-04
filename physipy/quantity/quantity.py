@@ -205,10 +205,13 @@ class Quantity(object):
 
     def __mul__(self,y):
         y = quantify(y)
-        q = Quantity(self.value * y.value, 
-                        self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol)
-        return large_quantify(q).rm_dim_if_dimless() 
+        #q = Quantity(self.value * y.value, 
+        #                self.dimension * y.dimension, 
+        #                symbol = self.symbol * y.symbol)
+        #return large_quantify(q).rm_dim_if_dimless() 
+        return type(self)(self.value * y.value, 
+                          self.dimension * y.dimension, 
+                          symbol = self.symbol * y.symbol)
     
     __rmul__ = __mul__
 
