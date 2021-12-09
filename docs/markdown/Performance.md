@@ -6,10 +6,6 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.4
-  kernelspec:
-    display_name: Python 3 (ipykernel)
-    language: python
-    name: python3
 ---
 
 # Performance
@@ -61,6 +57,7 @@ Basic comparison on pow
 ```python
 print(22.8*mus/(289*ns))
 ```
+
 
 ```python
 %%timeit 
@@ -227,6 +224,38 @@ arrm = arr*physipy.m
 arrm
 ```
 
+
+
+```python
+physipy
+  add : 0.57792
+  sub : 0.58624
+  mul : 1.10884
+truediv : 1.20130
+  add : 0.69919
+  sub : 0.74585
+  mul : 1.34999
+truediv : 1.72294
+
+physipy
+  add : 0.58849
+  sub : 0.59637
+  mul : 1.10718
+truediv : 1.19365
+  add : 0.75698
+  sub : 0.79829
+  mul : 1.34892
+truediv : 1.63579
+```
+
+```python
+
+```
+## benchmark timing
+
+
+Here is a comparison of most operations : 
+
 ```python
 import timeit
 
@@ -292,6 +321,32 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
 
 ## Array creation
 
+```python
+
+
+```
+
+```python
+
+```
+
+```python
+
+```
+
+
+
+```python
+pip install line_profiler
+```
+
+```python
+%lprun
+```
+
+# Array creation
+
+
 
 Compare lazy creation of arrays
 
@@ -316,6 +371,7 @@ bench_arr_scalar_op_mul
 ```python
 #%prun -D prunsum -s time m+m 
 %prun -D prunsum_file -s nfl use_case()
+
 !snakeviz prunsum_file
 ```
 
