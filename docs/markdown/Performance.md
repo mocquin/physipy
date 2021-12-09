@@ -6,10 +6,6 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.4
-  kernelspec:
-    display_name: Python 3 (ipykernel)
-    language: python
-    name: python3
 ---
 
 # Performance
@@ -63,6 +59,7 @@ Basic comparison on pow
 ```python
 print(22.8*mus/(289*ns))
 ```
+
 
 ```python
 %%timeit 
@@ -274,6 +271,10 @@ truediv : 1.63579
 ```python
 
 ```
+## benchmark timing
+
+
+Here is a comparison of most operations : 
 
 ```python
 import timeit
@@ -354,6 +355,10 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
 
 
 ```python
+pip install line_profiler
+```
+
+```python
 %lprun
 ```
 
@@ -383,6 +388,7 @@ bench_arr_scalar_op_mul
 ```python
 #%prun -D prunsum -s time m+m 
 %prun -D prunsum_file -s nfl use_case()
+
 !snakeviz prunsum_file
 ```
 
