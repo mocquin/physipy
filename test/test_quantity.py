@@ -3,8 +3,9 @@ import numpy as np
 import unittest
 from fractions import Fraction
 import math
+import time
 
-
+import pandas as pd
 import matplotlib
 import matplotlib.pyplot
 
@@ -30,6 +31,17 @@ sr = units["sr"]
 
 class TestQuantity(unittest.TestCase):
     
+    def setUp(self):
+        self.startTime = time.time()
+        self.tottime = 0
+
+    def tearDown(self):
+        t = time.time() - self.startTime
+        self.tottime = self.tottime + t
+        print(f"{self.id():70} : {t:10.6f}")
+        self.times.append(t)
+        self.ids.append(str(self.id()))
+    
     @classmethod
     def setUpClass(cls):
         
@@ -48,6 +60,16 @@ class TestQuantity(unittest.TestCase):
         cls.y_qu = Quantity(cls.y, cls.dim, favunit=cls.mm)
         cls.x_qsu = Quantity(cls.x, cls.dim, symbol="x_qsu", favunit=cls.mm)
         cls.y_qsu = Quantity(cls.y, cls.dim, symbol="y_qsu", favunit=cls.mm)
+        
+        cls.times = []
+        cls.ids = []
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.df = pd.DataFrame.from_dict({
+            "time":cls.times,
+            "id":cls.ids,
+        })
         
     def test_03_test_Quantity_creation(self):
         

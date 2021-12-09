@@ -1,18 +1,40 @@
 import unittest
 from fractions import Fraction
+import time
 
 from physipy import Dimension, DimensionError
 
+import pandas as pd
 
 class TestClassDimension(unittest.TestCase):
 
+    def setUp(self):
+        self.startTime = time.time()
+        self.tottime = 0
+
+    def tearDown(self):
+        t = time.time() - self.startTime
+        self.tottime = self.tottime + t
+        print(f"{self.id():70} : {t:10.6f}")
+        self.times.append(t)
+        self.ids.append(str(self.id()))
+    
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.m = Dimension("L")
         cls.none = Dimension(None)
         cls.dim_complexe = Dimension({"J": 1, "theta": -3})
         cls.no_dimension_str = "no-dimension"
+        cls.times = []
+        cls.ids = []
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.df = pd.DataFrame.from_dict({
+            "time":cls.times,
+            "id":cls.ids,
+        })
+        
     def test_010_init(cls):
 
         metre_by_dict = Dimension({"L": 1})
