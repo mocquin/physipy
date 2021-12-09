@@ -11,6 +11,8 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     dimension = traitlets.Instance(Dimension, allow_none=False)
     # value trait : a Quantity instance
     value = traitlets.Instance(Quantity, allow_none=False)
+    favunit = traitlets.Instance(Quantity, allow_none=True)
+
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
     # string trait text
@@ -21,6 +23,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     def __init__(self, value=0.0, disabled=False, 
                  continuous_update=True, description="Quantity:",
                  fixed_dimension=False, placeholder="Type python expr",
+                 favunit=None,
                  **kwargs):
         
         # context for parsing
@@ -36,6 +39,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # set quantity
         self.value = value
+        if favunit is None:
+            self.favunit = value.favunit
+        else:
+            self.favunit = favunit
+        self.value.favunit = self.favunit
         # set text widget
         self.text = ipyw.Text(value=str(self.value),
                               placeholder=placeholder,
@@ -60,12 +68,13 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             expression = expression.replace(" ", "*")
             # eval expression with unit context
             try:
-                old_favunit = self.value.favunit
+                old_favunit = self.favunit
                 res = eval(expression, self.context)
                 res = quantify(res)
                 # update quantity value
                 self.value = res
-                self.value.favunit = old_favunit
+                self.favunit = old_favunit
+                self.value.favunit = self.favunit
                 # update display_value
                 self.display_val = str(self.value)
             except:
@@ -107,6 +116,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     dimension = traitlets.Instance(Dimension, allow_none=False)
     # value trait : a Quantity instance
     value = traitlets.Instance(Quantity, allow_none=False)
+    favunit = traitlets.Instance(Quantity, allow_none=True)
     qmin = traitlets.Instance(Quantity, allow_none=False)
     qmax = traitlets.Instance(Quantity, allow_none=False)
     qstep = traitlets.Instance(Quantity, allow_none=False)
@@ -117,7 +127,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     
     def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
-                 fixed_dimension=False, label=True,#placeholder="Type python expr",
+                 fixed_dimension=False, label=True, favunit=None,#placeholder="Type python expr",
                  **kwargs):
         
         super().__init__(**kwargs)
@@ -136,8 +146,11 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # set quantity
         self.value = value
-        
-
+        if favunit is None:
+            self.favunit = value.favunit
+        else:
+            self.favunit = favunit
+        self.value.favunit = self.favunit
         if min is not None:
             qmin = quantify(min)
             if not qmin.dimension == self.value.dimension:
@@ -180,7 +193,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                                       )
     
         def update_label_on_slider_change(change):
-            self.value = Quantity(change.new, self.value.dimension, favunit=self.value.favunit)
+            self.value = Quantity(change.new, self.value.dimension, favunit=self.favunit)
             self.label.value = str(self.value)
         self.slider.observe(update_label_on_slider_change, names="value")
 
@@ -215,7 +228,9 @@ class QuantityTextSlider(QuantityText):
     """
     
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, description="")
+        favunit = kwargs.get("favunit", None)
+        
+        super().__init__(*args, description="", favunit=favunit)
         
         self.qslider = QuantitySlider(*args,
                                       label=False,
@@ -227,6 +242,12 @@ class QuantityTextSlider(QuantityText):
         link = ipyw.link(
             (self, "value"), 
             (self.qslider, "value")
+        )
+        
+        
+        link = ipyw.link(
+            (self, "favunit"),
+            (self.qslider, "favunit"),
         )
         
         # set the QuantityText HBox children with just the slider and the text
