@@ -140,6 +140,21 @@ except:
     print("b.fixed_dimension =", b.fixed_dimension,
           ", hence Quantity must be same dimension.")
 
+# %%
+# handle favunit
+a = 3*m
+a.favunit = mm
+w = QuantityTextSlider(a)
+w
+
+# %%
+w = QuantityTextSlider(3*m)
+w
+
+# %%
+w.qslider.favunit = mm
+w
+
 # %% [markdown]
 # # Fixed-Dimension QuantityText
 # A QuantityText that will set a dimension at creation, and not allow any other dimension:
@@ -451,7 +466,11 @@ from physipy.qwidgets.qipywidgets import QuantityTextSlider
 import ipywidgets as ipyw
 
 # %%
-from physipy import m
+from numpy import pi
+from physipy import m, units, rad
+mm = units["mm"]
+km = units["km"]
+
 
 w = QuantityTextSlider(3*m)
 w
@@ -464,6 +483,16 @@ w
 q = pi*m
 q.favunit = mm
 w = QuantityTextSlider(q)
+w
+
+# %%
+# play around with the above widget's favunit
+#w.favunit = km
+#w.qslider.favunit = mm
+
+# %%
+q = pi*m
+w = QuantityTextSlider(q, favunit=km)
 w
 
 # %%
