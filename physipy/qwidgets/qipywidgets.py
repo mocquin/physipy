@@ -1,9 +1,12 @@
-from ipywidgets import Layout
-from traitlets import TraitError
-from physipy import quantify, Dimension, Quantity, units, set_favunit, DimensionError
-import ipywidgets as ipyw
-import traitlets
 from numpy import pi
+
+import ipywidgets as ipyw
+from ipywidgets import Layout
+
+import traitlets
+from traitlets import TraitError
+
+from physipy import quantify, Dimension, Quantity, units, set_favunit, DimensionError
 
 
 class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
@@ -20,14 +23,19 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     # description
     description = traitlets.Unicode(allow_none=True)
     
-    def __init__(self, value=0.0, disabled=False, 
-                 continuous_update=True, description="Quantity:",
-                 fixed_dimension=False, placeholder="Type python expr",
+    def __init__(self, 
+                 value=0.0, 
+                 disabled=False, 
+                 continuous_update=True, 
+                 description="Quantity:",
+                 fixed_dimension=False,
+                 placeholder="Type python expr",
                  favunit=None,
                  **kwargs):
         
         # context for parsing
         self.context = {**units, "pi":pi}
+        
         self.description = description
         
         # quantity work
@@ -39,15 +47,18 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # set quantity
         self.value = value
+        
+        # favunit
         if favunit is None:
             self.favunit = value.favunit
         else:
             self.favunit = favunit
         self.value.favunit = self.favunit
+        
         # set text widget
-        self.text = ipyw.Text(value=str(self.value),
+        self.text = ipyw.Text(value=str(self.value),     # init text with init value
                               placeholder=placeholder,
-                              description=self.description,#'Set to:',
+                              description=self.description,
                               disabled=disabled,
                               continuous_update=continuous_update,
                               layout=Layout(width='auto',
@@ -60,28 +71,37 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         traitlets.link((self.text, "value"), 
                        (self, "display_val"))
         
+        # Actually a Box widget that wraps a Text widget
         super().__init__(**kwargs)
         self.children = [self.text]
 
-        # on_submit observe
+        # on_submit observe : what to do when text is entered
         def text_update_values(wdgt):
+            
             # get expression entered
             expression = wdgt.value
             expression = expression.replace(" ", "*") # to parse "5 m" into "5*m"
+            
             # eval expression with unit context
             try:
                 old_favunit = self.favunit
                 res = eval(expression, self.context)
                 res = quantify(res)
+                
                 # update quantity value
                 self.value = res
                 self.favunit = old_favunit
                 self.value.favunit = self.favunit
+                
                 # update display_value
                 self.display_val = str(self.value)
+                
             except:
+                # if anything fails, do nothing
                 self.display_val = str(self.value)
+        # create the callback
         self.text.on_submit(text_update_values)
+
 
     # update value_number and text on quantity value change
     @traitlets.observe("value")
@@ -90,14 +110,20 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         self.dimension = self.value.dimension
         self.display_val = f'{str(self.value)}'
 
+        
+    # helper to validate value the value if fixed dimension
     @traitlets.validate('value')
     def _valid_value(self, proposal):
         if self.fixed_dimension and proposal['value'].dimension != self.dimension:
-            raise TraitError('value and parity should be consistent')
+            raise TraitError('Dimension between old and new value should be consistent.')
         return proposal['value']
     
 
 class FDQuantityText(QuantityText):
+    """
+    A FDQuantityText simply wraps QuantityText with fixed_dimension to True,
+    making it even more explicit that the dimension can't be changed.
+    """
     
     def __init__(self, value=0.0, disabled=False, 
                  continuous_update=True, description="Quantity:", *args,
