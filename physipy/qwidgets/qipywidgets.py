@@ -57,7 +57,9 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                              style={'description_width': '130px'})
         
         # link text value and display_val unicode trait
-        traitlets.link((self.text, "value"), (self, "display_val"))
+        traitlets.link((self.text, "value"), 
+                       (self, "display_val"))
+        
         super().__init__(**kwargs)
         self.children = [self.text]
 
@@ -65,7 +67,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         def text_update_values(wdgt):
             # get expression entered
             expression = wdgt.value
-            expression = expression.replace(" ", "*")
+            expression = expression.replace(" ", "*") # to parse "5 m" into "5*m"
             # eval expression with unit context
             try:
                 old_favunit = self.favunit
