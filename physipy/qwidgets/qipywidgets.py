@@ -125,15 +125,13 @@ class FDQuantityText(QuantityText):
     making it even more explicit that the dimension can't be changed.
     """
     
-    def __init__(self, value=0.0, disabled=False, 
-                 continuous_update=True, description="Quantity:", *args,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         
-        super().__init__(value=value, disabled=disabled,
-                         continuous_update=continuous_update, 
-                         description=description,
-                         fixed_dimension=True, 
-                         *args, 
+        fixed_dimension = kwargs.get("fixed_dimension", True)
+        if not fixed_dimension:
+            raise ValueError("fixed_dimension can't be False. Use QuantityText.")
+        kwargs["fixed_dimension"] = True
+        super().__init__(*args, 
                          **kwargs)
 
 
