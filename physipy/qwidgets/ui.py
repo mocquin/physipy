@@ -2,7 +2,8 @@ import ipywidgets as ipyw
 
 from .qipywidgets import QuantityText, QuantityTextSlider
 
-from physipy import set_favunit
+from physipy import set_favunit, all_units
+from physipy.quantity.utils import hard_favunit
 
 
 def ui_widget_decorate(inits_values, kind="Text"):
@@ -46,13 +47,18 @@ def ui_widget_decorate(inits_values, kind="Text"):
         for initq in inits_values:
             # param name
             pname = initq[0]
+            
             # initial value 
             initial_value = initq[1]
+            # check if the initial is a favunit, and set itself as favunit
+            if hard_favunit(initial_value, all_units.values()):
+                initial_value.favunit = initial_value
             
             # if provided, use alias instead of param name
             if len(initq) == 3:
                 pname = initq[2]
 
+            # the widget is created here
             widget = w(initial_value,
                        description=pname)
             
