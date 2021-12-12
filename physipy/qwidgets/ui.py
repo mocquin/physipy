@@ -53,6 +53,7 @@ def ui_widget_decorate(inits_values, kind="Text"):
             if len(initq) == 3:
                 pname = initq[2]
 
+            # the widget is created here
             widget = w(initial_value,
                        description=pname)
             
