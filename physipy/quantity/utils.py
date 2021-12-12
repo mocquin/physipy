@@ -7,6 +7,35 @@ from sympy.parsing.sympy_parser import parse_expr
 
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
 
+
+def hard_equal(q1, q2):
+    """
+    q1 and q2 are equal if their value, dimension, and symbols are equal.
+    """
+    try:
+        if q1.dimension == q2.dimension:
+            return q1.value == q2.value and q1.symbol == q2.symbol# comparing arrays returns array of bool
+        else:
+            return False
+    except Exception as e:
+            return False
+
+def hard_favunit(q, units_list):
+    """
+    Return True if q hard-equals any unit.
+    """
+    favs = [unit for unit in units_list if hard_equal(q, unit)]
+    return True if len(favs)>=1 else False
+
+
+def easy_favunit(q, units_list):
+    """
+    Return True if q equals any unit.
+    """
+    favs = [unit for unit in units_list if q==unit]
+    return True if len(favs)>=1 else False
+
+
 def _parse_str_to_dic(exp_str):
     """
     Use sympy's parser to split a string "m/s**2"
