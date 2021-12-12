@@ -2,6 +2,8 @@ import ipywidgets as ipyw
 
 from .qipywidgets import QuantityText, QuantityTextSlider
 
+from physipy import set_favunit
+
 
 def ui_widget_decorate(inits_values, kind="Text"):
     """
