@@ -121,7 +121,9 @@ def ui_widget_decorate_from_annotations(func, kind="Text"):
         # only turn quantity annotations to widgets,
         # standards params are "passed"
         if type(v.annotation) == Quantity:
-            inits_values.append((v.name, v.annotation, v.name))
+            inits_values.append((v.name,
+                                 v.annotation, # initial value
+                                 v.name))
         
     # fyi : to get retun annotation
     #sig.return_annotation
