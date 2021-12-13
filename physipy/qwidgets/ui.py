@@ -2,7 +2,7 @@ import ipywidgets as ipyw
 
 from .qipywidgets import QuantityText, QuantityTextSlider
 
-from physipy import set_favunit, all_units
+from physipy import set_favunit, all_units, Quantity
 from physipy.quantity.utils import hard_favunit
 
 
@@ -118,8 +118,11 @@ def ui_widget_decorate_from_annotations(func, kind="Text"):
     inits_values = []
     
     for k,v in sig.parameters.items():
-        inits_values.append((v.name, v.annotation, v.name))
-
+        # only turn quantity annotations to widgets,
+        # standards params are "passed"
+        if type(v.annotation) == Quantity:
+            inits_values.append((v.name, v.annotation, v.name))
+        
     # fyi : to get retun annotation
     #sig.return_annotation
     if not sig.return_annotation == inspect._empty:
@@ -146,8 +149,6 @@ def FunctionUI(tab_name, function_dict, kind="Text"):
         
     acc.children = sections_uis
 
-    
-    
     tab = ipyw.Tab()
     tab.children = [acc]
     tab.set_title(0, tab_name)
