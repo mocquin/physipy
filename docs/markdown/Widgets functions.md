@@ -187,6 +187,7 @@ Use to generate UIs for a bunch of annotated functions
 ```python
 from physipy import units, imperial_units, rad
 from physipy.qwidgets.ui import FunctionUI
+from physipy.quantity.utils import latex_eq
 
 # get some units
 mm = units["mm"]
@@ -203,8 +204,8 @@ murad = units["murad"]
 def speed(x:m, time:s)-> m/s:
     return x/time
 
-
-def diffraction(lmbda:mum, D:mm)->murad:
+@latex_eq(r"$\lambda/D$")  # add latex equation
+def diffraction(lmbda:mum, D:mm)->murad: # output will be displayed in micro-radians
     return lmbda/D*rad
 
 
