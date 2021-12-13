@@ -179,6 +179,51 @@ def freq_RC(R:ohm, C:farad)->GHz:
 freq_RC
 ```
 
+# Function UI accordion
+
+
+Use to generate UIs for a bunch of annotated functions
+
+```python
+from physipy import units, imperial_units, rad
+from physipy.qwidgets.ui import FunctionUI
+
+# get some units
+mm = units["mm"]
+mum = units["mum"]
+
+hour = units["h"]
+mile = imperial_units["mil"]
+mph = mile/hour
+mph.symbol = "mph"
+
+murad = units["murad"]
+
+# define functions with annotations
+def speed(x:m, time:s)-> m/s:
+    return x/time
+
+
+def diffraction(lmbda:mum, D:mm)->murad:
+    return lmbda/D*rad
+
+
+# module name
+tab_name = "Physics"
+
+functions_dict = {
+    "Mechanics": [
+        speed,
+    ],
+    "Optics": [
+        diffraction,
+    ]
+}
+
+ui= FunctionUI(tab_name, functions_dict, kind="TextSlider")
+ui
+```
+
 ```python
 
 ```
