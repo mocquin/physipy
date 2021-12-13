@@ -1539,7 +1539,8 @@ cant_be_implemented = ["logical_and", "logical_or", "logical_xor", "logical_not"
 
 ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
 unary_ufuncs = no_dim_1 + angle_1 + same_out + inv_angle_1 + special_dict + deg_rad + same_dim_in_1_nodim_out
-
+implemented = (same_dim_out_2 + same_dim_in_2_nodim_out + same_dim_in_1_nodim_out + skip_2 + special_dict +
+no_dim_1 + no_dim_2 + angle_1 + same_out + inv_angle_1 + deg_rad)
 
 
 def quantify(x):
