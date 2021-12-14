@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.2
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -218,3 +218,25 @@ except Exception as e:
 
 # %%
 np.reshape(q_arr, (1, len(q_arr)))
+
+# %% [markdown]
+# # List of implemented functions
+
+# %%
+from physipy.quantity.quantity import HANDLED_FUNCTIONS, implemented
+
+physipy_implemented = set([f.__name__ for f in HANDLED_FUNCTIONS]).union(set(implemented))
+physipy_implemented
+
+# %% [markdown] tags=[]
+# # List of not implemented functions
+
+# %% [markdown]
+# From https://github.com/hgrecco/pint/commit/2da1be75878e6da53f658b79ed057cc0b34b8c05
+
+# %%
+import numpy as np
+
+numpy_functions = set(attr for attr in dir(np) if hasattr(getattr(np, attr), '_implementation'))
+
+print(sorted(numpy_functions - physipy_implemented))
