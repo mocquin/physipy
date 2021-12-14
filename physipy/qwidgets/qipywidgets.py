@@ -438,8 +438,6 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # list of available units
         if self.dimension == Dimension(None) or all_units:
             self.favunit_str_list = [u_str for u_str, u_q in self.units.items()]
-       # elif not all_units and self.dimension is not None:
-       #     self.favunit_str_list = [u_str for u_str, u_q in self.units.items() if self.dimension == u_q.dimension]
         else:
             self.favunit_str_list = [u_str for u_str, u_q in self.units.items() if self.dimension == u_q.dimension ]
         self.favunit_str_list.append("-")
@@ -447,14 +445,14 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # dropdown
         self.favunit_dd = ipyw.Dropdown(
-                           options=self.favunit_str_list,
+            options=self.favunit_str_list,
             # set init value               
             value=str(self.value.symbol),
-                           description='Favunit:',
-                           layout=Layout(width="30%",
-                                         margin="5px 5px 5px 5px",                                         
-                                         border="solid black")
-                                   )
+            description='Favunit:',
+            layout=Layout(width="30%",
+                          margin="5px 5px 5px 5px",                                         
+                          border="solid black"),
+        )
         
 
         self.children = [self.favunit_dd]
@@ -466,7 +464,7 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             # retrieve new favunit q
             self.value = self.units[change.new]
         self.favunit_dd.observe(update_favunit_on_favunit_dd_change, names="value")
-# -
+
         def update_dd_value(change):
             self.favunit_dd.value = str(change.new.symbol)
         self.observe(update_dd_value, names="value")
