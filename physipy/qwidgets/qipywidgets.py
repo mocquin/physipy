@@ -22,8 +22,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     favunit = traitlets.Instance(Quantity, allow_none=True)
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
-    # description
-    description = traitlets.Unicode(allow_none=True)
+
     
     def __init__(self, 
                  value=0.0, 
@@ -37,13 +36,12 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # context for parsing
         self.context = {**units, "pi":pi}
-        # Text description
-        self.description = description
+
         
         # set text widget
         self.text = ipyw.Text(value="",     # init text with init value
                               placeholder=placeholder,
-                              description=self.description,
+                              description=description,
                               disabled=disabled,
                               continuous_update=continuous_update,
                               layout=Layout(width='auto',
@@ -73,6 +71,12 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             
         # TODO : link those 2
         self.value.favunit = self.favunit
+        
+
+        
+        # link text value and display_val unicode trait
+        #traitlets.link((self.text, "value"), 
+        #               (self, "display_val"))
         
         # Actually a Box widget that wraps a Text widget
         super().__init__(**kwargs)
@@ -107,6 +111,10 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         self.text.on_submit(text_update_values)
 
 
+    @property
+    def description(self):
+        return self.text.description
+        
     # update value_number and text on quantity value change
     @traitlets.observe("value")
     def _update_display_val(self, proposal):
@@ -157,8 +165,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     qstep = traitlets.Instance(Quantity, allow_none=False)
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
-    # description
-    description = traitlets.Unicode(allow_none=True)
+
     
     def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
@@ -167,10 +174,6 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         super().__init__(**kwargs)
 
-        
-        # context for parsing
-        #self.context = {**units, "pi":pi}
-        self.description = description
         
         # quantity work
         # set dimension
@@ -254,6 +257,13 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             self.children = [
                 self.slider,
             ]
+            
+    @property
+    def description(self):
+        """
+        Also used in QuantityText
+        """
+        return self.slider.description
 
 
 class QuantityTextSlider(QuantityText):
@@ -311,8 +321,7 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     qstep = traitlets.Instance(Quantity, allow_none=False)
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
-    # description
-    description = traitlets.Unicode(allow_none=True)
+    
     
     def __init__(self, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
@@ -325,10 +334,6 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         super().__init__(**kwargs)
 
-        
-        # context for parsing
-        #self.context = {**units, "pi":pi}
-        self.description = description
         
         # quantity work
         # set dimension
