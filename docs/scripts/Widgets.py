@@ -88,19 +88,16 @@ w
 # %%
 print(w.value)
 print(w.value.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 print(w.fixed_dimension)
 
 # %%
 print(w.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 
 # %%
 print(w.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 
 # %% [markdown]
 # With custom description : 

@@ -36,5 +36,9 @@ wf.add_integral(1*s, 4*s)
 ```
 
 ```python
+wf.x2
+```
+
+```python
 
 ```

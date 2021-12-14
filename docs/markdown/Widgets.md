@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.2
+      jupytext_version: 1.13.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -50,8 +50,8 @@ ipyw.VBox([
     qrs,
     favunit_dd,
 ])
-
 ```
+
 
 For most widgets, a "Fixed-Dimension" version is available, prefixed "FD". Once defined, you can't change the value to a quantity with another dimension.
 
@@ -88,21 +88,18 @@ A QuantityText has typical attributes of a widget and a Quantity, except the `va
 ```python
 print(w.value)
 print(w.value.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 print(w.fixed_dimension)
 ```
 
 ```python
 print(w.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 ```
 
 ```python
 print(w.value)
-print(w.dimension)
-print(w.description)
+#print(w.description)
 ```
 
 With custom description : 

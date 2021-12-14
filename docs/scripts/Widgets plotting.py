@@ -34,3 +34,6 @@ wf
 wf.add_integral(1*s, 4*s)
 
 # %%
+wf.x2
+
+# %%
