@@ -83,6 +83,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
  - [python-units](https://pypi.org/project/python-units/)
+ - [natu](https://github.com/kdavies4/natu)
  - [misu](https://github.com/cjrh/misu)
  - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
 
