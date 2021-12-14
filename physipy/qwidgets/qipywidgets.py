@@ -170,6 +170,9 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     # value trait : a Quantity instance
     value = traitlets.Instance(Quantity, allow_none=False)
     favunit = traitlets.Instance(Quantity, allow_none=True)
+    
+    # what the point of those being declared here ? except enforcing
+    # to be quantity ?
     qmin = traitlets.Instance(Quantity, allow_none=False)
     qmax = traitlets.Instance(Quantity, allow_none=False)
     qstep = traitlets.Instance(Quantity, allow_none=False)
