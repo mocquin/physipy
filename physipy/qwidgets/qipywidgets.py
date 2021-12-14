@@ -428,7 +428,6 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     dimension = traitlets.Instance(Dimension)
     value = traitlets.Instance(Quantity, allow_none=True)
-    strfavunit = traitlets.Unicode()
     
     def __init__(self, dimension=None, all_units=False,
                  **kwargs):
