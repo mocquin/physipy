@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.2
+      jupytext_version: 1.13.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -28,14 +28,117 @@ import numpy as np
 import physipy
 from physipy.quantity.utils import asqarray
 from physipy import m, K, s, Quantity, Dimension
+```
+
+```python
 import uncertainties
 from uncertainties import ufloat
 from uncertainties import umath
 from uncertainties.umath import *  # sin(), etc.
 ```
 
+Define a quantity that hold the uncertainties value : 
+
 ```python
-def info(x): print(f"{str(type(x)): <45}", " --- ", f"{str(repr(x)): <65}"+" --- "+f"{str(x): <13}")
+height = ufloat(1.84, 0.1) 
+qheight = height*m
+
+print(height)
+print(qheight)
+```
+
+Uncertainties attributes are still available but without unit (hence the need of a better interface):
+
+```python
+print(qheight.nominal_value)
+print(qheight.std_dev)
+print(qheight.std_score(3))
+```
+
+Some operations fails like : 
+
+```python
+u = ufloat(1, 0.1) * m
+v = ufloat(10, 0.1) * m
+sum_value = u + v
+sum_value.derivatives[u.value]
+```
+
+<!-- #region tags=[] -->
+## Operations with other quantities 
+are possible as long as uncertainties support the operation with the quantity's value : 
+<!-- #endregion -->
+
+```python
+print(qheight*2)
+print(qheight*2*m)
+print(qheight**2)
+print(qheight*np.arange(3))
+print((2*qheight+1*m))
+```
+
+## Operations with other uncertainties
+
+
+By default, an uncertainty that is not wrapped by a quantity is supposed to have no physical dimension
+
+```python
+print(qheight)
+print(qheight * ufloat(2, 0.1))
+print(qheight / ufloat(2, 0.1))
+
+```
+
+## Access to the individual sources of uncertainty
+based on https://pythonhosted.org/uncertainties/user_guide.html#access-to-the-individual-sources-of-uncertainty
+Again, we loose the unit falling back on the backend value : we would like to have : 
+```
+21.00+/-0.22 m
+v variable: 0.2 m
+u variable: 0.1 m
+```
+
+```python
+u = ufloat(1, 0.1, "u variable") * m  # Tag
+v = ufloat(10, 0.1, "v variable") * m
+sum_value = u+2*v
+print(sum_value)
+for (var, error) in sum_value.error_components().items():
+    print("{}: {}".format(var.tag, error))
+```
+
+# Comparison
+
+```python
+x = ufloat(0.20, 0.01) *m
+y = x + 0.0001*m
+
+print(y > x) # expect True
+print(y > 0*m) # expect True
+
+y = ufloat(1, 0.1) * m
+z = ufloat(1, 0.1) * m
+print(y)
+print(z)
+print(y == y) # expect True
+print(y == z) # expect False
+```
+
+# Math module and numpy
+Not tested but will most likely fails as uncertainties relies on `umath` and `unumpy`. To be fair, physipy also have a `math` module that wraps the builtin one.
+
+```python
+
+```
+
+```python
+
+```
+
+# Dirty Sandbox
+
+```python
+def info(x): print(f"{str(type(x)): <20}", " --- ", f"{str(repr(x)): <30}"+" --- "+f"{str(x): <10}")
 
 xuv = ufloat(1.123, 0.1) 
 yuv = ufloat(2.123, 0.2)
