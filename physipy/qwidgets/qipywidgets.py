@@ -20,8 +20,6 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     value = traitlets.Instance(Quantity, allow_none=False)
     # favunit : a quantity or None
     favunit = traitlets.Instance(Quantity, allow_none=True)
-    # value_number : float value of quantity
-    value_number = traitlets.Float(allow_none=True)
 
     
     def __init__(self, 
@@ -113,10 +111,9 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         """
         return self.text.description
         
-    # update value_number and text on quantity value change
+    # update text on quantity value change
     @traitlets.observe("value")
     def _update_display_val(self, proposal):
-        self.value_number = self.value.value
         self.dimension = self.value.dimension
         self.text.value = f'{str(self.value)}'
 
@@ -161,8 +158,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     qmin = traitlets.Instance(Quantity, allow_none=False)
     qmax = traitlets.Instance(Quantity, allow_none=False)
     qstep = traitlets.Instance(Quantity, allow_none=False)
-    # value_number : float value of quantity
-    value_number = traitlets.Float(allow_none=True)
+
 
     
     def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
@@ -317,8 +313,7 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     qmin = traitlets.Instance(Quantity, allow_none=False)
     qmax = traitlets.Instance(Quantity, allow_none=False)
     qstep = traitlets.Instance(Quantity, allow_none=False)
-    # value_number : float value of quantity
-    value_number = traitlets.Float(allow_none=True)
+
     
     
     def __init__(self, min=None, max=None, step=None, disabled=False, 
