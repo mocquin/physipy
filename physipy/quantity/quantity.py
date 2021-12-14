@@ -1000,7 +1000,7 @@ def np_fliplr(m):
                     favunit=m.favunit)
 
 
-@implements(np.fliplud)
+@implements(np.flipud)
 def np_flipud(m):
     return Quantity(np.flipud(m.value),
                     m.dimension, 
