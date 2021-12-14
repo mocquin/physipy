@@ -60,6 +60,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # set dimension
         value = quantify(value)
         self.dimension = value.dimension
+        
         # if true, any change in value must have same dimension as initial dimension
         self.fixed_dimension = fixed_dimension
         
@@ -269,6 +270,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             self.children = [
                 self.slider,
             ]
+
             
     @property
     def description(self):
