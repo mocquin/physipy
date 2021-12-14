@@ -984,6 +984,30 @@ def np_inv(a):
     return Quantity(np.linalg.inv(a.value), 1/a.dimension)
 
 
+@implements(np.flip)
+def np_flip(m, axis=None):
+    return Quantity(np.flip(m.value, axis=axis), 
+                    m.dimension,
+                    symbol=m.symbol, 
+                    favunit=m.favunit)
+
+
+@implements(np.fliplr)
+def np_fliplr(m):
+    return Quantity(np.fliplr(m.value),
+                    m.dimension, 
+                    symbol=m.symbol, 
+                    favunit=m.favunit)
+
+
+@implements(np.fliplud)
+def np_flipud(m):
+    return Quantity(np.flipud(m.value),
+                    m.dimension, 
+                    symbol=m.symbol,
+                    favunit=m.favunit)
+
+
 @implements(np.random.normal)
 def np_random_normal(loc=0.0, scale=1.0, **kwargs):
     loc = quantify(loc)
@@ -1179,6 +1203,13 @@ def np_median(q): return Quantity(np.median(q.value), q.dimension, favunit=q.fav
 def np_var(q, *args, **kwargs): return Quantity(np.var(q.value, *args, **kwargs), q.dimension**2)
 
 
+@implements(np.rollaxis)
+def np_rollaxis(a, axis, start=0):
+    return Quantity(np.rollaxis(a.value, axis, start=0),
+                    a.dimension, 
+                    symbol=a.symbol,
+                    favunit=a.favunit)
+
 @implements(np.trapz)
 def np_trapz(q, x=None, dx=1, **kwargs):
     #if not isinstance(q.value,np.ndarray):
@@ -1194,6 +1225,21 @@ def np_trapz(q, x=None, dx=1, **kwargs):
         return Quantity(np.trapz(q.value, x=x.value, **kwargs),
                     q.dimension * x.dimension,
                     )
+    
+@implements(np.transpose)
+def np_transpose(a, axis=None):
+    return Quantity(np.transpose(a.value, axis=axis), 
+                    a.dimension,
+                    favunit=a.favunit,
+                    symbol=a.symbol)
+
+@implements(np.rot90)
+def np_rot90(m, k=1, axes=(0,1)):
+    return Quantity(np.rot90(m.value, k=k, axes=axes), 
+                    m.dimension,
+                    favunit=m.favunit,
+                    symbol=m.symbol)
+
 
 @implements(np.alen)
 def np_alen(a):
