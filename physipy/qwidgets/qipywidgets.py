@@ -15,10 +15,16 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     """
     
     # dimension trait : a Dimension instance
+    # use to store the dimension at startup and check
+    # if new value has same dimension when same dimension
+    # is mandatory through fixed_dimension
     dimension = traitlets.Instance(Dimension, allow_none=False)
+    
     # value trait : a Quantity instance
     value = traitlets.Instance(Quantity, allow_none=False)
+    
     # favunit : a quantity or None
+    # this is only used for display purpose
     favunit = traitlets.Instance(Quantity, allow_none=True)
 
     
@@ -37,16 +43,18 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
         
         # set text widget
-        self.text = ipyw.Text(value="",     # init text with init value
-                              placeholder=placeholder,
-                              description=description,
-                              disabled=disabled,
-                              continuous_update=continuous_update,
-                              layout=Layout(width='auto',
-                                            margin="0px 0px 0px 0px",
-                                            padding="0px 0px 0px 0px",
-                                            border="solid gray"),
-                             style={'description_width': '130px'})
+        self.text = ipyw.Text(
+            value="",                 
+            placeholder=placeholder,
+            description=description,
+            disabled=disabled,
+            continuous_update=continuous_update,
+            layout=Layout(width='auto',
+                          margin="0px 0px 0px 0px",
+                          padding="0px 0px 0px 0px",
+                          border="solid gray"),
+            style={'description_width': '130px'},
+        )
         
         # quantity work
         # set dimension
@@ -85,7 +93,9 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             # eval expression with unit context
             try:
                 old_favunit = self.favunit
-                res = eval(expression, self.context)
+                # TODO : use a Lexer/Parser to allow 
+                # only valid mathematical text
+                res = eval(expression, self.context) 
                 res = quantify(res)
                 
                 # update quantity value
@@ -95,11 +105,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                 self.value.favunit = self.favunit
                 
                 # update display_value
-                self.text.value = str(self.value)
+                self.text.value = str(self.value) # self.value.favunit is used here
                 
             except:
                 # if anything fails, do nothing
-                self.text.value = str(self.value)
+                self.text.value = str(self.value) # self.value.favunit is used here
         # create the callback
         self.text.on_submit(text_update_values)
 
@@ -115,7 +125,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     @traitlets.observe("value")
     def _update_display_val(self, proposal):
         self.dimension = self.value.dimension
-        self.text.value = f'{str(self.value)}'
+        self.text.value = f'{str(self.value)}' # self.value.favunit is used here
 
         
     # helper to validate value the value if fixed dimension
@@ -134,9 +144,14 @@ class FDQuantityText(QuantityText):
     
     def __init__(self, *args, **kwargs):
         
+        # pop the fixed_dimension kwarg if present
+        # and raise Error if it was False
+        # forgive if was True
         fixed_dimension = kwargs.get("fixed_dimension", True)
         if not fixed_dimension:
             raise ValueError("fixed_dimension can't be False. Use QuantityText.")
+        
+        # Set it to true and send to QuantityText
         kwargs["fixed_dimension"] = True
         super().__init__(*args, 
                          **kwargs)
