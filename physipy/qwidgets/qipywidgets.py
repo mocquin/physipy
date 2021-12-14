@@ -72,11 +72,6 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # TODO : link those 2
         self.value.favunit = self.favunit
         
-
-        
-        # link text value and display_val unicode trait
-        #traitlets.link((self.text, "value"), 
-        #               (self, "display_val"))
         
         # Actually a Box widget that wraps a Text widget
         super().__init__(**kwargs)
@@ -113,6 +108,9 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
     @property
     def description(self):
+        """
+        Used by interact/interactive.
+        """
         return self.text.description
         
     # update value_number and text on quantity value change
