@@ -10,12 +10,16 @@ from physipy import quantify, Dimension, Quantity, units, set_favunit, Dimension
 
 
 class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
+    """
+    
+    """
+    
     # dimension trait : a Dimension instance
     dimension = traitlets.Instance(Dimension, allow_none=False)
     # value trait : a Quantity instance
     value = traitlets.Instance(Quantity, allow_none=False)
+    # favunit : a quantity or None
     favunit = traitlets.Instance(Quantity, allow_none=True)
-
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
     # string trait text
@@ -35,7 +39,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # context for parsing
         self.context = {**units, "pi":pi}
-        
+        # Text description
         self.description = description
         
         # quantity work
@@ -50,9 +54,13 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # favunit
         if favunit is None:
+            # we fall back on the passed quantity's favunit
+            # (that could be None also)
             self.favunit = value.favunit
         else:
             self.favunit = favunit
+            
+        # TODO : link those 2
         self.value.favunit = self.favunit
         
         # set text widget
@@ -91,6 +99,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                 # update quantity value
                 self.value = res
                 self.favunit = old_favunit
+                # see above, TODO find a way to link those 2
                 self.value.favunit = self.favunit
                 
                 # update display_value
