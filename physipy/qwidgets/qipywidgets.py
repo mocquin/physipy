@@ -273,6 +273,12 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         Also used in QuantityText
         """
         return self.slider.description
+    
+    @traitlets.validate('value')
+    def _valid_value(self, proposal):
+        if self.fixed_dimension and proposal['value'].dimension != self.dimension:
+            raise TraitError('Dimension between old and new value should be consistent.')
+        return proposal['value']
 
 
 class QuantityTextSlider(QuantityText):
