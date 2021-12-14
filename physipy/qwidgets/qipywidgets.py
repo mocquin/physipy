@@ -22,8 +22,6 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     favunit = traitlets.Instance(Quantity, allow_none=True)
     # value_number : float value of quantity
     value_number = traitlets.Float(allow_none=True)
-    # string trait text
-    display_val = traitlets.Unicode(allow_none=True)
     # description
     description = traitlets.Unicode(allow_none=True)
     
@@ -42,6 +40,18 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # Text description
         self.description = description
         
+        # set text widget
+        self.text = ipyw.Text(value="",     # init text with init value
+                              placeholder=placeholder,
+                              description=self.description,
+                              disabled=disabled,
+                              continuous_update=continuous_update,
+                              layout=Layout(width='auto',
+                                            margin="0px 0px 0px 0px",
+                                            padding="0px 0px 0px 0px",
+                                            border="solid gray"),
+                             style={'description_width': '130px'})
+        
         # quantity work
         # set dimension
         value = quantify(value)
@@ -51,6 +61,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # set quantity
         self.value = value
+        self.text.value = str(self.value)
         
         # favunit
         if favunit is None:
@@ -62,22 +73,6 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             
         # TODO : link those 2
         self.value.favunit = self.favunit
-        
-        # set text widget
-        self.text = ipyw.Text(value=str(self.value),     # init text with init value
-                              placeholder=placeholder,
-                              description=self.description,
-                              disabled=disabled,
-                              continuous_update=continuous_update,
-                              layout=Layout(width='auto',
-                                            margin="0px 0px 0px 0px",
-                                            padding="0px 0px 0px 0px",
-                                            border="solid gray"),
-                             style={'description_width': '130px'})
-        
-        # link text value and display_val unicode trait
-        traitlets.link((self.text, "value"), 
-                       (self, "display_val"))
         
         # Actually a Box widget that wraps a Text widget
         super().__init__(**kwargs)
@@ -103,11 +98,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                 self.value.favunit = self.favunit
                 
                 # update display_value
-                self.display_val = str(self.value)
+                self.text.value = str(self.value)
                 
             except:
                 # if anything fails, do nothing
-                self.display_val = str(self.value)
+                self.text.value = str(self.value)
         # create the callback
         self.text.on_submit(text_update_values)
 
@@ -117,7 +112,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     def _update_display_val(self, proposal):
         self.value_number = self.value.value
         self.dimension = self.value.dimension
-        self.display_val = f'{str(self.value)}'
+        self.text.value = f'{str(self.value)}'
 
         
     # helper to validate value the value if fixed dimension
