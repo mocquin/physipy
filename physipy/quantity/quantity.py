@@ -1321,11 +1321,10 @@ def np_roll(a, *args, **kwargs):
     return Quantity(np.roll(a.value, *args, **kwargs), a.dimension)
 
 @implements(np.meshgrid)
-def np_meshgrid(x, y, **kwargs):
-    x = quantify(x)
-    y = quantify(y)
-    res_x, res_y = np.meshgrid(x.value, y.value, **kwargs)
-    return Quantity(res_x, x.dimension), Quantity(res_y, y.dimension)
+def np_meshgrid(*xi, **kwargs):
+    xiq = [quantify(x) for x in xi]
+    res = np.meshgrid(*(xi.value for xi in xiq), **kwargs)
+    return tuple(Quantity(r, q.dimension) for r, q in zip(res, xiq))
 
 
 @implements(np.real)
