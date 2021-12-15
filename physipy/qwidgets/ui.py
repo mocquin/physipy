@@ -4,6 +4,7 @@ from .qipywidgets import QuantityText, QuantityTextSlider
 
 from physipy import set_favunit, all_units, Quantity
 from physipy.quantity.utils import hard_favunit
+from IPython.display import display
 
 
 def ui_widget_decorate(inits_values, kind="Text"):
