@@ -1022,6 +1022,22 @@ def np_may_share_memory(a, b, **kwargs):
     return np.may_share_memory(a.value, b.value, **kwargs)
 
 
+@implements(np.polyfit)
+def np_polyfit(x, y, deg, *args, **kwargs):
+    x = quantify(x)
+    y = quantify(y)
+    p = np.polyfit(x.value, y.value, deg, *args, **kwargs)
+    qp = tuple(Quantity(coef, y.dimension / x.dimension**(deg-i) ) for i, coef in enumerate(p))
+    return qp
+       
+@implements(np.polyval)
+def np_polyval(p, x):
+    p_values = tuple(quantify(coef).value for coef in p)
+    x = quantify(x)
+    res = np.polyval(p_values, x.value)
+    return Quantity(res, p[-1].dimension)
+ 
+
 
 @implements(np.clip)
 def np_clip(a, a_min, a_max, *args, **kwargs):
