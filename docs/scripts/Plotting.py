@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.2
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -108,7 +108,7 @@ y = np.linspace(0, 30) * mm
 x = np.linspace(0, 5) * s
 
 fig, ax = plt.subplots()
-ax.plot(x, y, 'tab:blue')
+#ax.plot(x, y, 'tab:blue')
 ax.axhline(0.02 * m, color='tab:red')
 ax.axvline(500*ms, color='tab:green')
 

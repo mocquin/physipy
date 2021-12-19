@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.2
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -20,13 +20,42 @@
 # https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable
 # This tests if the object has "__iter__"
 
+# %% [markdown]
+#  - iter(x): on quantity doesn't raise a TypeError just because Quantity has a method called '__getitem__'. Would also if __iter__ was a method
+#  - np.iterable : (used by matplotlib units interface):
+# ```python 
+# try:
+#     iter(y)
+# except TypeError:
+#     return False
+# return True
+# ```
+
 # %%
 import collections
 from physipy import m
 
 isinstance(m, collections.abc.Iterable)
 
-# %% [markdown]
+# %%
+import numpy as np
+
+# %%
+np.iterable(m)
+
+# %%
+type(m.value)
+
+# %%
+type(iter(m))
+
+# %%
+# np.iterable??
+
+# %%
+# iter?
+
+# %% [markdown] tags=[]
 # ## Array repr with 0 value
 # Pick best favunit take the smallest when 0 is in the array with positiv and negativ values
 
