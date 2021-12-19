@@ -523,9 +523,13 @@ class Quantity(object):
             self.value[idx] = q.value
 
     #def __iter__(self):
+    #    """
+    #    Having __iter__ makes isinstance(x, collections.abc.Iterable) return True
+    #    just because x has attr "__iter__".
+    #    """
     #    if isinstance(self.value,np.ndarray):
     #        return QuantityIterator(self)
-    #    else:
+    #   else:
     #        return iter(self.value)
         
     @property
