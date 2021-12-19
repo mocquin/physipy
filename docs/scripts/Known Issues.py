@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -29,6 +30,16 @@
 # except TypeError:
 #     return False
 # return True
+# ```
+#  -  https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable
+#  
+# ```
+# class collections.abc.Iterable¶
+#
+#     ABC for classes that provide the __iter__() method.
+#
+#     Checking isinstance(obj, Iterable) detects classes that are registered as Iterable or that have an __iter__() method, but it does not detect classes that iterate with the __getitem__() method. The only reliable way to determine whether an object is iterable is to call iter(obj).
+#
 # ```
 
 # %%
