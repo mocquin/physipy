@@ -8,6 +8,8 @@ import time
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot
+import matplotlib.pyplot as plt
+
 
 
 from physipy.quantity import Dimension, Quantity, DimensionError
@@ -23,11 +25,13 @@ from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit
 from physipy.quantity.utils import asqarray
 from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
+import physipy
 
 
 km = units["km"]
 m = units["m"]
 sr = units["sr"]
+mm = units["mm"]
 
 class TestQuantity(unittest.TestCase):
     
@@ -1643,6 +1647,30 @@ class TestQuantity(unittest.TestCase):
             ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
         
     
+    #def test_matplotlib_axhlines(self):
+    # Not working due to np.iterable(3*m) returning True
+    #    with physipy.quantity.plot.plotting_context():
+    #        y = np.linspace(0, 30) * mm
+    #        x = np.linspace(0, 5) * s
+    #        
+    #        fig, ax = plt.subplots()
+    #        ax.plot(x, y, 'tab:blue')
+    #        ax.axhline(0.02 * m, color='tab:red')
+
+    #def test_matplotlib_axvlines(self):
+    # Not working due to np.iterable(3*m) returning True
+    #    with physipy.quantity.plot.plotting_context():
+    #        y = np.linspace(0, 30) * mm
+    #        x = np.linspace(0, 5) * s
+    #        
+    #        fig, ax = plt.subplots()
+    #        ax.plot(x, y, 'tab:blue')
+    #        ax.axvline(0.02 * m, color='tab:red')
+            
+    def test_matplotlib_quickplot(self):
+        y = np.linspace(0, 30) * mm
+        y.plot()
+            
     def test_flat(self):
 
         # indexing
