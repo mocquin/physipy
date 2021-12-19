@@ -261,7 +261,27 @@ class TestQuantity(unittest.TestCase):
         # scalar quantity shouldn't be iterable
         with self.assertRaises(TypeError):
             for i in 5*s: print("i")
-            
+    
+    #def test_50_1_iter(self):
+    #    a = 3*m
+    #    with self.assertRaises(TypeError):
+    #        iter(a)
+        
+
+    #def test_50_2_abc_iterable(self):
+    #    """
+    #    isintance(x, collections.abc.Iterable) is sometimes used as a way
+    #    to check if x is iterable.
+    #    
+    #    checks if x has "__iter__" attr, so we need to use getattr
+    #    """
+    #    import collections.abc
+    #    is_iterable = np.array([1, 2, 3])*m
+    #    self.assertTrue(isinstance(is_iterable, collections.abc.Iterable))
+    #    is_iterable = np.array([[1, 2, 3]])*m
+    #    self.assertTrue(isinstance(is_iterable, collections.abc.Iterable))
+    #                           
+    #    self.assertFalse(isinstance(m,collections.abc.Iterable))
             
     def test_51_iterator_2d(self):
         # check that iteration works
