@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from physipy.integrate import quad, dblquad, tplquad
+from physipy.integrate import quad, dblquad, tplquad, solve_ivp
 from physipy.optimize import root, brentq
 from physipy.quantity import vectorize #turn_scalar_to_str
 from physipy.quantity.calculus import xvectorize, ndvectorize
@@ -1940,7 +1940,88 @@ class TestQuantity(unittest.TestCase):
         exp = np.floor_divide.reduce(np.arange(10))
         self.assertEqual(res, exp)
     
+    def test_scipy_integrate_solveivp(self):
+        # Expected 
+        import scipy.integrate
+        import numpy as np
+ 
+
+        # in Ohms
+        R = 10000
+        # in Farad
+        capa = 1*10**-12
+        # time constant
+        tau= R*capa
+        # Source in volts
+        Ve = 1
+        # initial tension in volts
+        y0 = [0]
+         
+        #def analytical_solution(t):
+        #    return (y0[0]-Ve)*np.exp(-t/tau) + Ve
+
+         
+        def RHS_dydt(t, y):
+            return 1/(tau)*(Ve - y)
+         
+        t_span = (0, 10*tau)
+        
+        # solution with no units
+        solution_exp = scipy.integrate.solve_ivp(
+            RHS_dydt,
+            t_span,
+            y0,
+            dense_output=True,
+        )
+        
+        
+        
+        
+        from physipy import units, s, set_favunit
+            
+        ohm = units["ohm"]
+        F = units["F"]
+        V = units["V"]
+        
+        # in Ohms
+        R = 10000 * ohm
+        # in Farad
+        capa = 1*10**-12 * F
+        # time constant
+        tau= R*capa
+        # Source in volts
+        Ve = 1 * V
+        # initial tension in volts
+        y0 = [0*V]
     
+
+        def source_tension(t):
+            return Ve
+         
+        def RHS_dydt(t, y):
+            return 1/(tau)*(Ve - y)
+         
+        t_span = (0*s, 10*tau)
+        solution_res = solve_ivp(
+            RHS_dydt,
+            t_span,
+            y0,
+            dense_output=True,
+        )
+    
+        # things to test : 
+        # sol.t is in time dimension
+        # sol.y has y dimension
+        # sol.sol(time) returns a y dimension
+        # sol.sol(dimless) raises
+        self.assertTrue(np.all( solution_res.t==solution_exp.t*s))
+        self.assertTrue(np.all( solution_res.y==solution_exp.y*V))
+        ech_t = np.linspace(0*s, 2*tau)
+        self.assertTrue(np.all( solution_res.sol(ech_t)==solution_exp.sol(ech_t.value)*V))
+        with self.assertRaises(DimensionError):
+            solution_res.sol(1)
+            
+        
     
 if __name__ == "__main__":
     unittest.main()

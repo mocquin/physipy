@@ -9,6 +9,7 @@ import scipy
 import scipy.integrate
 
 from physipy import quantify, Quantity, Dimension, DimensionError
+from physipy.quantity.utils import check_dimension
 
 def quad(func, x0, x1, *oargs, args=(), **kwargs):
     """A wrapper on scipy.integrate.quad : 
@@ -110,3 +111,69 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
     return Quantity(tplquad_value,
                    res_dim * x0.dimension * y0.dimension * z0.dimension).rm_dim_if_dimless(), prec    
 
+
+                 
+        
+
+def solve_ivp(fun, 
+              t_span, 
+              y0,
+              method='RK45',
+              t_eval=None, 
+              dense_output=False, events=None, vectorized=False, args=None, **options):
+    
+    # first, quantify everything that could be quantity
+    tstart, tstop = t_span
+    t_span = quantify(tstart), quantify(tstop)
+    if not t_span[0].dimension == t_span[1].dimension:
+        print("error of dimension")
+    y0 = [quantify(y) for y in y0]
+    if t_eval is not None:
+        t_eval = quantify(t_eval)
+        
+
+    t_span_value = t_span[0].value, t_span[1].value
+    y0_value = [y.value for y in y0]
+    if t_eval is not None:
+        t_eval_value = t_eval.value
+    else:
+        t_eval_value = None
+    
+        
+    # second : rewrite everything without units
+    def func_value(t_value, y_value):
+        # add back the units
+        t = Quantity(t_value, t_span[0].dimension)
+        y = Quantity(y_value, y0[0].dimension)
+        # compute with units
+        res_raw = fun(t, y)
+        # extract the numerical value
+        raw = quantify(res_raw)
+        return raw.value
+    
+    # compute numerical solution
+    sol = scipy.integrate.solve_ivp(
+        func_value,
+        t_span_value,
+        y0_value,
+        method=method, 
+        t_eval=t_eval, 
+        dense_output=dense_output,
+        events=events,
+        vectorized=vectorized, 
+        args=args, 
+        **options
+    )
+    
+    # "decorate" the solution with units
+    sol.t = Quantity(sol.t, t_span[0].dimension)
+    sol.y = Quantity(sol.y, y0[0].dimension)
+    func_sol = sol.sol
+    
+    # for some reason the solution accepts 0*s as well as 0
+    @check_dimension(t_span[0].dimension)
+    def sol_q(t):
+        return Quantity(func_sol(t), y0[0].dimension)#/t_span[0].dimension)
+    sol.sol = sol_q
+    return sol
+                   
