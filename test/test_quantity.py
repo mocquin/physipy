@@ -1667,25 +1667,25 @@ class TestQuantity(unittest.TestCase):
             ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
         
     
-    #def test_matplotlib_axhlines(self):
-    # Not working due to np.iterable(3*m) returning True
-    #    with physipy.quantity.plot.plotting_context():
-    #        y = np.linspace(0, 30) * mm
-    #        x = np.linspace(0, 5) * s
-    #        
-    #        fig, ax = plt.subplots()
-    #        ax.plot(x, y, 'tab:blue')
-    #        ax.axhline(0.02 * m, color='tab:red')
+    def test_matplotlib_axhlines(self):
+        # was not working due to np.iterable(3*m) returning True
+        with physipy.quantity.plot.plotting_context():
+            y = np.linspace(0, 30) * mm
+            x = np.linspace(0, 5) * s
+            
+            fig, ax = plt.subplots()
+            ax.plot(x, y, 'tab:blue')
+            ax.axhline(0.02 * m, color='tab:red')
 
-    #def test_matplotlib_axvlines(self):
-    # Not working due to np.iterable(3*m) returning True
-    #    with physipy.quantity.plot.plotting_context():
-    #        y = np.linspace(0, 30) * mm
-    #        x = np.linspace(0, 5) * s
-    #        
-    #        fig, ax = plt.subplots()
-    #        ax.plot(x, y, 'tab:blue')
-    #        ax.axvline(0.02 * m, color='tab:red')
+    def test_matplotlib_axvlines(self):
+        # was not working due to np.iterable(3*m) returning True
+        with physipy.quantity.plot.plotting_context():
+            y = np.linspace(0, 30) * mm
+            x = np.linspace(0, 5) * s
+            
+            fig, ax = plt.subplots()
+            ax.plot(x, y, 'tab:blue')
+            ax.axvline(0.02 * s, color='tab:red')
             
     def test_matplotlib_quickplot(self):
         y = np.linspace(0, 30) * mm
