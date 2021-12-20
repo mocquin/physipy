@@ -507,6 +507,13 @@ class Quantity(object):
 
     
     def __getitem__(self, idx):
+        """
+        Having this defined here makes iter(m) not raising an exception
+        so np.iterable considers m as iterable, which is not.
+        Maybe use monkey patching ?
+        Solution was to define __iter__ since iter first checks that
+        x.__iter__ doesn't raise a TypeError
+        """
         return type(self)(self.value[idx],
                             self.dimension,
                             favunit=self.favunit)
@@ -522,15 +529,18 @@ class Quantity(object):
         else:
             self.value[idx] = q.value
 
-    #def __iter__(self):
-    #    """
-    #    Having __iter__ makes isinstance(x, collections.abc.Iterable) return True
-    #    just because x has attr "__iter__".
-    #    """
-    #    if isinstance(self.value,np.ndarray):
-    #        return QuantityIterator(self)
-    #   else:
-    #        return iter(self.value)
+    def __iter__(self):
+        """
+        Having __iter__ makes isinstance(x, collections.abc.Iterable) return True
+        just because x has attr "__iter__".
+        Was moved to getattr, but come back for compatibility with iter(m)
+        and np.iterable.
+        """
+        iter(self.value)
+        if isinstance(self.value,np.ndarray):
+            return QuantityIterator(self)
+        else:
+            return iter(self.value)
         
     @property
     def flat(self):
