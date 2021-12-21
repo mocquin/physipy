@@ -1162,8 +1162,8 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.diagonal(a)== np.array([0,3])*m))
         
         # np.diff
-        # a = np.array([1, 2, 4, 7, 0])*m
-        # self.assertTrue(np.all(np.diff(a)==np.array([1, 2, 3, -7])*m))
+        a = np.array([1, 2, 4, 7, 0])*m
+        self.assertTrue(np.all(np.diff(a)==np.array([1, 2, 3, -7])*m))
         
         
         # np.dot

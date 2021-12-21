@@ -1133,15 +1133,15 @@ def np_diagonal(a, **kwargs):
     return Quantity(np.diagonal(a.value, **kwargs), a.dimension)
 
 
-#@implements(np.diff)
-#def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
-#    if prepend != np._NoValue:
-#        if prepend.dimension != a.dimension:
-#            raise DimensionError(a.dimension, prepend.dimension)
-#    if append != np._NoValue:
-#        if append.dimension != a.dimension:
-#            raise DimensionError(a.dimension, append.dimension)
-#    return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
+@implements(np.diff)
+def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
+    if prepend != np._NoValue:
+        if prepend.dimension != a.dimension:
+            raise DimensionError(a.dimension, prepend.dimension)
+    if append != np._NoValue:
+        if append.dimension != a.dimension:
+            raise DimensionError(a.dimension, append.dimension)
+    return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
 
 @implements(np.ndim)
 def np_ndim(a):
