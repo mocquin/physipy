@@ -1687,6 +1687,15 @@ class TestQuantity(unittest.TestCase):
             ax.plot(x, y, 'tab:blue')
             ax.axvline(0.02 * s, color='tab:red')
             
+    def test_matplotlib_twinx(self):
+        with physipy.quantity.plot.plotting_context():
+
+            fig, ax = plt.subplots()
+            ax.plot(asqarray([m, 2*m]),
+                    asqarray([2*m, 3*m]), "-o")
+            ax2 = ax.twinx()
+            ax2.plot(m, 3*s, "*", color="r")
+            
     def test_matplotlib_quickplot(self):
         y = np.linspace(0, 30) * mm
         y.plot()
