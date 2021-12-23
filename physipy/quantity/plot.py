@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.units as munits
 
 from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
+from .units import all_units
 
 class QuantityConverter(munits.ConversionInterface):
 
@@ -13,7 +14,7 @@ class QuantityConverter(munits.ConversionInterface):
         if axis.units is not None:
             if not q.dimension == axis.units.dimension:
                 raise DimensionError(q.dimension, axis.units.dimension)
-        q_unit = q._plot_extract_q_for_axe()
+        q_unit = q._plot_extract_q_for_axe(all_units.values())
         return q_unit
 
     @staticmethod

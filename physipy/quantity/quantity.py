@@ -663,8 +663,15 @@ class Quantity(object):
         return self/q_unit
     
     # for munits support
-    def _plot_extract_q_for_axe(self):
-        favunit = self.favunit
+    def _plot_extract_q_for_axe(self, units_list):
+        if self.favunit is None:
+            favs = [unit for unit in units_list if self._SI_unitary_quantity==unit]
+            if len(favs)>=1:
+                favunit = favs[0]
+            else:
+                favunit = self.favunit
+        else:
+            favunit = self.favunit        
         if isinstance(favunit, Quantity):
             ratio_favunit = make_quantity(self/favunit)
             dim_SI = ratio_favunit.dimension

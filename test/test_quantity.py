@@ -32,6 +32,7 @@ km = units["km"]
 m = units["m"]
 sr = units["sr"]
 mm = units["mm"]
+V = units["V"]
 
 class TestQuantity(unittest.TestCase):
     
@@ -1695,6 +1696,18 @@ class TestQuantity(unittest.TestCase):
                     asqarray([2*m, 3*m]), "-o")
             ax2 = ax.twinx()
             ax2.plot(m, 3*s, "*", color="r")
+            
+    def test_matplotlib_favunit_volts(self):
+        with physipy.quantity.plot.plotting_context():
+    
+            fig, ax = plt.subplots()
+            ax.plot(3*m, 5*V, "-o")
+            self.assertEqual(ax.yaxis.units, 
+                        V)
+            self.assertEqual(ax.yaxis.label.get_text(), 
+                         "V")
+            
+            
             
     def test_matplotlib_quickplot(self):
         y = np.linspace(0, 30) * mm
