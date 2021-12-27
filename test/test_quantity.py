@@ -1713,6 +1713,17 @@ class TestQuantity(unittest.TestCase):
         y = np.linspace(0, 30) * mm
         y.plot()
             
+            
+    def test_matplotlib_set_limits_on_blank_plot(self):
+        with physipy.quantity.plot.plotting_context():
+            from physipy import units, s, imperial_units, setup_matplotlib, m
+            inch = imperial_units["in"]
+            fig, ax = plt.subplots()
+            ax.set_xlim(2*s,3*s)
+            ax.set_ylim(1*inch, 7*inch)
+            self.assertTrue(ax.xaxis.units==s)
+            self.assertTrue(ax.yaxis.units==m)
+            
     def test_flat(self):
 
         # indexing

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib
+import numpy as np
 import matplotlib.units as munits
 
 from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
@@ -14,8 +15,16 @@ class QuantityConverter(munits.ConversionInterface):
         if axis.units is not None:
             if not q.dimension == axis.units.dimension:
                 raise DimensionError(q.dimension, axis.units.dimension)
-        q_unit = q._plot_extract_q_for_axe(all_units.values())
-        return q_unit
+        if isinstance(q, Quantity):
+            q_unit = q._plot_extract_q_for_axe(all_units.values())
+            return q_unit
+        # when calling ax.set_xlim(2*m, 3*m), the tuple (2*m, 3*m) is passed to
+        # default_units 
+        if np.iterable(q):
+            for v in q:
+                if isinstance(v, Quantity):
+                    return v._plot_extract_q_for_axe(all_units.values())
+            return None
 
     @staticmethod
     def axisinfo(q_unit, axis):
