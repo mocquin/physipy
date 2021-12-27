@@ -1714,6 +1714,28 @@ class TestQuantity(unittest.TestCase):
         y.plot()
             
             
+    def test_matplotlib_scatter_masked(self):
+        with physipy.quantity.plot.plotting_context():
+            secs = units["s"]
+            hertz = units["Hz"]
+            minutes = units["min"]
+            
+            # create masked array
+            data = (1, 2, 3, 4, 5, 6, 7, 8)
+            mask = (1, 0, 1, 0, 0, 0, 1, 0)
+            xsecs = secs * np.ma.MaskedArray(data, mask, float)
+            
+            fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True)
+            
+            ax1.scatter(xsecs, xsecs)
+            ax2.scatter(xsecs, 1/xsecs, yunits=hertz)
+            ax3.scatter(xsecs, xsecs, yunits=minutes)
+            
+            self.assertTrue(ax1.yaxis.units == s)
+            self.assertTrue(ax2.yaxis.units == hertz)
+            self.assertTrue(ax3.yaxis.units == minutes)
+            
+            
     def test_matplotlib_set_limits_on_blank_plot(self):
         with physipy.quantity.plot.plotting_context():
             from physipy import units, s, imperial_units, setup_matplotlib, m
