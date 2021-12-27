@@ -55,8 +55,8 @@ print(x_samples + 1*m)
 print(x_samples * 2)
 print(x_samples**2)
 print(1/x_samples)
-
 ```
+
 
 ## Comparison
 
@@ -67,8 +67,8 @@ try:
     x_samples > 1.5*s
 except Exception as e:
     print(e)
-
 ```
+
 
 ## Numpy ufuncs
 Most numpy ufuncs are handled the expected way, but still check for dimension correctness :
@@ -167,8 +167,8 @@ print(big_arr.flat)
 
 for q in q_arr.flat:
     print(q)
-
 ```
+
 
 ## Known issues
 
@@ -244,4 +244,8 @@ import numpy as np
 numpy_functions = set(attr for attr in dir(np) if hasattr(getattr(np, attr), '_implementation'))
 
 print(sorted(numpy_functions - physipy_implemented))
+```
+
+```python
+
 ```

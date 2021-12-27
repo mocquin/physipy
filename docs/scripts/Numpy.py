@@ -240,3 +240,5 @@ import numpy as np
 numpy_functions = set(attr for attr in dir(np) if hasattr(getattr(np, attr), '_implementation'))
 
 print(sorted(numpy_functions - physipy_implemented))
+
+# %%
