@@ -714,8 +714,11 @@ class Quantity(object):
             raise AttributeError("Neither Quantity object nor its value ({}) "
                                  "has attribute '{}'".format(self.value, item))
     
-    #def to_numpy(self):
-    #    return np.asarray(self.value)
+    def to_numpy(self):
+        """
+        Needed for plt.hist(np.arange(10)*m).
+        """
+        return np.asarray(self.value)
     
     def reshape(self, *args, **kwargs):
         return type(self)(self.value.reshape(*args, **kwargs), self.dimension)
