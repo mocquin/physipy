@@ -107,16 +107,8 @@ class Quantity(object):
 
     def __setattr__(self, name, value):
         if name == "value":
-            if isinstance(value, np.ndarray):
-                super().__setattr__(name, value)
-            elif (isinstance(value,nb.Number) or type(value) == np.int64 or
-                  type(value) == np.int32):
-            #isinstance(value, (int, float)):#isinstance(value,float) or 
-            #isinstance(value,int) or type(value) == numpy.int64 or 
-            #type(value) == numpy.int32: 
-            #or numpy.isrealobj(valeur):
-                super().__setattr__(name, value)
-            elif isinstance(value, list) or isinstance(value, tuple):
+            # necessary to use [1, 2, 3]*m
+            if isinstance(value, (list, tuple)):
                 super().__setattr__(name, np.array(value))
             else:
                 super().__setattr__(name, value)
