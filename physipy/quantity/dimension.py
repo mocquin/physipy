@@ -168,25 +168,28 @@ class Dimension(object):
     
     def __mul__(self, y):
         """Allow the multiplication of Dimension objects."""
-        if isinstance(y, Dimension):
+        #if isinstance(y, Dimension):
+        try:
             new_dim_dict = {d: self.dim_dict[d] + y.dim_dict[d] for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
-        else:
+        except Exception as e:
             raise TypeError(("A dimension can only be multiplied "
-                             "by another dimension, not {}.").format(y))
+                             "by another dimension, not {}. Got exception {}").format(y, e))
 
     __rmul__ = __mul__
 
     def __truediv__(self, y):
         """Allow the division of Dimension objects."""
-        if isinstance(y, Dimension):
+        #if isinstance(y, Dimension):
+        try:
             new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         #elif y == 1:  # allowing division by one
         #    return self
-        else:
+       # else:
+        except Exception as e:
             raise TypeError(("A dimension can only be divided "
-                             "by another dimension, not {}.").format(y))
+                             "by another dimension, not {}. Got exception {}").format(y, e))
 
     def __rtruediv__(self, x):
         """Only used to raise a TypeError."""
