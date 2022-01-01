@@ -1625,7 +1625,7 @@ no_dim_1 + no_dim_2 + angle_1 + same_out + inv_angle_1 + deg_rad)
 
 def quantify(x):
     if isinstance(x, Quantity):
-        return x.__copy__()
+        return x#.__copy__()
     else:
         return Quantity(x, Dimension(None))
 
