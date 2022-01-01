@@ -97,11 +97,18 @@ class Quantity(object):
         self.favunit = favunit
         self.description = description
 
+    @property
+    def size(self):
+        if isinstance(self.value, np.ndarray):
+            return self.value.size
+        else:
+            return 1
+
+
     def __setattr__(self, name, value):
         if name == "value":
             if isinstance(value, np.ndarray):
                 super().__setattr__(name, value)
-                super().__setattr__("size", self.value.size)
             elif (isinstance(value,nb.Number) or type(value) == np.int64 or
                   type(value) == np.int32):
             #isinstance(value, (int, float)):#isinstance(value,float) or 
@@ -109,14 +116,10 @@ class Quantity(object):
             #type(value) == numpy.int32: 
             #or numpy.isrealobj(valeur):
                 super().__setattr__(name, value)
-                super().__setattr__("size", 1)
             elif isinstance(value, list) or isinstance(value, tuple):
                 super().__setattr__(name, np.array(value))
-            elif value is None:
-                super().__setattr__(name, value)
             else:
                 super().__setattr__(name, value)
-                super().__setattr__("size", 1)                
             #else: 
             #    raise TypeError(("Value of Quantity must be a number "
             #                     "or numpy array, not {}").format(type(value)))
