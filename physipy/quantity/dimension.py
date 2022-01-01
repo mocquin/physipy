@@ -106,6 +106,11 @@ class Dimension(object):
         self.dim_dict = NULL_SI_DICT.copy()
         if definition is None:
             pass  # dim_dict already initialized
+        # most of the time, the definition is a dim_dict of another quantity
+        # so it already has the good shape
+        elif (isinstance(definition, dict) and 
+            set(list(definition.keys()))==set(SI_SYMBOL_LIST)): 
+                self.dim_dict = definition
         # example : {"L":1, "T":-2}
         elif (isinstance(definition, dict) and
              set(list(definition.keys())).issubset(SI_SYMBOL_LIST)): #and
