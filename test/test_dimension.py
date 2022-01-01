@@ -27,6 +27,7 @@ class TestClassDimension(unittest.TestCase):
         cls.no_dimension_str = "no-dimension"
         cls.times = []
         cls.ids = []
+        cls.amp = Dimension("I")
 
     @classmethod
     def tearDownClass(cls):
@@ -67,6 +68,7 @@ class TestClassDimension(unittest.TestCase):
         expected_str = cls.no_dimension_str
         actual_str = str(cls.none)
         cls.assertEqual(expected_str, actual_str)
+        
 
     def test_030_repr(cls):
 
@@ -134,6 +136,10 @@ class TestClassDimension(unittest.TestCase):
         cls.assertEqual(cls.m, Dimension("m"))
         cls.assertEqual(cls.m * cls.m, Dimension("m**2"))
         cls.assertEqual(cls.m * cls.dim_complexe, Dimension("m*cd/K**3"))
+        
+        # sympy was parsing "I" as complex number
+        cls.assertEqual(cls.amp*cls.m, Dimension("L*I"))
+
         
         with cls.assertRaises(TypeError):
             # sympy parsing not good with ^ char

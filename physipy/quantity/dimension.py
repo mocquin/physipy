@@ -54,7 +54,7 @@ def parse_str_to_dic(exp_str):
     >>> parse_str_to_dic("L**2/M")
     {"L":2, "M":1}
     """
-    parsed = parse_expr(exp_str)
+    parsed = parse_expr(exp_str, global_dict={'Symbol':sp.Symbol, 'Integer':sp.Integer})
     exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
     return exp_dic
 
