@@ -103,6 +103,22 @@ class Quantity(object):
             return self.value.size
         else:
             return 1
+        
+    @property
+    def symbol(self):
+        return self._symbol
+    
+    @symbol.setter
+    def symbol(self, value):
+        if isinstance(value,sp.Expr):                  
+            self._symbol = value
+        elif isinstance(value,str):                       
+            self._symbol = sp.Symbol(value)
+        else: 
+            raise TypeError(("Symbol of Quantity must be a string "
+                             "or a sympy-symbol, "
+                             "not {}").format(type(value)))
+        
 
 
     def __setattr__(self, name, value):
@@ -121,15 +137,7 @@ class Quantity(object):
         #    else: 
         #        raise TypeError(("Dimension of Quantity must be a Dimension,"
         #                         "not {}").format(type(value)))
-        elif name == "symbol":
-            if isinstance(value,sp.Expr):                  
-                super().__setattr__(name, value)                          
-            elif isinstance(value,str):                       
-                super().__setattr__(name,sp.Symbol(value))       
-            else: 
-                raise TypeError(("Symbol of Quantity must be a string "
-                                 "or a sympy-symbol, "
-                                 "not {}").format(type(value)))
+
         elif name == "favunit":
             if isinstance(value,Quantity) or value == None:
                 super().__setattr__(name, value)
