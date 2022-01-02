@@ -65,6 +65,7 @@ import math
 import numbers as nb
 import numpy as np
 import sympy as sp
+import operator
 
 import warnings
 
@@ -82,6 +83,12 @@ DEFAULT_SYMBOL = sp.Symbol("UndefinedSymbol")
 
 HANDLED_FUNCTIONS = {}
 
+
+def _op_symbol(left, right, op):
+    if str(left)=="UndefinedSymbol" or str(right)=="UndefinedSymbol":
+        return DEFAULT_SYMBOL
+    else:
+        return op(left, right)
 
 class Quantity(object):
     """Quantity class : """
@@ -171,7 +178,8 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value * y.value, 
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                        #symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                          symbol=_op_symbol(self.symbol, y.symbol, operator.mul)).rm_dim_if_dimless()
     
     __rmul__ = __mul__
     
@@ -179,13 +187,15 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value @ y.value,
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                        #symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                         symbol=_op_symbol(self.symbol, y.symbol, operator.mul)).rm_dim_if_dimless()
 
     def __truediv__(self, y):
         y = quantify(y)
         return type(self)(self.value / y.value,
                         self.dimension / y.dimension,
-                        symbol = self.symbol / y.symbol).rm_dim_if_dimless()
+                        #symbol = self.symbol / y.symbol).rm_dim_if_dimless()
+                           symbol=_op_symbol(self.symbol, y.symbol, operator.truediv)).rm_dim_if_dimless()
 
     def __rtruediv__(self, x): return quantify(x) / self
 
