@@ -76,6 +76,7 @@ DISPLAY_DIGITS = 2
 EXP_THRESHOLD = 2
 UNIT_SUFFIX = ""
 LATEX_VALUE_UNIT_SEPARATOR = "\,"#" \cdot "
+DEFAULT_SYMBOL = sp.Symbol("UndefinedSymbol")
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
@@ -89,7 +90,7 @@ class Quantity(object):
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     
-    def __init__(self, value, dimension, symbol="UndefinedSymbol", favunit=None, description=""):
+    def __init__(self, value, dimension, symbol=DEFAULT_SYMBOL, favunit=None, description=""):
         self.__array_priority__ = 100
         self.value = value
         self.dimension = dimension
