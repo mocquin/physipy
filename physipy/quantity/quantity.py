@@ -119,7 +119,20 @@ class Quantity(object):
                              "or a sympy-symbol, "
                              "not {}").format(type(value)))
         
-
+    @property
+    def favunit(self):
+        return self._favunit
+    
+    @favunit.setter
+    def favunit(self, value):
+        if isinstance(value,Quantity) or value == None:
+            self._favunit = value
+        elif np.isscalar(value):
+            self._favunit = None
+        else:
+            raise TypeError(("Favorite unit of Quantity must be a Quantity "
+                             "or None, not {}").format(type(value)))
+        
 
     def __setattr__(self, name, value):
         if name == "value":
@@ -138,14 +151,14 @@ class Quantity(object):
         #        raise TypeError(("Dimension of Quantity must be a Dimension,"
         #                         "not {}").format(type(value)))
 
-        elif name == "favunit":
-            if isinstance(value,Quantity) or value == None:
-                super().__setattr__(name, value)
-            elif np.isscalar(value):
-                super().__setattr__(name, None)
-            else:
-                raise TypeError(("Favorite unit of Quantity must be a Quantity "
-                                 "or None, not {}").format(type(value)))
+        #elif name == "favunit":
+        #    if isinstance(value,Quantity) or value == None:
+        #        super().__setattr__(name, value)
+        #    elif np.isscalar(value):
+        #        super().__setattr__(name, None)
+        #    else:
+        #        raise TypeError(("Favorite unit of Quantity must be a Quantity "
+        #                         "or None, not {}").format(type(value)))
         #elif name == "description":
         #    if not isinstance(value, str):
         #        raise TypeError("desc attribute must be a string.")
