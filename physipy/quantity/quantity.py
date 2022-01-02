@@ -134,37 +134,17 @@ class Quantity(object):
                              "or None, not {}").format(type(value)))
         
 
-    def __setattr__(self, name, value):
-        if name == "value":
-            # necessary to use [1, 2, 3]*m
-            if isinstance(value, (list, tuple)):
-                super().__setattr__(name, np.array(value))
-            else:
-                super().__setattr__(name, value)
-            #else: 
-            #    raise TypeError(("Value of Quantity must be a number "
-            #                     "or numpy array, not {}").format(type(value)))
-        #elif name == "dimension":
-        #    if isinstance(value,Dimension) :
-        #        super().__setattr__(name,value)
-        #    else: 
-        #        raise TypeError(("Dimension of Quantity must be a Dimension,"
-        #                         "not {}").format(type(value)))
-
-        #elif name == "favunit":
-        #    if isinstance(value,Quantity) or value == None:
-        #        super().__setattr__(name, value)
-        #    elif np.isscalar(value):
-        #        super().__setattr__(name, None)
-        #    else:
-        #        raise TypeError(("Favorite unit of Quantity must be a Quantity "
-        #                         "or None, not {}").format(type(value)))
-        #elif name == "description":
-        #    if not isinstance(value, str):
-        #        raise TypeError("desc attribute must be a string.")
-        #    super().__setattr__(name, value)
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        if isinstance(value, (list, tuple)):
+            self._value = np.array(value)
         else:
-            super().__setattr__(name, value)
+            self._value = value
+
 
     def __add__(self, y):
         y = quantify(y)
