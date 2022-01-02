@@ -689,11 +689,11 @@ class Quantity(object):
         Note that if the attribute is found through the normal mechanism, 
         __getattr__() is not called.
         """
-        if item == '__iter__':
-            if isinstance(self.value,np.ndarray):
-                return QuantityIterator(self)
-            else:
-                return iter(self.value)
+        #if item == '__iter__':
+        #   if isinstance(self.value,np.ndarray):
+        #        return QuantityIterator(self)
+        #    else:
+        #        return iter(self.value)
         if item.startswith('__array_'):
             warnings.warn(f"The unit of the quantity is stripped for {item}")
             if isinstance(self.value, np.ndarray):
