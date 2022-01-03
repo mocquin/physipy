@@ -172,7 +172,7 @@ class Quantity(object):
         if self.symbol==DEFAULT_SYMBOL or y.symbol==DEFAULT_SYMBOL:
             symbol = DEFAULT_SYMBOL
         else:
-            symbol = symbol = self.symbol * y.symbol
+            symbol = self.symbol * y.symbol
         return type(self)(self.value * y.value, 
                         self.dimension * y.dimension, 
                         symbol=symbol,
@@ -192,7 +192,7 @@ class Quantity(object):
         if self.symbol==DEFAULT_SYMBOL or y.symbol==DEFAULT_SYMBOL:
             symbol = DEFAULT_SYMBOL
         else:
-            symbol = symbol = self.symbol / y.symbol
+            symbol = self.symbol / y.symbol
         return type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = symbol).rm_dim_if_dimless()
