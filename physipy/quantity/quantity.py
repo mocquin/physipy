@@ -90,9 +90,9 @@ class Quantity(object):
     DIGITS = DISPLAY_DIGITS
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
+    __array_priority__ = 100
     
     def __init__(self, value, dimension, symbol=DEFAULT_SYMBOL, favunit=None, description=""):
-        self.__array_priority__ = 100
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
