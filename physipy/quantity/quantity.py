@@ -169,9 +169,14 @@ class Quantity(object):
 
     def __mul__(self,y):
         y = quantify(y)
+        if self.symbol==DEFAULT_SYMBOL or y.symbol==DEFAULT_SYMBOL:
+            symbol = DEFAULT_SYMBOL
+        else:
+            symbol = symbol = self.symbol * y.symbol
         return type(self)(self.value * y.value, 
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                        symbol=symbol,
+                         ).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
     
@@ -179,13 +184,18 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value @ y.value,
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol).rm_dim_if_dimless() 
+                        #symbol = self.symbol * y.symbol
+                         ).rm_dim_if_dimless() 
 
     def __truediv__(self, y):
         y = quantify(y)
+        if self.symbol==DEFAULT_SYMBOL or y.symbol==DEFAULT_SYMBOL:
+            symbol = DEFAULT_SYMBOL
+        else:
+            symbol = symbol = self.symbol / y.symbol
         return type(self)(self.value / y.value,
                         self.dimension / y.dimension,
-                        symbol = self.symbol / y.symbol).rm_dim_if_dimless()
+                        symbol = symbol).rm_dim_if_dimless()
 
     def __rtruediv__(self, x): return quantify(x) / self
 
