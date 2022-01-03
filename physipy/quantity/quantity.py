@@ -92,12 +92,11 @@ class Quantity(object):
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     __array_priority__ = 100
     
-    def __init__(self, value, dimension, symbol=DEFAULT_SYMBOL, favunit=None, description=""):
+    def __init__(self, value, dimension, symbol=DEFAULT_SYMBOL, favunit=None):
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
         self.favunit = favunit
-        self.description = description
 
     @property
     def size(self):
