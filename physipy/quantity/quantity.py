@@ -76,7 +76,8 @@ DISPLAY_DIGITS = 2
 EXP_THRESHOLD = 2
 UNIT_SUFFIX = ""
 LATEX_VALUE_UNIT_SEPARATOR = "\,"#" \cdot "
-DEFAULT_SYMBOL = sp.Symbol("UndefinedSymbol")
+#DEFAULT_SYMBOL = sp.Symbol("UndefinedSymbol")
+DEFAULT_SYMBOL = "UndefinedSymbol"
 #SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 #CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
@@ -105,20 +106,20 @@ class Quantity(object):
         else:
             return 1
         
-    @property
-    def symbol(self):
-        return self._symbol
+    #@property
+    #def symbol(self):
+    #    return self._symbol
     
-    @symbol.setter
-    def symbol(self, value):
-        if isinstance(value,sp.Expr):                  
-            self._symbol = value
-        elif isinstance(value,str):                       
-            self._symbol = sp.Symbol(value)
-        else: 
-            raise TypeError(("Symbol of Quantity must be a string "
-                             "or a sympy-symbol, "
-                             "not {}").format(type(value)))
+    #@symbol.setter
+    #def symbol(self, value):
+    #    if isinstance(value,sp.Expr):                  
+    #        self._symbol = value
+    #    elif isinstance(value,str):                       
+    #        self._symbol = sp.Symbol(value)
+    #    else: 
+    #        raise TypeError(("Symbol of Quantity must be a string "
+    #                         "or a sympy-symbol, "
+    #                         "not {}").format(type(value)))
         
     @property
     def favunit(self):
@@ -171,7 +172,7 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value * y.value, 
                         self.dimension * y.dimension, 
-                        symbol=self.symbol * y.symbol,
+                        symbol=self.symbol + "*" + y.symbol,
                          ).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
@@ -187,7 +188,7 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value / y.value,
                         self.dimension / y.dimension,
-                        symbol = self.symbol / y.symbol,
+                        symbol = self.symbol + "/" + y.symbol,
                          ).rm_dim_if_dimless()
 
     def __rtruediv__(self, x): return quantify(x) / self
@@ -235,7 +236,7 @@ class Quantity(object):
         #                    "not {}").format(type(power)))
         return type(self)(self.value ** power, 
                         self.dimension ** power,
-                        #symbol = self.symbol ** power,
+                        symbol = self.symbol + '**' +str(power),
                        ).rm_dim_if_dimless()
 
     def __neg__(self): return self * (-1)
