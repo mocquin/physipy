@@ -1589,6 +1589,14 @@ def np_hstack(tup):
     return Quantity(np.hstack(new_tup), dim)
 
 
+@implements(np.where)
+def np_where(cond, x, y):
+    x = quantify(x)
+    y = quantify(y)
+    if not x.dimension == y.dimension:
+        raise DimensionError(x.dimension, y.dimension)
+    return Quantity(np.where(cond, x.value, y.value), x.dimension)
+
 
 # 2 in : same dimension ---> out : same dim as in
 same_dim_out_2 = ["add", "subtract", "hypot", "maximum", "minimum", "fmax", "fmin", "remainder", "mod", "fmod"]

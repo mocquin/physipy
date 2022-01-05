@@ -1995,6 +1995,13 @@ class TestQuantity(unittest.TestCase):
         exp = np.floor_divide.reduce(np.arange(10))
         self.assertEqual(res, exp)
     
+    
+    def test_np_where(self):
+        arr = np.arange(10)
+        res = np.where(arr*m>4*m, 1*m, 10*m)
+        exp = np.where(arr>4, 1, 10)*m
+        self.assertTrue(np.all(res==exp))
+    
     def test_scipy_integrate_solveivp(self):
         # Expected 
         import scipy.integrate
