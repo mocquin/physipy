@@ -296,8 +296,10 @@ class QuantityTextSlider(QuantityText):
     
     def __init__(self, *args, **kwargs):
         favunit = kwargs.get("favunit", None)
+        description = kwargs.get("description", "")
         
-        super().__init__(*args, description="", favunit=favunit)
+        super().__init__(*args, description=description, favunit=favunit)
+        
         
         self.qslider = QuantitySlider(*args,
                                       label=False,
