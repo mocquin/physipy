@@ -68,7 +68,7 @@ import sympy as sp
 
 import warnings
 
-from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
+from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL, DIMENSIONLESS
 
 # # Constantes
 UNIT_PREFIX= " "
@@ -300,19 +300,19 @@ class Quantity(object):
 
     def __complex__(self):
         if not self.is_dimensionless_ext():
-            raise DimensionError(self.dimension, Dimension(None), binary=False)
+            raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return complex(self.value)
 
 
     def __int__(self):
         if not self.is_dimensionless_ext():
-            raise DimensionError(self.dimension, Dimension(None), binary=False)
+            raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return int(self.value)
 
 
     def __float__(self):
         if not self.is_dimensionless_ext():
-            raise DimensionError(self.dimension, Dimension(None), binary=False)
+            raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return float(self.value)
 
 
@@ -489,7 +489,7 @@ class Quantity(object):
         if isinstance(favunit, Quantity):
             ratio_favunit = make_quantity(self/favunit)
             dim_SI = ratio_favunit.dimension
-            if dim_SI == Dimension(None):
+            if dim_SI == DIMENSIONLESS:
                 return str(favunit.symbol)
             else:
                 return str(favunit.symbol) + "*" + dim_SI.str_SI_unit()
@@ -584,7 +584,7 @@ class Quantity(object):
     def integrate(self, *args, **kwargs): return np.trapz(self, *args, **kwargs)
     
     def is_dimensionless(self):
-        return self.dimension == Dimension(None)
+        return self.dimension == DIMENSIONLESS
 
     def rm_dim_if_dimless(self):
         if self.is_dimensionless():
@@ -675,7 +675,7 @@ class Quantity(object):
         if isinstance(favunit, Quantity):
             ratio_favunit = make_quantity(self/favunit)
             dim_SI = ratio_favunit.dimension
-            if dim_SI == Dimension(None):
+            if dim_SI == DIMENSIONLESS:
                 return favunit
             else:
                 return make_quantity(favunit * ratio_favunit._SI_unitary_quantity, 
@@ -823,15 +823,15 @@ class Quantity(object):
             elif ufunc_name == "copysign" or ufunc_name == "nextafter":
                 return type(self)(res, left.dimension)
         elif ufunc_name in no_dim_1:
-            if not left.dimension == Dimension(None):
-                raise DimensionError(left.dimension, Dimension(None))
+            if not left.dimension == DIMENSIONLESS:
+                raise DimensionError(left.dimension, DIMENSIONLESS)
             res = ufunc.__call__(left.value)
-            return type(self)(res, Dimension(None))
+            return type(self)(res, DIMENSIONLESS)
         elif ufunc_name in angle_1:
             if not left.is_dimensionless_ext():
-                raise DimensionError(left.dimension, Dimension(None), binary=True)
+                raise DimensionError(left.dimension, DIMENSIONLESS, binary=True)
             res = ufunc.__call__(left.value)
-            return type(self)(res, Dimension(None)).rm_dim_if_dimless()
+            return type(self)(res, DIMENSIONLESS).rm_dim_if_dimless()
         elif ufunc_name in same_out:
             res = ufunc.__call__(left.value)
             return type(self)(res, left.dimension).rm_dim_if_dimless()
@@ -879,14 +879,14 @@ class Quantity(object):
             res = ufunc.__call__(left.value, other.value)    
             return res
         elif ufunc_name in inv_angle_1:
-            if not left.dimension == Dimension(None):
-                raise DimensionError(left.dimension, Dimension(None))
+            if not left.dimension == DIMENSIONLESS:
+                raise DimensionError(left.dimension, DIMENSIONLESS)
             res = ufunc.__call__(left.value)
             return res
         #elif ufunc_name in inv_angle_2:
         #    other = quantify(args[1])
-        #    if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
-        #        raise DimensionError(left.dimension, Dimension(None))
+        #    if not (left.dimension == DIMENSIONLESS and other.dimension == DIMENSIONLESS):
+        #        raise DimensionError(left.dimension, DIMENSIONLESS)
         #    res = ufunc.__call__(left.value, other.value)
         #    return res
         elif ufunc_name in same_dim_in_1_nodim_out:
@@ -894,8 +894,8 @@ class Quantity(object):
             return res
         elif ufunc_name in no_dim_2:
             other = quantify(args[1])
-            if not (left.dimension == Dimension(None) and other.dimension == Dimension(None)):
-                raise DimensionError(left.dimension, Dimension(None))
+            if not (left.dimension == DIMENSIONLESS and other.dimension == DIMENSIONLESS):
+                raise DimensionError(left.dimension, DIMENSIONLESS)
             res = ufunc.__call__(left.value, other.value)
             return res
         else:
@@ -1640,7 +1640,7 @@ def quantify(x):
     if isinstance(x, Quantity):
         return x#.__copy__()
     else:
-        return Quantity(x, Dimension(None))
+        return Quantity(x, DIMENSIONLESS)
 
 def dimensionify(x):
     if isinstance(x, Dimension):
@@ -1648,9 +1648,9 @@ def dimensionify(x):
     elif isinstance(x, Quantity):
         return x.dimension
     elif np.isscalar(x) and not type(x) == str:
-        return Dimension(None)
+        return DIMENSIONLESS
     elif isinstance(x, np.ndarray):
-        return Dimension(None)
+        return DIMENSIONLESS
     else:
         return Dimension(x)
 
@@ -1666,7 +1666,7 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
             q.favunit = favunit
         return q
     else:
-        return Quantity(x, Dimension(None), symbol=symbol, favunit=favunit)
+        return Quantity(x, DIMENSIONLESS, symbol=symbol, favunit=favunit)
 
 
 

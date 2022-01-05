@@ -246,6 +246,8 @@ class Dimension(object):
         dimension found in DIMENSIONALITY"""
         return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
 
+    
+DIMENSIONLESS = Dimension(None)
 
 def compute_str(dic, default_str, output_init=1):
     """Compute the product-concatenation of the 
