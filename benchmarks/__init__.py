@@ -10,11 +10,14 @@ pip install virtualenv
 2. Once setup and benchmarks written : (this may take a while)
 ```
 asv run ALL  # to run all benchmarks on all comiits
+asv run HASHFILE:hashestobenchmark.txt # to run the list of commits
 ```
+(use `git log --pretty=oneline physipy/quantity/quantity.py physipy/quantity/dimension.py` to get the list for eg)
 3. Convert to html and inspect
 ```
 asv publish  # convert results to html
 asv preview  # display html on server
 ```
+
 
 """
