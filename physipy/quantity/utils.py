@@ -1,11 +1,74 @@
 import functools
 
+from functools import lru_cache
+from operator import attrgetter
+
 import numpy as np
 import sympy as sp
 
 from sympy.parsing.sympy_parser import parse_expr
 
 from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
+
+
+
+def cached_property_depends_on(*args):
+    """
+    Decorator to cache a property that depends on other attributes.
+    This differs from functools.cached_property in that functools.cached_property is made for immutable atributes.
+    
+    From https://stackoverflow.com/questions/48262273/python-bookkeeping-dependencies-in-cached-attributes-that-might-change
+    
+    Examples :
+    ==========
+    import time
+
+    class BADTimeConstantRC:
+        
+        def __init__(self, R, C):
+            self.R = R
+            self.C = C
+            
+        @property
+        def tau(self):
+            print("Slow computation...")
+            time.sleep(5)
+            return self.R * self.C
+        
+    class GOODTimeConstantRC:
+        
+        def __init__(self, R, C):
+            self.R = R
+            self.C = C
+        
+        @cached_property_depends_on('R', 'C')
+        def tau(self):
+            print("Slow computation...")
+            time.sleep(5)
+            return self.R * self.C
+        
+        
+    from physipy import units
+    ohm = units["ohm"]
+    Farad = units["F"]
+    bad = BADTimeConstantRC(ohm, Farad)
+    print("Bad first : ", bad.tau) # This is long the first time...
+    print("Bad second : ", bad.tau) # ... but also the second time !
+    
+    good = GOODTimeConstantRC(ohm, Farad)
+    print("Good fisrt : ", good.tau) # This is long the first time...
+    print("Good second : ", good.tau) # ... but not the second time since neither R nor C have changed.
+    
+    
+    """
+    attrs = attrgetter(*args)
+    def decorator(func):
+        _cache = lru_cache(maxsize=None)(lambda self, _: func(self))
+        def _with_tracked(self):
+            return _cache(self, attrs(self))
+        return property(_with_tracked, doc=func.__doc__)
+    return decorator
+
 
 
 def hard_equal(q1, q2):
