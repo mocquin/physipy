@@ -168,11 +168,17 @@ class Quantity(object):
     def __rsub__(self, x): return quantify(x) - self
 
     def __mul__(self,y):
-        y = quantify(y)
-        return type(self)(self.value * y.value, 
-                        self.dimension * y.dimension, 
-                        symbol=self.symbol + "*" + y.symbol,
-                         ).rm_dim_if_dimless() 
+        try:
+            return type(self)(self.value * y.value, 
+                self.dimension * y.dimension, 
+                symbol=self.symbol + "*" + y.symbol,
+                 ).rm_dim_if_dimless() 
+        except:
+            y = quantify(y)
+            return type(self)(self.value * y.value, 
+                self.dimension * y.dimension, 
+                symbol=self.symbol + "*" + y.symbol,
+                 ).rm_dim_if_dimless() 
     
     __rmul__ = __mul__
     
