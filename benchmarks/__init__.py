@@ -11,6 +11,7 @@ pip install virtualenv
 ```
 asv run ALL  # to run all benchmarks on all comiits
 asv run HASHFILE:hashestobenchmark.txt # to run the list of commits
+asv run # bench last commit
 ```
 (use `git log --pretty=oneline physipy/quantity/quantity.py physipy/quantity/dimension.py` to get the list for eg)
 3. Convert to html and inspect

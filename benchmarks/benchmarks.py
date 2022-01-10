@@ -72,12 +72,12 @@ class BasicPhysipy:
         
     def time_QuantityCreationByMul(self):
         q = 2 * m
-
+        
     def time_QuantityCreationByExpr(self):
         q = physipy.Quantity(1, physipy.Dimension("M/L"))
         
     def time_QuantityCreationByArray(self):
-        q = np.arange(10) * m
+        q = self.arr * m
         
     def time_QuantityAdd(self):
         q = m + m
