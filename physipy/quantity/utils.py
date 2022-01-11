@@ -17,6 +17,8 @@ def cached_property_depends_on(*args):
     Decorator to cache a property that depends on other attributes.
     This differs from functools.cached_property in that functools.cached_property is made for immutable atributes.
     
+    Use on computation-heavy attributes.
+    
     From https://stackoverflow.com/questions/48262273/python-bookkeeping-dependencies-in-cached-attributes-that-might-change
     
     Examples :
