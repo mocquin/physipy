@@ -72,7 +72,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         if favunit is None:
             # we fall back on the passed quantity's favunit
             # (that could be None also)
-            self.favunit = value.favunit
+            self.favunit = value._pick_smart_favunit()
         else:
             self.favunit = favunit
             
@@ -198,7 +198,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         # set quantity
         self.value = value
         if favunit is None:
-            self.favunit = value.favunit
+            self.favunit = value._pick_smart_favunit()
         else:
             self.favunit = favunit
         self.value.favunit = self.favunit
