@@ -295,10 +295,12 @@ class QuantityTextSlider(QuantityText):
     """
     
     def __init__(self, *args, **kwargs):
-        favunit = kwargs.get("favunit", None)
-        description = kwargs.get("description", "")
-        
-        super().__init__(*args, description=description, favunit=favunit)
+        # favunit is passed to the QuantityText for display purpose
+        favunit = kwargs.pop("favunit", None)
+        # but description is kept in the slider
+        #description = kwargs.pop("description", "")
+        # so we leave an empty description for the QuantityText
+        super().__init__(*args, description="", favunit=favunit)
         
         
         self.qslider = QuantitySlider(*args,
