@@ -66,7 +66,6 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # set quantity
         self.value = value
-        self.text.value = str(self.value)
         
         # favunit
         if favunit is None:
@@ -75,9 +74,13 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
             self.favunit = value._pick_smart_favunit()
         else:
             self.favunit = favunit
-            
+        
+
         # TODO : link those 2
         self.value.favunit = self.favunit
+        # set text value after setting the favunit
+        self.text.value = str(self.value)
+            
         
         
         # Actually a Box widget that wraps a Text widget
