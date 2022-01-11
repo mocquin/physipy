@@ -168,6 +168,7 @@ class Quantity(object):
     def __rsub__(self, x): return quantify(x) - self
 
     def __mul__(self,y):
+        # TODO make a decorator "try_raw_then_quantify_if_fail"
         try:
             return type(self)(self.value * y.value, 
                 self.dimension * y.dimension, 
