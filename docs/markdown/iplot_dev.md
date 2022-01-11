@@ -1,31 +1,31 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %%
+```python
 from physipy import *
 from physipy.qwidgets.qipywidgets import QuantityText
 import traitlets
+```
 
-
-# %%
+```python
 def widgetify(q):
     w = QuantityText(q)
     q.w = w
     
+```
 
-
-# %%
+```python
 class QTrait(traitlets.TraitType):
     info_text = 'a quantity'
 
@@ -33,11 +33,13 @@ class QTrait(traitlets.TraitType):
         if isinstance(value, Quantity):
             return value
         self.error(obj, value)
+```
 
+```python
 
-# %%
+```
 
-# %%
+```python
 class Model(traitlets.HasTraits):
     
     
@@ -57,37 +59,40 @@ class Model(traitlets.HasTraits):
     
     
         
+```
 
-# %%
+```python
 class QuantityWithWidget(Quantity):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         w = QuantityText(Quantity(self.value, self.dimension))
         self.w = w
+```
 
-
-# %%
+```python
 QuantityWithWidget(3, Dimension("m"))*2
+```
 
-
-# %%
+```python
 def widgetify(q):
     q = quantify(q)
     return QuantityWithWidget(q.value, q.dimension)
+```
 
-
-# %%
+```python
 q = widgetify(4*s)
 q
+```
 
-# %%
+```python
 q.w
+```
 
-# %%
+```python
 q
+```
 
-
-# %%
+```python
 class TraitedQuantity(traitlets.HasTraits):
     value = QTrait()
     
@@ -115,42 +120,59 @@ class TraitedQuantity(traitlets.HasTraits):
         return repr(self.value)
         
 Q = TraitedQuantity(3*m)
+```
 
-# %%
+```python
 Q.widget
+```
 
-# %%
+```python
 Q.value
+```
 
-# %%
+```python
 Q.value = 7*m # notice the widget update here
+```
 
-# %%
+```python
 Q.value
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
 Q.widget
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
+
+```
+
+```python
 import numpy as np
 from physipy import m
+```
 
-# %%
+```python
 x = np.arange(10).reshape(2, 5)*m
 x
+```
 
-# %%
+```python
 np.fliplr(x)
+```
 
-# %%
+```python
 from radiopy.radiation import u_lum_spec_en
 import pandas as pd
 import numpy as np
@@ -204,17 +226,19 @@ a_3 = 2.82143937212
 a_4 = 3.9206903948
 a_5 = 4.965114231744276
 lambert_sol = a_5
+```
 
-# %%
+```python
 from radiopy.radiation import planck_spec_en, wien_displacement_spec_en, lum_max_spec_en, lum_spec_en_bande, planck_spec_en_
+```
 
-# %% [markdown]
-# # Interactive Ax
+# Interactive Ax
 
-# %%
-# %matplotlib ipympl
+```python
+%matplotlib ipympl
+```
 
-# %%
+```python
 import matplotlib.pyplot as plt
 import ipywidgets as ipyw
 from physipy.qwidgets.qipywidgets import *
@@ -726,8 +750,9 @@ class IAx(ipyw.HBox):
 #class InteractiveLine():
     
 #    def __init__(self, func, )
+```
 
-# %%
+```python
 ax = IAx()
 ax
 
@@ -737,52 +762,71 @@ display(ax)
 # bouton pour update legend
 # dropdown pour xfavunit et yvafunit
 # ajouter un widget avec un bouton par ligne pour retirer la ligne / monter/descendre la ligne
+```
 
-# %%
+```python
 ax.ax.get_xticks(minor=True)
+```
 
-# %%
+```python
 ax.add_line(lambda l: planck_spec_en(l, 250*K), 2*mum, 20*mum, xfavunit=mum, yfavunit=u_lum_spec_en, label="planck(250K)")
+```
 
 
-# %%
+```python
 ax.add_integral(lambda l:planck_spec_en(l, 250*K), 2*mum, 15*mum)
+```
 
-# %%
+```python
 ax.show_abaq(lambda l, T:planck_spec_en(l, T), 2*mum, 20*mum, [T_K*K for T_K in np.linspace(250, 350, 11)])
+```
 
-# %%
+```python
 ax.add_line(lambda l: planck_spec_en(l, 350*K), 2*mum, 20*mum, xfavunit=mum, label="planck(350)")
+```
 
 
-# %%
+```python
 
-# %% [markdown]
-# https://stackoverflow.com/questions/19353576/curved-text-rendering-in-matplotlib
-#
-# https://stackoverflow.com/questions/44143395/align-arbitrarily-rotated-text-annotations-relative-to-the-text-not-the-boundin/44143396#44143396
+```
 
-# %%
+https://stackoverflow.com/questions/19353576/curved-text-rendering-in-matplotlib
 
-# %%
+https://stackoverflow.com/questions/44143395/align-arbitrarily-rotated-text-annotations-relative-to-the-text-not-the-boundin/44143396#44143396
 
-# %%
+```python
+
+```
+
+```python
+
+```
+
+```python
 ax.ax.set_yscale('log')
+```
 
-# %%
+```python
 print(ax.list_of_lines)
+```
 
-# %%
+```python
 ax.remove_line(0)
+```
 
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
+
+```
+
+```python
 class FunctionUI(ipyw.VBox):
     
     def __init__(self, func):
@@ -791,14 +835,21 @@ class FunctionUI(ipyw.VBox):
         self.list_of_controls = []
         
     
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
+
+```
+
+```python
 # integral computation
 #from matplotlib.patches import Polygon
 #ix = np.linspace(lmbda_min_int, lmbda_max_int)
@@ -821,20 +872,25 @@ def compute_integral_polygon(xmin, xmax, func, ax=None, **kwargs):
     return res
     
 
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %% [markdown]
-# ### use ndvectorize and lambda function
-#  - dirty
-#  - lose favunit
+```python
 
-# %%
-# %matplotlib ipympl
+```
 
-# %%
+### use ndvectorize and lambda function
+ - dirty
+ - lose favunit
+
+```python
+%matplotlib ipympl
+```
+
+```python
 import ipywidgets as ipyw
 T = 300*K
 T_min = 250*K
@@ -855,11 +911,13 @@ lmbda_max_int = 6*mum
 int_init = lum_spec_en_bande(lmbda_min_int, lmbda_max_int, T)
 
 
+```
 
-# %%
+```python
 lum_max = ndvectorize(lambda T:lum_max_spec_en(T))(ech_T)
+```
 
-# %%
+```python
 out_w = ipyw.Output()
 
 with out_w:    
@@ -1008,63 +1066,76 @@ def update_nech(change):
     ax.lines[0].set_data(ech_x_lmbda, ech_y)
     ax.relim()
     ax.autoscale_view()
+```
 
-
-# %%
+```python
 temps = np.linspace(250, 350, 11)*K
 print(temps)
 x_temps = [wien_displacement_spec_en(T) for T in temps]
 y_temps = [lum_max_spec_en(T) for T in temps]
+```
 
-# %%
+```python
 with out_w:
     ax.grid(True, which="both", axis="both")
     for i, txt in enumerate(temps):
         ax.annotate(txt, (x_temps[i], y_temps[i]))
+```
 
 
-# %% [markdown]
-#     
-# xmin_w.observe(update_xmin,          "value")
-# xmax_w.observe(update_xmax,          "value")
-# ymin_w.observe(update_ymin,          "value")
-# ymax_w.observe(update_ymax,          "value")
-# title_w.observe(update_title,        "value")
-# xlabel_w.observe(update_xlabel,      "value")
-# ylabel_w.observe(update_ylabel,      "value")
-# line_legend_w.observe(update_legend, "value")
-# temp_w.observe(update_temp,          "value")
-# xechmin_w.observe(update_echxmin,    "value")
-# xechmax_w.observe(update_echxmax,    "value")
-# nech_w.observe(update_nech,          "value")
-#
-#
-# display(ipyw.HBox([out_w, box]))
+<!-- #region -->
+    
+xmin_w.observe(update_xmin,          "value")
+xmax_w.observe(update_xmax,          "value")
+ymin_w.observe(update_ymin,          "value")
+ymax_w.observe(update_ymax,          "value")
+title_w.observe(update_title,        "value")
+xlabel_w.observe(update_xlabel,      "value")
+ylabel_w.observe(update_ylabel,      "value")
+line_legend_w.observe(update_legend, "value")
+temp_w.observe(update_temp,          "value")
+xechmin_w.observe(update_echxmin,    "value")
+xechmax_w.observe(update_echxmax,    "value")
+nech_w.observe(update_nech,          "value")
 
-# %%
 
-# %%
+display(ipyw.HBox([out_w, box]))
+<!-- #endregion -->
+
+```python
+
+```
+
+```python
 fig, ax  = plt.subplots()
+```
 
-# %%
-# %matplotlib ipympl
+```python
+%matplotlib ipympl
+```
 
-        # %%
+```python
         axis_list = ["stretch", "auto", "fixed"]
         self.axis_ddw = ipyw.Dropdown(options=axis_list, description="Axis scaling:")
         
           
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %% [markdown]
-# # Wrapped function
+```
 
-# %%
+```python
+
+```
+
+# Wrapped function
+
+```python
 from radiopy.radiation import u_lum_spec_en
 import pandas as pd
 import numpy as np
@@ -1284,21 +1355,24 @@ class WrappedFunction1D():
         with self.out_w:
             self.cursor_hline, = ax.plot(asqarray([self.xmin, self.xmax]), asqarray([y, y]))
             self.cursor_vline, = ax.plot(asqarray([self.get_xcursor(), self.get_xcursor()]), asqarray([0*y, y]))
+```
 
-# %%
-# %matplotlib widget
+```python
+%matplotlib widget
+```
 
-# %%
+```python
 wf(1, 2, 3)
+```
 
-# %%
-# %matplotlib ipympl
+```python
+%matplotlib ipympl
 from physipy import m, s
 from physipy.qwidgets.plot_ui import WrappedFunction1D
 from physipy.quantity.utils import name_eq
+```
 
-
-# %%
+```python
 @name_eq("Myfunc")        
 def func(x1, x2, x3):
     return x1*x2 + 3 * x3
@@ -1310,9 +1384,9 @@ wf = WrappedFunction1D(func, 0*s, 5*s,
 
 #wf.add_integral(2*s, 4*s)
 wf
+```
 
-
-# %%
+```python
 @name_eq("Gain at new price")
 def get(investment, ref_price, new_price, K=0.8):
     buy_price = ref_price*K
@@ -1327,37 +1401,46 @@ def get(investment, ref_price, new_price, K=0.8):
     gain_at_new_price = price_at_new_price - investment
     taux_at_new_price = price_at_new_price / investment
     return gain_at_new_price#price_at_new_price, recieved_price_at_ref_price, buy_price, nb_action_wo_abondement, nb_action_abondement, nb_action_totale, gain_at_ref_price, taux_at_ref_price, gain_at_new_price, taux_at_new_price
+```
 
-
-# %%
+```python
 
 wf = WrappedFunction1D(get, 50, 4000, 
                        ref_price=(40, 140),
                        new_price=(40, 140))
+```
 
-# %%
+```python
 wf
+```
 
-# %%
+```python
 p = wf.add_integral(1*s, 5*s)
+```
 
 
-# %%
+```python
 p.set_xy()
+```
 
-# %%
+```python
 from radiopy.radiation import planck_spec_en_
+```
 
-# %%
+```python
 from physipy import units, K
 mum = units["mum"]
 wf = WrappedFunction1D(planck_spec_en_, 2*mum, 14*mum, 
                        T=(250*K, 340*K),
                        )
 wf
+```
 
-# %%
+```python
 p = wf.add_integral(3*mum, 5*mum)
+```
 
 
-# %%
+```python
+
+```

@@ -193,6 +193,12 @@ for q in q_arr.flat:
 from physipy.quantity.utils import qarange
 
 # %%
+try:
+    np.arange(10*m)
+except Exception as e:
+    print(e)
+
+# %%
 # using range
 print(np.array(range(10))*m)
 # using np.arange
@@ -225,6 +231,10 @@ np.reshape(q_arr, (1, len(q_arr)))
 # %%
 from physipy.quantity.quantity import HANDLED_FUNCTIONS, implemented
 
+# %%
+set([f.__name__ for f in HANDLED_FUNCTIONS])
+
+# %%
 physipy_implemented = set([f.__name__ for f in HANDLED_FUNCTIONS]).union(set(implemented))
 physipy_implemented
 

@@ -1,6 +1,7 @@
 ---
 jupyter:
   jupytext:
+    encoding: '# -*- coding: utf-8 -*-'
     text_representation:
       extension: .md
       format_name: markdown
@@ -61,15 +62,7 @@ type(m.value)
 ```
 
 ```python
-type(iter(m))
-```
-
-```python
-np.iterable??
-```
-
-```python
-iter?
+iter(m)
 ```
 
 <!-- #region tags=[] -->
@@ -131,7 +124,7 @@ from physipy import m
 np.random.normal(np.array(3*m), np.array(1*m))
 ```
 
-# FIXED (Matplotlib histogram) by adding "to_numpy" method
+# HALF-FIXED (Matplotlib histogram) by adding "to_numpy" method, but we loose the unit
 
 
 It turns out that matplotlib first checks if the object has a "to_numpy()" method, then again improved by removing to_numpy and removing __iter__ and delegate it to getattr
@@ -147,6 +140,7 @@ import matplotlib.pyplot as plt
 
 ```python
 arr = np.random.normal(1, 0.1, size=100)*m
+arr
 ```
 
 ```python
@@ -154,7 +148,7 @@ plt.hist(arr.value)
 ```
 
 ```python
-plt.hist(arr)
+plt.hist(np.arange(10)*m)
 ```
 
 # Matplotlib histogram, again : missing units support

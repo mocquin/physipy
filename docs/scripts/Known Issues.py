@@ -58,13 +58,7 @@ np.iterable(m)
 type(m.value)
 
 # %%
-type(iter(m))
-
-# %%
-# np.iterable??
-
-# %%
-# iter?
+iter(m)
 
 # %% [markdown] tags=[]
 # ## Array repr with 0 value
@@ -123,7 +117,7 @@ from physipy import m
 np.random.normal(np.array(3*m), np.array(1*m))
 
 # %% [markdown]
-# # FIXED (Matplotlib histogram) by adding "to_numpy" method
+# # HALF-FIXED (Matplotlib histogram) by adding "to_numpy" method, but we loose the unit
 
 # %% [markdown]
 # It turns out that matplotlib first checks if the object has a "to_numpy()" method, then again improved by removing to_numpy and removing __iter__ and delegate it to getattr
@@ -138,12 +132,13 @@ import matplotlib.pyplot as plt
 
 # %%
 arr = np.random.normal(1, 0.1, size=100)*m
+arr
 
 # %%
 plt.hist(arr.value)
 
 # %%
-plt.hist(arr)
+plt.hist(np.arange(10)*m)
 
 # %% [markdown]
 # # Matplotlib histogram, again : missing units support

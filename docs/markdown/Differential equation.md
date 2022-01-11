@@ -247,6 +247,8 @@ def timeit_without_unit():
     t_span = (0, 10*tau)
     
     %timeit scipy.integrate.solve_ivp(RHS_dydt, t_span, y0, dense_output=True)
+    %timeit scipy.integrate.solve_ivp(RHS_dydt, t_span, y0, dense_output=False)
+    
 
 def timeit_with_unit():
     import numpy as np
@@ -276,6 +278,7 @@ def timeit_with_unit():
     t_span = (0*s, 10*tau)
 
     %timeit solve_ivp(RHS_dydt, t_span, y0, dense_output=True)
+    %timeit solve_ivp(RHS_dydt, t_span, y0, dense_output=False)
 
     
 timeit_without_unit()

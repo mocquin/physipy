@@ -1,24 +1,23 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %% [markdown]
-# # Performance
+# Performance
 
-# %% [markdown]
-# Obviously, using unit-aware variables will slow down any computation compared to raw python values (int, flot, numpy.ndarray).
 
-# %%
+Obviously, using unit-aware variables will slow down any computation compared to raw python values (int, flot, numpy.ndarray).
+
+```python
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -40,46 +39,51 @@ b = 654321
 
 aq = a*m
 bq = b*m
+```
 
 
-# %% [markdown]
-# Basic comparison on addition
+Basic comparison on addition
 
-# %%
-# %timeit  (a +  b)
-# %timeit (aq + bq)
+```python
+%timeit  (a +  b)
+%timeit (aq + bq)
+```
 
-# %%
+```python
 print(12.4*mus/(63.7*ns))
+```
 
-# %% [markdown]
-# Basic comparison on pow
+Basic comparison on pow
 
-# %%
-# %timeit  (a**2)
-# %timeit (aq**2)
+```python
+%timeit  (a**2)
+%timeit (aq**2)
+```
 
-# %%
+```python
 print(22.8*mus/(289*ns))
+```
 
-# %%
-# %%timeit 
+```python
+%%timeit 
 try:
     pass
 except:
     pass
+```
 
-# %%
-# %%timeit
+```python
+%%timeit
 isinstance(m, Quantity)
+```
 
-# %% [markdown] tags=[]
-# ## benchmark timing
+<!-- #region tags=[] -->
+## benchmark timing
+<!-- #endregion -->
 
-# %% [markdown]
-# Here is a comparison of most operations : 
+Here is a comparison of most operations : 
 
-# %%
+```python
 import numpy as np
 from physipy import m, s, Quantity
 arr = np.linspace(0, 200)
@@ -119,9 +123,9 @@ def use_case2():
     lmbdas = ech_lmbda_mum*mum
     Tbb = 300*K
     integral = np.trapz(plancks_law(lmbdas, Tbb), x=lmbdas)
+```
 
-
-# %%
+```python
 import pint
 import physipy
 import forallpeople
@@ -141,8 +145,9 @@ arr = np.arange(1, 4)
 import timeit
 
 import operator
+```
 
-# %%
+```python
 operations = {
     "add":"__add__", 
     "sub":"__sub__",
@@ -175,8 +180,9 @@ asp_qs = {
     "b":b*astropy_units.m,
     "arrm":arr*astropy_units.m,
 }
+```
 
-# %%
+```python
 results = []
 
 for modules_dict in [physipy_qs, pint_qs, fap_qs, asp_qs]:
@@ -207,8 +213,9 @@ import seaborn as sns
 df = pd.DataFrame(results, columns=["package", "op", "time", "left", "right", "left_type", "right_type", "result"])
 sns.catplot(
     col="op", x="right_type", y="time", hue="package", data=df, kind="bar")
+```
 
-# %%
+```python
 physipy
   add : 0.26833
   sub : 0.24462
@@ -218,23 +225,31 @@ truediv : 1.05938
   sub : 0.33431
   mul : 1.21743
 truediv : 1.50563
+```
 
-# %%
+```python
 aq=a*physipy.m
 arrm = arr*physipy.m
+```
 
-# %%
-# %timeit arr*a
-# %timeit aq*arrm
+```python
+%timeit arr*a
+%timeit aq*arrm
+```
 
-# %%
+```python
 arrm
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
+
+```
+
+```python
 physipy
   add : 0.57792
   sub : 0.58624
@@ -254,10 +269,13 @@ truediv : 1.19365
   sub : 0.79829
   mul : 1.34892
 truediv : 1.63579
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
 import timeit
 
 operations = {
@@ -265,8 +283,9 @@ operations = {
     "sub":"__sub__",
     "mul":"__mul__",
 }
+```
 
-# %%
+```python
 import pint
 import physipy
 import forallpeople
@@ -277,8 +296,9 @@ ureg = pint.UnitRegistry()
 a = 123456
 b = 654321
 arr = np.arange(100)
+```
 
-# %%
+```python
 physipy_qs = {
     "name":"physipy",
     "a":a*physipy.m,
@@ -315,109 +335,132 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
         
         #print(f"{operation: >5} : {time_q/time: <5.1f}")
         print(f"{operation :>5} : {time_qarr:.5f}")
+```
 
 
-# %%
+```python
+
+
+```
+
+```python
+
+```
+
+```python
+
+```
 
 
 
-# %%
+```python
+%lprun
+```
 
-# %%
+# Array creation
 
-# %% [markdown]
-#
 
-# %%
-# %lprun
+Compare lazy creation of arrays
 
-# %% [markdown]
-# # Array creation
+```python
+%timeit asqarray([0*m, 2*m])
+%timeit [0, 2]*m
+```
 
-# %% [markdown]
-# Compare lazy creation of arrays
+# Profiling base operations
 
-# %%
-# %timeit asqarray([0*m, 2*m])
-# %timeit [0, 2]*m
-
-# %% [markdown]
-# # Profiling base operations
-
-# %%
+```python
 from physipy import m, s, rad, sr
+```
 
-# %%
+```python
 bench_scalar_op_add
 bench_scalar_op_mul
 bench_arr_scalar_op_add
 bench_arr_scalar_op_mul
+```
 
-# %%
-# #%prun -D prunsum -s time m+m 
-# %prun -D prunsum_file -s nfl use_case()
-# !snakeviz prunsum_file
+```python
+#%prun -D prunsum -s time m+m 
+%prun -D prunsum_file -s nfl use_case()
+!snakeviz prunsum_file
+```
 
-# %% [markdown]
-# Ideas for better performances : 
-#  - less 'isinstance'
-#  - remove sympy 
-#  - cleaner 'setattr'
+Ideas for better performances : 
+ - less 'isinstance'
+ - remove sympy 
+ - cleaner 'setattr'
 
-# %%
-# %%prun -s cumulative -D prundump
+```python
+%%prun -s cumulative -D prundump
 m + m
 2 * m
 2*s /(3*m)
 m**3
+```
 
-# %%
-# !snakeviz prundump
+```python
+!snakeviz prundump
+```
 
-# %% [markdown]
-# # Profiling tests
+# Profiling tests
 
-# %%
+```python
 import sys
 sys.path.insert(0,r"/Users/mocquin/MYLIB10/MODULES/physipy/test")
 import physipy
 import test_dimension
 import unittest
 from physipy import Quantity, Dimension
+```
 
-# %%
+```python
 from test_dimension import TestClassDimension
 from test_quantity import TestQuantity
+```
 
-# %%
+```python
 suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestQuantity)
+```
 
-# %%
-# %%prun -s calls -D prun
+```python
+%%prun -s calls -D prun
 unittest.TextTestRunner().run(suite)
+```
 
-# %%
-# !snakeviz prun
+```python
+!snakeviz prun
+```
 
-# %%
-# %timeit Quantity(1, Dimension(None))
+```python
+%timeit Quantity(1, Dimension(None))
+```
 
-# %%
-# %timeit Quantity(1, Dimension(None))
+```python
+%timeit Quantity(1, Dimension(None))
+```
 
-# %%
+```python
 testdim = test_dimension.TestClassDimension()
+```
 
-# %%
+```python
 testdim.run()
+```
 
-# %%
-# %cd ..
+```python
+%cd ..
+```
 
-# %%
-# #%cd
-# %prun -s module !python -m unittest
+```python
+#%cd
+%prun -s module !python -m unittest
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
+
+```

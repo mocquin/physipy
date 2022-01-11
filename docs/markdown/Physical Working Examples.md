@@ -1,21 +1,20 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %% [markdown]
-# # https://scipython.com/book2/chapter-6-numpy/examples/the-height-of-liquid-in-a-spherical-tank/
+# https://scipython.com/book2/chapter-6-numpy/examples/the-height-of-liquid-in-a-spherical-tank/
 
-# %%
+```python
 from physipy import m, units, s, setup_matplotlib
 setup_matplotlib()
 
@@ -56,11 +55,11 @@ ax.plot(time, h, 'o')
 ax.set_xlabel("Time (" + str(ax.xaxis.get_label().get_text()) + ")")
 ax.set_ylabel("Height in tank (" + str(ax.yaxis.get_label().get_text()) + ")")
 plt.show()
+```
 
-# %% [markdown]
-# # https://scipython.com/book2/chapter-6-numpy/examples/mesh-analysis-of-a-electrical-network/
+# https://scipython.com/book2/chapter-6-numpy/examples/mesh-analysis-of-a-electrical-network/
 
-# %%
+```python
 from physipy import m, units, s, setup_matplotlib
 setup_matplotlib()
 import numpy as np
@@ -74,5 +73,8 @@ R = np.array([[50, 0, -30],
 V = np.array([80, 80, 0]) * volt
 I = np.linalg.inv(R) @ V
 I
+```
 
-# %%
+```python
+
+```

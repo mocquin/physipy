@@ -1,33 +1,32 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %% [markdown]
-# # Quantity
+# Quantity
 
-# %% [markdown]
-# ## Construction from class
 
-# %% [markdown]
-# Several ways are available constructing a Quantity object
+## Construction from class
 
-# %%
+
+Several ways are available constructing a Quantity object
+
+```python
 from physipy import Quantity, m, sr, Dimension
+```
 
-# %% [markdown]
-# Scalar Quantity
+Scalar Quantity
 
-# %%
+```python
 # from int
 print(Quantity(1, Dimension("L")))
 
@@ -37,12 +36,12 @@ print(Quantity(1.123, Dimension("L")))
 # from fraction.Fraction
 from fractions import Fraction
 print(Quantity(Fraction(1, 2), Dimension("L")))
+```
 
 
-# %% [markdown]
-# Array-like Quantity
+Array-like Quantity
 
-# %%
+```python
 # from list
 print(Quantity([1, 2, 3, 4], Dimension("L")))
 
@@ -52,14 +51,14 @@ print(Quantity((1, 2, 3, 4), Dimension("L")))
 # from np.ndarray
 import numpy as np
 print(Quantity(np.array([1, 2, 3, 4]), Dimension("L")))
+```
 
-# %% [markdown]
-# ## Construction by multiplicating value with unit/quantity
+## Construction by multiplicating value with unit/quantity
 
-# %% [markdown]
-# Because the multiplication of quantity first tries to "quantify" the other operand, several creation routines by multicpliation are available
 
-# %%
+Because the multiplication of quantity first tries to "quantify" the other operand, several creation routines by multicpliation are available
+
+```python
 # multiplicating int
 print(1 * m)
 
@@ -77,18 +76,21 @@ print((1, 2, 3, 4) * m)
 
 # multiplicating array
 print(np.array([1, 2, 3, 4]) * m)
+```
 
-# %% [markdown]
-# # Known issues
+# Known issues
 
-# %% [markdown]
-# ## Quantity defition with minus sign
 
-# %%
+## Quantity defition with minus sign
+
+```python
 from physipy import Quantity, Dimension
 
 print(type(-Quantity(5, Dimension(None)))) # returns int
 print(type(Quantity(-5, Dimension(None)))) # returns Quantity
 print(type(Quantity(5, Dimension(None)))) # returns Quantity
+```
 
-# %%
+```python
+
+```

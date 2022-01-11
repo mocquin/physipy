@@ -13,24 +13,22 @@
 # ---
 
 # %% [markdown]
-# # Repr and string
-
-# %%
-import matplotlib.pyplot as plt
-import numpy as np
-from numpy import pi
-import physipy
-from physipy import m, s, Quantity, Dimension, rad
+# # Symbols of Quantity : a sympy symbol
 
 # %% [markdown]
-# ## Interactive repr
+# ## Specs 
+# Must support : 
+#  - multiplication
+#  - division 
+#  - conversion to str
+#  - creation from str
+#  - equality check
 
 # %%
-from physipy import K, constants
-sigma = constants["sigma"]
-
+import sys
+sys.path.append(r"/Users/mocquin/MYLIB10/MODULES/simparser/")
 
 # %%
-sigma * 300*K
+import simparser
 
 # %%

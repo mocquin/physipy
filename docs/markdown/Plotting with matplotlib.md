@@ -28,6 +28,9 @@ cm = units["cm"]
 ```
 
 
+Besides matplotlib being the most-used, most-documented, and most masture plotting package in python, a good reason to use it is its ability to handle units automatically, through its units interface.
+
+
 Ressources :
  - https://github.com/matplotlib/matplotlib/blob/97115aef5c18af5e48eb4ef041b6f48567088874/lib/matplotlib/axis.py#L1521
  
@@ -220,16 +223,16 @@ from physipy import s, m, setup_matplotlib
 from physipy.quantity.utils import asqarray
 
 from physipy import Dimension, units, quantify, Quantity
+setup_matplotlib()
+
+import matplotlib.units as munits
+print(munits.registry.get_converter([1*m]))
 
 fig, ax = plt.subplots()
 ax.plot(asqarray([m, 2*m]),
-        asqarray([2*m, 3*m]), "-o")
+        asqarray([2*m, 3*m]))#, "-o")
 ax2 = ax.twinx()
 ax2.plot(m, 3*s, "*", color="r")
-```
-
-```python
-
 ```
 
 ```python
@@ -256,8 +259,8 @@ ax3.scatter(xsecs, xsecs, yunits=minutes)
 
 fig.tight_layout()
 plt.show()
-
 ```
+
 
 ## units
 
@@ -306,11 +309,11 @@ men_std = asqarray([20*cm, 30*cm, 32*cm, 10*cm, 20*cm])
 fig, ax = plt.subplots()
 
 ind = np.arange(N)    # the x locations for the groups
-width = 0.35   *cm      # the width of the bars
+width = 0.35       # the width of the bars
 ax.bar(ind, 
        men_means, 
        width,
-       #bottom=0*cm, 
+       bottom=0*cm, 
        #yerr=men_std, 
        label='Men')
 
@@ -319,8 +322,8 @@ ax.bar(ind,
 #ax.bar(ind + width, women_means, width, bottom=0*cm, yerr=women_std,
 #       label='Women')
 
-ax.set_title('Scores by group and gender')
-ax.set_xticks(ind + width / 2, labels=['G1', 'G2', 'G3', 'G4', 'G5'])
+#ax.set_title('Scores by group and gender')
+#ax.set_xticks(ind + width / 2, labels=['G1', 'G2', 'G3', 'G4', 'G5'])
 
 ax.legend()
 #ax.yaxis.set_units(inch)

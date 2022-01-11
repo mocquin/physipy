@@ -195,6 +195,13 @@ from physipy.quantity.utils import qarange
 ```
 
 ```python
+try:
+    np.arange(10*m)
+except Exception as e:
+    print(e)
+```
+
+```python
 # using range
 print(np.array(range(10))*m)
 # using np.arange
@@ -227,7 +234,13 @@ np.reshape(q_arr, (1, len(q_arr)))
 
 ```python
 from physipy.quantity.quantity import HANDLED_FUNCTIONS, implemented
+```
 
+```python
+set([f.__name__ for f in HANDLED_FUNCTIONS])
+```
+
+```python
 physipy_implemented = set([f.__name__ for f in HANDLED_FUNCTIONS]).union(set(implemented))
 physipy_implemented
 ```
