@@ -78,6 +78,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
         # TODO : link those 2
         self.value.favunit = self.favunit
+        #link = ipyw.link(
+        #    (self.value, "favunit"), 
+        #   (self, "favunit")
+        #)
+        
         # set text value after setting the favunit
         self.text.value = str(self.value)
             
