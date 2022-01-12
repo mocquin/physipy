@@ -134,6 +134,9 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     @traitlets.observe("value")
     def _update_display_val(self, proposal):
         self.dimension = self.value.dimension
+        # set favunit before updating the text
+        self.value.favunit = self.favunit
+        # now set text with favunit set
         self.text.value = f'{str(self.value)}' # self.value.favunit is used here
 
         
