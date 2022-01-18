@@ -13,144 +13,6 @@
 # ---
 
 # %%
-from physipy import *
-from physipy.qwidgets.qipywidgets import QuantityText
-import traitlets
-
-
-# %%
-def widgetify(q):
-    w = QuantityText(q)
-    q.w = w
-    
-
-
-# %%
-class QTrait(traitlets.TraitType):
-    info_text = 'a quantity'
-
-    def validate(self, obj, value):
-        if isinstance(value, Quantity):
-            return value
-        self.error(obj, value)
-
-
-# %%
-
-# %%
-class Model(traitlets.HasTraits):
-    
-    
-    def __init__(self, 
-                 R0_ac, R0_av, 
-                 T0_ac, T0_av, 
-                 Ea_ac, Ea_av, 
-                T_ac, T_av):
-        self.R0_ac = R0_ac
-        self.R0_av = R0_av
-        self.T0_ac = T0_av
-        self.T0_av = T0_av
-        self.Ea_ac = Ea_ac
-        self.Ea_av = Ea_av
-        self.T_ac = T_ac
-        self.T_av = T_av
-    
-    
-        
-
-# %%
-class QuantityWithWidget(Quantity):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        w = QuantityText(Quantity(self.value, self.dimension))
-        self.w = w
-
-
-# %%
-QuantityWithWidget(3, Dimension("m"))*2
-
-
-# %%
-def widgetify(q):
-    q = quantify(q)
-    return QuantityWithWidget(q.value, q.dimension)
-
-
-# %%
-q = widgetify(4*s)
-q
-
-# %%
-q.w
-
-# %%
-q
-
-
-# %%
-class TraitedQuantity(traitlets.HasTraits):
-    value = QTrait()
-    
-    def __init__(self, q):
-        self.widget = QuantityText(q)
-        self.qvalue = q
-        
-        traitlets.link(
-            (self.widget, "value"),
-            (self, "qvalue"),
-        )
-        
-        #def _update_q(change):
-        #    q = change.new
-        #    self.value = q
-        #self.widget.observe(_update_q, names="value")
-        
-    #@traitlets.observe("value")
-    #def _update_w(self, change):
-    #    q = change.new
-    #    self.widget.value = q
-    #self.value.observe(_update_w, names="value")
-
-    def __repr__(self):
-        return repr(self.value)
-        
-Q = TraitedQuantity(3*m)
-
-# %%
-Q.widget
-
-# %%
-Q.value
-
-# %%
-Q.value = 7*m # notice the widget update here
-
-# %%
-Q.value
-
-# %%
-
-# %%
-Q.widget
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-import numpy as np
-from physipy import m
-
-# %%
-x = np.arange(10).reshape(2, 5)*m
-x
-
-# %%
-np.fliplr(x)
-
-# %%
 from radiopy.radiation import u_lum_spec_en
 import pandas as pd
 import numpy as np
@@ -723,20 +585,10 @@ class IAx(ipyw.HBox):
         self.lines_w.value = str(self.list_of_lines)
         self.ax.legend()
         
-#class InteractiveLine():
-    
-#    def __init__(self, func, )
-
-# %%
 ax = IAx()
 ax
 
-
 display(ax)
-# avoir une liste de bande spectrale pour comparaison
-# bouton pour update legend
-# dropdown pour xfavunit et yvafunit
-# ajouter un widget avec un bouton par ligne pour retirer la ligne / monter/descendre la ligne
 
 # %%
 ax.ax.get_xticks(minor=True)
@@ -775,22 +627,11 @@ print(ax.list_of_lines)
 # %%
 ax.remove_line(0)
 
-
 # %%
 
 # %%
 
 # %%
-
-# %%
-class FunctionUI(ipyw.VBox):
-    
-    def __init__(self, func):
-        
-        self.func = func
-        self.list_of_controls = []
-        
-    
 
 # %%
 
@@ -1061,244 +902,16 @@ fig, ax  = plt.subplots()
 
 # %%
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Wrapped function
-
-# %%
-from radiopy.radiation import u_lum_spec_en
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import ipywidgets as ipyw
-from physipy import *
-import physipy
-from physipy.quantity.utils import *
-from physipy.quantity.calculus import ndvectorize
-
-from physipy.qwidgets.qipywidgets import QuantityTextSlider
-
-
-setup_matplotlib()
-from collections import OrderedDict
-
-class WrappedFunction1D():
-    # un slider widget pour chaque param
-    # un range slider pour xmin/xmax
-    # une methode pour chaque param qui renvoi la valeur courant
-    # une methode qui renvoi les valeurs x et y pour l'update de la line
-    
-    def __init__(self, func, xmin, xmax, *args, num=100, xfavunit=None, yfavunit=None, xlim=None, ylim=None, **kwargs):
-        self.func = func
-        self.name = func.name
-        self.xfavunit = xfavunit
-        self.yfavunit = yfavunit
-        self.xmin = xmin
-        self.xmax = xmax
-        self.num = num
-        
-        
-        axis_list = ["stretch", "auto", "fixed"]
-        self.xaxis_ddw = ipyw.Dropdown(options=axis_list, description="X-Axis scaling:")
-        self.yaxis_ddw = ipyw.Dropdown(options=axis_list, description="Y-Axis scaling:")
-        
-        # Todo : handle xlim/ylim with fixed, stretched, etc
-        
-        self.ech_x = np.linspace(xmin, xmax, num=num)
-        # get favunit for inputs
-        import inspect
-        sig = inspect.signature(func)
-        if not sig.return_annotation == inspect._empty:
-            init_values = []
-            for k,v in sig.parameters.items():
-                init_values.append((v.name, v.annotation, v.name))
-            # add favunit for x for plotting
-            self.ech_x.favunit = init_values[0][1]
-        
-
-        
-        self.params = args
-        self.params_slider_dict = OrderedDict()
-        
-        self.state_dict = {}
-    
-        self.pargs = {}
-        self.sliders_dict = {}
-    
-        
-        def _update_data(change):
-            #print("update data")
-            data = self.data()
-            self.line.set_label(self.label)
-            self.line.set_data(data)
-            _update_cursor_data(None)
-            
-            self.ax.relim()
-            cur_xlims = self.ax.get_xlim()
-            cur_ylims = self.ax.get_ylim()
-            
-            # X
-            if self.xaxis_scale == "auto":
-                self.ax.autoscale_view(scaley=False)
-            elif self.xaxis_scale == "stretch":
-                new_lims = [self.ax.dataLim.x0, self.ax.dataLim.x0 + self.ax.dataLim.width]
-                new_lims = [
-                    new_lims[0] if new_lims[0] < cur_xlims[0] else cur_xlims[0],
-                    new_lims[1] if new_lims[1] > cur_xlims[1] else cur_xlims[1],
-                ]
-                self.ax.set_xlim(new_lims)
-                
-
-            if self.yaxis_scale == "auto":
-                self.ax.autoscale_view(scalex=False)
-            elif self.yaxis_scale == "stretch":
-                new_lims = [self.ax.dataLim.y0, self.ax.dataLim.y0 + self.ax.dataLim.height]
-                new_lims = [
-                    new_lims[0] if new_lims[0] < cur_ylims[0] else cur_ylims[0],
-                    new_lims[1] if new_lims[1] > cur_ylims[1] else cur_ylims[1],
-                ]
-                self.ax.set_ylim(new_lims)
-            
-            
-            self.ax.legend()
-            #self.ax.autoscale_view()
-        
-        sliders_list = []
-        for k, v in kwargs.items():
-            self.pargs[k] = v
-            #slider = ipyw.FloatSlider(v[0], min=v[0], max=v[-1], description=k, step=0.001)
-            slider = QuantityTextSlider(v[0], min=v[0], max=v[-1], description=k,
-                                       step=(v[-1]-v[0])/1000) # we override a default step
-            slider.observe(_update_data, names="value")
-
-            self.sliders_dict[k] = slider
-
-            sliders_list.append(slider)
-            
-        def _update_cursor_data(change):
-            y = self.func(self.get_xcursor(), **self.get_pvalues())
-            self.cursor_hline.set_data(asqarray([self.xmin, self.xmax]), asqarray([y, y]))
-            self.cursor_vline.set_data(asqarray([self.get_xcursor(), self.get_xcursor()]), asqarray([0*y, y]))
-            
-        self.cursor_slider = QuantityTextSlider(xmin, min=xmin, max=xmax, description="Cursor",
-                                               step=(xmax-xmin)/1000)
-        self.cursor_slider.observe(_update_cursor_data, names="value")
-
-        #print(self.sliders_list)
-        self.sliders_list = sliders_list
-        self.sliders_box = ipyw.VBox(sliders_list +[self.cursor_slider]+[self.xaxis_ddw, self.yaxis_ddw ])
-        self.out_w = ipyw.Output()
-        
-        #print(self.sliders_box)
-        self.plot()
-        self.plot_cursor()
-
-        #self.state = {k:v for (k,v) in zip(self.)}
-        
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
-        
-    @property
-    def xaxis_scale(self):
-        return self.xaxis_ddw.value
-
-    @property
-    def yaxis_scale(self):
-        return self.yaxis_ddw.value
-    
-    def get_xcursor(self):
-        return self.cursor_slider.value
-    
-    def add_integral(self, ximin, ximax):
-        from physipy import quad
-        args = tuple((v for v in self.get_pvalues().values()))
-        func = self.func
-        integ, prec = quad(func, ximin, ximax, args=args)
-
-        
-        from matplotlib.patches import Polygon
-        def compute_integral_polygon(xmin, xmax, func, ax=self.ax, **kwargs):
-            xmin = quantify(xmin)
-            xmax = quantify(xmax)
-            if ax is None:
-                ax = plt.gca()
-            ix = np.linspace(xmin, xmax)
-            #iy = func(ix, **kwargs)
-            try:
-                iy = func(ix, *args, **kwargs)
-            except: 
-                iy = physipy.quantity.utils.asqarray([func(x, *args, **kwargs) for x in ix])
-        
-            verts = [(xmin.value, 0),
-                     *zip((ix.value), iy.value), 
-                     (xmax.value, 0)]
-            poly = Polygon(verts, facecolor='0.9', edgecolor='0.5', alpha=0.5)
-            ax.text(0.5 * (xmin.value + xmax.value), 
-                    np.max(iy.value/5), 
-                    r"$\int_{x=" + f"{xmin}" + "}^{x=" + f"{xmax}" + "}"+f"{self.label}"+"\mathrm{d}x$="+f"{integ:.2f}",
-                    horizontalalignment='center', 
-                    fontsize=9)
-            res = ax.add_patch(poly)
-            return res
-        polygon = compute_integral_polygon(ximin, ximax, func)
-        self.integral_polygon = polygon
-        return self.integral_polygon
-    
-    @property
-    def label(self):
-        params = ",".join([k+"="+f"{v.value:~}" for k, v in zip(self.sliders_dict.keys(), self.sliders_dict.values())])
-        return f"{self.name}({params})"
-            
-            
-    def get_pvalue(self, pname):
-        return self.sliders_dict[pname].value
-            
-    def get_pvalues(self):
-        res =  {k:self.sliders_dict[k].value for k in self.sliders_dict.keys()}
-        return res
-        
-    def __repr__(self):
-        #display(self.sliders_box)
-        display(ipyw.HBox([self.out_w,
-                           self.sliders_box]))
-        return ""
-    
-    def data(self):
-        return (self.ech_x, self.func(self.ech_x, **self.get_pvalues()))
-    
-    def plot(self, ax=None, **kwargs):
-        with self.out_w:
-            if ax is None:
-                fig, ax = plt.subplots()
-                ax.grid("both")
-            line, = ax.plot(*self.data(), label=self.label, **kwargs)
-            self.ax = ax
-            self.fig = fig
-            self.fig.tight_layout()
-            self.line = line
-            ax.legend()
-            
-    def plot_cursor(self, **kwargs):
-        ax = self.ax
-        xx = (self.get_xcursor(), self.get_pvalues())
-        y = self.func(self.get_xcursor(), **self.get_pvalues())
-        with self.out_w:
-            self.cursor_hline, = ax.plot(asqarray([self.xmin, self.xmax]), asqarray([y, y]))
-            self.cursor_vline, = ax.plot(asqarray([self.get_xcursor(), self.get_xcursor()]), asqarray([0*y, y]))
 
 # %%
 # %matplotlib widget
 
-# %%
-wf(1, 2, 3)
-
-# %%
-# %matplotlib ipympl
 from physipy import m, s
 from physipy.qwidgets.plot_ui import WrappedFunction1D
 from physipy.quantity.utils import name_eq
 
-
-# %%
 @name_eq("Myfunc")        
 def func(x1, x2, x3):
     return x1*x2 + 3 * x3
@@ -1307,8 +920,8 @@ wf = WrappedFunction1D(func, 0*s, 5*s,
                        x2=(0*m, 5*m),
                        x3=(0*m*s, 5*m*s))
 
-
-#wf.add_integral(2*s, 4*s)
+print(wf(1, 2, 3))
+p = wf.add_integral(1*s, 5*s)
 wf
 
 
@@ -1326,38 +939,17 @@ def get(investment, ref_price, new_price, K=0.8):
     price_at_new_price = nb_action_totale * new_price
     gain_at_new_price = price_at_new_price - investment
     taux_at_new_price = price_at_new_price / investment
-    return gain_at_new_price#price_at_new_price, recieved_price_at_ref_price, buy_price, nb_action_wo_abondement, nb_action_abondement, nb_action_totale, gain_at_ref_price, taux_at_ref_price, gain_at_new_price, taux_at_new_price
+    return gain_at_new_price#price_at_new_price, recieved_price_at_ref_price, buy_price, nb_action_o_abondement, nb_action_abondement, nb_action_totale, gain_at_ref_price, taux_at_ref_price, gain_at_new_price, taux_at_new_price
 
-
-# %%
 
 wf = WrappedFunction1D(get, 50, 4000, 
                        ref_price=(40, 140),
                        new_price=(40, 140))
-
-# %%
 wf
 
 # %%
-p = wf.add_integral(1*s, 5*s)
-
 
 # %%
-p.set_xy()
-
-# %%
-from radiopy.radiation import planck_spec_en_
-
-# %%
-from physipy import units, K
-mum = units["mum"]
-wf = WrappedFunction1D(planck_spec_en_, 2*mum, 14*mum, 
-                       T=(250*K, 340*K),
-                       )
-wf
-
-# %%
-p = wf.add_integral(3*mum, 5*mum)
 
 
 # %%

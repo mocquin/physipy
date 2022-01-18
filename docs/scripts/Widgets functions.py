@@ -229,5 +229,3 @@ ui= FunctionUI(tab_name, functions_dict, kind="TextSlider")
 ui
 
 # %%
-
-# %%

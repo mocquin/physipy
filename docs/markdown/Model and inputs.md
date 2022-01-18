@@ -243,29 +243,116 @@ Lets try to make the RC model using traitlets
 
 ```python
 import traitlets
+import ipywidgets as ipyw
 from physipy import units, s, Quantity
-from physipy.qwidgets.qipywidgets import QuantityTextSlider
+from physipy.qwidgets.qipywidgets import QuantityTextSlider, QuantityText
 F = units["F"]
 ohm = units["ohm"]
 
 
 
 class QuantityDescriptor():
+    def __init__(self, value):
+        self.value = value
 
     def __set_name__(self, owner, name):
+        print("setting name for", name)
         # self.R
         self.public_name = name
         # actually refers to self._R_w
         self.private_name = '_' + name
 
     def __set__(self, obj, value):
-        setattr(obj, self.private_name, value)
+        self.value = value
+#        setattr(obj, self.private_name, value)
         
     def __get__(self, obj, objtype=None):
-        value = getattr(obj, self.private_name)
-        return value
+        return self.value
+        #value = getattr(obj, self.private_name)
+        #return value
+    
+class QuantityLabelDescriptor():
+    
+    def __init__(self, deps_names, cb_name):
+        self.deps_names = deps_names
+        self.cb_name = cb_name
+        
+    
+    def __set_name__(self, owner, name):
+        print("setting name for label", name)
+        # self.R
+        self.public_name = name
+        # actually refers to self._R_w
+        self.private_name_w= '_' + name + "_w"
+        # 
+        self.private_name_q = "_" + name + "_q"
+        
+        ## if widget already exists
+        #if hasattr(owner, self.private_name):
+        #    # get the private widget value, and set its value to the result of compute_
+        #    setattr(getattr(owner, self.private_name), "value", getattr(owner, "compute_"+self.public_name)())
+        #else:
+        #    print("create new widget")
+        #    setattr(owner, self.private_name, ipyw.Label(self.public_name + ":" + ""))
+        #    # get the widget
+        #    w = getattr(owner, self.private_name)
+        #    # set the widget value to
+        #    setattr(w, "value", str(getattr(owner, "compute_"+self.public_name)(owner)))
 
+            
+    def _update_text(self, obj):
+        setattr(obj, self.private_name_w+"value", str(getattr(obj, self.private_name_q)))
+    
+    
+    def __get__(self, obj, objtype):
+        # quantity never computed yet
+        for dep in self.deps_names:
+            # get the ref to the widget of the dependency
+            print('setting the callbacks')
+            getattr(obj, "_"+dep+"_w").observe(lambda e:self._update_text(obj), "value")
+        
+        if hasattr(obj, self.private_name_q):
+            return getattr(obj, self.private_name_q)
+        else:
+
+            print("trying to compute")
+            res = getattr(obj, "compute_"+self.public_name)()
+            setattr(obj, self.private_name_q, res)
+            setattr(obj, self.private_name_w, ipyw.Label(self.public_name + ":" + str(res)))
+            
+            return res
+    #def __get__(self, obj, objtype):
+    #    if hasattr(obj, self.private_name):
+    #        setattr(getattr(obj, self.private_name), "value", str(getattr(obj, "compute_"+self.public_name)()))
+    #    else:
+    #        print("create new widget")
+    #        setattr(obj, self.private_name, ipyw.Label(self.public_name + ":" + ""))
+    #    for dep in self.deps_names:
+    #        # get the ref to the widget of the dependency
+    #        print('setting the callbacks')
+    #        getattr(obj, "_"+dep+"_w").observe(self._update_text(obj), "value")
+    #    if not hasattr(obj, self.private_name):
+    #        res = getattr(obj, "compute_"+self.public_name)()
+    #        setattr(obj, self.private_name, ipyw.Label(self.public_name + ":" + str(res)))
+    #        return res
+#
+    #    return getattr(obj, "compute_"+self.public_name)()
+    
+    def __set__(self, obj, value):
+        if hasattr(obj, self.private_name_w):
+            # set the actual quantity value
+            setattr(obj, self.private_name_q, value)
+            self._update_text(obj)
+        else:
+            print("create new widget")
+            setattr(obj, self.private_name, ipyw.Label(self.public_name + ":" + str(value)))
+            
+        
 class QuantitySliderDescriptor():
+    
+    def __init__(self, min=None, max=None):
+        self.min =min
+        self.max = max
     
     def __set_name__(self, owner, name):
         # self.R
@@ -275,7 +362,16 @@ class QuantitySliderDescriptor():
 
     
     def __set__(self, obj, value):
-        setattr(obj, self.private_name, QuantityTextSlider(value, description=self.public_name))
+        # todo : find a way to not creat a new slider at each set
+        if hasattr(obj, self.private_name):
+            #print("setting value")
+            setattr(getattr(obj, self.private_name), "value", value)
+        else:
+            #print("create new widget")
+            setattr(obj, self.private_name, QuantityTextSlider(value,
+                                                           description=self.public_name,
+                                                          min=self.min,
+                                                          max=self.max))
         
     def __get__(self, obj, objtype=None):
         value = getattr(obj, self.private_name).value
@@ -290,28 +386,289 @@ class TraitletsRC():
         print(vars(vars(TraitletsRC(2*ohm, 2*F))["_R_w"]))
     """
     
-    R = QuantityDescriptor()
-    C = QuantitySliderDescriptor()
+    R = QuantitySliderDescriptor()
+    C = QuantitySliderDescriptor(min=0.01*F, max=200*F)
+    tau = QuantityLabelDescriptor(["R", "C"], "compute_tau")
 
     def __init__(self, R, C):
         self.R = R
         self.C = C
         
-    @property
-    def tau(self):
+    
+    def compute_tau(self):
         return self.R * self.C
     
+    def __repr__(self):
+        display(self._R_w)
+        display(self._C_w)
+        display(self._tau_w)
+        return ""
+    
 rc = TraitletsRC(2*ohm, 2*F)
-
+print(vars(rc).keys())
 print(rc.R, rc.C)
+print(rc.tau)
+#print(rc.tau)
 display(rc.R)
 display(rc.C)
+display(rc._C_w)
+rc
+```
+
+```python
+rc.R = 4*ohm
+```
+
+```python
+rc.tau
+```
+
+```python
+for i in vars(rc):
+    print(i)
+```
+
+```python
+class Observable():
+    
+    
+class ObservableQuantity(Quantity):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.callbacks = []
+        
+    def notify(self):
+        for cb in self.callbacks:
+            cb()
+        
+    def subscribe_callback(self, cb):
+        self.callbacks.append(cb)
+    
+    @Quantity.value.setter
+    def value(self, value):
+        if isinstance(value, (list, tuple)):
+            self._value = np.array(value)
+        else:
+            self._value = value
+        self.notify()    
+        
+    
+```
+
+```python
+
+```
+
+```python
+
+```
+
+```python
+class ObservableQuantity(traitlets.HasTraits):
+    quantity = traitlets.Instance(Quantity, allow_none=True)
+    
+    def __init__(self, q):
+        self.quantity = q
+        
+    def __repr__(self):
+        return repr(self.quantity)
+    def __str__(self):
+        return str(self.quantity)
+    
+    def 
+
+
+class RC():
+    def __init__(self, R, C):
+        self.R = ObservableQuantity(R)
+        self.C = ObservableQuantity(C)
+        
+        self.R.observe(self._update_tau(), "value")
+        self.C.observe(self._update_tau(), "value")
+
+    def _update_tau(self):
+        print("tau is now", self.tau())
+        
+    def tau(self):
+        return self.R * self.C
+
+
+rc = RC(2*ohm, 1*F)
+```
+
+```python
+obs_r.R = 4
+```
+
+```python
+class ObservableQuantity(Quantity):
+    
+    def __init__(self, *args, **kwargs):
+        self.callbacks = []
+        self.callbacks.append(lambda x:print("valuechanged", x))
+        super().__init__(*args, **kwargs)
+    
+    def register_callback_when_value_changes(self, cb):
+        self.callbacks.append(cb)
+    
+    def notify_change_in_value(self, change):
+        
+        for callback in self.callbacks:
+            callback(change)
+    
+    @Quantity.value.setter
+    def value(self, value):
+        # handle the initial setting value, we can't "get" it yet
+        try:
+            old = self.value
+        except:
+            old = "NotDefinedYet"
+        if isinstance(value, (list, tuple)):
+            self._value = np.array(value)
+        else:
+            self._value = value
+        change = {"old":old, "new":value}
+        self.notify_change_in_value(change)    
+        
+obs_r = ObservableQuantity(2, ohm.dimension)
+print(obs_r)
+print(obs_r*2, type(obs_r*2))
+```
+
+```python
+obs_r.register_callback_when_value_changes(lambda change:print("valuechanged !", change))
+```
+
+```python
+obs_r.value = 1
+```
+
+```python
+
+class ObservableQuantityDescriptor():
+    
+    def __init__(self, deps=[]):
+        self.deps = deps
+        
+    def __set_name__(self, owner, name):
+        # self.R
+        self.public_name = name
+        # actually refers to self._R_w
+        self.private_name = '_' + name + "_observable_proxy_descriptor"
+    
+    def __set__(self, obj, qvalue):
+        # if not ObservableQuantity exists already, where value is a quantity
+        if not hasattr(obj, self.private_name):
+            #print("setting value")
+            setattr(obj, self.private_name, qvalue)
+        # if a ObservableQuantity is there, overwrite it
+        else:
+            if not qvalue is getattr(obj, self.private_name):
+                old = getattr(obj, self.private_name)
+                new = qvalue
+                change = {"old":old, "new":new}
+                setattr(obj, self.private_name, new)
+                for dep in self.deps:
+                    getattr(obj, "compute_"+dep)(change)
+            else:
+                pass
+        if hasattr(obj, "_observables_dict"):
+            if self.public_name in obj._observables_dict:
+                return
+            else:
+                obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
+        else:
+            # create a list of the observables
+            setattr(obj, "_observables_dict", {})
+            obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
+
+            
+        
+    def __get__(self, obj, objtype=None):
+        if hasattr(obj, self.private_name):
+            # get the ObservableQuantity instance, so basically a Quantity
+            value = getattr(obj, self.private_name)
+            return value
+        # if it doesn't exist yet
+        else:
+            getattr(obj, "compute_"+self.public_name)({})
+            return getattr(obj, self.public_name)
+
+
+ms = units["ms"]
+        
+class RC():
+    
+    R = ObservableQuantityDescriptor(["tau"])
+    C = ObservableQuantityDescriptor(["tau"])
+    tau = ObservableQuantityDescriptor()
+    
+    def __init__(self, R, C):
+        self.R = R
+        self.C = C
+    
+    def compute_tau(self, change):
+        self.tau = self.R * self.C
+        self.tau.favunit = ms
+
+
+rc = RC(1*ohm, 1*F)
+print("First getting")
+print(rc.tau)
+
+print("second")
+rc.R = 2*ohm
+print(rc.C, rc.R, rc.tau)
+```
+
+```python
+rc._observables_dict
+```
+
+```python
+rc.tau
+```
+
+```python
+
+```
+
+```python
+print(rc.tau)
+```
+
+```python
+print(rc.C.favunit.symbol)
+```
+
+```python
+
+```
+
+```python
+rc.C = rc.C*2
+```
+
+```python
+print(rc.C)
 display(rc._C_w)
 ```
 
 ```python
-type(traitlets_rc._R)
-type(traitlets_rc._C_w)
+print(rc.C, rc.tau)
+```
+
+```python
+type(rc._R)
+type(rc._C_w)
+```
+
+```python
+display(rc._C_w)
+```
+
+```python
+print(rc.C)
 ```
 
 ```python

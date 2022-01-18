@@ -12,14 +12,17 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# # Wrapped function
+# A single class that wrap the function and a plot
+
 # %%
-# %matplotlib ipympl
+# %matplotlib widget
+
 from physipy import m, s
 from physipy.qwidgets.plot_ui import WrappedFunction1D
 from physipy.quantity.utils import name_eq
 
-
-# %%
 @name_eq("Myfunc")        
 def func(x1, x2, x3):
     return x1*x2 + 3 * x3
@@ -28,12 +31,23 @@ wf = WrappedFunction1D(func, 0*s, 5*s,
                        x2=(0*m, 5*m),
                        x3=(0*m*s, 5*m*s))
 
+print(wf(1, 2, 3))
+
+def add_integral():
+    p = wf.add_integral(1*s, 5*s)
 wf
 
 # %%
-wf.add_integral(1*s, 4*s)
+from radiopy.radiation import planck_spec_en_
+from physipy import units, K
 
-# %%
-wf.x2
+mum = units["mum"]
+wf = WrappedFunction1D(planck_spec_en_, 2*mum, 14*mum, 
+                       T=(250*K, 340*K),
+                       )
+
+p = wf.add_integral(3*mum, 5*mum)
+
+wf
 
 # %%
