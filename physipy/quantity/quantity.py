@@ -617,6 +617,13 @@ class Quantity(object):
         self.favunit = fav
         return self
 
+    def set_symbol(self, symbol):
+        """
+        To be used as one-line declaration for a favunit : my_period=(10*s).set_symbol("period")
+        """
+        self.symbol = symbol
+        return self
+    
     def ito(self, y):
         """in-place change of favunit."""
         self.favunit = y
