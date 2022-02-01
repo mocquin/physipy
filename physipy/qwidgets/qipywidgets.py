@@ -36,10 +36,11 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                  fixed_dimension=False,
                  placeholder="Type python expr",
                  favunit=None,
+                 add_context={},
                  **kwargs):
         
         # context for parsing
-        self.context = {**units, "pi":pi}
+        self.context = {**units, "pi":pi, **add_context}
 
         
         # set text widget
