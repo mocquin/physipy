@@ -1,18 +1,18 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %%
+```python
 import physipy
 from physipy import Dimension
 from fractions import Fraction
@@ -29,21 +29,21 @@ from physipy import s, m, sr, K, units, constants
 from physipy import quad
 import physipy
 import matplotlib.pyplot as plt
+```
 
-# %% [markdown]
-# # Calculus : numerical toolbox
+# Calculus : numerical toolbox
 
-# %% [markdown]
-# Some usefull numerical functions are provided, which basicaly consists in dimension-wrapped functions.
-# The wrapping operation is needed because no mean to hook the handling of Quantity object is avalaible (as it is for numpy's functions and ufuncs).
 
-# %% [markdown]
-# ## Integrate with quad
+Some usefull numerical functions are provided, which basicaly consists in dimension-wrapped functions.
+The wrapping operation is needed because no mean to hook the handling of Quantity object is avalaible (as it is for numpy's functions and ufuncs).
 
-# %% [markdown]
-# Lets integrate planck's law : [we know the expected result is $\sigma T^4/\pi$](https://en.wikipedia.org/wiki/Stefan%E2%80%93Boltzmann_law):
 
-# %%
+## Integrate with quad
+
+
+Lets integrate planck's law : [we know the expected result is $\sigma T^4/\pi$](https://en.wikipedia.org/wiki/Stefan%E2%80%93Boltzmann_law):
+
+```python
 # physical constants
 hp = constants["h"]
 c = constants["c"]
@@ -52,8 +52,9 @@ sigma = constants["Stefan_Boltzmann"]
 
 nm = units["nm"]
 mum = units["mum"]
+```
 
-# %%
+```python
 # blackbody at temperature 300K
 Tbb = 300*K
 
@@ -70,99 +71,106 @@ def planck_(lmbda):
 
 # expected value
 expected = sigma * Tbb**4 / (np.pi*sr)
+```
 
-# %%
+```python
 lmbda_start = 0.001*nm
 lmbda_stop = 1000*mum
 
 res, _ = quad(planck, lmbda_start, lmbda_stop)
+```
 
-# %%
+```python
 print(res)
 print(expected)
 print("error : ", res/expected-1)
+```
 
-# %% [markdown]
-# The convergence can be seen : 
+The convergence can be seen : 
 
-# %%
+```python
 integrands = []
 ech_stop = np.logspace(2, 4, 20)*mum
 ech_stop.favunit = mum
 for lmbda_stop in ech_stop:
     res, _ = quad(planck, lmbda_start, lmbda_stop)
     integrands.append(res)
+```
 
-# %%
+```python
 integrands = physipy.quantity.utils.list_of_Q_to_Q_array(integrands)
+```
 
-# %%
+```python
 from physipy import setup_matplotlib
 setup_matplotlib()
 
 plt.semilogx(ech_stop, integrands, "o", label="integral")
 plt.axhline(expected, label="expected value")
 plt.legend()
+```
 
+The processing time is quite longer with Quantities. Use this wrapper when speed is not mandatory.
 
-# %% [markdown]
-# The processing time is quite longer with Quantities. Use this wrapper when speed is not mandatory.
+```python
+%timeit quad(planck_, lmbda_start.value, lmbda_stop.value)
+%timeit quad(planck, lmbda_start, lmbda_stop)
+```
 
-# %%
-# %timeit quad(planck_, lmbda_start.value, lmbda_stop.value)
-# %timeit quad(planck, lmbda_start, lmbda_stop)
+Other writing possible:
 
-# %% [markdown]
-# Other writing possible:
-
-# %%
+```python
 def planck(lmbda, T):
     x = hp*c / (kB * T)
     return 2*hp*c**2/lmbda**5 * 1/(np.exp(x/lmbda)-1) /sr
 
 res, _ = quad(lambda lmbda: planck(lmbda, 300*K), lmbda_start, lmbda_stop)
 print(res)
+```
 
-# %% [markdown]
-# Other writing possible : 
+Other writing possible : 
 
-# %%
+```python
 res, _ = quad(planck, lmbda_start, lmbda_stop, args=(300*K,))
 print(res)
+```
 
-# %% [markdown]
-# ## Root solver
+## Root solver
 
-# %% [markdown]
-# A wrapper of `scipy.optimize.root`:
 
-# %%
+A wrapper of `scipy.optimize.root`:
+
+```python
 from physipy.quantity.calculus import root
 
 def toto(t):
     return -10*s + t
+```
 
-
-# %%
+```python
 print(root(toto, 0*s))
+```
 
-
-# %%
+```python
 def tata(t, p):
     return -10*s*p + t
 
 print(root(tata, 0*s, args=(0.5,)))
+```
 
-# %% [markdown]
-# A wrapper of `scipy.optimize.brentq`:
+A wrapper of `scipy.optimize.brentq`:
 
-# %%
+```python
 from physipy.quantity.calculus import brentq
+```
 
 
-# %%
+```python
 print(brentq(toto, -10*s, 10*s))
 print(brentq(tata, -10*s, 10*s, args=(0.5,)))
+```
 
 
-# %%
+```python
+
+```
