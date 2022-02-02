@@ -51,30 +51,32 @@ class ObservableQuantityDescriptor():
             # return the newly set value .toto
             return getattr(obj, self.public_name)
 
-
-ms = units["ms"]
         
-class RC():
-    
-    # to check the list of available observables : rc._observables_dict
-    R = ObservableQuantityDescriptor(["tau"])
-    C = ObservableQuantityDescriptor(["tau"])
-    tau = ObservableQuantityDescriptor()
-    
-    def __init__(self, R, C):
-        self.R = R
-        self.C = C
-    
-    def compute_tau(self, change):
-        self.tau = self.R * self.C
-        self.tau.favunit = ms
+if __name__ == "__main__":
+
+    ms = units["ms"]
+
+    class RC():
+
+        # to check the list of available observables : rc._observables_dict
+        R = ObservableQuantityDescriptor(["tau"])
+        C = ObservableQuantityDescriptor(["tau"])
+        tau = ObservableQuantityDescriptor()
+
+        def __init__(self, R, C):
+            self.R = R
+            self.C = C
+
+        def compute_tau(self, change):
+            self.tau = self.R * self.C
+            self.tau.favunit = ms
 
 
-rc = RC(1*ohm, 1*F)
-print("First getting")
-print(rc.tau)
+    rc = RC(1*ohm, 1*F)
+    print("First getting")
+    print(rc.tau)
 
-print("second")
-rc.R = 2*ohm
-print(rc.C, rc.R, rc.tau)
-rc._observables_dict
+    print("second")
+    rc.R = 2*ohm
+    print(rc.C, rc.R, rc.tau)
+    rc._observables_dict
