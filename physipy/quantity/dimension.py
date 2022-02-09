@@ -83,11 +83,11 @@ class DimensionError(Exception):
         """Init method of DimensionError class."""
         if binary:
             self.message = ("Dimension error : dimensions of "
-                            "operands are {} and {}, and are "
-                            "differents.").format(str(dim_1), str(dim_2))
+                            f"operands are {dim_1} and {dim_2}, and are "
+                            f"differents ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
         else:
-            self.message = ("Dimension error : dimension is {} "
-                            "but should be {}").format(str(dim_1), str(dim_2))
+            self.message = (f"Dimension error : dimension is {dim_1} "
+                            f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
 
     def __str__(self):
         """Str method of DimensionError class."""
@@ -244,7 +244,10 @@ class Dimension(object):
     def dimensionality(self):
         """Return the first dimensionality with same 
         dimension found in DIMENSIONALITY"""
-        return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
+        try:
+            return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
+        except:
+            return str(self)
 
     
 DIMENSIONLESS = Dimension(None)
@@ -273,6 +276,7 @@ def expand_dict_to_expr(dic, output_init=1):
 
 
 DIMENSIONALITY = {
+    "dimensionless":      Dimension(None),
     # Base dimension
     "length":             Dimension("L"),
     "mass":               Dimension("M"),
