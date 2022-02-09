@@ -124,9 +124,6 @@ print("Good fisrt : ", good.tau) # This is long the first time...
 print("Good second : ", good.tau) # ... but not the second time since neither R nor C have changed.
 
 # %% [markdown]
-# # Dependent model
-
-# %% [markdown]
 # This is another way to write a model with dependencies. Like the previous one, changing a parameter doesn't immediately triggger a computation of dependendant parameters, only at get-time.
 
 # %%
@@ -156,9 +153,6 @@ print(tc.tau)
 print(tc.tau)
 tc.R = 2*ohm
 print(tc.tau)
-
-# %%
-print(tc.children)
 
 # %% [markdown] tags=[]
 # # Better increase the number of MC samples rather than cross-product them
@@ -226,7 +220,10 @@ sns.heatmap(df.corr(), annot=True)
 # %%
 
 # %% [markdown]
-# # Using traitlets
+# # Dynamic models
+
+# %% [markdown]
+# ## Using traitlets and widgets
 
 # %% [markdown]
 # Lets try to make the RC model using traitlets
@@ -239,27 +236,6 @@ from physipy.qwidgets.qipywidgets import QuantityTextSlider, QuantityText
 F = units["F"]
 ohm = units["ohm"]
 
-
-
-class QuantityDescriptor():
-    def __init__(self, value):
-        self.value = value
-
-    def __set_name__(self, owner, name):
-        print("setting name for", name)
-        # self.R
-        self.public_name = name
-        # actually refers to self._R_w
-        self.private_name = '_' + name
-
-    def __set__(self, obj, value):
-        self.value = value
-#        setattr(obj, self.private_name, value)
-        
-    def __get__(self, obj, objtype=None):
-        return self.value
-        #value = getattr(obj, self.private_name)
-        #return value
     
 class QuantityLabelDescriptor():
     
@@ -414,91 +390,80 @@ rc.tau
 for i in vars(rc):
     print(i)
 
-
 # %%
-class Observable():
-    
-    
-class ObservableQuantity(Quantity):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.callbacks = []
-        
-    def notify(self):
-        for cb in self.callbacks:
-            cb()
-        
-    def subscribe_callback(self, cb):
-        self.callbacks.append(cb)
-    
-    @Quantity.value.setter
-    def value(self, value):
-        if isinstance(value, (list, tuple)):
-            self._value = np.array(value)
-        else:
-            self._value = value
-        self.notify()    
-        
+
     
 
 # %%
 
 # %%
 
+# %% [markdown] tags=[]
+# ## Dependent model
+# Using the acyclic module
+
 # %%
-class ObservableQuantity(traitlets.HasTraits):
-    quantity = traitlets.Instance(Quantity, allow_none=True)
+from physipy import units, set_favunit, s
+from physipy.quantity._acyclic_model import IndependentAttr, DeterminantAttr
+import numpy as np
+from numpy import exp
+ms = units["ms"]
+V = units["V"]
+F = units["F"]
+ohm = units["ohm"]
+
+
+class IRC2():
+    R  = IndependentAttr(1*ohm, 'R')
+    C  = IndependentAttr(1*F, 'C')
+    Ve = IndependentAttr(1*V, 'Ve')
+    u0 = IndependentAttr(0*V, 'u0')
     
-    def __init__(self, q):
-        self.quantity = q
-        
-    def __repr__(self):
-        return repr(self.quantity)
-    def __str__(self):
-        return str(self.quantity)
+    tau = DeterminantAttr(['R', 'C'], 'compute_tau', 'tau')
+    u = DeterminantAttr(['R', 'C', "Ve", "u0"], 'compute_u', 'u')
+
     
-    def 
-
-
-class RC():
-    def __init__(self, R, C):
-        self.R = ObservableQuantity(R)
-        self.C = ObservableQuantity(C)
+    def compute_tau(self):
+        self.tau = self.R * self.C
         
-        self.R.observe(self._update_tau(), "value")
-        self.C.observe(self._update_tau(), "value")
+    def compute_u(self):
+        self.u = (self.u0 - self.Ve)*exp(-3*s/self.tau) + self.Ve
 
-    def _update_tau(self):
-        print("tau is now", self.tau())
-        
-    def tau(self):
-        return self.R * self.C
-
-
-rc = RC(2*ohm, 1*F)
+# %% [markdown] tags=[]
+# ## ObservableQuanttity of its value
+#  - Standalone Quantity-Like class for a quantity
+#  - Update a quantity's ".value" will trigger callbacks.
 
 # %%
-obs_r.R = 4
+from physipy import units
+from physipy import Quantity
 
-
-# %%
 class ObservableQuantity(Quantity):
     
-    def __init__(self, *args, **kwargs):
-        self.callbacks = []
-        self.callbacks.append(lambda x:print("valuechanged", x))
+    def __init__(self, *args, cb_for_init=None, **kwargs):
+        self._callbacks = []
+        if cb_for_init is not None:
+            self._callbacks.append(cb_for_init)
         super().__init__(*args, **kwargs)
     
     def register_callback_when_value_changes(self, cb):
-        self.callbacks.append(cb)
+        """
+        Register a callback that will be called on value change.
+        """
+        self._callbacks.append(cb)
     
     def notify_change_in_value(self, change):
-        
-        for callback in self.callbacks:
+        """
+        Activate all callbacks that were registered.
+        """
+        for callback in self._callbacks:
             callback(change)
     
     @Quantity.value.setter
     def value(self, value):
+        """
+        Based on Quantity.value.setter
+        """
         # handle the initial setting value, we can't "get" it yet
         try:
             old = self.value
@@ -510,72 +475,35 @@ class ObservableQuantity(Quantity):
             self._value = value
         change = {"old":old, "new":value}
         self.notify_change_in_value(change)    
-        
-obs_r = ObservableQuantity(2, ohm.dimension)
+
+obs_r = ObservableQuantity(2, ohm.dimension, cb_for_init=lambda _:print("value changed"))
 print(obs_r)
-print(obs_r*2, type(obs_r*2))
+print(obs_r*2)
+print(obs_r**2 + obs_r**2)
 
-# %%
-obs_r.register_callback_when_value_changes(lambda change:print("valuechanged !", change))
-
-# %%
+obs_r.register_callback_when_value_changes(lambda change:print("valuechanged with change", change))
 obs_r.value = 1
 
+# %% [markdown]
+# ## ObservableQuantityDescriptor
+
+# %% [markdown]
+#  - Registering a Quantity by declaring the other quantities that should be updated.
+#  - Dependent tau is immediately computed and updated.
+#  - For class model that wraps several quantities
 
 # %%
-
-class ObservableQuantityDescriptor():
-    
-    def __init__(self, deps=[]):
-        self.deps = deps
-        
-    def __set_name__(self, owner, name):
-        # self.R
-        self.public_name = name
-        # actually refers to self._R_w
-        self.private_name = '_' + name + "_observable_proxy_descriptor"
-    
-    def __set__(self, obj, qvalue):
-        # if not ObservableQuantity exists already, where value is a quantity
-        if not hasattr(obj, self.private_name):
-            #print("setting value")
-            setattr(obj, self.private_name, qvalue)
-        # if a ObservableQuantity is there, overwrite it
-        else:
-            if not qvalue is getattr(obj, self.private_name):
-                old = getattr(obj, self.private_name)
-                new = qvalue
-                change = {"old":old, "new":new}
-                setattr(obj, self.private_name, new)
-                for dep in self.deps:
-                    getattr(obj, "compute_"+dep)(change)
-            else:
-                pass
-        if hasattr(obj, "_observables_dict"):
-            if self.public_name in obj._observables_dict:
-                return
-            else:
-                obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
-        else:
-            # create a list of the observables
-            setattr(obj, "_observables_dict", {})
-            obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
-
-            
-        
-    def __get__(self, obj, objtype=None):
-        if hasattr(obj, self.private_name):
-            # get the ObservableQuantity instance, so basically a Quantity
-            value = getattr(obj, self.private_name)
-            return value
-        # if it doesn't exist yet
-        else:
-            getattr(obj, "compute_"+self.public_name)({})
-            return getattr(obj, self.public_name)
-
+from physipy import units, s, set_favunit, setup_matplotlib
+setup_matplotlib()
+import numpy as np
+import matplotlib.pyplot as plt
+from physipy.quantity._observables_model import ObservableQuantityDescriptor
 
 ms = units["ms"]
-        
+ohm = units["ohm"]
+F = units["F"]
+V = units["V"]
+
 class RC():
     
     R = ObservableQuantityDescriptor(["tau"])
@@ -587,90 +515,147 @@ class RC():
         self.C = C
     
     def compute_tau(self, change):
+        print("updating tau with", change)
         self.tau = self.R * self.C
         self.tau.favunit = ms
 
-
+    @property
+    def _state(self):
+        return self._observables_dict
+        
 rc = RC(1*ohm, 1*F)
-print("First getting")
-print(rc.tau)
-
-print("second")
-rc.R = 2*ohm
+print("First getting tau")
 print(rc.C, rc.R, rc.tau)
 
-# %%
-rc._observables_dict
+print("Now changing R")
+rc.R = 2*ohm
+print("Second getting tau")
+print(rc.C, rc.R, rc.tau)
 
-# %%
-rc.tau
-
-# %%
-
-# %%
-print(rc.tau)
-
-# %%
-print(rc.C.favunit.symbol)
-
-# %%
-
-# %%
-rc.C = rc.C*2
-
-# %%
-print(rc.C)
-display(rc._C_w)
-
-# %%
-print(rc.C, rc.tau)
-
-# %%
-type(rc._R)
-type(rc._C_w)
-
-# %%
-display(rc._C_w)
-
-# %%
-print(rc.C)
-
-# %%
-print(traitlets_rc.tau)
-
-# %%
-traitlets_rc.tau
+print(rc._state)
 
 
 # %%
-class Subscriber():
-    def react_on_message(self):
-        pass
+# %matplotlib ipympl
 
-class Publisher():
-    def __init__(self):
-        self.subscribers = set()
-    def register_subscriber(self, who):
-        self.subscribers.add(who)
-    def dispatch(self, message):
-        for sub in self.subcribers:
-            sub.react_on_message(message)
+class RC_plot():
     
-class Both(Publisher, Subscriber):
-    def __init__(self, value):
-        super().__init__()
-        self.value = value
-    def __repr__(self):
-        return "<Observable/Observer" + str(self.value)+  ">"
+    R = ObservableQuantityDescriptor(["tau"])
+    C = ObservableQuantityDescriptor(["tau"])
+    tau = ObservableQuantityDescriptor(["response_val"])
+    response_val = ObservableQuantityDescriptor()
+    
+    def __init__(self, R, C, ech_t):
+        self.R = R
+        self.C = C
+        self.ech_t = ech_t
+    
+    def compute_tau(self, change):
+        print("updating tau with", change)
+        self.tau = self.R * self.C
+        self.tau.favunit = ms
+        
+    def compute_response_val(self, change):
+        print("updating response_line with", change)
+        self.response_val = self.response(self.ech_t)
+        try:
+            self.resp_line.set_ydata(self.response_val)
+        except:
+            pass
+        
+    @set_favunit(V)
+    def response(self, t):
+        return 1 - np.exp(-t/self.tau)
 
-R = Both(1*ohm)
-C = Both(1*F)
+    def plot(self):
+        fig, ax = plt.subplots()
+        self.fig = fig
+        self.ax = ax
+        
+        resp_line = self.ax.plot(self.ech_t, self.response_val)[0]
+        self.resp_line = resp_line
 
-tau = Both(None)
-R.register_subscriber(tau)
-C.register_subscriber(tau)
-
+    def get_descriptors(self):
+        for k, v in vars(rc).items():
+            if k.endswith("descriptor"):
+                print(k, v)
+        
+rc = RC_plot(1*ohm, 1*F, np.arange(10, step=0.01)*s)
+rc.plot()
 
 # %%
+rc.R = rc.R /2
+
+# %%
+for k, v in rc._observables_dict.items():
+    print(k, type(v))
+
+# %% [markdown] tags=[]
+# ## autocalc
+
+# %% [markdown]
+#  - https://medium.com/towards-data-science/create-a-simple-app-quickly-using-jupyter-notebook-312bdbb9d224
+#  - https://autocalc.readthedocs.io/en/latest/index.html
+#  - https://github.com/kefirbandi/autocalc
+#
+
+# %%
+import ipywidgets as widgets
+from autocalc.autocalc import Var
+import math
+
+a = Var('a', initial_value = 1, widget = widgets.FloatText())
+b = Var('b', initial_value = -3, widget = widgets.FloatText())
+c = Var('c', initial_value = 1, widget = widgets.FloatText())
+
+display(a); display(b); display(c)
+
+
+def Dfun(a, b, c):
+    try:
+        return math.sqrt(b*b-4*a*c)
+    except ValueError:
+        return math.nan
+
+def x1fun(a,b,D):
+    return (-b-D)/2/a
+def x2fun(a,b,D):
+    return (-b+D)/2/a
+
+
+D = Var('D', fun=Dfun, inputs=[a, b, c])
+x1 = Var('X1', fun=x1fun, inputs=[a, b, D], widget = widgets.FloatText(), read_only=True)
+x2 = Var('X2', fun=x2fun, inputs=[a, b, D], widget = widgets.FloatText(), read_only=True)
+display(x1)
+display(x2)
+
+# %%
+a = Var('a', initial_value = 1*m, widget = QuantityText())
+b = Var('b', initial_value = -3*m, widget = QuantityText())
+c = Var('c', initial_value = 1*m, widget = QuantityText())
+
+display(a); display(b); display(c)
+
+
+def Dfun(a, b, c):
+    try:
+        res = (b*b-4*a*c)**0.5
+        print(res)
+        return res
+    except ValueError:
+        return math.nan
+
+def x1fun(a,b,D):
+    res = (-b-D)/2/a
+    return res
+def x2fun(a,b,D):
+    return (-b+D)/2/a
+
+
+D = Var('D', fun=Dfun, inputs=[a, b, c])
+x1 = Var('X1', fun=x1fun, inputs=[a, b, D], widget = QuantityText(), read_only=True)
+x2 = Var('X2', fun=x2fun, inputs=[a, b, D], widget = QuantityText(), read_only=True)
+display(x1)
+display(x2)
 
 # %%

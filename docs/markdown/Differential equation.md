@@ -1,6 +1,7 @@
 ---
 jupyter:
   jupytext:
+    encoding: '# -*- coding: utf-8 -*-'
     text_representation:
       extension: .md
       format_name: markdown
@@ -338,6 +339,10 @@ $$y_{t+dt} - y_t \approx dt \frac{1}{2}\left( f(t, y(t)) + f(t+dt, y(t) + dt f(t
 This method introduces 2 sources of errors : 
 
 
+## Leap frog
+First you calculate the new positions based on the old velocity and the old acceleration. Then you calculate the new acceleration, which is only a function of the new position. And then you calculate the new velocities based on the old velocity and the average of old and new acceleration. 
+
+
 ## Runge-Kutta
 
 
@@ -349,6 +354,10 @@ This method introduces 2 sources of errors :
  - https://perso.crans.org/besson/publis/notebooks/Runge-Kutta_methods_for_ODE_integration_in_Python.html
  - https://www.physagreg.fr/methodes-numeriques/methodes-numeriques-euler-runge-kutta.pdf
  - https://femto-physique.fr/analyse-numerique/runge-kutta.php
+ - https://medium.com/intuition/dont-trust-runge-kutta-blindly-be392663fbe4
+
+
+Note that Runge-Kutta methods do not conserve energy : https://medium.com/intuition/dont-trust-runge-kutta-blindly-be392663fbe4
 
 
 This method is basically equivalent to Simpson's integral method, that approximate the function by a second-order polynom, ie a parabola, that has same values at bound and middle point.
@@ -391,5 +400,62 @@ def rk4(func, tk, _yk, _dt=0.01, **kwargs):
 
     # return an average of the derivative over tk, tk + dt
     return _yk + (_dt / 6) * (f1 + (2 * f2) + (2 * f3) + f4)
+```
+
+# Exapmple using Euler's explicit method
+
+```python
+# https://medium.com/towards-data-science/solving-non-linear-differential-equations-numerically-using-the-finite-difference-method-1532d0863755
+from physipy import m, s, kg, setup_matplotlib, rad, asqarray
+setup_matplotlib()
+import numpy as np
+import matplotlib.pyplot as plt
+
+N = 100         # in how much sub pieces we should break a 1sec interval
+T = 15        *s  # total duration of the simulation
+dt = 1*s / N      # dt
+g = 9.81      *m/s**2   # acceleration of gravity
+L = 1         *m  # pendulum rope length
+k = 0.8   *kg/s     # air resistance coefficient
+m = 1        *kg   # mass of the pendulum
+
+theta = [np.pi / 2 * rad]     # initial angle
+theta_dot = [0 * rad/s]         # initial angular velocity
+t = [0*s]
+
+for i in range(int(T/dt)):
+    theta_dot.append(theta_dot[-1] - theta_dot[-1] * dt * k / m - np.sin(theta[-1]) * dt * g / L*rad)
+    theta.append(theta_dot[-1] * dt + theta[-1])
+    t.append((i + 1) * dt)
+
+fig, axes = plt.subplots(2, sharex=True)
+axes[0].plot(asqarray(t), asqarray(theta), label='theta')
+axes[1].plot(asqarray(t), asqarray(theta_dot), label='theta dot')
+axes[0].legend()
+axes[1].legend()
+plt.show()
+```
+
+# Boundary ODE with shooting method
+The shooting methods are developed with the goal of transforming the ODE boundary value problems to an equivalent initial value problems.
+
+https://pythonnumericalmethods.berkeley.edu/notebooks/chapter23.01-ODE-Boundary-Value-Problem-Statement.html
+
+Consider a pin with temperature at x=0 T0 and x=L T_L, and ambiant temperature Ts.
+The heat equation is
+
+
+$$\frac{d^2T}{dx^2} -\alpha_1(T-T_s) - \alpha_2 (T^4)=0$$
+
+
+```python
+
+```
+
+```python
+
+```
+
+```python
 
 ```
