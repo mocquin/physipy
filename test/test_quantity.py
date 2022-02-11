@@ -1994,7 +1994,11 @@ class TestQuantity(unittest.TestCase):
         res = np.floor_divide.reduce(np.arange(10)*m)
         exp = np.floor_divide.reduce(np.arange(10))
         self.assertEqual(res, exp)
-    
+    def test_np_stride_sliding_window(self):
+        arr = np.arange(100).reshape(10, 10)*m
+        res = np.lib.stride_tricks.sliding_window_view(arr, (4,4))
+        exp = Quantity(np.lib.stride_tricks.sliding_window_view(arr, (4,4)), Dimension("L"))
+        
     
     def test_np_where(self):
         arr = np.arange(10)

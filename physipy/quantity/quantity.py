@@ -1299,6 +1299,12 @@ def np_rot90(m, k=1, axes=(0,1)):
 def np_alen(a):
     return np.alen(a.value)
 
+
+@implements(np.lib.stride_tricks.sliding_window_view)
+def np_lib_stride_tricks_sliding_window_view(x, *args, **kwargs):
+    raw = np.lib.stride_tricks.sliding_window_view(x.value, *args, **kwargs)
+    return Quantity(raw, x.dimension, favunit=x.favunit, symbol=x.symbol)
+
 #@implements(np.all)
 #def np_all(a, *args, **kwargs):
 #    # should dimension also be checked ?
