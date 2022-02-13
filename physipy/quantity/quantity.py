@@ -1586,6 +1586,14 @@ def np_convolve(a, v, *args, **kwargs):
     return Quantity(res, a.dimension * v.dimension)
 
 
+@implements(np.gradient)
+def np_gradient(f, *varargs, **kwargs):
+    if len(varargs)>1:
+        raise NotImplementedError("High dimension not implemented (but very doable")
+    dx = quantify(varargs[0])
+    f = quantify(f)
+    return Quantity(np.gradient(f.value, dx.value, **kwargs), f.dimension/dx.dimension)
+
 @implements(np.vstack)
 def np_vstack(tup):
     dim = tup[0].dimension

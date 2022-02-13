@@ -2000,7 +2000,17 @@ class TestQuantity(unittest.TestCase):
         exp = Quantity(np.lib.stride_tricks.sliding_window_view(arr, (4,4)), Dimension("L"))
         self.assertTrue(np.all(res==exp))
         
+    def test_np_gradient(self):
+        exp = Quantity(np.gradient(np.arange(10), 0.5), Dimension("L"))
+        res = np.gradient(np.arange(10)*m, 0.5)
+        self.assertTrue(np.all(res==exp))
         
+        
+        exp = np.gradient(np.arange(10), 0.5) # meters should simplify and return a plain arrays
+        res = np.gradient(np.arange(10)*m, 0.5*m)
+        self.assertTrue(np.all(res==exp))
+        
+                       
     
     def test_np_where(self):
         arr = np.arange(10)
