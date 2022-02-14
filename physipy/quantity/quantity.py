@@ -245,7 +245,7 @@ class Quantity(object):
                         symbol = self.symbol + '**' +str(power),
                        ).rm_dim_if_dimless()
 
-    def __neg__(self): return self * (-1)
+    def __neg__(self): return Quantity(-self.value, self.dimension, favunit=self.favunit)
     
     def __pos__(self): return self
     
