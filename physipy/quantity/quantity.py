@@ -1128,6 +1128,9 @@ def np_copy(a, **kwargs):
 # np.copyto todo
 # np.count_nonzero
 
+@implements(np.count_nonzero)
+def np_count_nonzero(a, *args, **kwargs):
+    return np.count_nonzero(a.value, *args, **kwargs)
 
 @implements(np.cross)
 def np_cross(a, b, **kwargs):

@@ -1999,7 +1999,11 @@ class TestQuantity(unittest.TestCase):
         res = np.lib.stride_tricks.sliding_window_view(arr*m, (4,4))
         exp = Quantity(np.lib.stride_tricks.sliding_window_view(arr, (4,4)), Dimension("L"))
         self.assertTrue(np.all(res==exp))
-        
+    def test_np_count_nonzero(self):
+        exp = np.count_nonzero(np.arange(10))
+        res = np.count_nonzero(np.arange(10)*m)
+        self.assertEqual(exp, res)
+    
     def test_np_gradient(self):
         exp = Quantity(np.gradient(np.arange(10), 0.5), Dimension("L"))
         res = np.gradient(np.arange(10)*m, 0.5)
