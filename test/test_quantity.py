@@ -1918,6 +1918,18 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.hstack((a, c))
             
+    def test_np_stack(self):
+        a = np.array([[1], [0.5], [3]])*m
+        b = np.array([[1], [0.5], [3]])*m
+        c = np.array([[1], [0.5], [3]])*K
+        
+        self.assertTrue(np.all(np.stack((a, a)) == np.stack((a.value, a.value))*m))
+        self.assertTrue(np.all(np.stack((a, b)) == np.stack((a.value, b.value))*m))
+        
+        with self.assertRaises(DimensionError):
+            np.stack((a, c))
+            
+                
     def test_np_roll(self):
         res = np.roll(np.arange(10)*m, 2)
         exp = [8, 9, 0, 1, 2, 3, 4, 5, 6, 7]*m

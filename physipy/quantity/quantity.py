@@ -1206,6 +1206,18 @@ def np_searchsorted(a, v, *args, **kwargs):
         raise DimensionError(a.dimension, v.dimension)
     return np.searchsorted(a.value, v.value, *args, **kwargs)
 
+@implements(np.stack)
+def np_stack(arrays, *args, **kwargs):
+    d = quantify(arrays[0]).dimension
+    ars = []
+    for ar in arrays:
+        qar = quantify(ar)
+        if qar.dimension ==d:
+            ars.append(qar.value)
+        else:
+            raise DimensionError(d, qar.dimension)
+    return Quantity(np.stack(ars, *args, **kwargs), d)
+
 @implements(np.dstack)
 def np_dstack(tup):
     dim = tup[0].dimension
