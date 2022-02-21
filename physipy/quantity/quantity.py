@@ -1218,6 +1218,15 @@ def np_stack(arrays, *args, **kwargs):
             raise DimensionError(d, qar.dimension)
     return Quantity(np.stack(ars, *args, **kwargs), d)
 
+@implements(np.insert)
+def np_insert(arr, obj, values, *args, **kwargs):
+    arr = quantify(arr)
+    values = quantify(values)
+    if not arr.dimension == values.dimension:
+        raise DimensionError(arr.dimension, values.dimension)
+    return Quantity(np.insert(arr.value, obj, values.value, *args, **kwargs), 
+                    arr.dimension, favunit=arr.favunit)
+
 @implements(np.dstack)
 def np_dstack(tup):
     dim = tup[0].dimension

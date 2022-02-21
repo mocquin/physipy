@@ -2020,12 +2020,18 @@ class TestQuantity(unittest.TestCase):
         exp = Quantity(np.gradient(np.arange(10), 0.5), Dimension("L"))
         res = np.gradient(np.arange(10)*m, 0.5)
         self.assertTrue(np.all(res==exp))
-        
-        
+
         exp = np.gradient(np.arange(10), 0.5) # meters should simplify and return a plain arrays
         res = np.gradient(np.arange(10)*m, 0.5*m)
         self.assertTrue(np.all(res==exp))
+
+    def test_np_insert(self):
+        exp = np.array([1, 2, 3, 4])*m
+        res = np.insert(np.array([1, 2, 4])*m, 2, 3*m)
+        self.assertTrue(np.all(exp==res))
         
+        with self.assertRaises(DimensionError):
+            np.insert(np.array([1, 2, 4])*m, 2, 3*s)
                        
     
     def test_np_where(self):
