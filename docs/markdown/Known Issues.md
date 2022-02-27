@@ -107,7 +107,7 @@ print(np.trapz(np.arange(5)*m))
 print(np.trapz(np.arange(5), x=np.arange(5)*m))
 print(np.trapz(np.arange(5), dx=5000*m, x=np.arange(5)*m)) #dx is silent
 # but not this
-#np.trapz(np.arange(5), dx=5000*m)
+np.trapz(np.arange(5), dx=5000*m)
 print("----uncomment above line to trigger exception")
 ```
 
@@ -145,6 +145,7 @@ arr
 
 ```python
 plt.hist(arr.value)
+plt.hist(arr)
 ```
 
 ```python
@@ -427,6 +428,76 @@ deg = units["deg"]
 a = 5*deg
 a.favunit = deg
 a
+```
+
+# Numpy full not triggered by array_function interface
+
+
+Get `TypeError: no implementation found for 'numpy.full' on types that implement __array_function__: [<class 'physipy.quantity.quantity.Quantity'>]`
+while it is implemented, so it seems its not triggered.
+
+This is a numpy bug : https://github.com/numpy/numpy/issues/21033
+
+```python
+from physipy import m
+import numpy as np
+
+np.full(3, m, like=m)
+```
+
+# Presence of "%" symbol in favunit
+
+```python
+from physipy import K
+import sympy as sp
+pc = 1/K
+pc.symbol = "%/K"
+
+q = 2*pc
+q.favunit = pc
+```
+
+```python
+pc.symbol
+```
+
+```python
+complemented = q._compute_complement_value().encode('unicode-escape').decode()
+complemented
+```
+
+```python
+a = sp.Symbol("a")
+b = sp.physics.units.percent #sp.Symbol("%")
+```
+
+```python
+a/b
+```
+
+```python
+((percent_transformer,) + standard_transformations )
+```
+
+```python
+import sympy as sp
+from sympy.parsing.sympy_parser import standard_transformations 
+
+def percent_transformer(tokens, local_dict, global_dict):
+    return [tok if tok != "%" else  sp.physics.units.percent for tok in tokens]
+
+sp.parsing.sympy_parser.parse_expr("%/K", transformations=((percent_transformer,) + standard_transformations))
+```
+
+```python
+sp.parsing.sympy_parser.parse_expr(complemented,
+                                   local_dict={"%":sp.physics.units.percent},
+                                   #evaluate=False, 
+                              )
+```
+
+```python
+
 ```
 
 ```python

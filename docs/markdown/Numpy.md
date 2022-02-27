@@ -123,6 +123,8 @@ print(np.meshgrid(q_arr, q_arr))
 print(np.fft.fft(q_arr))
 print(np.convolve(q_arr, q_arr))
 print(np.ravel(q_arr))
+print(np.std(q_arr))
+print(np.median(np.abs(q_arr-np.median(q_arr))))
 ```
 
 Reduce with ufuncs :

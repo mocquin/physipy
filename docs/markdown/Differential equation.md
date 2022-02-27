@@ -448,12 +448,316 @@ The heat equation is
 $$\frac{d^2T}{dx^2} -\alpha_1(T-T_s) - \alpha_2 (T^4)=0$$
 
 
-```python
 
+Exemple of the shooting with a shooting canon : we want the ball to be at height 50m at time 5s : 
+https://pythonnumericalmethods.berkeley.edu/notebooks/chapter23.02-The-Shooting-Method.html
+
+```python
+     
+                   
+ # Shooting method : turn a ODE into a root finding problem        
+                   
+import numpy as np
+import matplotlib.pyplot as plt
+
+from physipy import m, s, constants, units, setup_matplotlib, asqarray
+from physipy.integrate import solve_ivp as solve_ivp_q
+from physipy.optimize import root
+
+setup_matplotlib()
+g_acc = constants["g"]
+print(g_acc)
+
+%matplotlib inline
+
+NS = 200
+
+def F(t, Y):
+    """RHS of the equation where the left side is dY/dt
+    with Y=[y, v]"""
+    yp = Y[1]
+    ypp = -g_acc
+    return np.array([yp, ypp], dtype=object)
+
+
+t_span = np.linspace(0, 5, NS)*s
+# initial state vector
+Y0 = np.array([y0:=0*m,
+               v0:=25*m/s], dtype=object)
+# solution with guessed initial condition v0 at 25m/s
+sol = solve_ivp_q(F,
+                  [0, 5]*s, 
+                  Y0, 
+                  t_eval = t_span)
+
+fig, ax = plt.subplots(figsize = (10, 8))
+ax.plot(sol.t, sol.y[0],"-o", label=f"Arbitrary guess with initial speed={v0}")
+
+
+# notice that the initial position y0 is kept
+# also notice that while the vector state has 2 elements, the resolution
+# is made in 1D on the initial speed only
+def objective(v0):
+    sol = solve_ivp_q(F, 
+                      [0, 5]*s, 
+                      np.array([y0, 
+                                v0], dtype=object),
+                      t_eval = t_span)
+    # extract the y-vector giving the position along the time
+    y = sol.y[0]
+    # return the metric to find root : the last position vs the wanted last position at 50m
+    return y[-1] - 50*m
+
+# solve for the good initial speed, with initial guess at 10m/s
+v0_sol = root(objective, 10*m/s)
+
+# compute the full resolution along time given the right initial speed v0_sol
+final_sol = solve_ivp_q(F,
+                  [0, 5]*s,  
+                  np.array([y0, v0_sol], dtype=object),
+                  t_eval = t_span)
+
+ax.plot(final_sol.t, final_sol.y[0], "-o", label=f"Final solution with initial speed={v0_sol}")
+ax.legend()
+```
+
+# Finite difference method for Partial Differential Equation : Heat Equation
+
+
+https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a
+
+
+The heat equation is basicaly a partial differential equation that mixes time and space : 
+
+
+$$ \frac{\partial u}{\partial t} - \alpha \nabla u = 0 $$
+
+
+
+with $\alpha$ a diffusivity constant. More precisely in 2D : 
+
+
+$$\frac{\partial u}{\partial t} - \alpha \left( \frac{\partial^2 u}{\partial x^2} +  \frac{\partial^2 u}{\partial y^2}  \right) = 0$$
+
+
+
+Using Finite-Difference method simply consist in approximating the derivatives using small differences between values at small samples.
+
+
+Using finite-difference, we can rewrite the 2D heat equation : 
+
+
+$$\frac{u_{i,j}^{k+1} - u_{i,j}^k}{\Delta t} - \alpha \left( \frac{u_{i+1,j}^k - 2 u_{i,j}^k + u_{i-1,k}^k}{\Delta x^2} + \frac{u_{i,j+1}^k - 2 u_{i,j}^k + u_{i,k-1}^k}{\Delta y^2}  \right) = 0$$
+
+
+Suppose $\Delta x = \Delta y$, we can get : 
+$$u_{i,j}^{k+1} = \alpha\frac{\Delta t }{\Delta x^2}\left(u_{i+1,j}^k + u_{i-1,j}^k + u_{i,j+1}^k + u_{i,j-1}^k - 4 u_{i,j}^k  \right)+ u_{i,j}^k$$
+
+
+For numerical stability, we need : 
+$$\Delta t \le \frac{\Delta x^2}{4\alpha}$$
+
+
+Now about optimization of the loops : 
+notice that the equation to compute the temperature at time k+1 is a linear combination for other temperature points at time k. So this relation can be seen as a linear operation, and so can be writter with a convolution kernel. Picture the heat map at time k as a 2D image, and the heat map at time k+1 as another image that is the result of a convolution of the first image.
+Rewriting the equation with $\gamma = \alpha \frac{\Delta t}{\Delta x^2}$, we get : 
+$$u_{i,j}^{k+1} = \gamma u_{i+1,j}^k + \gamma u_{i-1,j}^k + \gamma u_{i,j+1}^k + \gamma u_{i,j-1}^k - 4 \gamma u_{i,j}^k +u_{i,j}^k$$
+The kernel can be seen as  :
+$$K = \begin{pmatrix}
+0 & \gamma & 0\\
+\gamma & 1-4\gamma & \gamma\\
+0 & \gamma & 0\\
+\end{pmatrix}
+$$
+with local heatmap =
+$$\begin{pmatrix}
+u_{i-1,j-1}^k & u_{i-1,j}^k & u_{i-1,j+1}^k\\
+u_{i,j-1}^k & u_{i,j}^k & u_{i,j+1}^k\\
+u_{i+1,j-1}^k & u_{i+1,j}^k & u_{i+1,j+1}^k\\
+\end{pmatrix}
+$$
+
+
+<!-- #region -->
+Remember the base equation for the sample located at (i,j) :
+$$u_{i,j}^{k+1} = \gamma u_{i+1,j}^k + \gamma u_{i-1,j}^k + \gamma u_{i,j+1}^k + \gamma u_{i,j-1}^k - 4 \gamma u_{i,j}^k +u_{i,j}^k$$
+
+
+This equation is true for all samples within the bounds (so not the ones on the first line, or last line, or first row, or last row). 
+Notice that there are 5 "u-variables", namely $
+u_{i+1,j}^k$, $u_{i-1,j}^k$, $u_{i,j+1}^k$, $u_{i,j-1}^k$, and $u_{i,j}^k$.
+
+Let's write : 
+ - `A = u[ k, 2:  , 1:-1]` to represent $u_{i+1,j}^k$
+ - `B = u[ k,  :-2, 1:-1]` to represent $u_{i-1,j}^k$
+ - `C = u[ k, 1:-1, 2:  ]` to represent $u_{i,j-1}^k$
+ - `D = u[ k, 1:-1,  :-2]` to represent $u_{i,j+1}^k$
+ - `E = u[ k, 1:-1, 1:-1]` to represent  $u_{i,j}^k$
+
+
+where the "1:-1" are here to left the bounds untouched, and k is there because we only use samples at time k to compute samples at time k+1. This way we can write that 
+
+$$u_{i,j}^{k+1} = \gamma A + \gamma B + \gamma C + \gamma D + (1-4\gamma) E$$
+
+And now, the operation of weight-averaging all samples with its neighborhood is done in one operation, for all samples.
+<!-- #endregion -->
+
+```python
+import numpy as np
+
+from physipy import m, units, s, K
+
+plate_length = 50 * m
+plate_width = 50 * m
+max_iter_time = 750 * s
+
+alpha = 2 * m**2/s
+delta_x = 1 * m
+
+nk, ni, nj = int(max_iter_time/s), int(plate_length/delta_x), int(plate_width/delta_x)
+
+delta_t = (delta_x ** 2)/(4 * alpha)
+
+# gamma is dimensionless
+gamma = (alpha * delta_t) / (delta_x ** 2)
+print(gamma)
 ```
 
 ```python
+# Boundary conditions
+u_top = 100.0 *K
+u_left = 0.0*K
+u_bottom = 0.0*K
+u_right = 0.0*K
 
+# Initial condition everywhere inside the grid
+u_initial = 0*K
+
+def initialize_u(nk, ni=ni, nj=nj):
+    
+    # Initialize solution: the grid of u(k, i, j)
+    u = np.ones((nk, ni, nj))*u_initial#np.full((nk, ni, nj), u_initial, like=K)
+
+    # Set the boundary conditions
+    u[:, 0, :] = u_top
+    u[:, :, 0] = u_left
+    u[:, -1, :] = u_bottom
+    u[:, :, -1] = u_right
+
+    return u
+initialize_u(nk)
+```
+
+```python
+# original code to compute heatmap at each space and time step
+def calculate(u):
+    nk, ni, nj = u.shape
+    for k in range(0, nk-1):
+        for i in range(1, ni-1):
+            for j in range(1, nj-1):
+                u[k + 1, i, j] = gamma * (u[k][i+1][j] + u[k][i-1][j] + u[k][i][j+1] + u[k][i][j-1] - 4*u[k][i][j]) + u[k][i][j]
+    return u
+
+# kernel for the convolution approach
+kernel = np.array([
+    [0, gamma, 0],
+    [gamma, 1-4*gamma, gamma],
+    [0, gamma, 0],
+])
+print(kernel)
+```
+
+```python
+# using convolution approach
+def calculate_faster(u):
+    nk, ni, nj = u.shape
+    for k in range(0, nk-1):
+        # we get a 4D array that contains all possible 3x3 local heatmaps at time k
+        local_maps = np.lib.stride_tricks.sliding_window_view(@u[k], (3,3))
+        # sum the product of the kernel and each map
+        # and sum each local map
+        result = np.sum(kernel * local_maps, axis=(2,3))
+        # set the newly computed heatmap at time k+1
+        u[k+1, 1:-1, 1:-1] = result
+    return u
+    
+
+# compute result with each method...
+u1 = calculate(initialize_u(nk))
+u2 = calculate_faster(initialize_u(nk))
+# check that they output the same results
+np.all(u1==u2)
+```
+
+```python
+print(np.max(np.abs(u1-u2)))
+```
+
+```python
+# and check how much faster the sliding window is compared to nested loops
+%timeit calculate(initialize_u(nk))
+%timeit calculate_faster(initialize_u(nk))
+```
+
+```python
+# using indexing approach
+def calculate_even_faster(u):
+    nk, ni, nj = u.shape
+    for k in range(0, nk-1):
+        A = u[k, 2:  , 1:-1]
+        B = u[k,  :-2, 1:-1]
+        C = u[k, 1:-1, 2:  ]
+        D = u[k, 1:-1,  :-2]
+        E = u[k, 1:-1, 1:-1]
+        result = gamma * (A+B+C+D-4*E) + E 
+        # set the newly computed heatmap at time k+1
+        u[k+1, 1:-1, 1:-1] = result
+    return u
+    
+# compute results and check it gives the same as before
+u3 = calculate_even_faster(initialize_u(nk))
+np.all(u3 == u1)
+```
+
+```python
+# and check again how much faster this method is
+%timeit calculate_even_faster(initialize_u(nk))
+```
+
+```python
+# create new map and display result
+u3 = calculate_even_faster(initialize_u(750, 100, 100))
+
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(8,6))
+mappable = ax.imshow(u3[-1], interpolation=None, cmap=plt.cm.jet)
+fig.colorbar(mappable, label="Temperature (°C)")
+ax.set_xlabel("x samples")
+ax.set_xlabel("y samples")
+fig.suptitle("Temperature map at final time")
+fig.tight_layout()
+```
+
+# Gradient
+
+
+Numpy's gradient : The gradient is computed using second order accurate central differences in the interior points and either first or second order accurate one-sides (forward or backwards) differences at the boundaries. The returned gradient hence has the same shape as the input array.
+
+```python
+import numpy as np
+from physipy import m
+```
+
+```python
+f = np.array([1, 2, 4, 7, 11, 16], dtype=float)
+print(np.gradient(f))
+print(np.gradient(f, 0.5))
+```
+
+```python
+f = np.array([1, 2, 4, 7, 11, 16], dtype=float) * m
+print(np.gradient(f, 0.5))
+print(np.gradient(f, 0.5*m))
 ```
 
 ```python
