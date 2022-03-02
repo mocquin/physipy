@@ -99,6 +99,7 @@ print(w.value)
 
 ```python
 print(w.value)
+print(w.dimension)
 #print(w.description)
 ```
 

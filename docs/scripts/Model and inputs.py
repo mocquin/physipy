@@ -22,7 +22,7 @@
 # %%
 
 # %% [markdown]
-# # Defining a set of inputs for a model
+# # Using numpy/broadcasting : defining a set of inputs for a model
 
 # %%
 from physipy import m, s, K, kg
@@ -68,24 +68,15 @@ some_metric
 # %% [markdown]
 # Let's make a simply RC model :
 
+# %% [markdown]
+# ## Using a builtin decorator `cached_property_depends_on`
+
 # %%
 import time
 from functools import lru_cache
 from operator import attrgetter
 
-def cached_property_depends_on(*args):
-    """
-    From https://stackoverflow.com/questions/48262273/python-bookkeeping-dependencies-in-cached-attributes-that-might-change
-    """
-    attrs = attrgetter(*args)
-    def decorator(func):
-        _cache = lru_cache(maxsize=None)(lambda self, _: func(self))
-        def _with_tracked(self):
-            return _cache(self, attrs(self))
-        return property(_with_tracked, doc=func.__doc__)
-    return decorator
-
-import time
+from physipy.quantity.utils import cached_property_depends_on
 
 class BADTimeConstantRC:
     
@@ -122,6 +113,9 @@ print("Bad second : ", bad.tau) # ... but also the second time !
 good = GOODTimeConstantRC(ohm, Farad)
 print("Good fisrt : ", good.tau) # This is long the first time...
 print("Good second : ", good.tau) # ... but not the second time since neither R nor C have changed.
+
+# %% [markdown]
+# ## using the acylic_model
 
 # %% [markdown]
 # This is another way to write a model with dependencies. Like the previous one, changing a parameter doesn't immediately triggger a computation of dependendant parameters, only at get-time.
@@ -219,7 +213,7 @@ sns.heatmap(df.corr(), annot=True)
 
 # %%
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Dynamic models
 
 # %% [markdown]
@@ -232,7 +226,7 @@ sns.heatmap(df.corr(), annot=True)
 import traitlets
 import ipywidgets as ipyw
 from physipy import units, s, Quantity
-from physipy.qwidgets.qipywidgets import QuantityTextSlider, QuantityText
+from physipy.qwidgets.qipywidgets import QuantityTextSlider, QuantityText, QuantitySliderDescriptor
 F = units["F"]
 ohm = units["ohm"]
 
@@ -249,9 +243,9 @@ class QuantityLabelDescriptor():
         # self.R
         self.public_name = name
         # actually refers to self._R_w
-        self.private_name_w= '_' + name + "_w"
+        self.private_name_w=  name + "_w"
         # 
-        self.private_name_q = "_" + name + "_q"
+        self.private_name_q = name + "_q"
         
         ## if widget already exists
         #if hasattr(owner, self.private_name):
@@ -275,7 +269,7 @@ class QuantityLabelDescriptor():
         for dep in self.deps_names:
             # get the ref to the widget of the dependency
             print('setting the callbacks')
-            getattr(obj, "_"+dep+"_w").observe(lambda e:self._update_text(obj), "value")
+            getattr(obj, dep+"_w").observe(lambda e:self._update_text(obj), "value")
         
         if hasattr(obj, self.private_name_q):
             return getattr(obj, self.private_name_q)
@@ -313,35 +307,8 @@ class QuantityLabelDescriptor():
             print("create new widget")
             setattr(obj, self.private_name, ipyw.Label(self.public_name + ":" + str(value)))
             
-        
-class QuantitySliderDescriptor():
-    
-    def __init__(self, min=None, max=None):
-        self.min =min
-        self.max = max
-    
-    def __set_name__(self, owner, name):
-        # self.R
-        self.public_name = name
-        # actually refers to self._R_w
-        self.private_name = '_' + name + "_w"
 
-    
-    def __set__(self, obj, value):
-        # todo : find a way to not creat a new slider at each set
-        if hasattr(obj, self.private_name):
-            #print("setting value")
-            setattr(getattr(obj, self.private_name), "value", value)
-        else:
-            #print("create new widget")
-            setattr(obj, self.private_name, QuantityTextSlider(value,
-                                                           description=self.public_name,
-                                                          min=self.min,
-                                                          max=self.max))
-        
-    def __get__(self, obj, objtype=None):
-        value = getattr(obj, self.private_name).value
-        return value
+
         
 class TraitletsRC():
     """
@@ -365,9 +332,9 @@ class TraitletsRC():
         return self.R * self.C
     
     def __repr__(self):
-        display(self._R_w)
-        display(self._C_w)
-        display(self._tau_w)
+        display(self.R_w)
+        display(self.C_w)
+        display(self.tau_w)
         return ""
     
 rc = TraitletsRC(2*ohm, 2*F)
@@ -377,7 +344,7 @@ print(rc.tau)
 #print(rc.tau)
 display(rc.R)
 display(rc.C)
-display(rc._C_w)
+display(rc.C_w)
 rc
 
 # %%
@@ -390,16 +357,8 @@ rc.tau
 for i in vars(rc):
     print(i)
 
-# %%
-
-    
-
-# %%
-
-# %%
-
 # %% [markdown] tags=[]
-# ## Dependent model
+# ## Using acyclic_model : dependent model
 # Using the acyclic module
 
 # %%
@@ -430,7 +389,7 @@ class IRC2():
         self.u = (self.u0 - self.Ve)*exp(-3*s/self.tau) + self.Ve
 
 # %% [markdown] tags=[]
-# ## ObservableQuanttity of its value
+# ## ObservableQuanttity of its value : observable pattern
 #  - Standalone Quantity-Like class for a quantity
 #  - Update a quantity's ".value" will trigger callbacks.
 
@@ -484,8 +443,13 @@ print(obs_r**2 + obs_r**2)
 obs_r.register_callback_when_value_changes(lambda change:print("valuechanged with change", change))
 obs_r.value = 1
 
+# %%
+print(obs_r)
+print(obs_r*2, type(obs_r*2))
+print(obs_r+obs_r, type(obs_r+obs_r))
+
 # %% [markdown]
-# ## ObservableQuantityDescriptor
+# ## Using a descriptor approach
 
 # %% [markdown]
 #  - Registering a Quantity by declaring the other quantities that should be updated.
@@ -584,6 +548,9 @@ rc = RC_plot(1*ohm, 1*F, np.arange(10, step=0.01)*s)
 rc.plot()
 
 # %%
+rc.R
+
+# %%
 rc.R = rc.R /2
 
 # %%
@@ -591,10 +558,12 @@ for k, v in rc._observables_dict.items():
     print(k, type(v))
 
 # %% [markdown] tags=[]
-# ## autocalc
+# ## Using autocalc
 
 # %% [markdown]
-#  - https://medium.com/towards-data-science/create-a-simple-app-quickly-using-jupyter-notebook-312bdbb9d224
+# Not working out of the box for physipy, but could be done with a little work.
+#
+# - https://medium.com/towards-data-science/create-a-simple-app-quickly-using-jupyter-notebook-312bdbb9d224
 #  - https://autocalc.readthedocs.io/en/latest/index.html
 #  - https://github.com/kefirbandi/autocalc
 #
@@ -657,5 +626,8 @@ x1 = Var('X1', fun=x1fun, inputs=[a, b, D], widget = QuantityText(), read_only=T
 x2 = Var('X2', fun=x2fun, inputs=[a, b, D], widget = QuantityText(), read_only=True)
 display(x1)
 display(x2)
+
+# %% [markdown]
+# ## pyqtgraph parameter tree
 
 # %%
