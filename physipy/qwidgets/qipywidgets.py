@@ -493,5 +493,39 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         
         
+
+class QuantitySliderDescriptor():
+    
+    def __init__(self, min=None, max=None):
+        self.min =min
+        self.max = max
+    
+    def __set_name__(self, owner, name):
+        # self.R
+        self.public_name = name
+        # actually refers to self._R_w
+        self.private_name = name + "_w"
+
+    
+    def __set__(self, obj, value):
+        # todo : find a way to not creat a new slider at each set
+        if hasattr(obj, self.private_name):
+            #print("setting value")
+            setattr(getattr(obj, self.private_name), "value", value)
+        else:
+            #print("create new widget")
+            setattr(obj, self.private_name, QuantityTextSlider(value,
+                                                           description=self.public_name,
+                                                          min=self.min,
+                                                          max=self.max))
         
+    def __get__(self, obj, objtype=None):
+        if hasattr(obj, self.private_name):
+            value = getattr(obj, self.private_name).value
+            return value
+        else:
+            setattr(obj, self.private_name, QuantityTextSlider(description=self.public_name,
+                                                          min=self.min,
+                                                          max=self.max))
+            
         
