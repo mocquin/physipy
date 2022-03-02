@@ -192,7 +192,7 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
 
     
-    def __init__(self, value=0.0, min=None, max=None, step=None, disabled=False, 
+    def __init__(self, value=None, min=None, max=None, step=None, disabled=False, 
                  continuous_update=True, description="Quantity:",
                  fixed_dimension=False, label=True, favunit=None,#placeholder="Type python expr",
                  **kwargs):
@@ -202,7 +202,12 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         # quantity work
         # set dimension
-        value = quantify(value)
+        if value is not None:
+            value = quantify(value)
+        elif min is not None:
+            value = min*1 # to reset favunit
+        else:
+            value = 0.0
         self.dimension = value.dimension
         # if true, any change in value must have same dimension as initial dimension
         self.fixed_dimension = fixed_dimension
