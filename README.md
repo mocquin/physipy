@@ -100,6 +100,13 @@ Astropy's base units : https://docs.astropy.org/en/stable/units/standard_units.h
 
 ## Alternative packages
 
+A quick performance benchmark show that physipy is just as fast (or faster) than other well-known physical packages, both when computing scalars (int or float) and numpy arrays :  
+![](./docs/notebooks/ressources/performance_alternative_packages.png)
+
+For a more in-depth comparison, checkout this repository (not maintenained be it should!) : https://github.com/mocquin/quantities-comparison : 
+![](./docs/notebooks/ressources/quantites-comparison.png)
+
+
 There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
 
  - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
