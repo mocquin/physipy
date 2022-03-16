@@ -24,7 +24,9 @@ from physipy.qwidgets.qipywidgets import (
     QuantitySlider, 
     QuantityTextSlider,
     QuantityRangeSlider,
-    FavunitDropdown)
+    FavunitDropdown,
+    QuantityTextWithFavunitDropdown
+)
 
 mm = units["mm"]
 a = 4*m
@@ -42,6 +44,8 @@ qts = QuantityTextSlider(a**0.5, description="Text-Slider")
 qrs = QuantityRangeSlider(a, 10*a, label=True, description="Range-Slider")
 # Dropdown
 favunit_dd = FavunitDropdown()
+# Quantity text with Favunit dropdown
+qt_wfavunit = QuantityTextWithFavunitDropdown(a**2)
 
 ipyw.VBox([
     qt, 
@@ -49,6 +53,7 @@ ipyw.VBox([
     qts,
     qrs,
     favunit_dd,
+    qt_wfavunit,
 ])
 ```
 
@@ -99,7 +104,6 @@ print(w.value)
 
 ```python
 print(w.value)
-print(w.dimension)
 #print(w.description)
 ```
 

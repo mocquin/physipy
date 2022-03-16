@@ -505,7 +505,38 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         
         
         
+class QuantityTextWithFavunitDropdown(QuantityText):
+    """
+    Wraps a QuantitText and a FavunitDropdown
+    Remembering that : 
+        QuantityText has traits : 
+            - dimension
+            - value
+            - favunit
+        FavunitDropdown : 
+            - dimension
+            - value : the favunit
+    So we should be able to link the favunit 
+    """
+    def __init__(self, *args, **kwargs):
         
+        # Create a dropdown widget
+        self.ddw = FavunitDropdown()
+        super().__init__(*args, **kwargs)
+        
+        # Link the favunits
+        ipyw.link((self, "favunit"), (self.ddw, "value"))
+
+        # Boxing widgets together
+        self.children = [self.text, self.ddw]
+        
+    #def update_qfavunit(self, change):
+    #    self.favunit = self.ddw.units[change["new"]]
+    #    self.value.favunit=self.favunit
+    #    self.text.value = str(self.value)
+        
+        
+    
         
 
 class QuantitySliderDescriptor():
