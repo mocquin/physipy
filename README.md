@@ -46,11 +46,20 @@ The implementation is pretty simple :
 
 
 ## Numpy's support
-See [NEP35](https://numpy.org/neps/nep-0035-array-creation-dispatch-with-array-function.html#nep35).
+
+Numpy is almost fully and transparently handled in physipy : basic operations, indexing, numpy functions and universal functions are handled. There are more than 150 functions implemented ! Some limitation still exist but can be can be circumvented.
+See the dedicated notebook : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb).
 
 ## Known issues
 
 See the dedicated notebook.
+
+## Benchmark
+Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :
+
+[![./docs/notebooks/ressources/asv_screenshot.png](./docs/notebooks/ressources/asv_screenshot.png)](https://mocquin.github.io/physipy/)
+
+See also the corresponding notebook at : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Benchmarking%20with%20AirSpeedVelocity.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Benchmarking%20with%20AirSpeedVelocity.ipynb).  
 
 ## About angles and units
 
