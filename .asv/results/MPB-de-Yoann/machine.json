@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Core(TM) i7-5557U CPU @ 3.10GHz",
+    "machine": "MPB-de-Yoann",
+    "num_cpu": "4",
+    "os": "macOS Mojave 10.14.5",
+    "ram": "17179869184",
+    "version": 1
+}
