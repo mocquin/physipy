@@ -139,11 +139,20 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         self.value.favunit = self.favunit
         # now set text with favunit set
         self.text.value = f'{str(self.value)}' # self.value.favunit is used here
+        
+    @traitlets.observe("favunit")
+    def _update_display_val_on_favunit_change(self, proposal):
+        self.value.favunit = self.favunit
+        self.text.value = f'{str(self.value)}' # self.value.favunit is used here
+
 
         
     # helper to validate value the value if fixed dimension
     @traitlets.validate('value')
     def _valid_value(self, proposal):
+        # try to cast the proposal value to a Quantity
+       # if not isinstance(proposal["value"], Quantity):
+       #     proposal["value"] = quantify(proposal['value'])
         if self.fixed_dimension and proposal['value'].dimension != self.dimension:
             raise TraitError('Dimension between old and new value should be consistent.')
         return proposal['value']
