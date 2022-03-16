@@ -69,17 +69,22 @@ x.favunit = ms # no need to call ax.xaxis.set_units(ms)
 fig, ax = plt.subplots()
 ax.plot(x, y)
 ```
-![](./docs/notebooks/ressources/matplotlib_plot_with_units.png)
+
+<img src="./docs/notebooks/ressources/matplotlib_plot_with_units.gif" height="200px" />
+
+
 Checkout the [dedicated notebook on matplotlib support](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Plotting%20with%20matplotlib.ipynb).
 
 
 ## Widgets
 
 Some ipywidgets are provided to make your physical researches and results more interactive :
-![](./docs/notebooks/ressources/widgets_examples.png)
+
+<img src="./docs/notebooks/ressources/widgets_examples.gif" height="200px" />
+
 Checkout the [dedicated notebook on ipywidgets](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Widgets.ipynb).
 
-![](./docs/notebooks/ressources/widget_function.gif)
+<img src="./docs/notebooks/ressources/widget_function.gif" height="200px" />
 
 
 ## Known issues
@@ -101,10 +106,13 @@ Astropy's base units : https://docs.astropy.org/en/stable/units/standard_units.h
 ## Alternative packages
 
 A quick performance benchmark show that physipy is just as fast (or faster) than other well-known physical packages, both when computing scalars (int or float) and numpy arrays :  
-![](./docs/notebooks/ressources/performance_alternative_packages.png)
+
+<img src="./docs/notebooks/ressources/performance_alternative_packages.png" height="200px" />
+
 
 For a more in-depth comparison, checkout this repository (not maintenained be it should!) : https://github.com/mocquin/quantities-comparison : 
-![](./docs/notebooks/ressources/quantites-comparison.png)
+
+<img src="./docs/notebooks/ressources/quantites-comparison.png" height="200px" />
 
 
 There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
