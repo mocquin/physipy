@@ -34,7 +34,7 @@ Basic creation of dimension-full arrays :
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import pi
+
 import physipy
 from physipy import m, s, Quantity, Dimension, rad
 ```
@@ -60,10 +60,15 @@ print(1/x_samples)
 
 ## Comparison
 
+
+Comparison is allowed only for quantities that have the same units : 
+
 ```python
+# allowed
 print(x_samples > 1.5*m)
 
 try: 
+    # not allowed
     x_samples > 1.5*s
 except Exception as e:
     print(e)
@@ -142,6 +147,9 @@ print(np.multiply.reduce(q))
 ```
 
 ## Indexing
+
+
+Indexing works just like with regular numpy arrays : 
 
 ```python
 big_arr = np.arange(20).reshape(4,5)*s
