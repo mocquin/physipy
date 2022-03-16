@@ -42,7 +42,7 @@
         "warmup_time": -1
     },
     "benchmarks.BasicPhysipy.time_QuantityCreationByArray": {
-        "code": "class BasicPhysipy:\n    def time_QuantityCreationByArray(self):\n        q = np.arange(10) * m\n\n    def setup(self):\n        self.arr = np.arange(10)",
+        "code": "class BasicPhysipy:\n    def time_QuantityCreationByArray(self):\n        q = self.arr * m\n\n    def setup(self):\n        self.arr = np.arange(10)",
         "min_run_count": 2,
         "name": "benchmarks.BasicPhysipy.time_QuantityCreationByArray",
         "number": 0,
@@ -54,7 +54,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "da52926318a40b666a67d0faf07d26927d5ecba03d70324916a359b1004f0d51",
+        "version": "30831440b7877bdb6cc9d5a18f95030f969bef1785464ef22c0f2917b5cd047f",
         "warmup_time": -1
     },
     "benchmarks.BasicPhysipy.time_QuantityCreationByExpr": {
