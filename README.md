@@ -70,7 +70,7 @@ fig, ax = plt.subplots()
 ax.plot(x, y)
 ```
 
-<img src="./docs/notebooks/ressources/matplotlib_plot_with_units.gif" height="200px" />
+<img src="./docs/notebooks/ressources/matplotlib_plot_with_units.png" height="200px" />
 
 
 Checkout the [dedicated notebook on matplotlib support](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Plotting%20with%20matplotlib.ipynb).
@@ -80,7 +80,7 @@ Checkout the [dedicated notebook on matplotlib support](https://github.com/mocqu
 
 Some ipywidgets are provided to make your physical researches and results more interactive :
 
-<img src="./docs/notebooks/ressources/widgets_examples.gif" height="200px" />
+<img src="./docs/notebooks/ressources/widgets_examples.png" height="200px" />
 
 Checkout the [dedicated notebook on ipywidgets](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Widgets.ipynb).
 
