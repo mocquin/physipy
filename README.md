@@ -50,6 +50,38 @@ The implementation is pretty simple :
 Numpy is almost fully and transparently handled in physipy : basic operations, indexing, numpy functions and universal functions are handled. There are more than 150 functions implemented ! Some limitation still exist but can be can be circumvented.
 See the dedicated notebook : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb).
 
+## Matplotlib's units support
+
+Matplotlib allows defining a physical units interface, which can be turned on using just `setup_matplotlib`, all plot involving a physical quantity will automatically label the axis accordingly : 
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from physipy import s, m, units, setup_matplotlib
+setup_matplotlib() # make matplotlib physipy's units aware
+mm = units["mm"]   # get millimiter
+ms = units["ms"]   # get millisecond
+
+y = np.linspace(0, 30) * mm
+x = np.linspace(0, 5) * s
+y.favunit = mm # no need to call ax.yaxis.set_units(mm)
+x.favunit = ms # no need to call ax.xaxis.set_units(ms)
+
+fig, ax = plt.subplots()
+ax.plot(x, y)
+```
+![](./docs/notebooks/ressources/matplotlib_plot_with_units.png)
+Checkout the [dedicated notebook on matplotlib support](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Plotting%20with%20matplotlib.ipynb).
+
+
+## Widgets
+
+Some ipywidgets are provided to make your physical researches and results more interactive :
+![](./docs/notebooks/ressources/widgets_examples.png)
+Checkout the [dedicated notebook on ipywidgets](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Widgets.ipynb).
+
+![](./docs/notebooks/ressources/widget_function.gif)
+
+
 ## Known issues
 
 See the dedicated notebook.

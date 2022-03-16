@@ -199,15 +199,20 @@ print(ax.xaxis.get_units())
 If the Quantity objects that are called in `ax.plot` have favunit, it will be used by default as the axis's unit.
 
 ```python
+import numpy as np
+import matplotlib.pyplot as plt
+from physipy import s, m, units, setup_matplotlib
+setup_matplotlib() # make matplotlib physipy's units aware
+mm = units["mm"]   # get millimiter
+ms = units["ms"]   # get millisecond
+
 y = np.linspace(0, 30) * mm
 x = np.linspace(0, 5) * s
 y.favunit = mm # no need to call ax.yaxis.set_units(mm)
 x.favunit = ms # no need to call ax.xaxis.set_units(ms)
 
 fig, ax = plt.subplots()
-ax.plot(x, y, 'tab:blue')
-ax.axhline(0.02 * m, color='tab:red')
-ax.axvline(500*ms, color='tab:green')
+ax.plot(x, y,)
 ```
 
 <!-- #region tags=[] -->
