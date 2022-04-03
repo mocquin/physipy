@@ -13,9 +13,14 @@
 # ---
 
 # %% [markdown]
-# https://en.wikipedia.org/wiki/Observer_pattern#Python
-# https://en.wikipedia.org/wiki/Reactive_programming
-# https://stackoverflow.com/questions/6190468/how-to-trigger-function-on-value-change
+#  - https://en.wikipedia.org/wiki/Observer_pattern#Python
+#  - https://en.wikipedia.org/wiki/Reactive_programming
+#  - https://stackoverflow.com/questions/6190468/how-to-trigger-function-on-value-change
+#  - https://www.python.org/doc/essays/graphs/ 
+#  - https://stackoverflow.com/questions/48336820/using-decorators-to-implement-observer-pattern-in-python3
+#  - https://github.com/victorcmoura/notifyr/tree/master/notifyr
+#  - https://codereview.stackexchange.com/questions/253675/a-python-decorator-for-an-observable-property-that-notifies-observers-when-th/253714#253714?newreg=04c9ad06b7164ef9b8fc4a7f32af2ee9
+#
 
 # %%
 
@@ -71,6 +76,12 @@ some_metric
 # %% [markdown]
 # ## Using a builtin decorator `cached_property_depends_on`
 
+# %% [markdown]
+# PROS : 
+#  - only a decorator needed
+# CONS : 
+#  - no triggering at value change or dependcy graph
+
 # %%
 import time
 from functools import lru_cache
@@ -82,7 +93,7 @@ class BADTimeConstantRC:
     
     def __init__(self, R, C):
         self.R = R
-        self.C = C
+        self.C = np.linspace(0*Farad, C)
         
     @property
     def tau(self):
@@ -94,7 +105,7 @@ class GOODTimeConstantRC:
     
     def __init__(self, R, C):
         self.R = R
-        self.C = C
+        self.C = np.linspace(0*Farad, C)
     
     @cached_property_depends_on('R', 'C')
     def tau(self):
@@ -119,6 +130,13 @@ print("Good second : ", good.tau) # ... but not the second time since neither R 
 
 # %% [markdown]
 # This is another way to write a model with dependencies. Like the previous one, changing a parameter doesn't immediately triggger a computation of dependendant parameters, only at get-time.
+
+# %% [markdown]
+# PROS : 
+#  - dependency graph automatic  
+#
+# CONS : 
+#  - definition of parameter is disinguished from computation method
 
 # %%
 from physipy import units, s
@@ -221,6 +239,13 @@ sns.heatmap(df.corr(), annot=True)
 
 # %% [markdown]
 # Lets try to make the RC model using traitlets
+
+# %% [markdown]
+# PROS : 
+#  - 
+#  
+# CONS :  
+#  - tau and compute_tau are separeted
 
 # %%
 import traitlets
@@ -389,7 +414,7 @@ class IRC2():
         self.u = (self.u0 - self.Ve)*exp(-3*s/self.tau) + self.Ve
 
 # %% [markdown] tags=[]
-# ## ObservableQuanttity of its value : observable pattern
+# ## ObservableQuanttity class: observable pattern
 #  - Standalone Quantity-Like class for a quantity
 #  - Update a quantity's ".value" will trigger callbacks.
 
@@ -629,5 +654,211 @@ display(x2)
 
 # %% [markdown]
 # ## pyqtgraph parameter tree
+
+# %% [markdown]
+# Not what I thought, basicaly just nested parameters
+
+# %% [markdown]
+# # Observable descriptor with dependency
+
+# %%
+from physipy import units
+
+W = units["W"]
+
+
+class ObservableProperty:
+    
+    def __set_name__(self, owner: type, name: str) -> None:
+        def add_observer(obj, observer):
+            if not hasattr(obj, self.observers_name):
+                setattr(obj, self.observers_name, [])
+            getattr(obj, self.observers_name).append(observer)
+            
+        self.private_name = f'_{name}'
+        self.observers_name = f'_{name}_observers'
+        setattr(owner, f'add_{name}_observer', add_observer)
+    
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return getattr(obj, self.private_name)
+
+    def __set__(self, obj, value):
+        setattr(obj, self.private_name, value)
+        for observer in getattr(obj, self.observers_name, []):
+            # using obj here allows to use "self.toto" in callbacks
+            observer(obj, value)
+         
+        
+
+class Car():
+    
+    wheels = ObservableProperty()
+    power = ObservableProperty()
+    
+    def __init__(self, wheels, power):
+        self.wheels = wheels
+        self.power = power
+        
+    @property
+    def power_per_wheel(self):
+        return self.power/self.wheels
+    
+    def __repr__(self):
+        return "".join(["Car with ", str(self.wheels), " wheels and ", str(self.power)])
+        
+        
+        
+car = Car(4, 10*W)
+car
+
+
+# %%
+print(car.wheels)
+car.wheels = car.wheels*2
+print(car.wheels)
+car.add_wheels_observer(lambda obj, new:print("new is", new))
+print(car.wheels)
+car.wheels = car.wheels*2
+car.add_wheels_observer(lambda obj, new:print("new power per wheel", obj.power_per_wheel))
+car.wheels = car.wheels*2
+
+
+# %%
+
+# %%
+from physipy import Quantity, Dimension, quantify, DimensionError, units
+ohm = units["ohm"]
+
+class BoundedQuantity(Quantity):
+    
+    def __init__(self, *args, min=None, max=None, cb_for_init=None, **kwargs):
+
+        
+        self._callbacks = []
+        if cb_for_init is not None:
+            self._callbacks.append(cb_for_init)
+        
+        dim = args[1]
+        
+        if min is None:
+            min_v = 0
+            min = Quantity(min_v, dim)
+        else:
+            min = quantify(min)
+
+        if max is None:
+            max_v = 100
+            max = Quantity(max_v, dim)
+        else:
+            max = quantify(max)
+            
+        if not min.dimension == max.dimension:
+            raise DimensionError(min.dimension, max.dimension)
+        
+        if not dim == max.dimension:
+            raise DimensionError(min.dimension, max.dimension)
+            
+        self.min_value = min.value
+        self.max_value = max.value
+        #self.value = args[0]
+        super().__init__(*args, **kwargs)
+        
+    
+    @Quantity.value.setter
+    def value(self, value):
+        # handle the initial setting value, we can't "get" it yet
+        try:
+            old = self.value
+        except:
+            old = "NotDefinedYet"
+        if isinstance(value, (list, tuple)):
+            self._value = np.array(value)
+        else:
+            if self.min_value < value < self.max_value:
+                self._value = value
+            else:
+                raise ValueError("Value is not between min and max")
+        change_dic = {"old":old, "new":value}
+        self.notify_change_in_value(change_dic)    
+        
+    
+    def register_callback_when_value_changes(self, cb):
+        """
+        Register a callback that will be called on value change.
+        """
+        self._callbacks.append(cb)
+    
+    
+    def notify_change_in_value(self, change_dic):
+        """
+        Activate all callbacks that were registered.
+        """
+        for callback in self._callbacks:
+            callback(change_dic)
+            
+            
+            
+                
+def bounded_quantity(init, min, max, favunit=None):
+    if favunit is None:
+        favunit = init.favunit
+    return BoundedQuantity(init.value, init.dimension, min=min, max=max, favunit=favunit)
+                
+R = bounded_quantity((2*ohm).set_favunit(ohm), 0*ohm, 3*ohm)#, favunit=ohm)
+print(R)
+R.value = 0.2
+print(R)
+R.register_callback_when_value_changes(lambda _: print("value changed"))
+R.value = 0.5
+
+# %%
+
+# %% [markdown]
+# # List of wanted features
+
+# %% [markdown]
+# - Handle min/max/step/initial value like a slider `
+# - Handle favunit
+# - Possibility to add callbacks after init
+# - Cachable on param state
+# - Get state of all params as a dict
+# - Customize __repr__ with all parameters
+# - Get a Model state that can be saved, with dependency
+# - Access a slider using _`w` on parameter value
+#
+#
+# ```python
+#
+# class BestRC():
+#
+#     def __init__(self, R, C):
+#         self.R = 
+#         self.C = 
+#     
+#     @property
+#     def tau(self):
+#         return self.R * self.C
+#     
+#     @set_favunit(V)
+#     def response(self, t):
+#         return 1 - np.exp(-t/self.tau)
+#         
+#        
+#     @cached_property_depends_on('R', 'C')
+#     def slow_tau(self):
+#         time.sleep(5)
+#         return self.tau**2
+#
+#         
+# rc = RC(2*ohm, 3*Farad)
+# rc = RC(C={init=2*ohm, min=3*ohm},
+#         F=3*Farad)
+#
+#
+# ```
+
+# %%
 
 # %%

@@ -902,53 +902,6 @@ fig, ax  = plt.subplots()
 
 # %%
 
-# %% [markdown] tags=[]
-# # Wrapped function
-
-# %%
-# %matplotlib widget
-
-from physipy import m, s
-from physipy.qwidgets.plot_ui import WrappedFunction1D
-from physipy.quantity.utils import name_eq
-
-@name_eq("Myfunc")        
-def func(x1, x2, x3):
-    return x1*x2 + 3 * x3
-
-wf = WrappedFunction1D(func, 0*s, 5*s, 
-                       x2=(0*m, 5*m),
-                       x3=(0*m*s, 5*m*s))
-
-print(wf(1, 2, 3))
-p = wf.add_integral(1*s, 5*s)
-wf
-
-
-# %%
-@name_eq("Gain at new price")
-def get(investment, ref_price, new_price, K=0.8):
-    buy_price = ref_price*K
-    nb_action_wo_abondement = investment/buy_price
-    nb_action_abondement = np.minimum(nb_action_wo_abondement//4, 10)
-    nb_action_totale = nb_action_wo_abondement + nb_action_abondement
-    recieved_price_at_ref_price = nb_action_totale * ref_price
-    gain_at_ref_price = recieved_price_at_ref_price - investment
-    taux_at_ref_price = recieved_price_at_ref_price / investment
-    
-    price_at_new_price = nb_action_totale * new_price
-    gain_at_new_price = price_at_new_price - investment
-    taux_at_new_price = price_at_new_price / investment
-    return gain_at_new_price#price_at_new_price, recieved_price_at_ref_price, buy_price, nb_action_o_abondement, nb_action_abondement, nb_action_totale, gain_at_ref_price, taux_at_ref_price, gain_at_new_price, taux_at_new_price
-
-
-wf = WrappedFunction1D(get, 50, 4000, 
-                       ref_price=(40, 140),
-                       new_price=(40, 140))
-wf
-
-# %%
-
 # %%
 
 
