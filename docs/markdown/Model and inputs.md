@@ -842,7 +842,23 @@ R.value = 0.5
 ```
 
 ```python
+from physipy.qwidgets.qipywidgets import QuantityTextSlider
 
+```
+
+```python
+class Model():
+    
+    def __repr__(self):
+        return "Model with "+"".join([k+":"+str(v) for k, v in self.pdict.items()])
+    
+    def as_ipyw(self):
+        """
+        As slider
+        """
+        from physipy.qwidgets.qipywidgets import QuantityTextSlider
+        s = QuantityTextSlider(self, min=self.min, max=self.max, favunit=self.favunit)
+        return s
 ```
 
 # List of wanted features
@@ -859,8 +875,8 @@ R.value = 0.5
 
 
 ```python
-
-class BestRC():
+# model inerhit for repr
+class BestRC(Model):
 
     def __init__(self, R, C):
         self.R = 
