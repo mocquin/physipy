@@ -670,6 +670,8 @@ W = units["W"]
 class ObservableProperty:
     
     def __set_name__(self, owner: type, name: str) -> None:
+        
+        # generic callback setter to instance
         def add_observer(obj, observer):
             if not hasattr(obj, self.observers_name):
                 setattr(obj, self.observers_name, [])
@@ -677,6 +679,8 @@ class ObservableProperty:
             
         self.private_name = f'_{name}'
         self.observers_name = f'_{name}_observers'
+        
+        # add the callback setter to the instance
         setattr(owner, f'add_{name}_observer', add_observer)
     
     def __get__(self, obj, objtype=None):
@@ -701,10 +705,11 @@ class Car():
         self.wheels = wheels
         self.power = power
         
+    
     @property
     def power_per_wheel(self):
         return self.power/self.wheels
-    
+
     def __repr__(self):
         return "".join(["Car with ", str(self.wheels), " wheels and ", str(self.power)])
         
@@ -724,6 +729,43 @@ car.wheels = car.wheels*2
 car.add_wheels_observer(lambda obj, new:print("new power per wheel", obj.power_per_wheel))
 car.wheels = car.wheels*2
 
+
+# %%
+
+# %%
+# %matplotlib qt
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+t = np.linspace(0, 2 * np.pi, 1024)
+data2d = np.sin(t)[:, np.newaxis] * np.cos(t)[np.newaxis, :]
+
+fig, ax = plt.subplots()
+im = ax.imshow(data2d)
+ax.set_title('Pan on the colorbar to shift the color mapping\n'
+             'Zoom on the colorbar to scale the color mapping')
+cbar = fig.colorbar(im, ax=ax, label='Interactive colorbar')
+
+def update_cmap(event):
+    print(ax.get_xlim())
+    print(ax.get_ylim())
+    d = im.get_array()
+    cbar.update_normal(d)
+    #cbar.set_ set_clim(vmin=np.min(d), vmax=np.max(d))    
+
+cid = fig.canvas.mpl_connect('button_release_event', update_cmap)
+
+def onclick(event):
+    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+          ('double' if event.dblclick else 'single', event.button,
+           event.x, event.y, event.xdata, event.ydata))
+
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+
+
+#plt.show()
 
 # %%
 
@@ -798,8 +840,13 @@ class BoundedQuantity(Quantity):
         for callback in self._callbacks:
             callback(change_dic)
             
-            
-            
+    def as_ipyw(self):
+        """
+        As slider
+        """
+        from physipy.qwidgets.qipywidgets import QuantityTextSlider
+        s = QuantityTextSlider(self, min=self.min, max=self.max, favunit=self.favunit)
+        return s            
                 
 def bounded_quantity(init, min, max, favunit=None):
     if favunit is None:
@@ -815,21 +862,54 @@ R.value = 0.5
 
 # %%
 from physipy.qwidgets.qipywidgets import QuantityTextSlider
+from physipy import set_favunit, units
+from physipy.quantity.utils import cached_property_depends_on
+V = units["V"]
+Farad = units["F"]
 
 
 # %%
 class Model():
+    deps = {}
     
     def __repr__(self):
         return "Model with "+"".join([k+":"+str(v) for k, v in self.pdict.items()])
     
-    def as_ipyw(self):
-        """
-        As slider
-        """
-        from physipy.qwidgets.qipywidgets import QuantityTextSlider
-        s = QuantityTextSlider(self, min=self.min, max=self.max, favunit=self.favunit)
-        return s
+    @classmethod
+    def register_dep(cls, base, high):
+        cls.deps[high] = [b for b in base]
+        
+class BestRC(Model):
+
+    def __init__(self, R, C):
+        super().__init__()
+        self.R = R
+        self.C = C
+        
+    BestRC.register_dep(["R", "C"], "tau")    
+    @property
+    def tau(self):
+        return self.R * self.C
+
+        
+    #@depends_on("tau")
+    @set_favunit(V)
+    def response(self, t):
+        return 1 - np.exp(-t/self.tau)
+        
+       
+    @cached_property_depends_on('R', 'C')
+    def slow_tau(self):
+        time.sleep(5)
+        return self.tau**2
+
+        
+rc = BestRC(2*ohm, 3*Farad)
+rc = BestRC(R={"init":2*ohm, "min":3*ohm},
+        C=3*Farad)
+
+print(BestRC.deps)
+
 
 # %% [markdown]
 # # List of wanted features
@@ -853,10 +933,13 @@ class Model():
 #         self.R = 
 #         self.C = 
 #     
+#     #@depends_on("R", "C")
 #     @property
 #     def tau(self):
 #         return self.R * self.C
-#     
+#     register_dep('R', 'C')("tau")
+#         
+#     @depends_on("tau")
 #     @set_favunit(V)
 #     def response(self, t):
 #         return 1 - np.exp(-t/self.tau)
@@ -876,5 +959,14 @@ class Model():
 # ```
 
 # %%
+def decorator_creator(*param_args):
+    
+    # define decorator
+    def decorator(func):
+        def _wrapped_method(self, *method_args, **method_kwargs):
+            
+            return 
+        return _wrapped_method
+    return decorator
 
 # %%
