@@ -220,7 +220,7 @@ class Quantity(object):
         return large_quantify(type(self)(self.value @ y.value,
                         self.dimension * y.dimension, 
                         #symbol = self.symbol * y.symbol
-                         ).rm_dim_if_dimless() 
+                         ).rm_dim_if_dimless())
 
 
     def __truediv__(self, y):
@@ -228,7 +228,7 @@ class Quantity(object):
         return large_quantify(type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol + "/" + y.symbol,
-                         ).rm_dim_if_dimless()
+                         ).rm_dim_if_dimless())
 
 
     def __rtruediv__(self, x): return quantify(x) / self
@@ -277,7 +277,7 @@ class Quantity(object):
         return large_quantify(type(self)(self.value ** power, 
                         self.dimension ** power,
                         symbol = self.symbol + '**' +str(power),
-                       ).rm_dim_if_dimless()
+                       ).rm_dim_if_dimless())
 
     def __neg__(self): return Quantity(-self.value,
                                        self.dimension, favunit=self.favunit)
@@ -1373,7 +1373,7 @@ def np_trapz(q, x=None, dx=1, **kwargs):
     else:
         x = quantify(x)
         return large_quantify(Quantity(np.trapz(q.value, x=x.value, **kwargs),
-                    q.dimension * x.dimension)
+                    q.dimension * x.dimension))
     
 @implements(np.transpose)
 def np_transpose(a, axis=None):
