@@ -207,7 +207,8 @@ class Quantity(object):
         y = quantify(y)
         q = Quantity(self.value * y.value, 
                         self.dimension * y.dimension, 
-                        symbol = self.symbol * y.symbol)
+                        symbol=self.symbol + "*" + y.symbol,
+                    )
         return large_quantify(q).rm_dim_if_dimless() 
         #return type(self)(self.value * y.value, 
         #                  self.dimension * y.dimension, 
