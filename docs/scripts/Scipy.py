@@ -12,6 +12,47 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# # Scipy.spatial.distance
+
+# %% [markdown]
+# Scipy first casts arrays into numpy array so no dimension checking is done.
+
+# %%
+import scipy.spatial.distance
+from  scipy.spatial.distance import squareform
+import numpy as np
+from physipy import K, m, s, units
+
+
+# %%
+nd_space = 20
+m_obs = 4
+arr = np.random.randn(m_obs, nd_space) * m
+
+# returned matrix will be of shape m_obs x m_obs
+print(squareform(scipy.spatial.distance.pdist(arr.value, "euclidean")))         # same dim
+print(squareform(scipy.spatial.distance.pdist(arr.value, "minkowski", p=2)))    # same dim, # same as euclidean for p=2
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'cityblock')))         # same dim
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'seuclidean')))        # same dim
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'sqeuclidean')))       # same dim
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'cosine')))            # any
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'correlation')))       # any
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'hamming')))           # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'chebyshev')))         # same dim 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'canberra')))          # same dim 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'braycurtis')))        # same dim 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'yule')))              # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'dice')))              # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'kulsinski')))         # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'rogerstanimoto')))    # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'russellrao')))        # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalmichener')))     # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalsneath')))       # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'kulczynski1')))       # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalmichener')))     # bool 
+print(squareform(scipy.spatial.distance.pdist(arr.value, lambda u, v: np.sqrt(((u-v)**2).sum()))))
+
 # %%
 
 # %%

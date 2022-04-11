@@ -38,9 +38,9 @@ import numpy as np
 
 # %%
 # uniform sampling
-lenghts = np.linspace(0.4, 0.8, num=30)*m
-times = np.linspace(1, 10, num=11)*s
-temps = np.linspace(300, 310, num=11)*K
+lenghts = np.linspace(0.4, 0.8, num=3)*m
+times = np.linspace(1, 10, num=3)*s
+temps = np.linspace(300, 310, num=2)*K
 # random sampling
 mass = np.random.randn(100)*3*kg + 100*kg
 
@@ -63,6 +63,30 @@ some_metric = lenghts*times/temps**2*np.exp(mass/(50*kg))
 
 # %%
 some_metric
+
+# %%
+import seaborn as sns
+import pandas as pd
+df = pd.DataFrame(
+    {
+        "length":lenghts,
+        "times":times,
+        "temps":temps,
+        "mass":mass,
+        "some_metric":some_metric,
+    }
+)
+df.head()
+
+# %%
+sns.heatmap(df.corr(), annot=True, square=True)
+
+# %%
+sns.pairplot(df)
+
+# %%
+sns.clustermap(df.sort_values("some_metric"),z_score=1, row_cluster=False)
+#sns.clustermap(df.sort_values("some_metric"),standard_scale=1, row_cluster=False)
 
 # %% [markdown]
 # # Cache a property with dependency

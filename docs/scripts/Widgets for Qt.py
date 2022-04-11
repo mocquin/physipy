@@ -15,6 +15,155 @@
 # %% [markdown]
 # # Example
 
+# %% [markdown]
+# # DAG
+
+# %% [markdown]
+# https://networkx.org/nx-guides/content/algorithms/dag/index.html
+
+# %%
+import networkx as nx
+import matplotlib.pyplot as plt
+import pprint
+from networkx.drawing.nx_agraph import write_dot, graphviz_layout
+
+
+G = nx.DiGraph([(0, 3), (1, 3), (2, 4), (3, 5), (3, 6), (4, 6), (5, 6)])
+
+# group nodes by column
+left_nodes = [0, 1, 2]
+middle_nodes = [3, 4]
+right_nodes = [5, 6]
+
+# set the position according to column (x-coord)
+pos = {n: (0, i) for i, n in enumerate(left_nodes)}
+pos.update({n: (1, i + 0.5) for i, n in enumerate(middle_nodes)})
+pos.update({n: (2, i + 0.5) for i, n in enumerate(right_nodes)})
+
+options = {
+    "font_size": 36,
+    "node_size": 3000,
+    "node_color": "white",
+    "edgecolors": "black",
+    "linewidths": 5,
+    "width": 5,
+}
+
+nx.draw_networkx(G, pos)#, **options)
+
+# Set margins for the axes so that nodes aren't clipped
+ax = plt.gca()
+ax.margins(0.20)
+#plt.axis("off")
+plt.show()
+
+
+# %% [markdown]
+# https://stackoverflow.com/questions/41942109/plotting-the-digraph-with-graphviz-in-python-from-dot-file
+
+# %%
+from graphviz import Source
+temp = """
+digraph G{
+edge [dir=forward]
+node [shape=plaintext]
+
+0 [label="0 (None)"]
+0 -> 5 [label="root"]
+1 [label="1 (Hello)"]
+2 [label="2 (how)"]
+2 -> 1 [label="advmod"]
+3 [label="3 (are)"]
+4 [label="4 (you)"]
+5 [label="5 (doing)"]
+5 -> 3 [label="aux"]
+5 -> 2 [label="advmod"]
+5 -> 4 [label="nsubj"]
+}
+"""
+#s = Source(temp, filename="test.gv", format="png")
+#s.view()
+
+# %%
+def flatten_deps(deps, BASE_LIST, RAW_DICT):
+    new_deps = []
+    for d in deps:
+        # if a base param
+        if d in BASE_LIST:
+            # and not et in deps : add it
+            if d not in new_deps:
+                new_deps.append(d)
+            # if already in new deps, go to next d
+            else:
+                continue
+        # if not a base param, it has its param list
+        else:
+            deps = RAW_DICT[d]
+            new_deps = flatten_deps(deps, BASE_LIST, RAW_DICT)
+    return new_deps
+
+
+def flatten_dep_dict(RAW_DICT, BASE_LIST):
+    FLAT_DICT = {}
+    for k, v in RAW_DICT.items():
+        FLAT_DICT[k] = flatten_deps(v, BASE_LIST, RAW_DICT)
+    return FLAT_DICT
+    
+BASE_LIST = ["a", "b", "c", "d", "e", "f", "g"]
+    
+RAW_DICT = {"C":["a", "b", "c"],
+            "B":["A", "e"], 
+            "A":["C", "a", "f"],
+            "D":["f", "A", "g"],
+            "E":["A", "C", "D"],
+           }
+
+FLAT_DICT = flatten_dep_dict(RAW_DICT, BASE_LIST)
+
+pprint.pprint(FLAT_DICT)
+
+def dict_to_list_of_edges(RAW_DICT):
+    list_of_diredges = []
+    for k, v in RAW_DICT.items():
+        for d in v:
+            list_of_diredges.append((k, d))
+    return list_of_diredges
+
+
+def get_DAG_depth(RAW_DICT):
+    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
+
+    G = nx.DiGraph(list_of_diredges)
+    m=0
+    for k, v in RAW_DICT.items():
+        d = nx.shortest_path_length(G,k)
+        max_dep = max(d.values())
+        if max_dep > m:
+            m = max_dep
+
+    return m
+
+def plot_DAG(RAW_DICT):
+
+    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
+
+    G = nx.DiGraph(list_of_diredges)
+    nx.draw_networkx(G)
+    
+def write_DAG_as_dot(RAW_DICT):
+    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
+
+    G = nx.DiGraph(list_of_diredges)
+    write_dot(G, "test.dot")
+    
+plot_DAG(RAW_DICT)
+#write_DAG_as_dot(RAW_DICT)
+
+# %%
+
+# %% [markdown]
+# # Model
+
 # %%
 from physipy import units, s, m, asqarray
 from physipy.qwidgets.qt import QuantityQtSlider
@@ -41,18 +190,60 @@ class RegisteringType(type):
         for key, val in attrs.items():
             deps = getattr(val, 'deps', None)
             if deps is not None:
+                print(val.__name__)
                 cls.curves[val.__name__] = deps
+                
+class ParamDescriptor():
+    def __init__(self, min, max):
+        self.min = min
+        self.max = max
+        
+    def __set_name__(self, owner, name):
+        # self.R
+        self.public_name = name
+        # actually refers to self._R_w
+        self.private_name = '_' + name + "_observable_proxy_descriptor"
+        
+    def __set__(self, obj, qvalue):
+        
+        # to add the attribute name to the list of base params
+        # but this means the check will be done at each __set__ 
+        # so it slow down computation
+        #if self.public_name not in obj.params:
+        #    obj.params.append(self.public_name)
+        if self.min <= qvalue <= self.max:
+            setattr(obj, self.private_name, qvalue)
+        else:
+            raise ValueError
+    
+    def __get__(self, obj, objtype=None):
+        value = getattr(obj, self.private_name)
+        return value
+    
+    
+
 
 class ModelRC(metaclass=RegisteringType):
     
     curves = {}
+    #params = []
     
+    R  = ParamDescriptor(0*ohm, 10*ohm)
+    C  = ParamDescriptor(0*F, 10*F)
+    Ve = ParamDescriptor(0*V, 10*V)
+    u0 = ParamDescriptor(0*V, 10*V)
+
     def __init__(self, Ve, R, C, u0=0*V, ech_t=np.arange(100)*s):
         self.R = R
         self.C = C
         self.Ve = Ve
         self.u0 = u0
         self.ech_t = ech_t
+        
+        # alternative : in ParamDescriptor : if self.public_name not in obj.params:obj.params.append(self.public_name)
+        #for i in vars(self).keys():
+        #    if i.endswith("_observable_proxy_descriptor"):
+        #        self.params.append(i.split("_")[1])
         
         # just add a params dict that describes the sliders...
         self.params = {
@@ -61,6 +252,7 @@ class ModelRC(metaclass=RegisteringType):
             "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
             "u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
         }
+        
         
     # ... and a method to provide all the curves you want to plot
     def get_curves(self):
@@ -71,24 +263,25 @@ class ModelRC(metaclass=RegisteringType):
         }
         return curves
 
-    
-    @cached_property_depends_on('R', 'C') # will not recompute if R and C state are unchanged
+
+    #@cached_property_depends_on('R', 'C') # will not recompute if R and C state are unchanged
+    @register_deps("tau", ["R", "C"])
     def tau(self):
-        #time.sleep(5)
         return self.R * self.C
     
+    @register_deps("convergence", ["Ve"])
     def xy_convergence(self):
         return asqarray([0*s, np.max(self.ech_t)]), asqarray([self.Ve, self.Ve])
     
     #@cached_property_depends_on('u0', 'Ve', "tau") # will not recompute if R and C state are unchanged
+    @register_deps("slope at start", ["u0", "Ve", "tau"])#"R", "C"])
     def xy_slope_at_start(self):
         xs = asqarray([0*s, self.tau, self.tau])
         ys = asqarray([self.u0, self.Ve, self.u0])
         return xs, ys
     
-    @register_deps("response", ["u0", "Ve", "R", "C"])
+    @register_deps("response", ["u0", "Ve", "tau"])#"R", "C"])
     def xy_response(self, ech_t=None):
-        
         if ech_t is None:
             ech_t = self.ech_t
 
@@ -96,14 +289,18 @@ class ModelRC(metaclass=RegisteringType):
         ys = (self.u0 - self.Ve) * np.exp(-ech_t/self.tau) + self.Ve
         return xs, ys 
     
-    def xy_response_slow(self):
-        #time.sleep(5)
-        return self.xy_response()
-        
 
 # %%
 model = ModelRC(0*V, 0*ohm, 3*F)
-model.curves
+print(model.params)
+print(model.R)
+model.R = 3*ohm
+print(model.R)
+
+# %%
+import pprint
+pprint.pprint(model.curves)
+pprint.pprint(model.params)
 
 # %%
 import warnings
@@ -214,18 +411,18 @@ class VuePyQt(QMainWindow):#QWidget):
             #pen =(0, 0, 200), symbolBrush =(0, 0, 200),
                       #symbolPen ='w', symbol ='o', symbolSize = 14, name ="symbol ='o'")
     
-    def update_trace_generator(self, name, curve_func):
-        def update_func():
-            xs, ys = curve_func()
-            self.trace(name, xs, ys)
-        return update_func
+    #def update_trace_generator(self, name, curve_func):
+    #    def update_func():
+    #        xs, ys = curve_func()
+    #        self.trace(name, xs, ys)
+    #    return update_func
     
-    def update_traces(self, qtvalue):
-        for name, trace_dict in self.model.get_curves().items():
-            func = trace_dict["xys"]
-            xs, ys = func()
-            pen_color = trace_dict["pen_color"]
-            self.trace(name, xs, ys, pen=pen_color)
+    #def update_traces(self, qtvalue):
+    #    for name, trace_dict in self.model.get_curves().items():
+    #        func = trace_dict["xys"]
+    #        xs, ys = func()
+    #        pen_color = trace_dict["pen_color"]
+    #        self.trace(name, xs, ys, pen=pen_color)
 
 
 # %%
