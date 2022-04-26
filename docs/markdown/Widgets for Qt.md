@@ -12,155 +12,6 @@ jupyter:
     name: python3
 ---
 
-# Example
-
-
-# DAG
-
-
-https://networkx.org/nx-guides/content/algorithms/dag/index.html
-
-```python
-import networkx as nx
-import matplotlib.pyplot as plt
-import pprint
-from networkx.drawing.nx_agraph import write_dot, graphviz_layout
-
-
-G = nx.DiGraph([(0, 3), (1, 3), (2, 4), (3, 5), (3, 6), (4, 6), (5, 6)])
-
-# group nodes by column
-left_nodes = [0, 1, 2]
-middle_nodes = [3, 4]
-right_nodes = [5, 6]
-
-# set the position according to column (x-coord)
-pos = {n: (0, i) for i, n in enumerate(left_nodes)}
-pos.update({n: (1, i + 0.5) for i, n in enumerate(middle_nodes)})
-pos.update({n: (2, i + 0.5) for i, n in enumerate(right_nodes)})
-
-options = {
-    "font_size": 36,
-    "node_size": 3000,
-    "node_color": "white",
-    "edgecolors": "black",
-    "linewidths": 5,
-    "width": 5,
-}
-
-nx.draw_networkx(G, pos)#, **options)
-
-# Set margins for the axes so that nodes aren't clipped
-ax = plt.gca()
-ax.margins(0.20)
-#plt.axis("off")
-plt.show()
-```
-
-
-https://stackoverflow.com/questions/41942109/plotting-the-digraph-with-graphviz-in-python-from-dot-file
-
-```python
-from graphviz import Source
-temp = """
-digraph G{
-edge [dir=forward]
-node [shape=plaintext]
-
-0 [label="0 (None)"]
-0 -> 5 [label="root"]
-1 [label="1 (Hello)"]
-2 [label="2 (how)"]
-2 -> 1 [label="advmod"]
-3 [label="3 (are)"]
-4 [label="4 (you)"]
-5 [label="5 (doing)"]
-5 -> 3 [label="aux"]
-5 -> 2 [label="advmod"]
-5 -> 4 [label="nsubj"]
-}
-"""
-#s = Source(temp, filename="test.gv", format="png")
-#s.view()
-```
-
-```python
-def flatten_deps(deps, BASE_LIST, RAW_DICT):
-    new_deps = []
-    for d in deps:
-        # if a base param
-        if d in BASE_LIST:
-            # and not et in deps : add it
-            if d not in new_deps:
-                new_deps.append(d)
-            # if already in new deps, go to next d
-            else:
-                continue
-        # if not a base param, it has its param list
-        else:
-            deps = RAW_DICT[d]
-            new_deps = new_deps+ flatten_deps(deps, BASE_LIST, RAW_DICT)
-    return new_deps
-
-
-def flatten_dep_dict(RAW_DICT, BASE_LIST):
-    FLAT_DICT = {}
-    for k, v in RAW_DICT.items():
-        FLAT_DICT[k] = flatten_deps(v, BASE_LIST, RAW_DICT)
-    return FLAT_DICT
-    
-BASE_LIST = ["a", "b", "c", "d", "e", "f", "g"]
-    
-RAW_DICT = {"C":["a", "b", "c"],
-            "B":["A", "e"], 
-            "A":["C", "a", "f"],
-            "D":["f", "A", "g"],
-            "E":["A", "C", "D"],
-           }
-
-FLAT_DICT = flatten_dep_dict(RAW_DICT, BASE_LIST)
-
-pprint.pprint(RAW_DICT)
-pprint.pprint(FLAT_DICT)
-
-def dict_to_list_of_edges(RAW_DICT):
-    list_of_diredges = []
-    for k, v in RAW_DICT.items():
-        for d in v:
-            list_of_diredges.append((k, d))
-    return list_of_diredges
-
-
-def get_DAG_depth(RAW_DICT):
-    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
-
-    G = nx.DiGraph(list_of_diredges)
-    m=0
-    for k, v in RAW_DICT.items():
-        d = nx.shortest_path_length(G,k)
-        max_dep = max(d.values())
-        if max_dep > m:
-            m = max_dep
-
-    return m
-
-def plot_DAG(RAW_DICT):
-
-    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
-
-    G = nx.DiGraph(list_of_diredges)
-    nx.draw_networkx(G)
-    
-def write_DAG_as_dot(RAW_DICT):
-    list_of_diredges = dict_to_list_of_edges(RAW_DICT)
-
-    G = nx.DiGraph(list_of_diredges)
-    write_dot(G, "test.dot")
-    
-plot_DAG(RAW_DICT)
-#write_DAG_as_dot(RAW_DICT)
-```
-
 # Model
 
 
@@ -172,6 +23,7 @@ from physipy import units, s, m, asqarray
 from physipy.qwidgets.qt import QuantityQtSlider
 from physipy.quantity.utils import cached_property_depends_on
 from pprint import pprint
+from pydag import flatten_dep_dict
 
 V = units["V"]
 ohm = units["ohm"]
@@ -180,9 +32,7 @@ F = units["F"]
 import numpy as np
 
 import time
-```
 
-```python
 
 class PropertyDescriptor():
     
@@ -205,20 +55,27 @@ class PropertyDescriptor():
     #    setattr(obj, self.private_name, func_with_deps)
 
         
-def register_deps(name, deps):
+def register_deps(name, deps, is_curve=False, pencolor=None):
     def decorator(f):
-        f.deps = (name, deps)
+        f.deps = (name, deps, is_curve, pencolor)
         return f
     return decorator
 
 class RegisteringType(type):
     def __init__(cls, name, bases, attrs):
+        cls.curves = {}
+        cls.dependent = {}
+        
         for key, val in attrs.items():
-            deps = getattr(val, 'deps', None)
-            if deps is not None:
-                cls.curves[val.__name__] = deps
+            all_deps = getattr(val, 'deps', None)
+            if all_deps is not None:
+                (name, deps, is_curve, pencolor) = all_deps
+                cls.dependent[val.__name__] = (name, deps)
+                # if is a curve
+                if is_curve:
+                    cls.curves[val.__name__] = (name, deps, pencolor)
         RAW_DICT = {}
-        for xy, (param, deps) in cls.curves.items():
+        for xy, (param, deps) in cls.dependent.items():
             RAW_DICT[param] = deps
         cls.RAW_DICT = RAW_DICT
         cls.BASE_LIST = []
@@ -227,6 +84,8 @@ class RegisteringType(type):
                 cls.BASE_LIST.append(key)
         cls.FLAT_DICT = flatten_dep_dict(cls.RAW_DICT, cls.BASE_LIST)
 
+
+        
         print("Created class with")
         pprint(cls.BASE_LIST)
         pprint(cls.RAW_DICT)
@@ -265,9 +124,6 @@ class ParamDescriptor():
 
 class ModelRC(metaclass=RegisteringType):
     
-    curves = {}
-    #params = []
-    
     R  = ParamDescriptor(0*ohm, 10*ohm)
     C  = ParamDescriptor(0*F, 10*F)
     Ve = ParamDescriptor(0*V, 10*V)
@@ -295,16 +151,7 @@ class ModelRC(metaclass=RegisteringType):
             "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
             "u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
         }
-        
-        
-    # ... and a method to provide all the curves you want to plot
-    def get_curves(self):
-        curves = {
-            "xys_start_solved":{"xys":self.xy_response, "pen_color":"r",}, # "deps":["R", "C", "Ve", "u0"]
-            "convergence_line":{"xys":self.xy_convergence, "pen_color":"g",},# "deps":["Ve"]},
-            "slope_at_start":  {'xys':self.xy_slope_at_start, "pen_color":'b'},
-        }
-        return curves
+
 
 
     #@cached_property_depends_on('R', 'C') # will not recompute if R and C state are unchanged
@@ -314,18 +161,18 @@ class ModelRC(metaclass=RegisteringType):
     def tau(self):
         return self.R * self.C
     
-    @register_deps("convergence", ["Ve"])
+    @register_deps("convergence", ["Ve"], True, pencolor="r")
     def xy_convergence(self):
         return asqarray([0*s, np.max(self.ech_t)]), asqarray([self.Ve, self.Ve])
     
     #@cached_property_depends_on('u0', 'Ve', "tau") # will not recompute if R and C state are unchanged
-    @register_deps("slope at start", ["u0", "Ve", "tau"])#"R", "C"])
+    @register_deps("slope at start", ["u0", "Ve", "tau"], True, pencolor="g")#"R", "C"])
     def xy_slope_at_start(self):
         xs = asqarray([0*s, self.tau(), self.tau()])
         ys = asqarray([self.u0, self.Ve, self.u0])
         return xs, ys
     
-    @register_deps("response", ["u0", "Ve", "tau"])#"R", "C"])
+    @register_deps("response", ["u0", "Ve", "tau"], True, pencolor="b")#"R", "C"])
     def xy_response(self, ech_t=None):
         if ech_t is None:
             ech_t = self.ech_t
@@ -334,15 +181,14 @@ class ModelRC(metaclass=RegisteringType):
         return xs, ys 
 ```
 
-
 ```python
 model = ModelRC(0*V, 0*ohm, 3*F)
 print(model.params)
 print(model.R, model.tau)
 model.R = 3*ohm
 print(model.R)
-
 ```
+
 
 ```python
 pprint(model.curves)
@@ -380,7 +226,7 @@ class VuePyQt(QMainWindow):#QWidget):
         # spent 3 days on this : https://stackoverflow.com/questions/2295290/what-do-lambda-function-closures-capture
         widgets = []
         for key, value in model.params.items():
-            
+            print(key, value)
             # create slider
             if hasattr(value["min"], "value"):
                 slider = QuantityQtSlider(value["min"], 
@@ -396,17 +242,26 @@ class VuePyQt(QMainWindow):#QWidget):
             # connect slider's value to model's value
             getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue, key=key:self.set_attr(self.model, key))#(lambda qtvalue:self.update_model_param_value(qtvalue, slider, key))
             # make slider to update all curves
-            getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue:self.update_traces(qtvalue))
+            #getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue:self.update_traces(qtvalue))
             
+            print("FLAT DICT :", self.model.FLAT_DICT)
+            
+            print("make slider update dependent trace for", key)
+            print("  looping in curves")
             # make slider to update dependent traces
-            #for k, v in self.model.curves.items():
-            #    #print(k, v)
-            #    if key in v[1]: # loop over parameter list
-            #        func = getattr(self.model, k)
-            #        def _upd(qt_value):
-            #            xs, ys = func()
-            #            self.traces[name].setData(xs.value,ys.value)
-            #        getattr(self, key+"_slider").qtslider.valueChanged.connect(_upd)
+            for k, v in self.model.curves.items():
+                print("     - curve ", k, v)
+                base_deps = self.model.FLAT_DICT[v[0]]
+                print("        with deps", base_deps)
+                if key in base_deps:
+                    print("        key", key, "is in deps")
+                    #if key in v[1]: # loop over parameter list
+                    func = getattr(self.model, k)
+                    def _upd(qt_value, func=func, k=k):
+                        xs, ys = func()
+                        self.traces[k].setData(xs.value,ys.value)
+                    getattr(self, key+"_slider").qtslider.valueChanged.connect(_upd)
+                    print("-------final setting", key)
             
             
             
@@ -432,10 +287,10 @@ class VuePyQt(QMainWindow):#QWidget):
         
         self.traces = dict()
         
-        for name, trace_dict in self.model.get_curves().items():
-            func = trace_dict["xys"]
-            xs, ys = func()
-            pen_color = trace_dict["pen_color"]
+        for name, all_deps in self.model.curves.items():
+            func_name = name#trace_dict["xys"]
+            xs, ys = getattr(self.model, func_name)()
+            pen_color = all_deps[-1]
             self.trace(name, xs, ys, pen=pen_color)
         
 
@@ -465,12 +320,12 @@ class VuePyQt(QMainWindow):#QWidget):
     #        self.trace(name, xs, ys)
     #    return update_func
     
-    def update_traces(self, qtvalue):
-        for name, trace_dict in self.model.get_curves().items():
-            func = trace_dict["xys"]
-            xs, ys = func()
-            pen_color = trace_dict["pen_color"]
-            self.trace(name, xs, ys, pen=pen_color)
+    #def update_traces(self, qtvalue):
+    #    for name, trace_dict in self.model.curves.items():
+    #        func = trace_dict["xys"]
+    #        xs, ys = func()
+    #        pen_color = trace_dict["pen_color"]
+    #        self.trace(name, xs, ys, pen=pen_color)
 ```
 
 ```python
@@ -490,8 +345,9 @@ def main():
     
     model = ModelRC(Ve, R, C)
     print(model.R, model.C, model.Ve, model.u0)
-
+    print(model.curves)
     vue = VuePyQt(model)
+    print("vue's traces : ", vue.traces)
     vue.show()
     sys.exit(app.exec_())
 
