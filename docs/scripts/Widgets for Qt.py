@@ -79,19 +79,36 @@ class RegisteringType(type):
         for xy, (param, deps) in cls.dependent.items():
             RAW_DICT[param] = deps
         cls.RAW_DICT = RAW_DICT
+        
+        ## REGISTER BASE PARAMS
         cls.BASE_LIST = []
+        cls.BASE_MINMAX = {}
         for key, val in attrs.items():
-            if type(val)== ParamDescriptor:#key.endswith("_observable_proxy_descriptor"):
+            if type(val)== ParamDescriptor:
                 cls.BASE_LIST.append(key)
+                cls.BASE_MINMAX[key] = {"min":val.min, "max":val.max}
+                
+                
+        ## FLATTEN DEPENDCY DICT
         cls.FLAT_DICT = flatten_dep_dict(cls.RAW_DICT, cls.BASE_LIST)
 
 
-        
         print("Created class with")
         pprint(cls.BASE_LIST)
         pprint(cls.RAW_DICT)
         pprint(cls.FLAT_DICT)
 
+        
+class ModelMixin():
+    @property
+    def params(self):
+        param_dict = {}
+        for pname in self.BASE_LIST:
+            param_dict[pname] = {"value":getattr(self, pname), **self.BASE_MINMAX[pname]}
+        return param_dict
+           #"u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
+    #    }
+        
         
 class ParamDescriptor():
     def __init__(self, min, max):
@@ -123,7 +140,7 @@ class ParamDescriptor():
     
 
 
-class ModelRC(metaclass=RegisteringType):
+class ModelRC(ModelMixin, metaclass=RegisteringType):
     
     R  = ParamDescriptor(0*ohm, 10*ohm)
     C  = ParamDescriptor(0*F, 10*F)
@@ -144,14 +161,14 @@ class ModelRC(metaclass=RegisteringType):
         
         # just add a params dict that describes the sliders...
     
-    @property
-    def params(self):
-        return {
-            "R"  :{"min":0*ohm, "max":10*ohm, "value":self.R},
-            "C"  :{"min":0*F,   "max":10*F,   "value":self.C},
-            "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
-            "u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
-        }
+    #@property
+    #def params(self):
+    #    return {
+    #        "R"  :{"min":0*ohm, "max":10*ohm, "value":self.R},
+    #        "C"  :{"min":0*F,   "max":10*F,   "value":self.C},
+    #        "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
+    #        "u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
+    #    }
 
 
 
