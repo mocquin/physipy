@@ -61,6 +61,20 @@ def register_deps(name, deps, is_curve=False, pencolor=None):
         return f
     return decorator
 
+import functools
+
+from functools import lru_cache
+from operator import attrgetter
+
+def cached_on_deps(*args):
+    attrs = attrgetter(*args)
+    def decorator(func):
+        _cache = lru_cache(maxsize=None)(lambda self, _: func(self))
+        def _with_tracked(self):
+            return _cache(self, attrs(self))
+        return _with_tracked
+    return decorator
+
 class RegisteringType(type):
     def __init__(cls, name, bases, attrs):
         cls.curves = {}
@@ -83,7 +97,7 @@ class RegisteringType(type):
         cls.BASE_LIST = []
         cls.BASE_MINMAX = {}
         for key, val in attrs.items():
-            if type(val)== ParamDescriptor:
+            if type(val)==ParamDescriptor:
                 cls.BASE_LIST.append(key)
                 cls.BASE_MINMAX[key] = {"min":val.min, "max":val.max}
                 
@@ -92,10 +106,10 @@ class RegisteringType(type):
         cls.FLAT_DICT = flatten_dep_dict(cls.RAW_DICT, cls.BASE_LIST)
 
 
-        print("Created class with")
-        pprint(cls.BASE_LIST)
-        pprint(cls.RAW_DICT)
-        pprint(cls.FLAT_DICT)
+        #print("Created class with")
+        #pprint(cls.BASE_LIST)
+        #pprint(cls.RAW_DICT)
+        #pprint(cls.FLAT_DICT)
 
         
 class ModelMixin():
@@ -105,9 +119,7 @@ class ModelMixin():
         for pname in self.BASE_LIST:
             param_dict[pname] = {"value":getattr(self, pname), **self.BASE_MINMAX[pname]}
         return param_dict
-           #"u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
-    #    }
-        
+
         
 class ParamDescriptor():
     def __init__(self, min, max):
@@ -152,31 +164,13 @@ class ModelRC(ModelMixin, metaclass=RegisteringType):
         self.Ve = Ve
         self.u0 = u0
         self.ech_t = ech_t
-        
-        # alternative : in ParamDescriptor : if self.public_name not in obj.params:obj.params.append(self.public_name)
-        #for i in vars(self).keys():
-        #    if i.endswith("_observable_proxy_descriptor"):
-        #        self.params.append(i.split("_")[1])
-        
-        # just add a params dict that describes the sliders...
-    
-    #@property
-    #def params(self):
-    #    return {
-    #        "R"  :{"min":0*ohm, "max":10*ohm, "value":self.R},
-    #        "C"  :{"min":0*F,   "max":10*F,   "value":self.C},
-    #        "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
-    #        "u0" :{"min":0*V,   "max":10*V,   "value":self.u0},
-    #    }
 
 
-
-    #@cached_property_depends_on('R', 'C') # will not recompute if R and C state are unchanged
-    #@property
-    #@PropertyDescriptor
     @register_deps("tau", ["R", "C"])
+    #@cached_on_deps('R', 'C') # will not recompute if R and C state are unchanged
     def tau(self):
         return self.R * self.C
+    #tau = register_deps("tau", ["R", "C"])(tau)
     
     @register_deps("convergence", ["Ve"], True, pencolor="r")
     def xy_convergence(self):
@@ -200,10 +194,12 @@ class ModelRC(ModelMixin, metaclass=RegisteringType):
 
 ```python
 model = ModelRC(0*V, 0*ohm, 3*F)
-print(model.params)
-print(model.R, model.tau)
+pprint(model.params)
+print(model.R, model.tau())
 model.R = 3*ohm
-print(model.R)
+pprint(model.R)
+pprint(model.tau())
+pprint(model.params)
 ```
 
 
@@ -243,7 +239,7 @@ class VuePyQt(QMainWindow):#QWidget):
         # spent 3 days on this : https://stackoverflow.com/questions/2295290/what-do-lambda-function-closures-capture
         widgets = []
         for key, value in model.params.items():
-            print(key, value)
+            #print(key, value)
             # create slider
             if hasattr(value["min"], "value"):
                 slider = QuantityQtSlider(value["min"], 
@@ -261,24 +257,24 @@ class VuePyQt(QMainWindow):#QWidget):
             # make slider to update all curves
             #getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue:self.update_traces(qtvalue))
             
-            print("FLAT DICT :", self.model.FLAT_DICT)
             
-            print("make slider update dependent trace for", key)
-            print("  looping in curves")
+            #print("make slider update dependent trace for", key)
+            #print("  looping in curves")
             # make slider to update dependent traces
             for k, v in self.model.curves.items():
-                print("     - curve ", k, v)
+                #print("     - curve ", k, v)
                 base_deps = self.model.FLAT_DICT[v[0]]
-                print("        with deps", base_deps)
+                #print("        with deps", base_deps)
                 if key in base_deps:
-                    print("        key", key, "is in deps")
+                    #print("        key", key, "is in deps")
                     #if key in v[1]: # loop over parameter list
                     func = getattr(self.model, k)
+                    # func=func and k=k are mandatory see SO's 2295290
                     def _upd(qt_value, func=func, k=k):
                         xs, ys = func()
                         self.traces[k].setData(xs.value,ys.value)
                     getattr(self, key+"_slider").qtslider.valueChanged.connect(_upd)
-                    print("-------final setting", key)
+                    #print("-------final setting", key)
             
             
             
