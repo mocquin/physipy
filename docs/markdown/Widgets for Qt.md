@@ -55,8 +55,8 @@ ax = plt.gca()
 ax.margins(0.20)
 #plt.axis("off")
 plt.show()
-
 ```
+
 
 https://stackoverflow.com/questions/41942109/plotting-the-digraph-with-graphviz-in-python-from-dot-file
 
@@ -99,7 +99,7 @@ def flatten_deps(deps, BASE_LIST, RAW_DICT):
         # if not a base param, it has its param list
         else:
             deps = RAW_DICT[d]
-            new_deps = flatten_deps(deps, BASE_LIST, RAW_DICT)
+            new_deps = new_deps+ flatten_deps(deps, BASE_LIST, RAW_DICT)
     return new_deps
 
 
@@ -120,6 +120,7 @@ RAW_DICT = {"C":["a", "b", "c"],
 
 FLAT_DICT = flatten_dep_dict(RAW_DICT, BASE_LIST)
 
+pprint.pprint(RAW_DICT)
 pprint.pprint(FLAT_DICT)
 
 def dict_to_list_of_edges(RAW_DICT):
@@ -160,16 +161,17 @@ plot_DAG(RAW_DICT)
 #write_DAG_as_dot(RAW_DICT)
 ```
 
-```python
-
-```
-
 # Model
+
+
+See : 
+ - https://docs.python.org/3/howto/descriptor.html#properties
 
 ```python
 from physipy import units, s, m, asqarray
 from physipy.qwidgets.qt import QuantityQtSlider
 from physipy.quantity.utils import cached_property_depends_on
+from pprint import pprint
 
 V = units["V"]
 ohm = units["ohm"]
@@ -181,6 +183,28 @@ import time
 ```
 
 ```python
+
+class PropertyDescriptor():
+    
+    def __init__(self, func_with_deps):
+        self.func_with_deps = func_with_deps
+        self.deps = func_with_deps.deps # (name, deps)
+        
+    def __set_name__(self, owner, name):
+        # self.R
+        self.__name__ = name
+        self.public_name = name
+        # actually refers to self._R_w
+        self.private_name = '_' + name + "_with_deps"
+        
+    def __get__(self, obj, objtype=None):
+        value = self.func_with_deps(obj)
+        return value
+    
+    #def __set__(self, obj, func_with_deps):
+    #    setattr(obj, self.private_name, func_with_deps)
+
+        
 def register_deps(name, deps):
     def decorator(f):
         f.deps = (name, deps)
@@ -192,9 +216,23 @@ class RegisteringType(type):
         for key, val in attrs.items():
             deps = getattr(val, 'deps', None)
             if deps is not None:
-                print(val.__name__)
                 cls.curves[val.__name__] = deps
-                
+        RAW_DICT = {}
+        for xy, (param, deps) in cls.curves.items():
+            RAW_DICT[param] = deps
+        cls.RAW_DICT = RAW_DICT
+        cls.BASE_LIST = []
+        for key, val in attrs.items():
+            if type(val)== ParamDescriptor:#key.endswith("_observable_proxy_descriptor"):
+                cls.BASE_LIST.append(key)
+        cls.FLAT_DICT = flatten_dep_dict(cls.RAW_DICT, cls.BASE_LIST)
+
+        print("Created class with")
+        pprint(cls.BASE_LIST)
+        pprint(cls.RAW_DICT)
+        pprint(cls.FLAT_DICT)
+
+        
 class ParamDescriptor():
     def __init__(self, min, max):
         self.min = min
@@ -248,7 +286,10 @@ class ModelRC(metaclass=RegisteringType):
         #        self.params.append(i.split("_")[1])
         
         # just add a params dict that describes the sliders...
-        self.params = {
+    
+    @property
+    def params(self):
+        return {
             "R"  :{"min":0*ohm, "max":10*ohm, "value":self.R},
             "C"  :{"min":0*F,   "max":10*F,   "value":self.C},
             "Ve" :{"min":0*V,   "max":10*V,   "value":self.Ve},
@@ -267,6 +308,8 @@ class ModelRC(metaclass=RegisteringType):
 
 
     #@cached_property_depends_on('R', 'C') # will not recompute if R and C state are unchanged
+    #@property
+    #@PropertyDescriptor
     @register_deps("tau", ["R", "C"])
     def tau(self):
         return self.R * self.C
@@ -278,7 +321,7 @@ class ModelRC(metaclass=RegisteringType):
     #@cached_property_depends_on('u0', 'Ve', "tau") # will not recompute if R and C state are unchanged
     @register_deps("slope at start", ["u0", "Ve", "tau"])#"R", "C"])
     def xy_slope_at_start(self):
-        xs = asqarray([0*s, self.tau, self.tau])
+        xs = asqarray([0*s, self.tau(), self.tau()])
         ys = asqarray([self.u0, self.Ve, self.u0])
         return xs, ys
     
@@ -286,25 +329,24 @@ class ModelRC(metaclass=RegisteringType):
     def xy_response(self, ech_t=None):
         if ech_t is None:
             ech_t = self.ech_t
-
         xs = ech_t
-        ys = (self.u0 - self.Ve) * np.exp(-ech_t/self.tau) + self.Ve
+        ys = (self.u0 - self.Ve) * np.exp(-ech_t/self.tau()) + self.Ve
         return xs, ys 
-    
 ```
+
 
 ```python
 model = ModelRC(0*V, 0*ohm, 3*F)
 print(model.params)
-print(model.R)
+print(model.R, model.tau)
 model.R = 3*ohm
 print(model.R)
+
 ```
 
 ```python
-import pprint
-pprint.pprint(model.curves)
-pprint.pprint(model.params)
+pprint(model.curves)
+pprint(model.params)
 ```
 
 ```python
@@ -354,16 +396,17 @@ class VuePyQt(QMainWindow):#QWidget):
             # connect slider's value to model's value
             getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue, key=key:self.set_attr(self.model, key))#(lambda qtvalue:self.update_model_param_value(qtvalue, slider, key))
             # make slider to update all curves
-            #getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue:self.update_traces(qtvalue))
+            getattr(self, key+"_slider").qtslider.valueChanged.connect(lambda qtvalue:self.update_traces(qtvalue))
             
             # make slider to update dependent traces
-            for k, v in self.model.curves.items():
-                if key in v[1]: # loop over parameter list
-                    func = getattr(self.model, k)
-                    def _upd(qt_value):
-                        xs, ys = func()
-                        self.traces[name].setData(xs.value,ys.value)
-                    getattr(self, key+"_slider").qtslider.valueChanged.connect(_upd)
+            #for k, v in self.model.curves.items():
+            #    #print(k, v)
+            #    if key in v[1]: # loop over parameter list
+            #        func = getattr(self.model, k)
+            #        def _upd(qt_value):
+            #            xs, ys = func()
+            #            self.traces[name].setData(xs.value,ys.value)
+            #        getattr(self, key+"_slider").qtslider.valueChanged.connect(_upd)
             
             
             
@@ -422,13 +465,12 @@ class VuePyQt(QMainWindow):#QWidget):
     #        self.trace(name, xs, ys)
     #    return update_func
     
-    #def update_traces(self, qtvalue):
-    #    for name, trace_dict in self.model.get_curves().items():
-    #        func = trace_dict["xys"]
-    #        xs, ys = func()
-    #        pen_color = trace_dict["pen_color"]
-    #        self.trace(name, xs, ys, pen=pen_color)
-
+    def update_traces(self, qtvalue):
+        for name, trace_dict in self.model.get_curves().items():
+            func = trace_dict["xys"]
+            xs, ys = func()
+            pen_color = trace_dict["pen_color"]
+            self.trace(name, xs, ys, pen=pen_color)
 ```
 
 ```python
