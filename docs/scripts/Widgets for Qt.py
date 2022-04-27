@@ -56,25 +56,34 @@ class PropertyDescriptor():
     #    setattr(obj, self.private_name, func_with_deps)
 
         
-def register_deps(name, deps, is_curve=False, pencolor=None):
+def register_deps(name, deps, is_curve=False, pencolor=None, **kwargs):
     def decorator(f):
-        f.deps = (name, deps, is_curve, pencolor)
+        f.deps = (name, deps, is_curve, pencolor, kwargs)
         return f
     return decorator
 
 import functools
 
 from functools import lru_cache
-from operator import attrgetter
+from operator import attrgetter, methodcaller
+
 
 def cached_on_deps(*args):
     attrs = attrgetter(*args)
+    
+    # final decorator
     def decorator(func):
+        # decorated once
         _cache = lru_cache(maxsize=None)(lambda self, _: func(self))
+        
+        # final decorated func
         def _with_tracked(self):
             return _cache(self, attrs(self))
-        return _with_tracked
-    return decorator
+        _with_tracked.deps = func.deps
+        _with_tracked.__name__ = func.__name__
+        return _with_tracked # final decorated fund
+    
+    return decorator # final decorator
 
 class RegisteringType(type):
     def __init__(cls, name, bases, attrs):
@@ -84,7 +93,7 @@ class RegisteringType(type):
         for key, val in attrs.items():
             all_deps = getattr(val, 'deps', None)
             if all_deps is not None:
-                (name, deps, is_curve, pencolor) = all_deps
+                (name, deps, is_curve, pencolor, kwargs) = all_deps
                 cls.dependent[val.__name__] = (name, deps)
                 # if is a curve
                 if is_curve:
@@ -93,7 +102,7 @@ class RegisteringType(type):
         for xy, (param, deps) in cls.dependent.items():
             RAW_DICT[param] = deps
         cls.RAW_DICT = RAW_DICT
-        
+        print(cls.RAW_DICT)
         ## REGISTER BASE PARAMS
         cls.BASE_LIST = []
         cls.BASE_MINMAX = {}
@@ -107,10 +116,10 @@ class RegisteringType(type):
         cls.FLAT_DICT = flatten_dep_dict(cls.RAW_DICT, cls.BASE_LIST)
 
 
-        #print("Created class with")
-        #pprint(cls.BASE_LIST)
-        #pprint(cls.RAW_DICT)
-        #pprint(cls.FLAT_DICT)
+        print("Created class with")
+        pprint(cls.BASE_LIST)
+        pprint(cls.RAW_DICT)
+        pprint(cls.FLAT_DICT)
 
         
 class ModelMixin():
@@ -121,7 +130,7 @@ class ModelMixin():
             param_dict[pname] = {"value":getattr(self, pname), **self.BASE_MINMAX[pname]}
         return param_dict
 
-        
+
 class ParamDescriptor():
     def __init__(self, min, max):
         self.min = min
@@ -167,24 +176,29 @@ class ModelRC(ModelMixin, metaclass=RegisteringType):
         self.ech_t = ech_t
 
 
-    @register_deps("tau", ["R", "C"])
-    #@cached_on_deps('R', 'C') # will not recompute if R and C state are unchanged
+    @cached_on_deps('R', 'C') # will not recompute if R and C state are unchanged
+    @register_deps("tau", ["R", "C"])#, latex='\tau=R\cdotC')
     def tau(self):
         return self.R * self.C
     #tau = register_deps("tau", ["R", "C"])(tau)
     
+    #@cached_on_deps('Ve')
+    @cached_on_deps('Ve') # will not recompute if R and C state are unchange
     @register_deps("convergence", ["Ve"], True, pencolor="r")
     def xy_convergence(self):
         return asqarray([0*s, np.max(self.ech_t)]), asqarray([self.Ve, self.Ve])
     
     #@cached_property_depends_on('u0', 'Ve', "tau") # will not recompute if R and C state are unchanged
-    @register_deps("slope at start", ["u0", "Ve", "tau"], True, pencolor="g")#"R", "C"])
+    #@cached_on_deps('Ve', 'u0', "tau") # will not recompute if R and C state are unchange
+    @cached_on_deps('Ve', 'u0', 'R', 'C') # will not recompute if R and C state are unchange
+    @register_deps("slope at start", ["u0", "Ve", "tau"], True, pencolor="g", latex='\frac{V_e-u_0}{\tau}')#"R", "C"])
     def xy_slope_at_start(self):
         xs = asqarray([0*s, self.tau(), self.tau()])
         ys = asqarray([self.u0, self.Ve, self.u0])
         return xs, ys
     
-    @register_deps("response", ["u0", "Ve", "tau"], True, pencolor="b")#"R", "C"])
+    @cached_on_deps('Ve', 'u0', 'R', 'C') # will not recompute if R and C state are unchange
+    @register_deps("response", ["u0", "Ve", "tau"], True, pencolor="b", latex="(u_0-V_e)e^{-t/\tau}+V_e")#"R", "C"])
     def xy_response(self, ech_t=None):
         if ech_t is None:
             ech_t = self.ech_t
@@ -200,9 +214,11 @@ model.R = 3*ohm
 pprint(model.R)
 pprint(model.tau())
 pprint(model.params)
+print(model.xy_convergence())
 
 
 # %%
+print(model.tau())
 pprint(model.curves)
 pprint(model.params)
 
@@ -355,8 +371,6 @@ def main():
     C  = 2 * F
     
     model = ModelRC(Ve, R, C)
-    print(model.R, model.C, model.Ve, model.u0)
-    print(model.curves)
     vue = VuePyQt(model)
     print("vue's traces : ", vue.traces)
     vue.show()
