@@ -19,6 +19,52 @@ from .quantity import quantify, Quantity
 from .utils import array_to_Q_array, decorate_with_various_unit, asqarray
 
 
+def umap(func, *args, **kwargs):
+    """ Extension of python's 'map' function that works with units
+    func is the function to map
+    args is the arrays on which the function should me mapped
+    kwargs must not be used
+    """
+    if not callable(func):
+        raise ValueError("First argument must be a function")
+
+    if len(kwargs) > 0:
+        raise ValueError("Keywords arguments are not allowed in this function")
+
+    # Analyse whether arguments are arrays or scalars
+    args_len = []
+    for i, arg in enumerate(args):
+        if np.isscalar(arg):
+            args_len.append(1)
+        elif isinstance(arg, Quantity) and np.isscalar(arg.value):
+            args_len.append(1)
+        else:
+            shape = np.shape(arg)
+            if len(shape) > 1:
+                raise NotImplementedError("Only 1D arrays are supported")
+            else:
+                length = len(arg)
+            args_len.append(length)
+    ref_length = max(args_len)
+    args_modif = list(args)
+    for i, arg in enumerate(args):
+        if args_len[i] == 1:
+            args_modif[i] = np.repeat(args[i], ref_length)
+        elif args_len[i] < ref_length:
+            raise ValueError("When calling umap: All array/list arguments should have the same length")
+        else:
+            args_modif[i] = arg
+    
+    args = tuple(args_modif)
+    print("Function arguments:", args)
+
+    out = np.empty((ref_length,), dtype=object) # Declare the output array
+
+    for i in range(ref_length): # iterating on index
+        arg = tuple( [arg[i] for arg in args] ) # building tuple of arguments for the current index
+        out[i] = func(*arg)
+
+    return out
 
 def vectorize(func):
     """Allow vectorize a function of Quantity.
@@ -33,6 +79,18 @@ def vectorize(func):
         return res
     return func_Q_vec
 
+def uvectorize(func, *args, **kwargs):
+    """Allow vectorize a function of Quantity.
+    
+    This function aims to extend numpy.vectorize to Quantity-function.
+    
+    """
+    def func_out(*a, **k):
+        return asqarray( umap(func, *a, **k))
+    return func_out
+
+
+
 
 def xvectorize(func):
     def vec_func(x):
@@ -46,6 +104,8 @@ def xvectorize(func):
 
 
 def ndvectorize(func):
+    """ Vectorize function for functions with one argument, this argument being an N-dimensional np array
+    """
     def vec_func(x):
         res = []
         for i in x.flat:
