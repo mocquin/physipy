@@ -793,18 +793,18 @@ class Quantity(object):
                 
         # hypot doesn't have a reduce
         if ufunc_name in same_dim_out_2 and ufunc_name != "hypot":
-            res = ufunc.reduce(left.value)    
+            res = ufunc.reduce(left.value, **kwargs)
             return type(self)(res, left.dimension)
         # only multiply seems to be possible
         elif ufunc_name in skip_2:
-            res = ufunc.reduce(left.value)    
+            res = ufunc.reduce(left.value, **kwargs)    
             if ufunc_name == "multiply" or ufunc_name == "matmul":
                 return type(self)(res, left.dimension ** len(left.value))
             else:
                 raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
         # return booleans : 
         elif ufunc_name in same_dim_in_2_nodim_out:
-            res =  ufunc.reduce(left.value)    
+            res =  ufunc.reduce(left.value, **kwargs)    
             return res
         # ValueError: reduce only supported for binary functions
         elif ufunc_name in unary_ufuncs:

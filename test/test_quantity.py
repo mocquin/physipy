@@ -1979,29 +1979,125 @@ class TestQuantity(unittest.TestCase):
         exp = np.multiply.reduce(np.arange(10))*m**10
         self.assertEqual(res, exp)        
     def test_np_greater_reduce(self):
-        res = np.greater.reduce(np.arange(10)*m)
-        exp = np.greater.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.greater.reduce(arr, dtype=bool)
+        res = np.greater.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.greater.reduce(arr.astype(object))
+        res = np.greater.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.greater.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.greater.reduce(arr*m)    
+            
     def test_np_greater_equal_reduce(self):
-        res = np.greater_equal.reduce(np.arange(10)*m)
-        exp = np.greater_equal.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.greater_equal.reduce(arr, dtype=bool)
+        res = np.greater_equal.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.greater_equal.reduce(arr.astype(object))
+        res = np.greater_equal.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.greater_equal.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.greater_equal.reduce(arr*m)    
+            
     def test_np_less_reduce(self):
-        res = np.less.reduce(np.arange(10)*m)
-        exp = np.less.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.less.reduce(arr, dtype=bool)
+        res = np.less.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.less.reduce(arr.astype(object))
+        res = np.less.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.less.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.less.reduce(arr*m)    
+        
     def test_np_less_equal_reduce(self):
-        res = np.less_equal.reduce(np.arange(10)*m)
-        exp = np.less_equal.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.less_equal.reduce(arr, dtype=bool)
+        res = np.less_equal.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.less_equal.reduce(arr.astype(object))
+        res = np.less_equal.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.less_equal.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.less_equal.reduce(arr*m)    
+            
     def test_np_not_equal_reduce(self):
-        res = np.not_equal.reduce(np.arange(10)*m)
-        exp = np.not_equal.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.not_equal.reduce(arr, dtype=bool)
+        res = np.not_equal.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.not_equal.reduce(arr.astype(object))
+        res = np.not_equal.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.not_equal.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.not_equal.reduce(arr*m)    
+        
     def test_np_equal_reduce(self):
-        res = np.equal.reduce(np.arange(10)*m)
-        exp = np.equal.reduce(np.arange(10))
+        # see https://github.com/numpy/numpy/issues/20929
+        arr = np.arange(10)    
+            
+        # with dtype bool
+        exp = np.equal.reduce(arr, dtype=bool)
+        res = np.equal.reduce(arr*m, dtype=bool)
         self.assertEqual(res, exp)
+
+        # as object
+        exp = np.equal.reduce(arr.astype(object))
+        res = np.equal.reduce(arr.astype(object)*m)
+        self.assertEqual(res, exp)
+
+        # error on raw input
+        with self.assertRaises(TypeError):
+            np.equal.reduce(arr)
+        with self.assertRaises(TypeError):
+            np.equal.reduce(arr*m)    
+        
     def test_np_floor_dividel_reduce(self):
         res = np.floor_divide.reduce(np.arange(10)*m)
         exp = np.floor_divide.reduce(np.arange(10))
