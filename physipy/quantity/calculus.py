@@ -16,7 +16,7 @@ import sympy as sp
 
 from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
 from .quantity import quantify, Quantity
-from .utils import array_to_Q_array, decorate_with_various_unit, asqarray
+from .utils import decorate_with_various_unit, asqarray
 
 
 

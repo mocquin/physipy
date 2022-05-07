@@ -6,7 +6,7 @@ from numpy import pi
 from ._version import __version__
 from . import quantity
 from .quantity import Quantity, Dimension, make_quantity, quantify, DimensionError, dimensionify
-from .quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, decorate_with_various_unit, add_back_unit_param, array_to_Q_array, asqarray
+from .quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, decorate_with_various_unit, add_back_unit_param, asqarray
 from .integrate import quad, dblquad, tplquad
 from .optimize import root, brentq
 from .quantity import vectorize

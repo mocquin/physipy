@@ -18,7 +18,7 @@ from physipy.quantity.calculus import xvectorize, ndvectorize
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
-from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit, array_to_Q_array
+from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit
 from physipy.quantity.utils import asqarray
 from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
