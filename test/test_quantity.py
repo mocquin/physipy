@@ -1796,6 +1796,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(exp == res))     
         
     def test_xvectorize(self):
+        # func returns dimensionfull value
         arr_m = np.arange(5)*m
         
         def thresh(x):
@@ -1807,6 +1808,21 @@ class TestQuantity(unittest.TestCase):
         
         res = vec_thresh(arr_m)
         exp = np.array([3, 3, 3, 3, 4])*m
+        self.assertTrue(np.all(res == exp))
+        
+        
+        # func returns dimensionless value
+        arr_m = np.arange(5)*m
+        
+        def thresh(x):
+            if x >3*m:
+                return x/m
+            else:
+                return 3
+        vec_thresh = xvectorize(thresh)
+        
+        res = vec_thresh(arr_m)
+        exp = np.array([3, 3, 3, 3, 4])
         self.assertTrue(np.all(res == exp))
         
     #def test_vectorize(self):
@@ -1841,6 +1857,7 @@ class TestQuantity(unittest.TestCase):
         
         
     def test_ndvectorize(self):
+        # func returns dimensionfull value
         arr_m = np.arange(6).reshape(3,2)*m
         
         def thresh(x):
@@ -1852,6 +1869,21 @@ class TestQuantity(unittest.TestCase):
         
         res = vec_thresh(arr_m)
         exp = np.array([[3, 3],[3, 3], [4, 5]])*m
+        self.assertTrue(np.all(res == exp))
+
+        
+        # func returns dimensionless value
+        arr_m = np.arange(6).reshape(3,2)*m
+        
+        def thresh(x):
+            if x >3*m:
+                return x/m
+            else:
+                return 3
+        vec_thresh = ndvectorize(thresh)
+        
+        res = vec_thresh(arr_m)
+        exp = np.array([[3, 3],[3, 3], [4, 5]])
         self.assertTrue(np.all(res == exp))
 
 
