@@ -20,18 +20,18 @@ from .utils import decorate_with_various_unit, asqarray
 
 
 
-def vectorize(func):
-    """Allow vectorize a function of Quantity.
-    
-    This function aims to extend numpy.vectorize to Quantity-function.
-    
-    """
-    func_vec = np.vectorize(func)
-    def func_Q_vec(*args, **kwargs):
-        res_brute = func_vec(*args, **kwargs)
-        res = asqarray(res_brute)
-        return res
-    return func_Q_vec
+#def vectorize(func):
+#    """Allow vectorize a function of Quantity.
+#    
+#    This function aims to extend numpy.vectorize to Quantity-function.
+#    
+#    """
+#    func_vec = np.vectorize(func)
+#    def func_Q_vec(*args, **kwargs):
+#        res_brute = func_vec(*args, **kwargs)
+#        res = asqarray(res_brute)
+#        return res
+#    return func_Q_vec
 
 
 def xvectorize(func):

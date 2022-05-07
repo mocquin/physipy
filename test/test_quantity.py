@@ -16,7 +16,7 @@ from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 from physipy.integrate import quad, dblquad, tplquad, solve_ivp
 from physipy.optimize import root, brentq
-from physipy.quantity import vectorize #turn_scalar_to_str
+#from physipy.quantity import vectorize #turn_scalar_to_str
 from physipy.quantity.calculus import xvectorize, ndvectorize
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
