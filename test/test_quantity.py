@@ -1854,7 +1854,50 @@ class TestQuantity(unittest.TestCase):
         exp = np.array([[3, 3],[3, 3], [4, 5]])*m
         self.assertTrue(np.all(res == exp))
 
+        
+    def test_uvectorize_single_arg(self):
+        # 1D array
+        arr_m = np.arange(5)*m
 
+        def thresh(x):
+            if x >3*m:
+                return x
+            else:
+                return 3*m
+        vec_thresh = uvectorize(thresh)
+        
+        res = vec_thresh(arr_m)
+        exp = np.array([3, 3, 3, 3, 4])*m
+        self.assertTrue(np.all(res == exp))
+        
+        # nD array
+        #Will fail because not yet implemented
+        #arr_m = np.arange(6).reshape(3,2)*m
+        #res = vec_thresh(arr_m)
+        #exp = np.array([[3, 3],[3, 3], [4, 5]])*m
+        #self.assertTrue(np.all(res == exp))        
+
+    def test_uvectorize_multiple_args(self):
+        # 1D array
+        x_arr = np.arange(5)*m
+        y_arr = 2*np.arange(5)*m
+        z_arr = 3*np.arange(5)*m
+
+        def thresh(x, y, z):
+            if x <=3*m:
+                return y+z
+            else:
+                return 3*m
+        vec_thresh = uvectorize(thresh)
+        
+        res = vec_thresh(x_arr, y_arr, z_arr)
+        exp = np.array([0, 5, 10, 15, 3])*m
+        self.assertIsNone(np.testing.assert_array_equal(res, exp))
+
+        res2 = vec_thresh(x_arr, 0*m, z_arr)
+        exp2 = np.array([0, 3, 6, 9, 3])*m
+        self.assertIsNone(np.testing.assert_array_equal(res2, exp2))
+ 
     def test_np_fft_fftshift(self):
         exp = np.fft.fftshift(np.arange(10))*s
         self.assertTrue(np.all(np.fft.fftshift(np.arange(10)*s)==exp))

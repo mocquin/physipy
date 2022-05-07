@@ -10,6 +10,7 @@ from .quantity import check_dimension, set_favunit, dimension_and_favunit, drop_
 from .integrate import quad, dblquad, tplquad
 from .optimize import root, brentq
 from .quantity import vectorize
+from .quantity import uvectorize
 from .quantity import m, kg, s, A, K, cd, mol, rad, sr
 from .quantity import SI_units, SI_units_prefixed, SI_derived_units, other_units, units, all_units, SI_derived_units_prefixed
 
