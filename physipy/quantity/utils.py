@@ -509,50 +509,6 @@ def name_eq(name):
     return wrapper
 
 
-def array_to_Q_array(x):
-    raise ImplementedError
-#    """Converts an array of Quantity to a Quantity with array value.
-#    
-#    First aim to be used with the vectorize.
-#    
-#    """
-#    # aim to deal with np.ndarray
-#    if type(x) == np.ndarray:
-#        # if array is size 1
-#        if x.size == 1:
-#            return quantify(x.item(0))
-#        # when size>1 and Quantity
-#        elif isinstance(x[0], Quantity):
-#            # extract values into an array
-#            val_out = np.asarray([qu.value for qu in x])
-#            # send in a new Quantity
-#            return Quantity(val_out, 
-#                            x[0].dimension, 
-#                            favunit=x[0].favunit)
-#        # otherwise create a dimless quantity
-#        else:
-#            return Quantity(x, Dimension(None))            
-#    else:
-#        return quantify(x)
-    
-    
-def list_of_Q_to_Q_array(Q_list):
-    raise ImplementedError
-#    """Convert list of Quantity's object to a Quantity with array value.
-#    All Quantity must have the same dimension."""
-#    first = quantify(Q_list[0])
-#    dim = first.dimension
-#    val_list = []
-#    for q in Q_list:
-#        q = quantify(q)
-#        if q.dimension == dim:
-#            val_list.append(q.value)
-#        else:
-#            raise ValueError
-#    return Quantity(np.array(val_list), dim)
-
-
-
 from collections.abc import Iterable
 
 def _flatten(x):
