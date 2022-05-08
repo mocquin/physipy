@@ -17,7 +17,7 @@ from physipy.quantity import Dimension, Quantity, DimensionError
 from physipy.integrate import quad, dblquad, tplquad, solve_ivp
 from physipy.optimize import root, brentq
 #from physipy.quantity import vectorize #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize
+from physipy.quantity.calculus import xvectorize, ndvectorize, vectorize_1d_args
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
@@ -1884,6 +1884,79 @@ class TestQuantity(unittest.TestCase):
         
         res = vec_thresh(arr_m)
         exp = np.array([[3, 3],[3, 3], [4, 5]])
+        self.assertTrue(np.all(res == exp))
+
+        
+    def test_vectorize_broadcast(self):
+        
+        @vectorize_1d_args() # parenths are needed because of kwargs
+        def addition(n, offset):
+            if n>offset:
+                return n + n + offset
+            else:
+                return n+offset
+
+        # 1d and scalar, as quantities
+        numbers = (1, 2, 3, 4)*m
+        offset = 3*m
+        res = addition(numbers, offset)
+        exp = [4, 5, 6, 11]*m
+        self.assertTrue(np.all(res == exp))
+
+
+        # both 1d, as quantities
+        numbers = (1, 2, 3, 4)*m
+        offset = (2, 5, 1, 5)*m
+        res = addition(numbers, offset)
+        exp = [3, 7, 7, 9]*m
+        self.assertTrue(np.all(res == exp))
+
+        
+
+        # 1d and scalar, as ints
+        numbers = (1, 2, 3, 4)
+        offset = 3
+        res = type(addition(numbers, offset))
+        exp = Quantity
+        self.assertEqual(res, exp)
+
+        
+        # don't force quantity output type
+        @vectorize_1d_args(force_quantity=False) 
+        def addition(n, offset):
+            if n>offset:
+                return n + n + offset
+            else:
+                return n+offset
+            
+            
+        numbers = (1, 2, 3, 4)
+        offset = 3
+        res = type(addition(numbers, offset))
+        exp = list
+        self.assertEqual(res, exp)
+
+
+        @vectorize_1d_args()
+        def thresh(x, y, z):
+            if x <=3*m:
+                return y+z
+            else:
+                return 3*m
+
+        x_arr = np.arange(5)*m
+        y_arr = 2*m#*np.arange(5)*m
+        z_arr = 3*np.arange(5)*m
+        res = thresh(x_arr, y_arr, z_arr)
+        exp = [2, 5, 8, 11, 3]*m
+        self.assertTrue(np.all(res == exp))
+
+        
+        x_arr = np.arange(5)*m
+        y_arr = 2*np.arange(5)*m
+        z_arr = 3*np.arange(5)*m
+        res = thresh(x_arr, y_arr, z_arr)
+        exp = [0, 5, 10, 15, 3]*m
         self.assertTrue(np.all(res == exp))
 
 

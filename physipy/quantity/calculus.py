@@ -7,6 +7,7 @@ These are basically numpy function wrapped with dimensions checks.
 """
 
 import numbers as nb
+import functools
 
 import numpy as np
 import scipy
@@ -77,6 +78,53 @@ def ndvectorize(func):
         return res
     return vec_func
 
+
+def vectorize_1d_args(force_quantity=True):
+    """
+    Vectorize function to any number of 0-or-1d arrays.
+    
+    Only works if args are scalar or 1D arrays of the same lenght, or a mix of those.
+    Only works for single scalar output function.
+    
+    This could be a drop-in replacement for xvectorize.
+    
+    If force_quantity is True, returned value will always be a Quantity object, 
+    even if the function returns dimensionless scalars (floats or likes).
+    
+    Examples : 
+    ==========
+    @vectorize_1d_args
+    def addition(n, offset):
+        if n>offset:
+            return n + n + offset
+        else:
+            return n+offset
+
+    # 1d and scalar
+    numbers = (1, 2, 3, 4)*m
+    offset = 3*m
+    result = addition(numbers, offset)
+    
+    # both 1d (must be same length)
+    numbers = (1, 2, 3, 4)*m
+    offset = (2, 5, 1, 5)*m
+    result = addition(numbers, offset)
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def decorated(*args):
+            # first broadcast args
+            args = np.broadcast_arrays(*args)
+            # compute results iteratively
+            res_iterator = map(func, *args)
+            res = [r for r in res_iterator]
+            # wrap units
+            if force_quantity:
+                return asqarray(res)
+            else:
+                return res
+        return decorated
+    return decorator
 
 
 def trapz2(Zs, ech_x, ech_y):
