@@ -17,7 +17,7 @@ from physipy.quantity import Dimension, Quantity, DimensionError
 from physipy.integrate import quad, dblquad, tplquad, solve_ivp
 from physipy.optimize import root, brentq
 #from physipy.quantity import vectorize #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize, vectorize_1d_args
+from physipy.quantity.calculus import xvectorize, ndvectorize, vectorize_nd_args
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
@@ -1887,9 +1887,9 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(res == exp))
 
         
-    def test_vectorize_broadcast(self):
+    def test_vectorize_broadcast_oned(self):
         
-        @vectorize_1d_args() # parenths are needed because of kwargs
+        @vectorize_nd_args() # parenths are needed because of kwargs
         def addition(n, offset):
             if n>offset:
                 return n + n + offset
@@ -1922,7 +1922,7 @@ class TestQuantity(unittest.TestCase):
 
         
         # don't force quantity output type
-        @vectorize_1d_args(force_quantity=False) 
+        @vectorize_nd_args(force_quantity=False) 
         def addition(n, offset):
             if n>offset:
                 return n + n + offset
@@ -1933,11 +1933,11 @@ class TestQuantity(unittest.TestCase):
         numbers = (1, 2, 3, 4)
         offset = 3
         res = type(addition(numbers, offset))
-        exp = list
+        exp = np.ndarray
         self.assertEqual(res, exp)
 
 
-        @vectorize_1d_args()
+        @vectorize_nd_args()
         def thresh(x, y, z):
             if x <=3*m:
                 return y+z
@@ -1958,7 +1958,46 @@ class TestQuantity(unittest.TestCase):
         res = thresh(x_arr, y_arr, z_arr)
         exp = [0, 5, 10, 15, 3]*m
         self.assertTrue(np.all(res == exp))
+        
+        
+        
+        
+    def test_vectorize_broadcast_nd(self):
+        img = np.linspace(-1.5, 1.5, num=25).reshape(5,5)*m
+        gain = np.ones((5,5))
+        offs = np.ones((5,5))*0.5*m
 
+        def apply_nuc(img, gain, offs, sat_min=-1.5*m, sat_max=1.5*m):
+            res = img*gain+offs
+            if res > sat_max:
+                return sat_max
+            elif res < sat_min:
+                return sat_min
+            else:
+                return res
+        
+        vec_apply_nuc = vectorize_nd_args()(apply_nuc)
+        all_2d = vec_apply_nuc(img, gain, offs)
+        one_2d = vec_apply_nuc(img, 1, 0.5*m)
+        self.assertTrue(np.all(all_2d==one_2d))
+        
+
+        def double_if_valid(img, mask, coef=2):
+            if mask:
+                return 2*img
+            else:
+                return img
+
+        mask = np.abs(img) > 1.3*m
+        
+        vec_double_if_valid = vectorize_nd_args()(double_if_valid)
+        res = vec_double_if_valid(img, mask)
+        exp = np.array([[-3.   , -2.75 , -1.25 , -1.125, -1.   ],
+                        [-0.875, -0.75 , -0.625, -0.5  , -0.375],
+                        [-0.25 , -0.125,  0.   ,  0.125,  0.25 ],
+                        [ 0.375,  0.5  ,  0.625,  0.75 ,  0.875],
+                        [ 1.   ,  1.125,  1.25 ,  2.75 ,  3.   ],])*m
+        self.assertTrue(np.all(res==exp))
 
     def test_np_fft_fftshift(self):
         exp = np.fft.fftshift(np.arange(10))*s

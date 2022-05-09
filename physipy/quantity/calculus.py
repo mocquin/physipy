@@ -79,15 +79,14 @@ def ndvectorize(func):
     return vec_func
 
 
-def vectorize_1d_args(force_quantity=True):
+
+def vectorize_nd_args(force_quantity=True):
     """
-    Vectorize function to any number of 0-or-1d arrays.
+    Vectorize function to any number of scalar or nd arrays. 
+    Inputs must be broadcastable.
     
-    Only works if args are scalar or 1D arrays of the same lenght, or a mix of those.
     Only works for single scalar output function.
-    
-    This could be a drop-in replacement for xvectorize.
-    
+        
     If force_quantity is True, returned value will always be a Quantity object, 
     even if the function returns dimensionless scalars (floats or likes).
     
@@ -109,20 +108,38 @@ def vectorize_1d_args(force_quantity=True):
     numbers = (1, 2, 3, 4)*m
     offset = (2, 5, 1, 5)*m
     result = addition(numbers, offset)
+    
+    # on 2D with same shape
+    img = np.linspace(-1.5, 1.5, num=25).reshape(5,5)*m
+    gain = np.ones((5,5))
+    offs = np.ones((5,5))*0.5*m
+
+    def apply_nuc(img, gain, offs, sat_min=-1.5*m, sat_max=1.5*m):
+        res = img*gain+offs
+        if res > sat_max:
+            return sat_max
+        elif res < sat_min:
+            return sat_min
+        else:
+            return res
+
+    vec_apply_nuc = vectorize_nd_args()(apply_nuc)
+    all_2d = vec_apply_nuc(img, gain, offs)
+    one_2d = vec_apply_nuc(img, 1, 0.5*m)
     """
     def decorator(func):
         @functools.wraps(func)
-        def decorated(*args):
+        def decorated(*args, **kwargs):
             # first broadcast args
-            args = np.broadcast_arrays(*args)
-            # compute results iteratively
-            res_iterator = map(func, *args)
+            args = np.broadcast_arrays(*args) 
+            flat_args = [arg.flat for arg in args]
+            res_iterator = map(func, *flat_args, **kwargs)
             res = [r for r in res_iterator]
             # wrap units
             if force_quantity:
-                return asqarray(res)
+                return asqarray(res).reshape(args[0].shape)
             else:
-                return res
+                return np.asarray(res).reshape(args[0].shape)
         return decorated
     return decorator
 
