@@ -17,7 +17,7 @@ from physipy.quantity import Dimension, Quantity, DimensionError
 from physipy.integrate import quad, dblquad, tplquad, solve_ivp
 from physipy.optimize import root, brentq
 #from physipy.quantity import vectorize #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize, vectorize_nd_args
+from physipy.quantity.calculus import vectorize_nd_args #xvectorize, ndvectorize, 
 from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
@@ -1804,7 +1804,7 @@ class TestQuantity(unittest.TestCase):
                 return x
             else:
                 return 3*m
-        vec_thresh = xvectorize(thresh)
+        vec_thresh = vectorize_nd_args()(thresh)
         
         res = vec_thresh(arr_m)
         exp = np.array([3, 3, 3, 3, 4])*m
@@ -1819,42 +1819,11 @@ class TestQuantity(unittest.TestCase):
                 return x/m
             else:
                 return 3
-        vec_thresh = xvectorize(thresh)
+        vec_thresh = vectorize_nd_args()(thresh)
         
         res = vec_thresh(arr_m)
         exp = np.array([3, 3, 3, 3, 4])
         self.assertTrue(np.all(res == exp))
-        
-    #def test_vectorize(self):
-    #    
-    #    # 1D array
-    #    arr_m = np.arange(5)*m
-#
-    #    def thresh(x):
-    #        if x >3*m:
-    #            return x
-    #        else:
-    #            return 3*m
-    #    vec_thresh = vectorize(thresh)
-    #    
-    #    res = vec_thresh(arr_m)
-    #    exp = np.array([3, 3, 3, 3, 4])*m
-    #    self.assertTrue(np.all(res == exp))
-    #    
-    #    # nD array
-    #    arr_m = np.arange(6).reshape(3,2)*m
-    #    
-    #    def thresh(x):
-    #        if x >3*m:
-    #            return x
-    #        else:
-    #            return 3*m
-    #    vec_thresh = vectorize(thresh)
-    #    
-    #    res = vec_thresh(arr_m)
-    #    exp = np.array([[3, 3],[3, 3], [4, 5]])*m
-    #    self.assertTrue(np.all(res == exp))        
-        
         
     def test_ndvectorize(self):
         # func returns dimensionfull value
@@ -1865,7 +1834,7 @@ class TestQuantity(unittest.TestCase):
                 return x
             else:
                 return 3*m
-        vec_thresh = ndvectorize(thresh)
+        vec_thresh = vectorize_nd_args()(thresh)
         
         res = vec_thresh(arr_m)
         exp = np.array([[3, 3],[3, 3], [4, 5]])*m
@@ -1880,7 +1849,7 @@ class TestQuantity(unittest.TestCase):
                 return x/m
             else:
                 return 3
-        vec_thresh = ndvectorize(thresh)
+        vec_thresh = vectorize_nd_args()(thresh)
         
         res = vec_thresh(arr_m)
         exp = np.array([[3, 3],[3, 3], [4, 5]])

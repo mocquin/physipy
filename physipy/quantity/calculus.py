@@ -35,55 +35,56 @@ from .utils import decorate_with_various_unit, asqarray
 #    return func_Q_vec
 
 
-def xvectorize(func):
-    """
-    1-D vectorize func.
-    
-    func must have signature 'func(arg)', and vectorization is made along arg.
-    Returned value will be a Quantity object, even if returned values are 
-    dimensionless (because of the use of asqarray).
-    
-    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
-    it does not improve performance in any way.
-    """
-    def vec_func(x):
-        res = []
-        for i in x:
-            res.append(func(i))
-        res = asqarray(res)
-        return res
-    return vec_func
+#def xvectorize(func):
+#    """
+#    1-D vectorize func.
+#    
+#    func must have signature 'func(arg)', and vectorization is made along arg.
+#    Returned value will be a Quantity object, even if returned values are 
+#    dimensionless (because of the use of asqarray).
+#    
+#    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
+#    it does not improve performance in any way.
+#    """
+#    def vec_func(x):
+#        res = []
+#        for i in x:
+#            res.append(func(i))
+#        res = asqarray(res)
+#        return res
+#    return vec_func
 
 
-def ndvectorize(func):
-    """
-    1-D vectorize func and accept input as ndarray.
-    
-    func must have signature 'func(arg)', and vectorization is made along arg.
-    Returned value will be a Quantity object, even if returned values are 
-    dimensionless (because of the use of asqarray).
-    
-    Basically, func is applied to each value in arg input (as a flat list), 
-    and output is reshaped to input shape.
-    
-    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
-    it does not improve performance in any way.
-    """
-    def vec_func(x):
-        res = []
-        for i in x.flat:
-            res.append(func(i))
-        res = asqarray(res)
-        res.value = res.value.reshape(x.shape)
-        return res
-    return vec_func
+#def ndvectorize(func):
+#    """
+#    1-D vectorize func and accept input as ndarray.
+#    
+#    func must have signature 'func(arg)', and vectorization is made along arg.
+#    Returned value will be a Quantity object, even if returned values are 
+#    dimensionless (because of the use of asqarray).
+#    
+#    Basically, func is applied to each value in arg input (as a flat list), 
+#    and output is reshaped to input shape.
+#    
+#    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
+#    it does not improve performance in any way.
+#    """
+#    def vec_func(x):
+#        res = []
+#        for i in x.flat:
+#            res.append(func(i))
+#        res = asqarray(res)
+#        res.value = res.value.reshape(x.shape)
+#        return res
+#    return vec_func
 
 
 
 def vectorize_nd_args(force_quantity=True):
     """
     Vectorize function to any number of scalar or nd arrays. 
-    Inputs must be broadcastable.
+    Inputs must be broadcastable. Like np.vectorize, this is essentially
+    a wrapper for a 'for loop', so do not expect performance improvement.
     
     Only works for single scalar output function.
         
