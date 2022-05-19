@@ -26,6 +26,7 @@ PLEASE NOTE :
  - numpy to check if the dimension powers are scalars
 
 """
+from __future__ import annotations
 import json
 import os
 
@@ -43,10 +44,10 @@ with open(os.path.join(dirname, "dimension.txt")) as file:
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
-NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST}
+NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST} # type: dict[str, int]
 
 
-def parse_str_to_dic(exp_str):
+def parse_str_to_dic(exp_str: str) -> dict:
     """Parse a str expression into a power dict.
     
     Example:
@@ -59,7 +60,7 @@ def parse_str_to_dic(exp_str):
     return exp_dic
 
 
-def check_pattern(exp_str, symbol_list):
+def check_pattern(exp_str: str, symbol_list: list) ->bool:
     """Check that all symbols used in exp_str are present in symbol_list.
     
     Start by parsing the string expression into a power_dict, then check that 
@@ -79,7 +80,7 @@ def check_pattern(exp_str, symbol_list):
 class DimensionError(Exception):
     """Exception class for dimension errors."""
 
-    def __init__(self, dim_1, dim_2, binary=True):
+    def __init__(self, dim_1: Dimension, dim_2: Dimension, binary: bool = True) -> None:
         """Init method of DimensionError class."""
         if binary:
             self.message = ("Dimension error : dimensions of "
@@ -89,7 +90,7 @@ class DimensionError(Exception):
             self.message = (f"Dimension error : dimension is {dim_1} "
                             f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Str method of DimensionError class."""
         return self.message
 
@@ -101,7 +102,7 @@ class Dimension(object):
     # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict" # "SI_unit"
 
-    def __init__(self, definition):
+    def __init__(self, definition) -> None:
         """Allow the creation of Dimension object with 3 possibile ways."""
         self.dim_dict = NULL_SI_DICT.copy()
         if definition is None:
@@ -145,19 +146,19 @@ class Dimension(object):
                                                    SI_SYMBOL_LIST,
                                                    definition))
 
-    def __str__(self):
+    def __str__(self: Dimension) -> str:
         """Concatenate symbol-wise the content of the dim_dict attribute."""
         return compute_str(self.dim_dict, NO_DIMENSION_STR)
 
-    def __format__(self, format_spec):
+    def __format__(self: Dimension, format_spec: str) -> str:
         raw = self.__str__()
         return format(raw, format_spec)
     
-    def __repr__(self):
+    def __repr__(self: Dimension) -> str:
         """Return the dim_dict into a <Dimension : ...> tag."""
         return "<Dimension : " + str(self.dim_dict) + ">"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self: Dimension) -> str:
         """Latex repr hook for IPython."""
         if self.DEFAULT_REPR_LATEX == "dim_dict":
             expr_dim = expand_dict_to_expr(self.dim_dict)
@@ -166,7 +167,7 @@ class Dimension(object):
             return self.latex_SI_unit()
 
     
-    def __mul__(self, y):
+    def __mul__(self: Dimension, y: Dimension) -> Dimension:
         """Allow the multiplication of Dimension objects."""
         #if isinstance(y, Dimension):
         try:
@@ -178,7 +179,7 @@ class Dimension(object):
 
     __rmul__ = __mul__
 
-    def __truediv__(self, y):
+    def __truediv__(self: Dimension, y: Dimension) -> Dimension:
         """Allow the division of Dimension objects."""
         #if isinstance(y, Dimension):
         try:
@@ -191,7 +192,7 @@ class Dimension(object):
             raise TypeError(("A dimension can only be divided "
                              "by another dimension, not {}. Got exception {}").format(y, e))
 
-    def __rtruediv__(self, x):
+    def __rtruediv__(self: Dimension, x: Dimension) -> Dimension:
         """Only used to raise a TypeError."""
         if x == 1:   # allowing one-divion
             #return self.inverse()
@@ -199,7 +200,7 @@ class Dimension(object):
         else:
             raise TypeError("A Dimension can only divide 1 to be inverted.")
 
-    def __pow__(self, y):
+    def __pow__(self: Dimension, y) -> Dimension:
         """Allow the elevation of Dimension objects to a real power."""
         if np.isscalar(y):
             new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
@@ -208,7 +209,7 @@ class Dimension(object):
             raise TypeError(("The power of a dimension must be a scalar,"
                              "not {}").format(type(y)))
 
-    def __eq__(self, y):
+    def __eq__(self: Dimension, y: Dimension) -> bool:
         """Dimensions are equal if their dim_dict are equal."""
         #if type(y)==Dimension:
         try:
@@ -225,23 +226,23 @@ class Dimension(object):
     #    inv_dict = {key: -value for key, value in self.dim_dict.items()}
     #    return Dimension(inv_dict)
 
-    def siunit_dict(self):
+    def siunit_dict(self: Dimension) -> dict:
         """Return a dict where keys are SI unit
         string, and value are powers."""
         return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
     
-    def str_SI_unit(self):
+    def str_SI_unit(self: Dimension) -> str:
         """Compute the symbol-wise SI unit."""
         str_dict = self.siunit_dict()
         return compute_str(str_dict, "")
 
-    def latex_SI_unit(self):
+    def latex_SI_unit(self: Dimension) -> str:
         """Latex repr of SI unit form."""
         expr_SI = expand_dict_to_expr(self.siunit_dict())
         return "$" + latex(expr_SI) + "$"
     
     @property
-    def dimensionality(self):
+    def dimensionality(self: Dimension):
         """Return the first dimensionality with same 
         dimension found in DIMENSIONALITY"""
         try:
@@ -252,7 +253,7 @@ class Dimension(object):
     
 DIMENSIONLESS = Dimension(None)
 
-def compute_str(dic, default_str, output_init=1):
+def compute_str(dic: dict, default_str: str, output_init: int = 1) -> str:
     """Compute the product-concatenation of the 
     dict as key**value into a string.
     Only used for 'str' and 'repr' methods.
@@ -264,7 +265,7 @@ def compute_str(dic, default_str, output_init=1):
         return str(output)
 
     
-def expand_dict_to_expr(dic, output_init=1):
+def expand_dict_to_expr(dic: dict, output_init: int = 1) -> sp.Symbol:
     """Compute the sympy expression from exponent dict,
     starting the product with ouptput=1.
     Only used for 'str' and 'repr' methods.

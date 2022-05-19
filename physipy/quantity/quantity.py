@@ -60,7 +60,8 @@ PROPOSITIONS/QUESTIONS :
  - should redefine every numpy ufunc as method ?
 
 """
-
+from __future__ import annotations
+from typing import Callable
 import math
 import numbers as nb
 import numpy as np
@@ -92,7 +93,7 @@ class Quantity(object):
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     __array_priority__ = 100
     
-    def __init__(self, value, dimension, symbol=DEFAULT_SYMBOL, favunit=None):
+    def __init__(self, value, dimension: Dimension, symbol=DEFAULT_SYMBOL, favunit: Quantity=None) -> None:
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
@@ -305,19 +306,19 @@ class Quantity(object):
                         favunit = self.favunit)
 
 
-    def __complex__(self):
+    def __complex__(self) -> complex:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return complex(self.value)
 
 
-    def __int__(self):
+    def __int__(self) -> int:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return int(self.value)
 
 
-    def __float__(self):
+    def __float__(self) -> float:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
         return float(self.value)
@@ -335,14 +336,14 @@ class Quantity(object):
     def copy(self):
         return self.__copy__()
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         if str(self.symbol) != "UndefinedSymbol":
             sym = ", symbol="+str(self.symbol)
         else:
             sym = ""
         return f'<{self.__class__.__name__} : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"        
 
-    def __str__(self):
+    def __str__(self) -> str:
         complement_value_for_repr = self._compute_complement_value() 
         if not complement_value_for_repr == "":
             return str(self._compute_value()) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
@@ -382,7 +383,7 @@ class Quantity(object):
     #    print("repr_pretty")
     #    return p.text(self._repr_latex_())
     
-    def plot(self, kind="y", other=None, ax=None):
+    def plot(self, kind: str = "y", other=None, ax=None) -> None:
         from physipy.quantity.plot import plotting_context
         if ax is None:
             import matplotlib.pyplot as plt
@@ -395,7 +396,7 @@ class Quantity(object):
             else:
                 raise ValueError("kind must be y of x with other")
     
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
 
@@ -420,7 +421,7 @@ class Quantity(object):
         return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
     
     
-    def _pick_smart_favunit(self, array_to_scal=np.mean):
+    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Quantity:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
@@ -440,7 +441,7 @@ class Quantity(object):
         return best_favunit
     
 
-    def _format_value(self):
+    def _format_value(self) -> str:
         """Used to format the value on repr as a str.
         If the value is > to 10**self.EXP_THRESH, it is displayed with scientific notation.
         Else floating point notation is used.
@@ -466,7 +467,7 @@ class Quantity(object):
     #def __format_raw__(self, format_spec):
     #    return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec: str) -> str:
         """This method is used when using format or f-string. 
         The format is applied to the numerical value part only."""
         complement_value_for_repr = self._compute_complement_value()
@@ -525,7 +526,7 @@ class Quantity(object):
                             self.dimension,
                             favunit=self.favunit)
 
-    def __setitem__(self, idx, q):
+    def __setitem__(self, idx, q) -> None:
         q = quantify(q)
         if not q.dimension == self.dimension:
             raise DimensionError(q.dimension,self.dimension)
@@ -550,7 +551,7 @@ class Quantity(object):
             return iter(self.value)
         
     @property
-    def flat(self):
+    def flat(self) -> FlatQuantityIterator:
         # pint implementation
         #for v in self.value.flat:
         #    yield Quantity(v, self.dimension)
@@ -561,7 +562,7 @@ class Quantity(object):
     def flatten(self):
         return type(self)(self.value.flatten(), self.dimension, favunit=self.favunit)
     
-    def tolist(self):
+    def tolist(self) -> list:
         return [type(self)(i, self.dimension) for i in self.value]
     
     @property
@@ -590,7 +591,7 @@ class Quantity(object):
     
     def integrate(self, *args, **kwargs): return np.trapz(self, *args, **kwargs)
     
-    def is_dimensionless(self):
+    def is_dimensionless(self) -> bool:
         return self.dimension == DIMENSIONLESS
 
     def rm_dim_if_dimless(self):
@@ -599,10 +600,10 @@ class Quantity(object):
         else:                           
             return self
         
-    def has_integer_dimension_power(self):
+    def has_integer_dimension_power(self) -> bool:
         return all(value == int(value) for value in self.dimension.dim_dict.values())
     
-    def to(self, y):
+    def to(self, y: Quantity):
         """return quantity with another favunit."""
         if not isinstance(y, Quantity):
             raise TypeError("Cannot express Quantity in not Quantity")
@@ -610,26 +611,26 @@ class Quantity(object):
         q.favunit = y
         return q
     
-    def set_favunit(self, fav):
+    def set_favunit(self, fav: Quantity) -> Quantity:
         """
         To be used as one-line declaration : (np.linspace(3, 10)*mum).set_favunit(mum)
         """
         self.favunit = fav
         return self
 
-    def set_symbol(self, symbol):
+    def set_symbol(self, symbol: str) -> Quantity:
         """
         To be used as one-line declaration for a favunit : my_period=(10*s).set_symbol("period")
         """
         self.symbol = symbol
         return self
     
-    def ito(self, y):
+    def ito(self, y: Quantity) -> Quantity:
         """in-place change of favunit."""
         self.favunit = y
         return self
     
-    def into(self, y):
+    def into(self, y: Quantity) -> Quantity:
         """like to, but with same dimension"""
         if not self.dimension == y.dimension:
             raise ValueError("must have same unit. Try to().")
@@ -642,31 +643,31 @@ class Quantity(object):
         return self.ito(y)
 
     # Shortcut for checking dimension
-    def is_length(self): return self.dimension == Dimension("L")
+    def is_length(self) -> bool: return self.dimension == Dimension("L")
 
-    def is_surface(self): return self.dimension == Dimension("L")**2
+    def is_surface(self) -> bool: return self.dimension == Dimension("L")**2
 
-    def is_volume(self): return self.dimension == Dimension("L")**3
+    def is_volume(self) -> bool: return self.dimension == Dimension("L")**3
 
-    def is_time(self): return self.dimension == Dimension("T")
+    def is_time(self) -> bool: return self.dimension == Dimension("T")
 
-    def is_mass(self): return self.dimension == Dimension("M")
+    def is_mass(self) -> bool: return self.dimension == Dimension("M")
 
-    def is_angle(self): return self.dimension == Dimension("RAD")
+    def is_angle(self) -> bool: return self.dimension == Dimension("RAD")
 
-    def is_solid_angle(self): return self.dimension == Dimension("SR")
+    def is_solid_angle(self) -> bool: return self.dimension == Dimension("SR")
 
-    def is_temperature(self): 
+    def is_temperature(self) -> bool:
         return self.dimension == Dimension("theta")
 
     def is_nan(self):
         "For use with pandas extension"
         return np.isnan(self.value)
 
-    def is_dimensionless_ext(self):
+    def is_dimensionless_ext(self) -> bool:
         return self.is_dimensionless() or self.is_angle()
     
-    def check_dim(self, dim):
+    def check_dim(self, dim) -> bool:
         return self.dimension == dimensionify(dim)
 
     # for munits support
@@ -924,8 +925,8 @@ class Quantity(object):
 
 # Numpy functions            
 # Override functions - used with __array_function__
-def implements(np_function):
-    def decorator(func):
+def implements(np_function: Callable) -> Callable:
+    def decorator(func: Callable) -> Callable:
         HANDLED_FUNCTIONS[np_function] = func
         return func
     return decorator            

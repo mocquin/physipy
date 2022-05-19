@@ -44,7 +44,7 @@ class QuantityConverter(munits.ConversionInterface):
             raise TypeError(f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}")
         return q._plot_get_value_for_plot(q_unit)    
     
-def setup_matplotlib(enable=True):
+def setup_matplotlib(enable=True) -> None:
     if matplotlib.__version__ < '2.0':
         raise RuntimeError('Matplotlib >= 2.0 required to work with units.')
     if enable == False:

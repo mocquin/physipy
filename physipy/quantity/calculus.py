@@ -5,6 +5,8 @@
 
 These are basically numpy function wrapped with dimensions checks.
 """
+from __future__ import annotations
+from typing import Callable
 
 import numbers as nb
 
@@ -34,7 +36,7 @@ from .utils import decorate_with_various_unit, asqarray
 #    return func_Q_vec
 
 
-def xvectorize(func):
+def xvectorize(func: Callable) -> Callable:
     """
     1-D vectorize func.
     
@@ -54,7 +56,7 @@ def xvectorize(func):
     return vec_func
 
 
-def ndvectorize(func):
+def ndvectorize(func: Callable) -> Callable:
     """
     1-D vectorize func and accept input as ndarray.
     
@@ -79,7 +81,7 @@ def ndvectorize(func):
 
 
 
-def trapz2(Zs, ech_x, ech_y):
+def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     """
     2D integral based on trapz.
     ech_x is horizontal sampling, along row

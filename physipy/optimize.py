@@ -1,5 +1,5 @@
 
-
+from typing import Callable
 
 
 import numbers as nb
@@ -10,7 +10,7 @@ from physipy import quantify, Quantity, Dimension, DimensionError
 
 
 # Generique 
-def root(func_cal, start, args=(), **kwargs):
+def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
     start = quantify(start)
     start_val = start.value
     start_dim = start.dimension
@@ -21,7 +21,7 @@ def root(func_cal, start, args=(), **kwargs):
     return Quantity(res, start_dim)
 
 
-def brentq(func_cal, start, stop, *oargs, args=(), **kwargs):
+def brentq(func_cal: Callable, start, stop, *oargs, args=(), **kwargs) -> Quantity:
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:
