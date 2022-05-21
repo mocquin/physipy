@@ -49,8 +49,19 @@ NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST}
 def parse_str_to_dic(exp_str):
     """Parse a str expression into a power dict.
     
-    Example:
-    ========
+    Parameters
+    ----------
+    exp_str : str
+        A string representing an expression of products with exponents.
+    
+    Returns
+    -------
+    exp_dic : dict 
+        A dict with keys the string symbol of the expression, and values the corresponding
+        exponent.
+    
+    Examples
+    --------
     >>> parse_str_to_dic("L**2/M")
     {"L":2, "M":1}
     """
@@ -65,8 +76,21 @@ def check_pattern(exp_str, symbol_list):
     Start by parsing the string expression into a power_dict, then check that 
     all the keys of the power_dict are present in the symbol_list.
     
-    Example:
-    ========
+    Parameters
+    ----------
+    exp_str : str
+        A string representing an expression of products with exponents.
+    symbol_list : list of str
+        A list of the base symbol that are allowed.
+        
+    Returns
+    -------
+    bool
+        A bool indicating if all the symbol in the expression are allowed in the symbol
+        list.
+    
+    Examples
+    --------
     >>> check_pattern("L**2*T", ["L", "T"])
     True
     >>> check_pattern("L**2*M", ["L", "T"])
@@ -167,32 +191,80 @@ class Dimension(object):
 
     
     def __mul__(self, y):
-        """Allow the multiplication of Dimension objects."""
+        """Multiply Dimension objects.
+        
+        The multiplication of 2 Dimension objects is another Dimension with power given by
+        the sum of the input Dimension's powers.
+        
+        Parameter
+        ---------
+        y : Dimension
+            The Dimension to multiply.
+            
+        Returns
+        -------
+        dim : Dimension
+            The new Dimension representing the product.
+        """
         #if isinstance(y, Dimension):
         try:
-            new_dim_dict = {d: self.dim_dict[d] + y.dim_dict[d] for d in self.dim_dict.keys()}
+            new_dim_dict = {d: self.dim_dict[d] + y.dim_dict[d] for d
+                            in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         except Exception as e:
             raise TypeError(("A dimension can only be multiplied "
-                             "by another dimension, not {}. Got exception {}").format(y, e))
+                             "by another dimension, not {}."
+                             "Got exception {}").format(y, e))
 
     __rmul__ = __mul__
 
     def __truediv__(self, y):
-        """Allow the division of Dimension objects."""
+        """Allow the division of Dimension objects.
+        
+        The division of 2 Dimension objects is another Dimension with power given by
+        the difference between the input Dimension's powers.
+        
+        Parameter
+        ---------
+        y : Dimension
+            The Dimension to divide by.
+            
+        Returns
+        -------
+        dim : Dimension
+            The new Dimension representing the division.
+        """
         #if isinstance(y, Dimension):
         try:
-            new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()}
+            new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d 
+                            in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         #elif y == 1:  # allowing division by one
         #    return self
        # else:
         except Exception as e:
             raise TypeError(("A dimension can only be divided "
-                             "by another dimension, not {}. Got exception {}").format(y, e))
+                             "by another dimension, not {}."
+                             "Got exception {}").format(y, e))
 
     def __rtruediv__(self, x):
-        """Only used to raise a TypeError."""
+        """Inverse a Dimension by divinding one.
+        
+        THe only value a Dimension can divide is 1, in order to invert a Dimension. 
+        The inverse of the Dimension has all it's power negated.       
+        Mainly used to raise a TypeError in unallowed uses.
+        
+        Parameter
+        ---------
+        x : 1
+            A Dimension can only divide one.
+            
+        Returns
+        -------
+        dim : Dimension
+            The inverse of the input Dimension.
+            
+        """
         if x == 1:   # allowing one-divion
             #return self.inverse()
             return self**-1
@@ -200,7 +272,20 @@ class Dimension(object):
             raise TypeError("A Dimension can only divide 1 to be inverted.")
 
     def __pow__(self, y):
-        """Allow the elevation of Dimension objects to a real power."""
+        """Raise a Dimension objects to a real power.
+        
+        Only scalars are allowed.
+        
+        Parameter
+        ---------
+        y : scalar-like
+            The exponent.
+            
+        Returns
+        -------
+        dim : Dimension
+            The raised Dimension.
+        """
         if np.isscalar(y):
             new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
@@ -209,7 +294,19 @@ class Dimension(object):
                              "not {}").format(type(y)))
 
     def __eq__(self, y):
-        """Dimensions are equal if their dim_dict are equal."""
+        """Check equality between Dimension objects.
+        
+        Dimensions are equal if their dim_dict are equal.
+        
+        Parameter
+        ---------
+        y : Dimension
+            The Dimension object to test equality with.
+        Returns
+        -------
+        bool
+            True if the Dimensions objects are equal, False otherwise.
+        """
         #if type(y)==Dimension:
         try:
             return self.dim_dict == y.dim_dict
@@ -226,51 +323,121 @@ class Dimension(object):
     #    return Dimension(inv_dict)
 
     def siunit_dict(self):
-        """Return a dict where keys are SI unit
-        string, and value are powers."""
+        """Return a dict where keys are SI unit string, and value are powers.
+        
+        Returns
+        -------
+        dict
+            A dict with keys the SI-unit symbols and values the corresponding exponent.
+        """
         return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
     
     def str_SI_unit(self):
-        """Compute the symbol-wise SI unit."""
+        """Compute the symbol-wise SI unit equivalent of the Dimension.
+        
+        Returns
+        -------
+        str
+            A string that represent the Dimension powers with SI-units symbols.
+        
+        See also
+        --------
+        compute_str, Dimension.siunit_dict
+        """
         str_dict = self.siunit_dict()
         return compute_str(str_dict, "")
 
     def latex_SI_unit(self):
-        """Latex repr of SI unit form."""
+        """Latex repr of SI unit form.
+        
+        Leverage sympy's latex function to compute the latex expression equivalent to
+        the SI-unit string representation of the Dimension.
+        
+        See also
+        --------
+        Dimension.siunit_dict
+        """
         expr_SI = expand_dict_to_expr(self.siunit_dict())
         return "$" + latex(expr_SI) + "$"
     
     @property
     def dimensionality(self):
-        """Return the first dimensionality with same 
-        dimension found in DIMENSIONALITY"""
+        """Return the first dimensionality with same dimension found in DIMENSIONALITY.
+        
+        Returns
+        -------
+        str
+            A string giving a dimensionnality equivalent to the Dimension.
+            
+        See also
+        --------
+        DIMENSIONALITY
+        """
         try:
-            return [dimensionality for dimensionality, dimension in DIMENSIONALITY.items() if dimension == self][0]
+            return [dimensionality for dimensionality, dimension
+                    in DIMENSIONALITY.items() if dimension == self][0]
         except:
             return str(self)
 
     
 DIMENSIONLESS = Dimension(None)
 
-def compute_str(dic, default_str, output_init=1):
-    """Compute the product-concatenation of the 
+def compute_str(power_dict, default_str, output_init=1):
+    """Convert power-dict to a string expression equivalent.
+    
+    Compute the product-concatenation of the 
     dict as key**value into a string.
     Only used for 'str' and 'repr' methods.
+    
+    Parameters
+    ----------
+    power_dict : dict
+        A power-dict containing str as keys and scalars as values.
+    default_str : str
+        A string to return if the output value is equal to the output initial value.
+    output_init : scalar-like, defaults to 1.
+        The initial value used to compute the expanded value.
+        
+    Returns
+    -------
+    str
+        The string-casted of the output value if the output value is different from the 
+        initial output, otherwise default_str.
+        
+    See also
+    --------
+    expand_dict_to_expr : compute the value from a power-dict.    
     """
-    output = expand_dict_to_expr(dic, output_init)
+    output = expand_dict_to_expr(power_dict, output_init)
     if output == output_init:
         return default_str
     else:
         return str(output)
 
     
-def expand_dict_to_expr(dic, output_init=1):
-    """Compute the sympy expression from exponent dict,
-    starting the product with ouptput=1.
-    Only used for 'str' and 'repr' methods.
+def expand_dict_to_expr(power_dict, output_init=1):
+    """
+    Compute the sympy expression from exponent dict, starting the product with ouptput=1.
+    Used for 'str' and 'repr' methods of Dimension.
+    
+    Parameters
+    ----------
+    power_dict : dict
+        A power-dict containing str as keys and scalars as values.
+    output_init : scalar-like, default to 1.
+        The initial value used to compute the value of the power-expression.
+    
+    Returns
+    -------
+    expr 
+        A sympy-expression equivalent to the power-dict.
+        
+    See also
+    --------
+    compute_str : Convert a power-dict to a str equivalent.
     """
     output = output_init
-    for key, value in dic.items():
+    for key, value in power_dict.items():
         output *= sp.Symbol(key)**value
     return output
 
