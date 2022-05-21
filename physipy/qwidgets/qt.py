@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSlider, QWidget, QApplication, QVBoxLayout, QLabel, QMainWindow
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, \
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, \
     QVBoxLayout, QWidget, QLineEdit, QComboBox
 import PyQt5.QtWidgets
 import PyQt5.QtCore as QtCore
@@ -19,9 +19,10 @@ class QuantityQtSlider(QWidget):
     def __init__(self, qminimum, qmaximum, value=None, descr="Quantity", favunit=None, parent=None):
         super(QuantityQtSlider, self).__init__(parent=parent)
         self.setAutoFillBackground(True)
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.blue)
-        self.setPalette(p)
+        #p = self.palette()
+        #p.setColor(self.backgroundRole(), Qt.Color("#6d6875")) # 6d6875
+        #self.setPalette(p)
+        self.setStyleSheet('background-color: #e36414;')
         self.descr = descr
                
         from physipy import units
@@ -37,14 +38,14 @@ class QuantityQtSlider(QWidget):
         self.numlabel = QLabel(self)
         self.numlabel.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.numlabel.setMinimumWidth(100)
-        self.numlabel.setStyleSheet("background-color: green")
+        self.numlabel.setStyleSheet("background-color: #fb8b24")
         #self.numlabel.setMargin(0)
         # Label for description
         self.desclabel = QLabel(self)
         self.desclabel.setText(descr)
         self.desclabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.desclabel.setMinimumWidth(20)
-        self.desclabel.setStyleSheet("background-color: red")#;margin:0px")
+        self.desclabel.setStyleSheet("background-color: #9a031e")#;margin:0px")
         # QLineEdit
         self.qlineedit = QLineEdit()
         self.qlineedit.setMinimumWidth(20)
@@ -72,7 +73,7 @@ class QuantityQtSlider(QWidget):
         self.qtslider.setOrientation(Qt.Horizontal)
         self.qtslider.setFixedWidth(200)
         self.qtslider.valueChanged.connect(self.setLabelValue)
-        self.qtslider.setStyleSheet("background-color: yellow")
+        self.qtslider.setStyleSheet("background-color: #5f0f40")
         
         self.resize(self.sizeHint())
         
@@ -179,3 +180,27 @@ class QuantityQtSlider(QWidget):
 
     
     
+    
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QMainWindow
+from physipy import units
+
+
+class ParamSet(QWidget):
+    
+    def __init__(self, dict_model):
+        super(ParamSet, self).__init__()
+        
+        self.dict_model = dict_model
+        self.layout = QVBoxLayout()
+        self.sliders = []
+        for k, v in self.dict_model.items():
+            qmin = v["min"]
+            qmax = v["max"]
+            val  = v["value"]
+            
+            qs = QuantityQtSlider(qmin, qmax, value=val, descr=k)
+            self.sliders.append(qs)
+        
+        for qs in self.sliders:
+            self.layout.addWidget(qs)
+        self.setLayout(self.layout)
