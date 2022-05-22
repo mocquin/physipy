@@ -53,23 +53,57 @@ PREFIX_DICT = {
 }
 
 
-def CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
-    """Create the prefixed dict for the base SI units
+def _CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
+    """Create the prefixed dict for the base SI units.
     
-    Extends the dic by adding the combination between prefix_dic and base_units
+    Extends the dic by adding the combination between prefix_dic and base_units.
+    
+    Parameters
+    ----------
+    prefix_dic : dict
+        Dict with keys the string representation of a prefix, and values the corresponding value.
+    base_units_symbol_dim : dict
+        Dict with keys the dimension symbol, and values the unit symbol.
+    dic : dict, optionnal
+        Dict on which are added the prefixed values. Default to {}.
+    
+    Returns
+    -------
+    dict 
+        Dict with keys the prefixed-unit symbol, and values the corresponding Quantity.
     """
     for prefix_symbol, prefix_value in prefix_dic.items():
         for dim_symbol, unit_symbol in base_units_symbol_dim.items():
             prefixed_unit_symbol = prefix_symbol + unit_symbol
+            # handle the gram, which is a milli-kilogram
             if prefixed_unit_symbol == "mkg":
                 dic["g"] = Quantity(0.001, Dimension("M"), symbol="g")
+                continue
             # Update dic
-            dic[prefixed_unit_symbol] = Quantity(prefix_value,Dimension(dim_symbol),symbol=prefixed_unit_symbol)
+            dic[prefixed_unit_symbol] = Quantity(prefix_value,
+                                                 Dimension(dim_symbol), 
+                                                 symbol=prefixed_unit_symbol)
     return dic
 
 
 def prefix_units(prefix_dic, unit_dict, extend=False):
-    """Return a dict of unit with all combination between the input unit dict and the prefix dict."""
+    """Return a dict of unit with all combination between the input unit dict and the prefix dict.
+    
+    Parameters
+    ----------
+    prefix_dic : dict
+        Dict with keys the string representation of a prefix, and values the corresponding value.
+    unit_dict : dict
+        Dict with keys the string of units, and value the corresponding Quantity.
+    extend : bool
+        Weither to extend the input unit dict, or return the prefixed units in a separate dict
+        
+    Returns
+    -------
+    dict
+        Dict with keys the string of prefixed units, and values the corresponding
+        Quantity. Extends the input unit_dict if extend is True.
+    """
     prefixed_dict = {}
     for prefix_symbol, prefix_value in prefix_dic.items():
         for unit_symbol, unit_quantity in unit_dict.items():
@@ -78,6 +112,9 @@ def prefix_units(prefix_dic, unit_dict, extend=False):
                                                            symbol=prefixed_symbol)
     return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
     
+    
+def _make_quantity_dict_with_symbols(dic):
+    return {key: make_quantity(value, symbol=key) for key, value in dic.items()}
 
 # Init of SI inits dict
 SI_units = {value: Quantity(1,Dimension(key), symbol=value) for (key,value) in SI_UNIT_SYMBOL.items()}
@@ -94,11 +131,11 @@ rad = SI_units["rad"]
 sr  = SI_units["sr"]
 
 # Derived SI units with all prefixes
-SI_units_prefixed = CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
+SI_units_prefixed = _CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
 
 
 # SI derived units
-SI_derived_units_raw = {
+_SI_derived_units_raw = {
     "Hz"  : 1/s,
     "N"   : m * kg * s**-2,
     "Pa"  : kg * m**-1 * s**-2,
@@ -119,13 +156,13 @@ SI_derived_units_raw = {
     "Sv"  : m**2 * s**-2,
     "kat" : mol * s**-1,
     }
-
-SI_derived_units = {key: make_quantity(value, symbol=key) for key, value in SI_derived_units_raw.items()}
+# create the actual dict of units, with symbols
+SI_derived_units = _make_quantity_dict_with_symbols(_SI_derived_units_raw)
 SI_derived_units_prefixed = prefix_units(PREFIX_DICT, SI_derived_units, extend=True)
 
 
 # Other units
-other_accepted_units_raw = {
+_other_accepted_units_raw = {
     "min" : 60 * s,
     "h"   : 3600 * s,
     "d"   : 86400 * s,
@@ -139,7 +176,7 @@ other_accepted_units_raw = {
     "eV"  : 1.602176634 * 10**-19 * kg * m**2 * s**-2,
 }
 
-other_units = {key: make_quantity(value, symbol=key) for key, value in other_accepted_units_raw.items()}
+other_units = _make_quantity_dict_with_symbols(_other_accepted_units_raw)
 
 
 # Concatenating units
@@ -149,4 +186,4 @@ all_units = {**SI_units_prefixed, **SI_derived_units_prefixed, **other_units}
 
 del pi
 del Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
-del SI_derived_units_raw, other_accepted_units_raw
+del _SI_derived_units_raw, _other_accepted_units_raw
