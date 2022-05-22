@@ -75,7 +75,20 @@ def cached_property_depends_on(*args):
 
 def hard_equal(q1, q2):
     """
-    q1 and q2 are equal if their value, dimension, and symbols are equal.
+    Check if value, dimension, and symbols are equal for Quantities.
+    
+    This differs from standard equality ("==", or "__eq__") in that the 
+    symbols msut be equal as well, in additiion to value and dimension.
+    
+    Parameters
+    ----------
+    q1, q2 : Quantity
+        Quantity objects to check equality for.
+        
+    Returns
+    -------
+    bool
+        True if Quantity objects are equal, even for symbols.
     """
     try:
         if q1.dimension == q2.dimension:
@@ -87,28 +100,56 @@ def hard_equal(q1, q2):
 
 def hard_favunit(q, units_list):
     """
-    Return True if q hard-equals any unit.
+    Return True if q hard-equals any unit in units_list.
+    
+    Parameters
+    ----------
+    q : Quantity
+        Quantity object to test if present in the list.
+    units_list : list of Quantity
+        List of Quantity objects 
+        
+    Returns
+    -------
+    bool 
+        Weither q is present in units_list
+        
+    See also
+    --------
+    hard_equal
     """
     favs = [unit for unit in units_list if hard_equal(q, unit)]
     return True if len(favs)>=1 else False
 
 
-def easy_favunit(q, units_list):
-    """
-    Return True if q equals any unit.
-    """
-    favs = [unit for unit in units_list if q==unit]
-    return True if len(favs)>=1 else False
-
-
 def _parse_str_to_dic(exp_str):
     """
-    Use sympy's parser to split a string "m/s**2"
-    to a dict {"m":1, "s":-2}.
+    Parse a power expression to a dict.
+    
+    
+    Parameters
+    ----------
+    exp_str : str
+        A string containing a valid power expression.
+        
+    Returns
+    -------
+    dict
+        A dict with keys the string-symbols and values the corresponding exponent.
+    
+    Example
+    -------
+    >>> _parse_str_to_dic("m/s**2")
+    {"m":1, "s":-2}
+    
+    See also
+    --------
+    parse_expr
     """
     parsed = parse_expr(exp_str)
     exp_dic = {str(key):value for key,value in parsed.as_powers_dict().items()}
     return exp_dic
+
 
 def _exp_dic_to_q(exp_dic, parsing_dict):
     """
@@ -123,6 +164,7 @@ def _exp_dic_to_q(exp_dic, parsing_dict):
         # power up and multiply
         q *= u**value
     return q
+
 
 def expr_to_q(exp_str, parsing_dict):
     """
@@ -148,7 +190,23 @@ def strunit_array_to_qunit_array(array_like_of_str, parsing_dict):
 
 
 def qarange(start_or_stop, stop=None, step=None, **kwargs):
-    """Wrapper around np.arange"""
+    """Wrapper around np.arange
+    
+    Meant to be used as a replacement of np.arange  when Quantity objects
+    are involved.
+    
+    Parameters
+    ----------
+    start_or_stop : Quantity
+    stop : Quantity, defaults to None.
+    step : Quantity, defaults to None.
+    kwargs : kwargs are passed directly to np.arange.
+    
+    Returns
+    -------
+    Quantity
+        Quantity with value an array based on np.arange
+    """
     # start_or_stop param
     final_start_or_stop = quantify(start_or_stop)
     in_dim = final_start_or_stop.dimension

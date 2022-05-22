@@ -19,21 +19,6 @@ from .quantity import quantify, Quantity
 from .utils import decorate_with_various_unit, asqarray
 
 
-
-#def vectorize(func):
-#    """Allow vectorize a function of Quantity.
-#    
-#    This function aims to extend numpy.vectorize to Quantity-function.
-#    
-#    """
-#    func_vec = np.vectorize(func)
-#    def func_Q_vec(*args, **kwargs):
-#        res_brute = func_vec(*args, **kwargs)
-#        res = asqarray(res_brute)
-#        return res
-#    return func_Q_vec
-
-
 def xvectorize(func):
     """
     1-D vectorize func.
@@ -44,6 +29,16 @@ def xvectorize(func):
     
     Just like np.vectorize, this decorator is a utility to wrap a for loop - 
     it does not improve performance in any way.
+    
+    Parameter
+    ---------
+    func : callable
+        A function of one parameter.
+        
+    Returns
+    -------
+    callable
+        Decorated function.
     """
     def vec_func(x):
         res = []
@@ -67,6 +62,16 @@ def ndvectorize(func):
     
     Just like np.vectorize, this decorator is a utility to wrap a for loop - 
     it does not improve performance in any way.
+    
+    Parameter
+    ---------
+    func : callable
+        A function of one parameter.
+        
+    Returns
+    -------
+    callable
+        Decorated function.
     """
     def vec_func(x):
         res = []
@@ -76,7 +81,6 @@ def ndvectorize(func):
         res.value = res.value.reshape(x.shape)
         return res
     return vec_func
-
 
 
 def trapz2(Zs, ech_x, ech_y):
@@ -103,6 +107,7 @@ def trapz2(Zs, ech_x, ech_y):
     int_x = np.trapz(Zs, axis=-1, x=ech_x)
     int_xy = np.trapz(int_x, axis=-1, x=ech_y)
     return int_xy
+
 
 def main():
     pass
