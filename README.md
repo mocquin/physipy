@@ -50,6 +50,37 @@ The implementation is pretty simple :
 Numpy is almost fully and transparently handled in physipy : basic operations, indexing, numpy functions and universal functions are handled. There are more than 150 functions implemented ! Some limitation still exist but can be can be circumvented.
 See the dedicated notebook : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb).
 
+## Pandas' support
+
+Pandas can be interfaced with physipy through the extension API exposed by pandas. For this, just install the package [`physipandas`](https://github.com/mocquin/physipandas). You can then use `pd.Series` and `pd.DataFrame` whilst keeping the meaningfull units. Checkout the dedicated repo for [physipandas](https://github.com/mocquin/physipandas) for more information.
+
+```python
+import pandas as pd
+import numpy as np
+from physipy import m
+from physipandas import QuantityDtype, QuantityArray
+
+c = pd.Series(QuantityArray(np.arange(10)*m), 
+              dtype=QuantityDtype(m))
+
+print(type(c))                 # --> <class 'pandas.core.series.Series'>
+print(c.physipy.dimension)     # --> : L
+print(c.physipy.values.mean()) # --> : 4.5 m
+c
+
+0   0
+1   1
+2   2
+3   3
+4   4
+5   5
+6   6
+7   7
+8   8
+9   9
+dtype: physipy[1 m]
+```
+
 ## Matplotlib's units support
 
 Matplotlib allows defining a physical units interface, which can be turned on using just `setup_matplotlib`, all plot involving a physical quantity will automatically label the axis accordingly : 
