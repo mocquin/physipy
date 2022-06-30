@@ -23,6 +23,19 @@ Get a live session at [![Binder](https://mybinder.org/badge_logo.svg)](https://m
 pip install physipy
 ```
 
+## Why choose this package 
+Here are some reasons that might encourage you to choose this package for quantity/physical/units handling in python : 
+ - Light-weight package (2 classes, few helper functions - the rest is convenience)
+ - Great numpy compatibility (see below)
+ - Great pandas compatibility (see below)
+ - Great matplotlib compatibility (see below)
+ - Jupyter widgets that handle units (as ipywidgets and Qt, see below)
+ - As fast (if not faster) than the main other units packages (see below)
+
+Also : 
+ - lots of unit tests
+ - computation performances tracked with airspeed-velocity (see below)
+
 ## Goals
 
 - Few LOC
