@@ -13,6 +13,55 @@
 # ---
 
 # %% [markdown]
+# # QuantityQtSlider
+
+# %% [markdown]
+# A Qt slider that handles quantities and units
+
+# %%
+from physipy import units, s, m
+from physipy.qwidgets.qt import QuantityQtSlider
+from PyQt5.QtWidgets import QApplication, QMainWindow
+
+ohm = units["ohm"]
+
+app = QApplication([])
+win = QMainWindow()
+w = QuantityQtSlider(2*ohm, 10*ohm, value=5*ohm, descr="Resistor")
+win.setCentralWidget(w)
+win.show()
+
+if __name__ == '__main__':
+    app.exec_()
+
+# %% [markdown]
+# # ParamSet
+
+# %%
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from physipy import units
+from physipy.qwidgets.qt import ParamSet
+V = units["V"]
+C = units["C"]
+
+ohm = units["ohm"]
+
+
+# %%
+model = {'C': {"min":2*C, "max":5*C, "value":3*C},
+         'R': {"min":2*ohm, "max":5*ohm, "value":3*ohm},
+         'E': {"min":2*V, "max":5*V, "value":3*V},
+        }
+w = ParamSet(model)
+
+# %%
+app = QApplication([])
+win = QMainWindow()
+win.setCentralWidget(w)
+win.show()
+app.exec_()
+
+# %% [markdown]
 # # Model
 
 # %% [markdown]
@@ -233,9 +282,15 @@ from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QSizePolicy, QSli
 import PyQt5.QtWidgets
 import PyQt5.QtCore as QtCore
 
+import pyqtgraph.dockarea
 
 
+import pyqtgraph
 import pyqtgraph as pg
+
+pyqtgraph.setConfigOption('background', '#0f4c5c')
+pyqtgraph.setConfigOption('foreground', 'w')
+
 # Enable antialiasing for prettier plots
 pg.setConfigOptions(antialias=True)
 import pyqtgraph.console
@@ -245,7 +300,19 @@ class VuePyQt(QMainWindow):#QWidget):
         super(VuePyQt, self).__init__()
 
         self.model = model
+        self.setStyleSheet("background-color: #0f4c5c;")
 
+        area = pyqtgraph.dockarea.DockArea()
+        d1 = pyqtgraph.dockarea.Dock("Parameters", size=(1, 1))    
+        d2 = pyqtgraph.dockarea.Dock("Plot", size=(500,300), closable=False)
+        area.addDock(d1, 'top') 
+        area.addDock(d2, 'bottom', d1)   
+        
+        d1.label.setStyleSheet("background-color:#0f4c5c;") # color falls back when moved
+        d2.label.setStyleSheet("background-color:#0f4c5c;") # color falls back when moved
+        
+    
+        # create a Vertical layout
         layout = QVBoxLayout()
         self.setContentsMargins(0, 0, 0, 0) 
         #self.setSpacing(0)
@@ -295,10 +362,11 @@ class VuePyQt(QMainWindow):#QWidget):
 
             widgets.append(slider)
             
+        # add widgets to the V layout, top to bottom
         for w in widgets:
             layout.addWidget(w)
 
-        layout.setAlignment(QtCore.Qt.AlignTop)
+#        layout.setAlignment(QtCore.Qt.AlignTop)
         
         # to remove margins 
         layout.setContentsMargins(0, 0, 0, 0) #left top right bot
@@ -306,11 +374,15 @@ class VuePyQt(QMainWindow):#QWidget):
         layout.setSpacing(0)
         
         self.win = pg.GraphicsWindow(title="Basic plotting examples")
+        #self.win.setStyleSheet("background-color: background-color: #6d6875;")
 
         self.canvas = self.win.addPlot(title="Plot11", row=1, col=1,)# axisItems={"bottom":sp_xaxis})
         self.canvas.setLabel('left', 'Y-axis Values')
         self.canvas.addLegend()
         self.canvas.showGrid(x=True, y=True)
+        #self.canvas.se ("#6d6875")
+        #self.canvas.setStyleSheet("background-color: background-color: #6d6875;")
+
         
         self.traces = dict()
         
@@ -320,12 +392,18 @@ class VuePyQt(QMainWindow):#QWidget):
             pen_color = all_deps[-1]
             self.trace(name, xs, ys, pen=pen_color)
         
+        # add the GraphicsWindow widget to the V layout
+        #layout.addWidget(self.win)
 
-        layout.addWidget(self.win)
-
+        # since using a QMainWindow, we use a widget to set as central widget
+        # and set the layout of this widget
         widget = QWidget()
         widget.setLayout(layout)
-        self.setCentralWidget(widget)
+        
+        d1.addWidget(widget)
+        d2.addWidget(self.win)
+        self.setCentralWidget(area)
+        #self.setCentralWidget(widget)
 
     def set_attr(self, obj, key):
         setattr(obj, key, getattr(self, key+"_slider").value)
@@ -361,10 +439,10 @@ def main():
     app = QApplication(sys.argv)
     
     # to define a custom color
-    from PyQt5.QtGui import QPalette
-    palette = QPalette()
-    palette.setColor(QPalette.ButtonText, Qt.red)
-    app.setPalette(palette)
+    #from PyQt5.QtGui import QPalette
+    #palette = QPalette()
+    #palette.setColor(QPalette.ButtonText, Qt.red)
+    #app.setPalette(palette)
     
     Ve = 5 * V
     R  = 3 * ohm
