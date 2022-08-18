@@ -996,10 +996,7 @@ class TestQuantity(unittest.TestCase):
         
         arr = np.array([1,2,3])
         arr_m = Quantity(arr, Dimension("L"))
-        
-        # np.alen
-        self.assertEqual(np.alen(3*m), np.alen(3))
-        self.assertEqual(np.alen(np.arange(3)*m), np.alen(np.arange(3)))
+
         
         # np.all
         
