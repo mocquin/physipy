@@ -72,10 +72,10 @@
     // followed by the pip installed packages).
     //
     "matrix": {
-        "numpy": ["1.21"],
-        "sympy":["1.9"],
-        "scipy":["1.7.1"],
-        "matplotlib":["3.5.1"],
+        "numpy": ["1.23.2"],
+        "sympy":["1.11"],
+        "scipy":["1.9.0"],
+        "matplotlib":["3.5.3"],
         
         
     //     "six": ["", null],        // test with and without six installed
