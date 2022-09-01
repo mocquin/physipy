@@ -1,5 +1,8 @@
 include LICENSE README.md requirements.txt
 recursive-include physipy *.txt
 recursive-include test *.py
-recursice-exclude .ipynb_checkpoints
-recursice-exclude *.ipynb_checkpoints
+global-exclude *.ipynb_checkpoints
+prune test/.ipynb_checkpoints
+prune physipy/quantity/.ipynb_checkpoints/
+prune physipy.egg-info
+prune .ipynb_checkpoints
