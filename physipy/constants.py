@@ -30,7 +30,7 @@ scipy_constants_raw = {
     "c"                      : (csts.c                     , m/s),
     "speed_of_light"         : (csts.speed_of_light        , m/s),   	
     "mu_0"                   : (csts.mu_0                  , m * kg * s**-2 * A**-2), 
-    "epsilon_0" 	         : (csts.epsilon_0 	           , A**2 * s**4 * kg**-2 * m**-3), 
+    "epsilon_0" 	         : (csts.epsilon_0 	           , A**2 * s**4 * kg**-1 * m**-3), 
     "h" 	                 : (csts.h 	                   , kg * m**2 * s**-1),    
     "Planck"                 : (csts.Planck                , kg * m**2 * s**-1), 
     "hbar" 	                 : (csts.hbar 	               , kg * m**2 * s**-1),    
