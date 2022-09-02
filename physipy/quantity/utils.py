@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import functools
+from typing import Callable
 
 from functools import lru_cache
 from operator import attrgetter
@@ -12,7 +15,7 @@ from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantif
 
 
 
-def cached_property_depends_on(*args):
+def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:
     """
     Decorator to cache a property that depends on other attributes.
     This differs from functools.cached_property in that functools.cached_property is made for immutable atributes.
@@ -73,7 +76,7 @@ def cached_property_depends_on(*args):
 
 
 
-def hard_equal(q1, q2):
+def hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """
     Check if value, dimension, and symbols are equal for Quantities.
     
@@ -98,7 +101,7 @@ def hard_equal(q1, q2):
     except Exception as e:
             return False
 
-def hard_favunit(q, units_list):
+def hard_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
     """
     Return True if q hard-equals any unit in units_list.
     
@@ -122,7 +125,16 @@ def hard_favunit(q, units_list):
     return True if len(favs)>=1 else False
 
 
-def _parse_str_to_dic(exp_str):
+
+def easy_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
+    """
+    Return True if q equals any unit.
+    """
+    favs = [unit for unit in units_list if q==unit]
+    return True if len(favs)>=1 else False
+
+
+def _parse_str_to_dic(exp_str: str) -> dict:
     """
     Parse a power expression to a dict.
     
@@ -151,7 +163,7 @@ def _parse_str_to_dic(exp_str):
     return exp_dic
 
 
-def _exp_dic_to_q(exp_dic, parsing_dict):
+def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Quantity:
     """
     Helper to expand a dict to a quantity using :
         q = u1**v1 * u2**v2 ...
@@ -166,7 +178,7 @@ def _exp_dic_to_q(exp_dic, parsing_dict):
     return q
 
 
-def expr_to_q(exp_str, parsing_dict):
+def expr_to_q(exp_str: str, parsing_dict: dict) -> Quantity:
     """
     Parse a string expression to a quantity.
     """
@@ -174,7 +186,8 @@ def expr_to_q(exp_str, parsing_dict):
     q = _exp_dic_to_q(exp_dic, parsing_dict)
     return q
 
-def strunit_array_to_qunit_array(array_like_of_str, parsing_dict):
+
+def strunit_array_to_qunit_array(array_like_of_str, parsing_dict: dict):
     """
     Converts an iterable of strings to an iterable of quantities
     
@@ -189,7 +202,7 @@ def strunit_array_to_qunit_array(array_like_of_str, parsing_dict):
     return qs
 
 
-def qarange(start_or_stop, stop=None, step=None, **kwargs):
+def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     """Wrapper around np.arange
     
     Meant to be used as a replacement of np.arange  when Quantity objects
@@ -242,7 +255,7 @@ def _iterify(x):
     return [x] if not isinstance(x, (list, tuple)) else x
 
     
-def check_dimension(units_in=None, units_out=None):
+def check_dimension(units_in=None, units_out=None) -> Callable:
     """Check dimensions of inputs and ouputs of function.
     
     Will check that all inputs and outputs have the same dimension 
@@ -301,7 +314,7 @@ def check_dimension(units_in=None, units_out=None):
         units_out = _iterify(units_out)
     
     # define the decorator
-    def decorator(func):
+    def decorator(func: Callable):
         # create a decorated func
         @functools.wraps(func)
         def decorated_func(*args, **kwargs):
@@ -335,7 +348,7 @@ def check_dimension(units_in=None, units_out=None):
     return decorator
 
 
-def set_favunit(*favunits_out):
+def set_favunit(*favunits_out) -> Callable:
     """Sets favunit to outputs.
     
     Sets favunit for the function outputs.
@@ -380,7 +393,7 @@ def set_favunit(*favunits_out):
     return decorator
 
 
-def dimension_and_favunit(inputs=[], outputs=[]):
+def dimension_and_favunit(inputs=[], outputs=[]) -> Callable:
     """Check dimensions of outputs and inputs, and add favunit to outputs.
     
     A wrapper of `check_dimension` and `set_favunit` decorators. The inputs will 
@@ -398,7 +411,7 @@ def dimension_and_favunit(inputs=[], outputs=[]):
     return decorator
 
 
-def convert_to_unit(*unit_in, keep_dim=False):
+def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
     """Convert inputs to values in terms of specified units.
     
     Decorator to convert the function's inputs values in terms
@@ -429,7 +442,7 @@ def convert_to_unit(*unit_in, keep_dim=False):
     return decorator
 
 
-def drop_dimension(func):
+def drop_dimension(func: Callable) -> Callable:
     """Drop the inputs dimension and sends the SI-value.
     
     Decorator to drop inputs dimensions, quantity value is passed
@@ -453,7 +466,7 @@ def drop_dimension(func):
     return dimension_dropped
 
 
-def add_back_unit_param(*unit_out):
+def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
     """Multiply outputs of function by the units_out
     
     @add_back_unit_param(m, s)
@@ -475,7 +488,7 @@ def add_back_unit_param(*unit_out):
     return decorator
 
 
-def decorate_with_various_unit(inputs=[], ouputs=[]):
+def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
     """
     allow abitrary specification of dimension and unit: 
     @decorate_with_various_unit(("A", "A"), "A")
@@ -523,7 +536,7 @@ def decorate_with_various_unit(inputs=[], ouputs=[]):
     return decorator
 
 
-def composed_decs(*decs):
+def composed_decs(*decs: tuple[Callable]) -> Callable:
     """A wrapper to combine multiple decorators"""
     def deco(f):
         for dec in reversed(decs):
@@ -550,7 +563,7 @@ def latex_parse_eq(eq):
     return eq
 
     
-def latex_eq(eqn):
+def latex_eq(eqn) -> Callable:
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
     def wrapper(f):
@@ -559,7 +572,7 @@ def latex_eq(eqn):
     return wrapper
 
 
-def name_eq(name):
+def name_eq(name) -> Callable:
     """add a 'name' attribute (a string most likely) to a function"""
     def wrapper(f):
         f.name = name
@@ -601,7 +614,7 @@ def _wrap(a):
 
 
 
-def asqarray(array_like):
+def asqarray(array_like) -> Quantity:
     """The value returned will always be a Quantity with array value"""
     
     # tuple or list

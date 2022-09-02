@@ -22,6 +22,7 @@ Questions :
  - should other packages units/constants be in the same dict ?
  - should make a proper data structure, where a new unit added is checked if already taken ?
 """
+from __future__ import annotations
 
 from numpy import pi
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
@@ -53,9 +54,8 @@ PREFIX_DICT = {
 }
 
 
-def _CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
-    """Create the prefixed dict for the base SI units.
-    
+def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic: dict = {}) -> dict:
+    """
     Extends the dic by adding the combination between prefix_dic and base_units.
     
     Parameters
@@ -86,7 +86,7 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic, base_units_symbol_dim, dic={}):
     return dic
 
 
-def prefix_units(prefix_dic, unit_dict, extend=False):
+def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dict:
     """Return a dict of unit with all combination between the input unit dict and the prefix dict.
     
     Parameters

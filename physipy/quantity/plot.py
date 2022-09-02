@@ -43,7 +43,8 @@ class QuantityConverter(munits.ConversionInterface):
         if not isinstance(q_unit, Quantity):
             raise TypeError(f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}")
         return q._plot_get_value_for_plot(q_unit)    
-    
+
+
 def setup_matplotlib(enable:bool = True) -> None:
     """Enable unit system in Matplotlib for Quantity objects.
     
@@ -63,7 +64,8 @@ def setup_matplotlib(enable:bool = True) -> None:
         munits.registry.pop(Quantity, None)
     else:
         munits.registry[Quantity] = QuantityConverter()
-        
+
+
 def plotting_context():
     """Context for plotting with Quantity objects
     Based on : 
