@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.2
+      jupytext_version: 1.13.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -15,8 +15,8 @@ jupyter:
 # Example wrapping uncertainties : add the unit to `nominal_value` and `std_dev`
 
 
-Numpy's integration is a great example of how physipy can wrap any kind of numerical values, but it  integrated in the source code of physipy so it's a bit cheating.
-Let's see how physipy deals with a non-integrated numerical-like package : uncertaintie. By "non-integrated" I mean that no source code of physipy makes any explicit reference to uncertainties, so we only rely on the general wrapping interface of physipy.
+Numpy's integration is a great example of how physipy can wrap any kind of numerical values, but this integration is written in the source code of physipy so it's a bit cheating.  
+Let's see how physipy deals with a non-integrated numerical-like package : uncertainties. By "non-integrated" I mean that no source code of physipy makes any explicit reference to uncertainties, so we only rely on the general wrapping interface of physipy.
 
 ```python
 from physipy import m, s, K, Quantity, Dimension
@@ -38,16 +38,18 @@ print(xq)
 print(xq**2, type(xq**2))
 print(xq+2*m, type(xq+2*m))
 print(xq.value)
+print(m*x == x*m)
 ```
 
-That's a pretty neat result __that didn't need any additional code__.
-Now uncertainties instance have a `nominal_value` and `std_dev` attributes.
+That's a pretty neat result __that didn't need any additional code__.  
+Now going a bit further, uncertainties instance have a `nominal_value` and `std_dev` attributes.
 
 ```python
 # Creation must be done this way and not by "x*m" because "x*m" 
 # will multiply the uncerainties variable by 1, and turn it into a
 # AffineScalarFunc instance, which is not hashable and breaks my 
 # register_property_backend that relies on dict lookup
+x = u.ufloat(0.20, 0.01)  # x = 0.20+/-0.01
 xq = Quantity(x, Dimension("m")) 
 ```
 
@@ -63,12 +65,13 @@ print(xq.nominal_value)
 print(xq.std_dev)
 ```
 
-It would be great that `xq.nominal_value` actually prints `0.2 m`, not loosing the unit and making it explicit that the nominal value is actually 0.2 meters. To do that, we can add a property back to specify what we want `xq.nominal_value` to return : a property back is a dictionnary with key the name of the attribute, and as value the corresponding method to get the wanted result.
+It would be great that `xq.nominal_value` actually prints `0.2 m`, not loosing the unit and making it explicit that the nominal value is actually 0.2 meters. To do that, we can add a property back to specify what we want `xq.nominal_value` to return : a property backend is a dictionnary with key the name of the attribute, and as value the corresponding method to get the wanted result.
 
 For the nominal_value and standard deviation, we just want to add back the unit and make the variable a Quantity, so we multiply by the corresponding SI unit:
 
 ```python
 from physipy.quantity.quantity import register_property_backend
+
 uncertainties_property_backend_interface = {
     # res is the backend result of the attribute lookup, and q the wrapping quantity
     "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
@@ -83,6 +86,7 @@ With this property back interface registered we get the desired result for `prin
 
 ```python
 print(xq.nominal_value)
+print(xq.std_dev)
 ```
 
 # Why the duck type approach doesn't work
@@ -235,8 +239,8 @@ class MyFraction(fractions.Fraction):
 
 ```python
 my_length = MyFraction(3, 26)
-print(my_length)
-print(my_length*my_length)
+#print(my_length)
+#print(my_length*my_length)
 ```
 
 Now what happens when we create a quantity with this value
