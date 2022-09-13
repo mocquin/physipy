@@ -113,7 +113,7 @@ VALUE_BACKENDS = {}
 def register_value_backend(value_klass, value_quantity_klass):
     VALUE_BACKENDS[value_klass] = value_quantity_klass
 
-def large_quantify(x):
+def  _large_quantify(x):
     if isinstance(x, Quantity):
         # if its a Quantity, it has a value
         typ = type(x.value)
@@ -191,7 +191,7 @@ class Quantity(object):
             raise DimensionError(self.dimension, y.dimension)                          
         #return Quantity(self.value + y.value,
         #                self.dimension)    
-        return large_quantify(type(self)(self.value + y.value,
+        return _large_quantify(type(self)(self.value + y.value,
                         self.dimension))
 
     def __radd__(self, x): return self + x
@@ -200,7 +200,7 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension: 
             raise DimensionError(self.dimension, y.dimension)
-        return large_quantify(type(self)(self.value - y.value,
+        return _large_quantify(type(self)(self.value - y.value,
                         self.dimension))
 
     def __rsub__(self, x): return quantify(x) - self
@@ -211,7 +211,7 @@ class Quantity(object):
                         self.dimension * y.dimension, 
                         symbol=self.symbol + "*" + y.symbol,
                     )
-        return large_quantify(q).rm_dim_if_dimless() 
+        return _large_quantify(q).rm_dim_if_dimless() 
         #return type(self)(self.value * y.value, 
         #                  self.dimension * y.dimension, 
         #                  symbol = self.symbol * y.symbol)
@@ -220,7 +220,7 @@ class Quantity(object):
     
     def __matmul__(self, y):
         y = quantify(y)
-        return large_quantify(type(self)(self.value @ y.value,
+        return _large_quantify(type(self)(self.value @ y.value,
                         self.dimension * y.dimension, 
                         #symbol = self.symbol * y.symbol
                          ).rm_dim_if_dimless())
@@ -228,7 +228,7 @@ class Quantity(object):
 
     def __truediv__(self, y):
         y = quantify(y)
-        return large_quantify(type(self)(self.value / y.value,
+        return _large_quantify(type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol + "/" + y.symbol,
                          ).rm_dim_if_dimless())
@@ -244,14 +244,14 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return large_quantify(type(self)(self.value // y.value,
+        return _large_quantify(type(self)(self.value // y.value,
                        self.dimension).rm_dim_if_dimless())
     
     def __rfloordiv__(self, x):
         x = quantify(x)
         if not self.dimension == x.dimension:
             raise DimensionError(self.dimension, x.dimension)
-        return large_quantify(type(self)(x.value // self.value,
+        return _large_quantify(type(self)(x.value // self.value,
                        self.dimension).rm_dim_if_dimless())
 
     def __mod__(self,y):
@@ -263,7 +263,7 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return large_quantify(type(self)(self.value % y.value,
+        return _large_quantify(type(self)(self.value % y.value,
                         self.dimension))#.rm_dim_if_dimless()
 
     def __pow__(self,power):
@@ -277,7 +277,7 @@ class Quantity(object):
         #if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
-        return large_quantify(type(self)(self.value ** power, 
+        return _large_quantify(type(self)(self.value ** power, 
                         self.dimension ** power,
                         symbol = self.symbol + '**' +str(power),
                        ).rm_dim_if_dimless())
@@ -337,7 +337,7 @@ class Quantity(object):
 
 
     def __abs__(self):
-        return large_quantify(type(self)(abs(self.value),
+        return _large_quantify(type(self)(abs(self.value),
                         self.dimension,
                         favunit = self.favunit))
 
@@ -361,13 +361,13 @@ class Quantity(object):
 
 
     def __round__(self, i=None):
-        return large_quantify(type(self)(round(self.value, i), 
+        return _large_quantify(type(self)(round(self.value, i), 
                        self.dimension,
                        favunit = self.favunit))
 
 
     def __copy__(self):
-        return large_quantify(type(self)(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol))
+        return _large_quantify(type(self)(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol))
     
     def copy(self):
         return self.__copy__()
@@ -394,16 +394,16 @@ class Quantity(object):
         """
         To handle math.ceil
         """
-        return large_quantify(type(self)(math.ceil(self.value), self.dimension))
+        return _large_quantify(type(self)(math.ceil(self.value), self.dimension))
     
     def __floor__(self):
         """
         To handle math.floor
         """
-        return large_quantify(type(self)(math.floor(self.value), self.dimension))
+        return _large_quantify(type(self)(math.floor(self.value), self.dimension))
     
     def __trunc__(self):
-        return large_quantify(type(self)(math.trunc(self.value), self.dimension))
+        return _large_quantify(type(self)(math.trunc(self.value), self.dimension))
     
     #@property
     #def latex(self):
@@ -558,7 +558,7 @@ class Quantity(object):
         Solution was to define __iter__ since iter first checks that
         x.__iter__ doesn't raise a TypeError
         """
-        return large_quantify(type(self)(self.value[idx],
+        return _large_quantify(type(self)(self.value[idx],
                             self.dimension,
                             favunit=self.favunit))
 
@@ -596,7 +596,7 @@ class Quantity(object):
         return FlatQuantityIterator(self)
     
     def flatten(self):
-        return large_quantify(type(self)(self.value.flatten(),
+        return _large_quantify(type(self)(self.value.flatten(),
                                          self.dimension,
                                          favunit=self.favunit))
     
@@ -605,15 +605,15 @@ class Quantity(object):
     
     @property
     def real(self):
-        return large_quantify(type(self)(self.value.real, self.dimension))
+        return _large_quantify(type(self)(self.value.real, self.dimension))
     
     @property
     def imag(self):
-        return large_quantify(type(self)(self.value.imag, self.dimension))
+        return _large_quantify(type(self)(self.value.imag, self.dimension))
     
     @property
     def T(self):
-        return large_quantify(type(self)(self.value.T, self.dimension))
+        return _large_quantify(type(self)(self.value.T, self.dimension))
     
     
     def std(self, *args, **kwargs):
@@ -621,7 +621,7 @@ class Quantity(object):
     
     def inverse(self):
         """is this method usefull ?"""
-        return large_quantify(type(self)(1/self.value, 1/self.dimension))
+        return _large_quantify(type(self)(1/self.value, 1/self.dimension))
 
     def sum(self, **kwargs): return np.sum(self, **kwargs)
     
@@ -781,7 +781,7 @@ class Quantity(object):
 
     
     def reshape(self, *args, **kwargs):
-        return large_quantify(type(self)(self.value.reshape(*args, **kwargs), self.dimension))
+        return _large_quantify(type(self)(self.value.reshape(*args, **kwargs), self.dimension))
 
     
     def __array_function__(self, func, types, args, kwargs):
@@ -825,7 +825,7 @@ class Quantity(object):
         # hypot doesn't have a reduce
         if ufunc_name in ["add"]:
             res = ufunc.accumulate(left.value, **kwargs)    
-            return large_quantify(type(self)(res, left.dimension))
+            return _large_quantify(type(self)(res, left.dimension))
         else:
             raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
             
@@ -841,12 +841,12 @@ class Quantity(object):
         # hypot doesn't have a reduce
         if ufunc_name in same_dim_out_2 and ufunc_name != "hypot":
             res = ufunc.reduce(left.value, **kwargs)
-            return large_quantify(type(self)(res, left.dimension))
+            return _large_quantify(type(self)(res, left.dimension))
         # only multiply seems to be possible
         elif ufunc_name in skip_2:
             res = ufunc.reduce(left.value, **kwargs)    
             if ufunc_name == "multiply" or ufunc_name == "matmul":
-                return large_quantify(type(self)(res, left.dimension ** len(left.value)))
+                return _large_quantify(type(self)(res, left.dimension ** len(left.value)))
             else:
                 raise NotImplementedError(f"array ufunc {ufunc} with method {method} not implemented")
         # return booleans : 
@@ -873,56 +873,56 @@ class Quantity(object):
             if not left.dimension == other.dimension:
                 raise DimensionError(left.dimension, other.dimension)
             res = ufunc.__call__(left.value,other.value)    
-            return large_quantify(type(self)(res, left.dimension))
+            return _large_quantify(type(self)(res, left.dimension))
         elif ufunc_name in skip_2:
             other = quantify(args[1])
             res = ufunc.__call__(left.value, other.value)    
             if ufunc_name == "multiply" or ufunc_name == "matmul":
-                return large_quantify(type(self)(res, left.dimension * other.dimension))
+                return _large_quantify(type(self)(res, left.dimension * other.dimension))
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
-                return large_quantify(type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless())
+                return _large_quantify(type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless())
             elif ufunc_name == "copysign" or ufunc_name == "nextafter":
                 return type(self)(res, left.dimension)
         elif ufunc_name in no_dim_1:
             if not left.dimension == DIMENSIONLESS:
                 raise DimensionError(left.dimension, DIMENSIONLESS)
             res = ufunc.__call__(left.value)
-            return large_quantify(type(self)(res, Dimension(None)))
+            return _large_quantify(type(self)(res, Dimension(None)))
         elif ufunc_name in angle_1:
             if not left.is_dimensionless_ext():
                 raise DimensionError(left.dimension, DIMENSIONLESS, binary=True)
             res = ufunc.__call__(left.value)
-            return large_quantify(type(self)(res, Dimension(None))).rm_dim_if_dimless()
+            return _large_quantify(type(self)(res, Dimension(None))).rm_dim_if_dimless()
 
         elif ufunc_name in same_out:
             res = ufunc.__call__(left.value)
-            return large_quantify(type(self)(res, left.dimension)).rm_dim_if_dimless()
+            return _large_quantify(type(self)(res, left.dimension)).rm_dim_if_dimless()
         elif ufunc_name in special_dict:
             if ufunc_name == "sqrt":
                 res = ufunc.__call__(left.value)
-                return large_quantify(type(self)(res, left.dimension**(1/2)))
+                return _large_quantify(type(self)(res, left.dimension**(1/2)))
             elif ufunc_name == "power":
                 power_num = args[1]
                 if not (isinstance(power_num,int) or isinstance(power_num,float)):
                     raise TypeError(("Power must be a number, "
                             "not {}").format(type(power_num)))
                 res = ufunc.__call__(left.value, power_num)
-                return large_quantify(type(self)(res, 
+                return _large_quantify(type(self)(res, 
                         left.dimension ** power_num,
                         symbol = left.symbol ** power_num)).rm_dim_if_dimless()
             elif ufunc_name == "reciprocal":
                 res = ufunc.__call__(left.value)
-                return large_quantify(type(self)(res, 1/left.dimension))
+                return _large_quantify(type(self)(res, 1/left.dimension))
             elif ufunc_name == "square":
                 res = ufunc.__call__(left.value)
-                return large_quantify(type(self)(res, left.dimension**2))
+                return _large_quantify(type(self)(res, left.dimension**2))
             elif ufunc_name == "cbrt":
                 res = ufunc.__call__(left.value)
-                return large_quantify(type(self)(res, left.dimension**(1/3)))
+                return _large_quantify(type(self)(res, left.dimension**(1/3)))
             elif ufunc_name == "modf":
                 res = ufunc.__call__(left.value)
                 frac, integ = res
-                return (large_quantify(type(self)(frac, left.dimension)),
+                return ( _large_quantify(type(self)(frac, left.dimension)),
                        (type(self)(integ, left.dimension)))
             elif ufunc_name == "arctan2":
                 # both x and y should have same dim such that the ratio is dimless
@@ -961,14 +961,14 @@ class Quantity(object):
             res = ufunc.__call__(left.value, other.value)
             return res
         else:
-            raise ValueError("ufunc not implemented ?: ", str(ufunc))
+            raise ValueError("ufunc not implemented ?: ", str(ufunc), ufunc.__name__)
 
             
     def squeeze(self, *args, **kwargs):
         """
         Helper function to wrap numpy's squeeze.
         """
-        return large_quantify(type(self)(self.value.squeeze(*args, **kwargs), self.dimension))
+        return _large_quantify(type(self)(self.value.squeeze(*args, **kwargs), self.dimension))
 
 # Numpy functions            
 # Override functions - used with __array_function__
@@ -1343,12 +1343,12 @@ def np_trapz(q, x=None, dx=1, **kwargs):
     q = quantify(q)
     if x is None:    
         dx = quantify(dx)
-        return large_quantify(Quantity(np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+        return _large_quantify(Quantity(np.trapz(q.value, x=None, dx=dx.value, **kwargs),
                     q.dimension * dx.dimension,
                     ))
     else:
         x = quantify(x)
-        return large_quantify(Quantity(np.trapz(q.value, x=x.value, **kwargs),
+        return _large_quantify(Quantity(np.trapz(q.value, x=x.value, **kwargs),
                     q.dimension * x.dimension))
     
 @implements(np.transpose)
