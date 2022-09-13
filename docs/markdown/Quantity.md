@@ -77,20 +77,3 @@ print((1, 2, 3, 4) * m)
 # multiplicating array
 print(np.array([1, 2, 3, 4]) * m)
 ```
-
-# Known issues
-
-
-## Quantity defition with minus sign
-
-```python
-from physipy import Quantity, Dimension
-
-print(type(-Quantity(5, Dimension(None)))) # returns int
-print(type(Quantity(-5, Dimension(None)))) # returns Quantity
-print(type(Quantity(5, Dimension(None)))) # returns Quantity
-```
-
-```python
-
-```

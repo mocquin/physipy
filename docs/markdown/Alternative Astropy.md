@@ -1,42 +1,44 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %%
+```python
 import astropy
 print(astropy.__version__)
 from astropy.visualization import quantity_support
 quantity_support()
+```
 
-# %%
+```python
 from astropy import units as u
 from matplotlib import pyplot as plt
 plt.figure(figsize=(5,3))
 plt.plot([1, 2, 3] * u.m)
 plt.plot([1, 2, 3] * u.cm * 10)
+```
 
-# %%
+```python
 with quantity_support():
     plt.plot([1, 2, 3] * u.m)
+```
 
-# %% [markdown]
-# https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
-#
+https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
 
-# %% [markdown]
-# ## Plotting axhline without setting context
 
-# %%
+
+## Plotting axhline without setting context
+
+```python
 from astropy import units as u
 from matplotlib import pyplot as plt
 
@@ -46,98 +48,123 @@ y = [1, 2, 3] * u.cm
 ax.plot(x, y, 'tab:blue')
 ax.axhline(0.02 * u.cm , color='tab:red')
 ax.axvline(500* u.cm , color='tab:green')
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %% [markdown]
-# # Equivalencies
+```
 
-# %% [markdown]
-#  - https://docs.astropy.org/en/stable/units/equivalencies.html
-#  - https://docs.astropy.org/en/stable/_modules/astropy/units/equivalencies.html#temperature
-#  - https://docs.astropy.org/en/stable/_modules/astropy/units/equivalencies.html
+```python
 
-# %%
+```
+
+# Equivalencies
+
+
+ - https://docs.astropy.org/en/stable/units/equivalencies.html
+ - https://docs.astropy.org/en/stable/_modules/astropy/units/equivalencies.html#temperature
+ - https://docs.astropy.org/en/stable/_modules/astropy/units/equivalencies.html
+
+```python
 from astropy import units as u
 # this will fail : 
 # (0.8 * u.arcsec).to(u.parsec)  
 (0.8 * u.arcsec).to(u.parsec, equivalencies=u.parallax())
+```
 
-# %%
+```python
 import astropy.units as u
 
 liters_water = [
     (u.l, u.g, lambda x: 1000.0 * x, lambda x: x / 1000.0)
 ]
 u.l.to(u.kg, 1, equivalencies=liters_water)
+```
 
-# %%
+```python
 u.deg.to('', equivalencies=u.dimensionless_angles())  
+```
 
-# %%
+```python
 (0.5e38 * u.kg * u.m**2 * (u.cycle / u.s)**2).to(u.J,
 
                            equivalencies=u.dimensionless_angles())  
+```
 
-# %%
+```python
 import numpy as np
 np.exp((1j*0.125*u.cycle).to('', equivalencies=u.dimensionless_angles()))  
+```
 
-# %%
+```python
 (1*u.rad/u.s).to(u.Hz, equivalencies=[(u.cy/u.s, u.Hz)]) 
+```
 
-# %%
+```python
 ([1000, 2000] * u.nm).to(u.Hz, equivalencies=u.spectral())  
+```
 
-# %%
-# u.spectral?
+```python
+u.spectral?
+```
 
-# %%
+```python
 (1.5 * u.Jy).to(u.photon / u.cm**2 / u.s / u.Hz,
                  equivalencies=u.spectral_density(3500 * u.AA)) 
+```
 
-# %%
+```python
 u.photon
+```
 
-# %%
+```python
 dpi = u.pixel_scale(100 * u.pix / u.imperial.inch)
 (1024 * u.pix).to(u.cm, dpi)  
+```
 
-# %%
+```python
 temp_C = 0 * u.Celsius
 temp_Kelvin = temp_C.to(u.K, equivalencies=u.temperature())
 temp_Kelvin  
+```
 
-# %%
+```python
 temp_F = temp_C.to(u.imperial.deg_F, equivalencies=u.temperature())
 temp_F
+```
 
-# %%
+```python
 liters_water = [
    (u.l, u.g, lambda x: 1000.0 * x, lambda x: x / 1000.0)
 ]
 u.l.to(u.kg, 1, equivalencies=liters_water)
+```
 
-# %%
+```python
 u.Hz.find_equivalent_units()
+```
 
-# %%
+```python
 u.set_enabled_equivalencies(u.dimensionless_angles())
 u.deg.to('')  
+```
 
-# %%
+```python
 with u.set_enabled_equivalencies(u.dimensionless_angles()):
     phase = 0.5 * u.cycle
     c = np.exp(1j*phase)
 c  
+```
 
-# %%
+```python
 
-# %%
+```
+
+```python
 
 
 [docs]
@@ -932,39 +959,54 @@ def with_H0(H0=None):
     h100_val_unit = Unit(100/(H0.to_value((si.km/si.s)/astrophys.Mpc)) * astrophys.littleh)
 
     return Equivalency([(h100_val_unit, None)], "with_H0", kwargs={"H0": H0})
+```
 
+```python
 
-# %%
+```
 
-# %%
+```python
 https://docs.astropy.org/en/stable/_modules/astropy/units/equivalencies.html#temperature
+```
 
-# %%
+```python
 https://github.com/astropy/astropy/blob/a7ceb03f65c59d78d89129f767939f39948cbfea/astropy/units/function/core.py#L202
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
 
-# %% [markdown]
-# # np.copyto
+```
 
-# %%
+```python
+
+```
+
+# np.copyto
+
+```python
 import numpy as np
 
 from astropy import units as u
+```
 
 
-# %%
+```python
 np.array(2*u.m)
+```
 
-# %%
+```python
 
-# %%
+```
 
-# %%
+```python
+
+```
+
+```python
 a = np.array([1, 1, 1])*u.m
 b = np.array([1, 2, 3])*u.m
 np.copyto(a, b)
@@ -980,13 +1022,16 @@ a = np.array([1, 1, 1])*u.m
 b = np.array([1, 2, 3])
 np.copyto(a, b)
 print(a, b)
+```
 
-# %% [markdown]
-# # np.full
+# np.full
 
-# %%
+```python
 import numpy as np
 
 np.full((3, 3), 2*u.m)
+```
 
-# %%
+```python
+
+```

@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.2
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -35,7 +35,7 @@ weights = np.random.normal(74, 3, 10)*kg
 heights
 
 # %% [markdown] slideshow={"slide_type": "slide"} tags=[]
-# # Dataframe
+# ## Dataframe
 
 # %%
 df = pd.DataFrame({
@@ -62,5 +62,3 @@ df.describe()
 
 # %%
 # %timeit df["arr"].min()
-
-# %%

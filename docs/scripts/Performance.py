@@ -231,10 +231,6 @@ arrm = arr*physipy.m
 arrm
 
 # %%
-
-# %%
-
-# %%
 physipy
   add : 0.57792
   sub : 0.58624
@@ -254,8 +250,6 @@ truediv : 1.19365
   sub : 0.79829
   mul : 1.34892
 truediv : 1.63579
-
-# %%
 
 # %%
 import timeit
@@ -317,22 +311,8 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
         print(f"{operation :>5} : {time_qarr:.5f}")
 
 
-# %%
-
-
-
-# %%
-
-# %%
-
 # %% [markdown]
-#
-
-# %%
-# %lprun
-
-# %% [markdown]
-# # Array creation
+# ## Array creation
 
 # %% [markdown]
 # Compare lazy creation of arrays
@@ -342,7 +322,7 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
 # %timeit [0, 2]*m
 
 # %% [markdown]
-# # Profiling base operations
+# ## Profiling base operations
 
 # %%
 from physipy import m, s, rad, sr
@@ -375,7 +355,7 @@ m**3
 # !snakeviz prundump
 
 # %% [markdown]
-# # Profiling tests
+# ## Profiling tests
 
 # %%
 import sys

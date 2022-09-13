@@ -1,26 +1,26 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
-#       jupytext_version: 1.13.4
-#   kernelspec:
-#     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
-# ---
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.4
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
 
-# %% [markdown]
-# # Python's math module
+# Python's math module
 
-# %%
+```python
 from physipy import m, rad, Quantity, Dimension
 import physipy
 import physipy.math as phymath
+```
 
-# %%
+```python
 import math
 from math import acos, acosh, asin, asinh, atan, atan2, atanh
 from math import ceil, copysign, comb, cos, cosh
@@ -41,8 +41,9 @@ from math import tan, tanh, trunc
 
 a = 5.123 * m
 b = -2*m
+```
 
-# %%
+```python
 math_params = {
     "acos"     :(acos     , a       ),
     "acosh"    :(acosh    , a       ),
@@ -149,8 +150,9 @@ physipy_math_params = {
     "tanh"     :(physipy.math.tanh     ,q       ),
     "trunc"    :(physipy.math.trunc    ,q       ),
 }
+```
 
-# %%
+```python
 import time
 class Timer():
     def __enter__(self):
@@ -168,9 +170,9 @@ def color_green_true_red_false(val):
     """
     color = 'green' if val else 'red'
     return 'color: %s' % color
+```
 
-
-# %%
+```python
 res = {}
 
 for name, func_and_args in math_params.items():
@@ -204,8 +206,9 @@ for name, func_and_args in math_params.items():
             results["Returned"] = str(e)  
             results["Time"] = None
     res[name] = results
+```
 
-# %%
+```python
 res_phymath = {}
 
 for name, func_and_args in physipy_math_params.items():
@@ -239,18 +242,24 @@ for name, func_and_args in physipy_math_params.items():
             results["Returned"] = str(e)  
             results["Time"] = None
     res_phymath[name] = results
+```
 
-# %%
+```python
 import pandas as pd
 df = pd.DataFrame.from_dict(res, orient="index")
 df = df.style.applymap(color_green_true_red_false, subset=pd.IndexSlice[:, ['Passed']])
 df_phymath = pd.DataFrame.from_dict(res_phymath, orient="index")
 df_phymath = df_phymath.style.applymap(color_green_true_red_false, subset=pd.IndexSlice[:, ['Passed']])
+```
 
-# %%
+```python
 df
+```
 
-# %%
+```python
 df_phymath
+```
 
-# %%
+```python
+
+```

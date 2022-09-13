@@ -242,14 +242,6 @@ arrm
 ```
 
 ```python
-
-```
-
-```python
-
-```
-
-```python
 physipy
   add : 0.57792
   sub : 0.58624
@@ -269,10 +261,6 @@ truediv : 1.19365
   sub : 0.79829
   mul : 1.34892
 truediv : 1.63579
-```
-
-```python
-
 ```
 
 ```python
@@ -338,26 +326,7 @@ for modules_dict in [physipy_qs, pint_qs, fap_qs]:
 ```
 
 
-```python
-
-
-```
-
-```python
-
-```
-
-```python
-
-```
-
-
-
-```python
-%lprun
-```
-
-# Array creation
+## Array creation
 
 
 Compare lazy creation of arrays
@@ -367,7 +336,7 @@ Compare lazy creation of arrays
 %timeit [0, 2]*m
 ```
 
-# Profiling base operations
+## Profiling base operations
 
 ```python
 from physipy import m, s, rad, sr
@@ -403,7 +372,7 @@ m**3
 !snakeviz prundump
 ```
 
-# Profiling tests
+## Profiling tests
 
 ```python
 import sys

@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.2
+#       jupytext_version: 1.13.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -114,13 +114,10 @@ print(div_dim)
 div_dim
 
 # %% [markdown]
-# The inverse of a dimension can be computed by computing the division from 1, and the inverse method
+# The inverse of a dimension can be computed by computing the division from 1:
 
 # %%
 1/a_speed_dimension
-
-# %%
-a_speed_dimension.inverse()
 
 # %% [markdown]
 # Computing the power : 
