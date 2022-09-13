@@ -7,13 +7,14 @@ so if we want them to be unit-aware, we have to make our own version.
 """
 
 import numpy as np
-from physipy import quantify, Quantity, Dimension
+from physipy import quantify, Quantity, Dimension, DimensionError
 
 
 def poisson(lam=1.0, size=None):
     lam = quantify(lam)
     samples = np.random.poisson(lam.value, size=size)
     return Quantity(samples, lam.dimension)
+
 
 def normal(loc=0.0, scale=1.0, size=None):
     loc = quantify(loc)
@@ -22,8 +23,8 @@ def normal(loc=0.0, scale=1.0, size=None):
         raise DimensionError(loc.dimension, scale.dimension)
     samples = np.random.normal(loc=loc.value, scale=scale.value, size=size)
     return Quantity(samples, loc.dimension)
-    
-    
+
+
 def uniform(low=0.0, high=1.0, size=None):
     low = quantify(low)
     high = quantify(high)

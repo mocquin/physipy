@@ -8,6 +8,7 @@ import matplotlib.units as munits
 from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
 from .units import all_units
 
+
 class QuantityConverter(munits.ConversionInterface):
 
     @staticmethod
@@ -19,7 +20,7 @@ class QuantityConverter(munits.ConversionInterface):
             q_unit = q._plot_extract_q_for_axe(all_units.values())
             return q_unit
         # when calling ax.set_xlim(2*m, 3*m), the tuple (2*m, 3*m) is passed to
-        # default_units 
+        # default_units
         if np.iterable(q):
             for v in q:
                 if isinstance(v, Quantity):
@@ -38,25 +39,26 @@ class QuantityConverter(munits.ConversionInterface):
             return [self._convert(v, q_unit, axis) for v in q]
         else:
             return self._convert(q, q_unit, axis)
-        
+
     def _convert(self, q, q_unit, axis):
         if not isinstance(q_unit, Quantity):
-            raise TypeError(f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}")
-        return q._plot_get_value_for_plot(q_unit)    
+            raise TypeError(
+                f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}")
+        return q._plot_get_value_for_plot(q_unit)
 
 
-def setup_matplotlib(enable:bool = True) -> None:
+def setup_matplotlib(enable: bool = True) -> None:
     """Enable unit system in Matplotlib for Quantity objects.
-    
+
     Parameters
     ----------
     enable : bool
         Weither to activate the handling of physipy in matplotlib.
-        
+
     Returns
     -------
     None
-    
+
     """
     if matplotlib.__version__ < '2.0':
         raise RuntimeError('Matplotlib >= 2.0 required to work with units.')
@@ -71,7 +73,7 @@ def plotting_context():
     Based on : 
         https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
     """
-    
+
     from matplotlib import units
     from matplotlib import ticker
 
@@ -80,7 +82,6 @@ def plotting_context():
     def all_issubclass(cls):
         return {cls}.union(
             [s for c in cls.__subclasses__() for s in all_issubclass(c)])
-
 
     class MplQuantityConverter(QuantityConverter):
 

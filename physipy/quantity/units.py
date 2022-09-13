@@ -57,7 +57,7 @@ PREFIX_DICT = {
 def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic: dict = {}) -> dict:
     """
     Extends the dic by adding the combination between prefix_dic and base_units.
-    
+
     Parameters
     ----------
     prefix_dic : dict
@@ -66,7 +66,7 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
         Dict with keys the dimension symbol, and values the unit symbol.
     dic : dict, optionnal
         Dict on which are added the prefixed values. Default to {}.
-    
+
     Returns
     -------
     dict 
@@ -81,14 +81,14 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
                 continue
             # Update dic
             dic[prefixed_unit_symbol] = Quantity(prefix_value,
-                                                 Dimension(dim_symbol), 
+                                                 Dimension(dim_symbol),
                                                  symbol=prefixed_unit_symbol)
     return dic
 
 
 def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dict:
     """Return a dict of unit with all combination between the input unit dict and the prefix dict.
-    
+
     Parameters
     ----------
     prefix_dic : dict
@@ -97,7 +97,7 @@ def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dic
         Dict with keys the string of units, and value the corresponding Quantity.
     extend : bool
         Weither to extend the input unit dict, or return the prefixed units in a separate dict
-        
+
     Returns
     -------
     dict
@@ -107,17 +107,19 @@ def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dic
     prefixed_dict = {}
     for prefix_symbol, prefix_value in prefix_dic.items():
         for unit_symbol, unit_quantity in unit_dict.items():
-            prefixed_symbol = prefix_symbol+ str(unit_quantity.symbol)
+            prefixed_symbol = prefix_symbol + str(unit_quantity.symbol)
             prefixed_dict[prefixed_symbol] = make_quantity(prefix_value * unit_quantity,
                                                            symbol=prefixed_symbol)
     return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
-    
-    
+
+
 def _make_quantity_dict_with_symbols(dic):
     return {key: make_quantity(value, symbol=key) for key, value in dic.items()}
 
+
 # Init of SI inits dict
-SI_units = {value: Quantity(1,Dimension(key), symbol=value) for (key,value) in SI_UNIT_SYMBOL.items()}
+SI_units = {value: Quantity(1, Dimension(key), symbol=value)
+            for (key, value) in SI_UNIT_SYMBOL.items()}
 
 
 kg  = SI_units["kg"]
