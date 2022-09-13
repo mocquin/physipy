@@ -13,7 +13,10 @@
 # ---
 
 # %% [markdown]
-# # Example wrapping uncertainties : add the unit to `nominal_value` and `std_dev`
+# # Numeric backend interface
+
+# %% [markdown]
+# ## Example wrapping uncertainties : add the unit to `nominal_value` and `std_dev`
 
 # %% [markdown]
 # Numpy's integration is a great example of how physipy can wrap any kind of numerical values, but this integration is written in the source code of physipy so it's a bit cheating.  
@@ -35,11 +38,11 @@ print(type(x))
 # %%
 # now let's create a quanity version of x
 xq = x*m
-print(xq)
-print(xq**2, type(xq**2))
-print(xq+2*m, type(xq+2*m))
-print(xq.value)
-print(m*x == x*m)
+print(xq)                    # a Quantity
+print(xq**2, type(xq**2))    # a Quantity
+print(xq+2*m, type(xq+2*m))  # a Quantity
+print(xq.value)              # an uncertainties value
+print(m*x == x*m)            # True
 
 # %% [markdown]
 # That's a pretty neat result __that didn't need any additional code__.  
@@ -61,8 +64,8 @@ print(x.std_dev)
 # In physipy, if an attribute doesn't exist in the quantity instance, the lookup falls back on the backend value, ie on the uncertainties variable, so by default we get the same result on `xq` (note that we don't get auto-completion either for the same reason):
 
 # %%
-print(xq.nominal_value)
-print(xq.std_dev)
+print(xq.nominal_value) # 0.2
+print(xq.std_dev)       # 0.1
 
 # %% [markdown]
 # It would be great that `xq.nominal_value` actually prints `0.2 m`, not loosing the unit and making it explicit that the nominal value is actually 0.2 meters. To do that, we can add a property back to specify what we want `xq.nominal_value` to return : a property backend is a dictionnary with key the name of the attribute, and as value the corresponding method to get the wanted result.
@@ -85,11 +88,11 @@ register_property_backend(type(xq.value),
 # With this property back interface registered we get the desired result for `print(xq.nominal_value)`:
 
 # %%
-print(xq.nominal_value)
-print(xq.std_dev)
+print(xq.nominal_value) # 0.2 m, instead of just 0.2 previously
+print(xq.std_dev)       # 0.1 m, instead of just 0.1 previously
 
 # %% [markdown]
-# # Why the duck type approach doesn't work
+# ## Why the duck type approach doesn't work
 
 # %% [markdown]
 # Another approach to do this would be to create a new class like this
@@ -121,51 +124,7 @@ print(xq2+2*m, type(xq2+2*m), (xq2+2*m).value, (xq2+2*m)._SI_unitary_quantity)
 print((xq2+2*m).nominal_value)
 
 # %% [markdown]
-# # Wrapping mcerp
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-print(type((x*m).value))
-
-# %%
-
-# %%
-
-# %% [markdown]
-# By design, physipy can wrap pretty well most numerical-like packages, like numpy or uncertainties.
-#
-
-# %%
-
-# %% [markdown]
-# A FAIRE !!!!!!
-# Ajouter Mul dans MyFraction !!!!!!!!!
-
-# %%
-
-# %%
-
-# %% [markdown]
-# # Interface
+# ## Interface
 
 # %% [markdown]
 # The simplest way to use physipy with specific objects, like fractions or your own class is to create quantities that wrap your value : here `Quantity` wraps the custom value as its `value` attribute.
@@ -186,6 +145,10 @@ print(length)
 
 # %%
 print(length + 2*m)
+print(length**2)
+print(length.dimension)
+print(length.is_mass())
+print(length.sum())
 
 
 # %% [markdown]
@@ -199,27 +162,13 @@ class MyFraction(fractions.Fraction):
     def __str__(self):
         return f"[[[{self.numerator}/{self.denominator}]]]"
 
-    def __mul__(self, other):
-        print(type(other))
-        if not isinstance(other, fractions.Fraction):
-            other = fractions.Fraction(other)
-        print(type(other))
-        fres = self*other
-        return fraction.Fraction(fres)
-    __rmul__ = __mul__
-
 
 # %%
 my_length = MyFraction(3, 26)
-#print(my_length)
-#print(my_length*my_length)
-
-# %% [markdown]
-# Now what happens when we create a quantity with this value
-
-# %%
-my_length_q = my_length*m
-print(my_length_q)
+print(my_length)
+print(my_length*my_length)
+print(Quantity(MyFraction(3, 26), Dimension("L")))
+print(MyFraction(3, 26)*m)
 
 
 # %% [markdown]
@@ -233,9 +182,8 @@ print(my_length_q)
 # %%
 class QuantityWrappedMyFraction(Quantity):
     def __str__(self):
-        print("toto")
         str_myfraction = str(self.value)
-        return str_myfraction + "-"+self.dimension.str_SI_unit()
+        return "QuantityWrappedMyFraction : " + str_myfraction + "-"+self.dimension.str_SI_unit()
 
 from physipy.quantity.quantity import register_value_backend
 register_value_backend(
@@ -245,32 +193,9 @@ register_value_backend(
     QuantityWrappedMyFraction)
 
 # %%
-my_length_q = my_length*m
-print(my_length_q)
-
-# %%
-
-# %%
-my_length_q.value
-
-# %%
-import mcerp
-from physipy import m, Quantity, Dimension
-
-# %%
-type(x1)
-
-# %%
-x1 = Quantity(mcerp.N(24, 1), Dimension("m"))
-
-# %%
-x2 = mcerp.N(2, 1)
-
-# %%
-from physipy.quantity.quantity import register_property_backend, register_value_backend
-register_value_backend(type(x1))
-
-# %%
-x1*m
+print(my_length)
+print(my_length*my_length)
+print(Quantity(MyFraction(3, 26), Dimension("L")))
+print(MyFraction(3, 26)*m)
 
 # %%
