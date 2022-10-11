@@ -26,8 +26,6 @@ from physipy import s, m, setup_matplotlib
 
 from physipy import Dimension, units, quantify, Quantity
 
-
-
 ms = units["ms"]
 mm = units['mm']
 km = units["km"]
@@ -216,18 +214,6 @@ sns.catplot(
 ```
 
 ```python
-physipy
-  add : 0.26833
-  sub : 0.24462
-  mul : 0.96287
-truediv : 1.05938
-  add : 0.33669
-  sub : 0.33431
-  mul : 1.21743
-truediv : 1.50563
-```
-
-```python
 aq=a*physipy.m
 arrm = arr*physipy.m
 ```
@@ -239,28 +225,6 @@ arrm = arr*physipy.m
 
 ```python
 arrm
-```
-
-```python
-physipy
-  add : 0.57792
-  sub : 0.58624
-  mul : 1.10884
-truediv : 1.20130
-  add : 0.69919
-  sub : 0.74585
-  mul : 1.34999
-truediv : 1.72294
-
-physipy
-  add : 0.58849
-  sub : 0.59637
-  mul : 1.10718
-truediv : 1.19365
-  add : 0.75698
-  sub : 0.79829
-  mul : 1.34892
-truediv : 1.63579
 ```
 
 ```python
