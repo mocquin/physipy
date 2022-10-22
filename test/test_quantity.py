@@ -166,6 +166,11 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(2 / self.x_q, Quantity(2 / self.x, 1/ self.dim))
         self.assertEqual(self.x_q / 2, Quantity(self.x / 2, self.dim))
         
+        # dividing a quantity by itself should return int/float 1, not a 
+        # quantity ?
+        self.assertEqual(self.x_q / self.x_q, 1)
+        
+        
     def test_15_abs(self):
         left = Quantity(-1, Dimension("L"))
         right = m
