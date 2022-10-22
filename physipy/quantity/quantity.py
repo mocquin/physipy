@@ -229,7 +229,7 @@ class Quantity(object):
         return _large_quantify(type(self)(self.value / y.value,
                         self.dimension / y.dimension,
                         symbol = self.symbol + "/" + y.symbol,
-                         ).rm_dim_if_dimless())
+                         )).rm_dim_if_dimless()
 
 
     def __rtruediv__(self, x): return quantify(x) / self
