@@ -1758,6 +1758,11 @@ def dimensionify(x):
 
 
 def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
+    """
+    Create a new Quantity from x, with optionnal symbol and favunit.
+    If x is already a Quantity, also copy its favunit if favunit=None.
+    If x is not a Quantity, create a dimensionless Quantity.
+    """
     if isinstance(x, Quantity):
         q = x.__copy__()
         q.symbol = symbol
