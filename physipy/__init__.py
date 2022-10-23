@@ -18,3 +18,21 @@ from .constants import constants, scipy_constants, scipy_constants_codata
 from .custom_units import custom_units, imperial_units
 
 from . import math
+
+
+try:
+    import uncertainties as uc
+    from .quantity.quantity import register_property_backend
+
+    uncertainties_property_backend_interface = {
+        # res is the backend result of the attribute lookup, and q the wrapping quantity
+        "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
+        "std_dev":lambda q, res: q._SI_unitary_quantity*res,
+        "n":lambda q, res: q._SI_unitary_quantity*res,
+        "s":lambda q, res: q._SI_unitary_quantity*res,
+    }
+
+    register_property_backend(uc.core.Variable, 
+                             uncertainties_property_backend_interface)
+except:
+    pass

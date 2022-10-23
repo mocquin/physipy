@@ -24,6 +24,7 @@
 
 # %%
 from physipy import m, s, K, Quantity, Dimension
+import uncertainties.umath as um
 import uncertainties as u
 
 # create a pure uncertainties instance
@@ -53,8 +54,8 @@ print(m*x == x*m)            # True
 # will multiply the uncerainties variable by 1, and turn it into a
 # AffineScalarFunc instance, which is not hashable and breaks my 
 # register_property_backend that relies on dict lookup
-x = u.ufloat(0.20, 0.01)  # x = 0.20+/-0.01
-xq = Quantity(x, Dimension("m")) 
+#x = u.ufloat(0.20, 0.01)  # x = 0.20+/-0.01
+xq = Quantity(x, Dimension("m")) # xq = x *m
 
 # %%
 print(x.nominal_value)
@@ -73,23 +74,49 @@ print(xq.std_dev)       # 0.1
 # For the nominal_value and standard deviation, we just want to add back the unit and make the variable a Quantity, so we multiply by the corresponding SI unit:
 
 # %%
+type(xq.value)
+
+# %%
+import uncertainties as uc
 from physipy.quantity.quantity import register_property_backend
 
 uncertainties_property_backend_interface = {
     # res is the backend result of the attribute lookup, and q the wrapping quantity
     "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
     "std_dev":lambda q, res: q._SI_unitary_quantity*res,
+    "n":lambda q, res: q._SI_unitary_quantity*res,
+    "s":lambda q, res: q._SI_unitary_quantity*res,
 }
 
-register_property_backend(type(xq.value), 
+print("Registering uncertainties")
+register_property_backend(uc.core.Variable, 
                          uncertainties_property_backend_interface)
 
 # %% [markdown]
 # With this property back interface registered we get the desired result for `print(xq.nominal_value)`:
 
 # %%
+print(type(xq.value))
 print(xq.nominal_value) # 0.2 m, instead of just 0.2 previously
 print(xq.std_dev)       # 0.1 m, instead of just 0.1 previously
+
+# %%
+yq = 2*xq 
+
+# %%
+type(list(yq.derivatives.keys())[0])
+
+# %%
+from physipy.math import decorator_angle_or_dimless_to_dimless
+from physipy import rad
+
+# %%
+sin = decorator_angle_or_dimless_to_dimless(um.sin)
+print(sin(x*rad))
+print(um.sin(x))
+
+# %%
+    
 
 # %% [markdown]
 # ## Why the duck type approach doesn't work
@@ -197,5 +224,11 @@ print(my_length)
 print(my_length*my_length)
 print(Quantity(MyFraction(3, 26), Dimension("L")))
 print(MyFraction(3, 26)*m)
+
+# %% [markdown]
+# # Requirements for easy backend supports
+
+# %% [markdown]
+#  - The class must be hashable : for the dict lookup on type, we need the class as key, so they need to be hashable
 
 # %%
