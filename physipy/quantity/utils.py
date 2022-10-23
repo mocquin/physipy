@@ -508,6 +508,13 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
         - check that the inputs have coherent units vs each others
         - set the specified unit to the output
 
+    Examples
+    --------
+    @decorate_with_various_unit(('A', 'A'), 'A')
+    def another_sum(x, y):
+        return x + y
+    print(another_sum(2*m, 1*m))
+
     TODO : get rid of eval with a expression parser"""
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
