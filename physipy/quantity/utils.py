@@ -548,6 +548,35 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
     return decorator
 
 
+def wrap_with_unit(dim_as_str):
+    """
+    Idea to wrap a function regardless of absolut unit, but relative
+    to input unit.
+    
+    Examples
+    --------
+    # add one only to float/dimensionless
+    def increment(x):
+        return x + 1
+    
+    # add one for any unit
+    dec_increment = generator("x")(increment)
+    
+    # increment(2*m) would fail but not
+    dec_increment(2*m)
+    """
+    # define the decorator
+    def decorator(func: Callable):
+        # create a decorated func
+        @functools.wraps(func)
+        def decorated_func(x):
+            x = quantify(x)
+            dim_in = x.dimension
+            res = func(x.value)
+            return Quantity(res, eval(dim_as_str, {"x":dim_in}))
+        return decorated_func
+    return decorator
+
 def composed_decs(*decs: tuple[Callable]) -> Callable:
     """A wrapper to combine multiple decorators"""
     def deco(f):
