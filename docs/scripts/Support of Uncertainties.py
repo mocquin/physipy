@@ -58,10 +58,10 @@ print(qheight.std_score(3))
 # Some operations fails like : 
 
 # %%
-u = ufloat(1, 0.1) * m
-v = ufloat(10, 0.1) * m
+u = ufloat(1, 0.1) #* m
+v = ufloat(10, 0.1)# * m
 sum_value = u + v
-sum_value.derivatives[u.value]
+sum_value.derivatives[u]#]
 
 # %% [markdown] tags=[]
 # ## Operations with other quantities 
@@ -121,97 +121,29 @@ print(z)
 print(y == y) # expect True
 print(y == z) # expect False
 
-
 # %% [markdown]
 # # Math module and numpy
 # Not tested but will most likely fails as uncertainties relies on `umath` and `unumpy`. To be fair, physipy also have a `math` module that wraps the builtin one.
-
-# %%
-
-# %%
 
 # %% [markdown]
 # # Dirty Sandbox
 
 # %%
-def info(x): print(f"{str(type(x)): <20}", " --- ", f"{str(repr(x)): <30}"+" --- "+f"{str(x): <10}")
+import uncertainties as uc
+x =  uc.ufloat(0.20, 0.01)
+arr = np.array([uc.ufloat(1, 0.01),
+                uc.ufloat(2, 0.1)])
 
-xuv = ufloat(1.123, 0.1) 
-yuv = ufloat(2.123, 0.2)
-y = Quantity(ufloat(1.123, 0.1) , Dimension(None))
-xuvq = xuv * s
-yuvq = yuv * m
-zuvq = Quantity(xuv, Dimension(None))
-
-info(xuv)
-info(y)
+arr_q = np.array([arr[0]*m, arr[1]*m])
+arr.sum() * m == arr_q.sum()
 
 # %%
-info(xuv)
-info(xuvq)
+np.isclose(arr_q.sum().value, (arr.sum() * m).value)
 
-print("Add")
-info(xuv+1)
-info(xuvq+1*s)
-info(xuv+xuv)
-info(xuvq+xuvq)
+# %%
 
-print("Prod by int")
-info(2*xuv)
-info(2*xuvq)
-info(xuv*2)
-info(xuvq*2)
-
-print("Product")
-info(xuv*xuv)
-info(xuvq*xuvq)
-
-info(xuv * yuv)
-info(xuvq * yuvq)
-
-print("Divide by int")
-info(xuv/2)
-info(xuvq/2)
-
-info(2/xuv)
-info(2/xuvq)
-
-print("Divide by other")
-info(xuv/yuv)
-info(xuvq/yuvq)
-
-print("Pow by int")
-info(xuv**2)
-info(xuvq**2)
-
-print("Pow by object")
-info(2**xuv)
-#info(2**xuvq) # TypeError: unsupported operand type(s) for ** or pow(): 'int' and 'Quantity'
-
-
-print("Math functions")
-info(umath.sin(xuv))
-# info(umath.sin(zuvq)) # TypeError: can't convert an affine function (<class 'uncertainties.core.Variable'>) to float; use x.nominal_value
-info(umath.sqrt(xuv))
-# info(umath.sqrt(xuvq)) # DimensionError: Dimension error : dimension is T but should be no-dimension
-
-
-print("Derivatives")
-info((2*xuv+1000).derivatives[xuv])
-info((2/m*xuvq+1000*s/m).derivatives[xuv]) # work to be done here
-
-
-print("Attributes")
-info(xuv.nominal_value)
-info(xuvq.nominal_value) # needs to be wrapped with the unit
-info(xuv.std_dev)
-info(xuvq.std_dev) # needs to be wrapped with the unit
-info(xuv.std_score(3))
-info(xuvq.std_score(3)) # need to be wrapped with the unit
-
-
-print("Numpy support")
-# todo, not trivial as to what the expected behavior is
+# %%
+arr_q.sum().value == (arr.sum() * m).value
 
 # %% [markdown]
 # # Measurement : mix between Uncertainties and Pint
