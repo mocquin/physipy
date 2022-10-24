@@ -176,7 +176,7 @@ class TestQuantity(unittest.TestCase):
     def test_20_test_inv(self):
         pass
         
-    def test_30_test_unite_favorite(self):
+    def test_30_test_favunit(self):
         
         
         #print("DISPLAY_DIGITS : " + str(DISPLAY_DIGITS))
@@ -251,8 +251,10 @@ class TestQuantity(unittest.TestCase):
 
     def test_50_iterateur(self):
         u = np.array([1,2,3,4,5])*m
-        u.unite_favorite = Quantity(0.001,Dimension("L"),symbol="mm")
+        u.favunit = Quantity(0.001,Dimension("L"),symbol="mm")
         self.assertEqual(u[2],3*m)
+        self.assertEqual(u[2].favunit, Quantity(0.001,Dimension("L"),symbol="mm"))
+        
         
         
         # set item
