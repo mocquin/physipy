@@ -127,6 +127,7 @@ class Dimension(object):
     # DEFAULT REPR LATEX can be used to change the way a Dimension
     # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
+    __slots__ = 'dim_dict'
 
     def __init__(self, definition) -> None:
         """Allow the creation of Dimension object with 3 possibile ways."""
