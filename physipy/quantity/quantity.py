@@ -92,6 +92,7 @@ class Quantity(object):
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     __array_priority__ = 100
+    __slots__ = '_value', 'dimension', 'symbol', '_favunit'
 
     def __init__(self, value, dimension: Dimension, symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
         self.value = value
