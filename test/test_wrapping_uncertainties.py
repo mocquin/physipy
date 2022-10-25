@@ -54,6 +54,69 @@ class TestWrappingUncertainties(unittest.TestCase):
         self.assertEqual(x_q_l, x_q)
         self.assertEqual(x_q_r, x_q)
         
+    def test_bool(self):
+        x = uc.ufloat(3, 0)
+        y = uc.ufloat(0, 0)
+        z = uc.ufloat(0, 0.1)
+        t = uc.ufloat(-1, 2)
+
+        self.assertEqual(bool(x), bool(x*m))
+        self.assertEqual(bool(y), bool(y*m))
+        self.assertEqual(bool(z), bool(z*m))
+        self.assertEqual(bool(t), bool(t*m))
+
+
+    def test_affine(self):
+        x = uc.ufloat(3.14, 0.01, "x var")        
+        y = x*m + 0*m
+        self.assertEqual(type(y.value), uc.core.AffineScalarFunc)
+        self.assertEqual(y.nominal_value, 3.14*m)
+        self.assertEqual(y.std_dev, 0.01*m)
+
+    def test_error_origin(self):
+        x = uc.ufloat(3.14, 0.01, "x var")*m   
+        a = uc.ufloat(-1, 0.001)*m
+
+        y = 2*x + 3*x + 2 + a
+        error_sources = y.error_components()
+        self.assertEqual(len(error_sources),  2) # 'a' and 'x'
+        self.assertEqual(error_sources[x], 0.05*m)
+        self.assertEqual(error_sources[a], 0.001*m)
+    
+    
+        
+    def test_derivatives(self):
+        
+        x = uc.ufloat(3.14, 0.01, "x var")
+        a = uc.ufloat(-1, 0.001)*m
+
+        y = 2*x *m+ 3*x *m+ 2 + a
+        self.assertEqual(y.derivatives[x], 5)
+        
+        
+        x = uc.ufloat(3.14, 0.01, "x var")*m   
+        a = uc.ufloat(-1, 0.001)*m
+
+        y = 2*x + 3*x + 2 + a
+        self.assertEqual(y.derivatives[x], 5)
+        
+        
+
+        # Modification of the standard deviation of variables:
+        x.std_dev = 1 *m
+        self.assertEqual(y.error_components()[x], 5)  # New error contribution!
+
+        
+    def test_correlation(self):
+        a = uc.ufloat(1, 0)*m
+        x = uc.ufloat(4, 0.1)*m
+        y = x*2 + a
+        # Correlations cancel "naive" additions of uncertainties:
+        self.assertNotEqual(y.std_dev, 0*m)
+        normally_zero = y - (x*2 + 1)
+        self.assertEqual(normally_zero.nominal_value, 0*m)
+        self.assertEqual(normally_zero.std_dev, 0*m)
+
     def test_mul(self):
         
         res = self.x_q*m
@@ -84,6 +147,7 @@ class TestWrappingUncertainties(unittest.TestCase):
         exp = Quantity(self.x**2, Dimension('m**2'))
         self.assertEqual(res, exp)
         
+
     def test_sin(self):
         x_q = self.x*rad
         # umath.sin
