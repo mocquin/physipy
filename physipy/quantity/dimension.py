@@ -35,6 +35,9 @@ import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
 import sympy.printing.latex as latex
 
+# import Symbol once as used in a loop, faster this way
+sp_Symbol = sp.Symbol
+
 
 dirname = os.path.dirname(__file__)
 with open(os.path.join(dirname, "dimension.txt")) as file:
@@ -444,7 +447,7 @@ def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp.Symbol:
     """
     output = output_init
     for key, value in power_dict.items():
-        output *= sp.Symbol(key)**value
+        output *= sp_Symbol(key)**value
     return output
 
 
