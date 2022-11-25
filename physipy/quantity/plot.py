@@ -5,6 +5,9 @@ import matplotlib
 import numpy as np
 import matplotlib.units as munits
 
+# import registry as used trouhout, faster
+munits_registry = munits.registry
+
 from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
 from .units import all_units
 
@@ -63,9 +66,9 @@ def setup_matplotlib(enable: bool = True) -> None:
     if matplotlib.__version__ < '2.0':
         raise RuntimeError('Matplotlib >= 2.0 required to work with units.')
     if enable == False:
-        munits.registry.pop(Quantity, None)
+        munits_registry.pop(Quantity, None)
     else:
-        munits.registry[Quantity] = QuantityConverter()
+        munits_registry[Quantity] = QuantityConverter()
 
 
 def plotting_context():
@@ -94,8 +97,8 @@ def plotting_context():
             self._original_converter = {}
 
             for cls in self._all_issubclass_quantity:
-                self._original_converter[cls] = munits.registry.get(cls)
-                munits.registry[cls] = self
+                self._original_converter[cls] = munits_registry.get(cls)
+                munits_registry[cls] = self
 
         def __enter__(self):
             return self
@@ -103,8 +106,8 @@ def plotting_context():
         def __exit__(self, type, value, tb):
             for cls in self._all_issubclass_quantity:
                 if self._original_converter[cls] is None:
-                    del munits.registry[cls]
+                    del munits_registry[cls]
                 else:
-                    munits.registry[cls] = self._original_converter[cls]
+                    munits_registry[cls] = self._original_converter[cls]
 
     return MplQuantityConverter()
