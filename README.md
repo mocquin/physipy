@@ -142,6 +142,9 @@ Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are avai
 
 See also the corresponding notebook at : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Benchmarking%20with%20AirSpeedVelocity.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Benchmarking%20with%20AirSpeedVelocity.ipynb).  
 
+## Optimized
+Performance linting under progress with [perflint](https://github.com/tonybaloney/perflint).
+
 ## About angles and units
 
 See : https://www.bipm.org/en/CGPM/db/20/8/.
