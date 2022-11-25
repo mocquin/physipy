@@ -182,11 +182,9 @@ def solve_ivp(fun,
     sol.t = Quantity(sol.t, t_span[0].dimension)
 
     if not_scalar:
-        soly_q = []
-        for y_value, y0 in zip(sol.y, Y0):
-            soly_q.append(Quantity(y_value, y0.dimension))
-        arr_q = soly_q  # np.array(soly_q, dtype=object)
-        sol.y = arr_q
+        #soly_q = 
+        #arr_q = soly_q  # np.array(soly_q, dtype=object)
+        sol.y = [Quantity(y_value, y0.dimension) for y_value, y0 in zip(sol.y, Y0)]
     else:
         sol.y = Quantity(sol.y, Y0[0].dimension)
 
