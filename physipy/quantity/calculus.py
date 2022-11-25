@@ -43,10 +43,7 @@ def xvectorize(func: Callable) -> Callable:
         Decorated function.
     """
     def vec_func(x):
-        res = []
-        for i in x:
-            res.append(func(i))
-        res = asqarray(res)
+        res = asqarray([func(i) for i in x])
         return res
     return vec_func
 
@@ -76,10 +73,7 @@ def ndvectorize(func: Callable) -> Callable:
         Decorated function.
     """
     def vec_func(x):
-        res = []
-        for i in x.flat:
-            res.append(func(i))
-        res = asqarray(res)
+        res = asqarray([func(i) for i in x.flat])
         res.value = res.value.reshape(x.shape)
         return res
     return vec_func
