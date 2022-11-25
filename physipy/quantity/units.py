@@ -77,6 +77,8 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
             prefixed_unit_symbol = prefix_symbol + unit_symbol
             # handle the gram, which is a milli-kilogram
             if prefixed_unit_symbol == "mkg":
+                # loop-invariant but should not be executed so not a 
+                # speed-loss
                 dic["g"] = Quantity(0.001, Dimension("M"), symbol="g")
                 continue
             # Update dic
