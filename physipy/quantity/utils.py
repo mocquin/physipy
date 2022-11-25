@@ -8,6 +8,7 @@ from functools import lru_cache
 from operator import attrgetter
 
 import numpy as np
+from numpy import array as np_array # faster to import once since used in a loop
 import sympy as sp
 
 from sympy.parsing.sympy_parser import parse_expr
@@ -674,7 +675,7 @@ def asqarray(array_like) -> Quantity:
                 q = quantify(q)
                 if q.dimension == dim:
                     val_list.append(q.value)
-                    res_val = np.array(val_list)
+                    res_val = np_array(val_list)
                 else:
                     raise DimensionError(q.dimension, dim)
             return Quantity(res_val, dim)
@@ -698,7 +699,7 @@ def asqarray(array_like) -> Quantity:
                 for q in array_like:
                     if q.dimension == dim:
                         val_list.append(q.value)
-                        res_val = np.array(val_list)
+                        res_val = np_array(val_list)
                     else:
                         raise DimensionError(q.dim, dim)
                 return Quantity(res_val.reshape(shape), dim)
