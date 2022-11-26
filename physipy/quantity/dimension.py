@@ -30,13 +30,13 @@ from __future__ import annotations
 import json
 import os
 
-import sympy as sp
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
 import sympy.printing.latex as latex
 
 # import Symbol once as used in a loop, faster this way
-sp_Symbol = sp.Symbol
+from sympy import Symbol as sp_Symbol
+from sympy import Integer as sp_Integer
 
 
 dirname = os.path.dirname(__file__)
@@ -70,7 +70,7 @@ def parse_str_to_dic(exp_str: str) -> dict:
     {"L":2, "M":1}
     """
     parsed = parse_expr(exp_str, global_dict={
-                        'Symbol': sp.Symbol, 'Integer': sp.Integer})
+                        'Symbol': sp_Symbol, 'Integer': sp_Integer})
     exp_dic = {str(key): value for key,
                value in parsed.as_powers_dict().items()}
     return exp_dic
@@ -424,7 +424,7 @@ def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str
         return str(output)
 
 
-def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp.Symbol:
+def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.
