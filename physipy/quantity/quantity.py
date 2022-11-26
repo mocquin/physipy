@@ -1335,8 +1335,8 @@ def np_trapz(q, x=None, dx=1, **kwargs):
 
 
 @implements(np.transpose)
-def np_transpose(a, axis=None):
-    return Quantity(np.transpose(a.value, axis=axis),
+def np_transpose(a, axes=None):
+    return Quantity(np.transpose(a.value, axes=axes),
                     a.dimension,
                     favunit=a.favunit,
                     symbol=a.symbol)
