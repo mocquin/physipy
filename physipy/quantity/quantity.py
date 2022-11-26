@@ -65,7 +65,9 @@ from typing import Callable
 import math
 import numbers as nb
 import numpy as np
-import sympy as sp
+
+import sympy.printing as sp_printing
+import sympy.parsing as sp_parsing
 
 import warnings
 
@@ -386,7 +388,7 @@ class Quantity(object):
                 ax.plot(self, other)
             else:
                 raise ValueError("kind must be y of x with other")
-
+                
     def _repr_latex_(self) -> str:
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
@@ -401,16 +403,16 @@ class Quantity(object):
         complemented = q._compute_complement_value()
         if complemented != "":
             # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
-            complement_value_str = sp.printing.latex(
-                sp.parsing.sympy_parser.parse_expr(complemented))
+            complement_value_str = sp_printing.latex(
+                sp_parsing.sympy_parser.parse_expr(complemented))
         else:
             complement_value_str = ""
         # if self.value is an array, only wrap the complement in latex
         if isinstance(self.value, np.ndarray):
             return formatted_value + "$" + self.LATEX_SEP + complement_value_str + "$"
         # if self.value is a scalar, use sympy to parse expression
-        value_str = sp.printing.latex(
-            sp.parsing.sympy_parser.parse_expr(formatted_value))
+        value_str = sp_printing.latex(
+            sp_parsing.sympy_parser.parse_expr(formatted_value))
         return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
 
     def _pick_smart_favunit(self, array_to_scal=np.mean) -> Quantity:
