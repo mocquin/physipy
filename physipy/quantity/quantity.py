@@ -1160,15 +1160,24 @@ def np_cumsum(a, **kwargs):
 
 
 @implements(np.histogram)
-def np_histogram(a, bins=10, range=None, normed=None, weights=None, **kwargs):
+def np_histogram(a, bins=10, range=None, density=None, weights=None, **kwargs):
     if range is not None:
         range = (quantify(range[0]), quantify(range[1]))
         if not range[0].dimension == range[1].dimension:
             raise DimensionError(range[0].dimension, range[1].dimension)
     hist, bin_edges = np.histogram(
-        a.value, bins=bins, range=range, normed=normed, weights=weights)
+        a.value, bins=bins, range=range, density=density, weights=weights)
     return hist, Quantity(bin_edges, a.dimension)
 
+
+@implements(np.histogram2d)
+def np_histogram2d(x, y, bins=10, range=None, weights=None, **kwargs):
+    x = quantify(x)
+    y = quantify(y)
+    hist, xedges, yedges = np.histogram2d(
+        x.value, y.value, bins=bins, range=range, weights=weights)
+    return hist, Quantity(xedges, x.dimension), Quantity(yedges, y.dimension)
+    
 
 @implements(np.diagonal)
 def np_diagonal(a, **kwargs):

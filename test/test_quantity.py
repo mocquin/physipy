@@ -2167,6 +2167,21 @@ class TestQuantity(unittest.TestCase):
         exp = np.where(arr>4, 1, 10)*m
         self.assertTrue(np.all(res==exp))
     
+    def test_np_histogram2d(self):
+        a = np.arange(100)
+        b = np.arange(100)*m
+        hist, abins, bbins = np.histogram2d(a, b)
+        
+        exp_hist = np.histogram2d(np.arange(100), np.arange(100))[0]
+        exp_abins = np.histogram2d(np.arange(100), np.arange(100))[1]
+        exp_bbins = np.histogram2d(np.arange(100), np.arange(100))[2]*m
+        self.assertTrue(np.all(hist == exp_hist))
+        self.assertTrue(np.all(abins == exp_abins))
+        self.assertTrue(np.all(bbins == exp_bbins))
+        
+        
+        
+    
     def test_scipy_integrate_solveivp(self):
         # Expected 
         import scipy.integrate
