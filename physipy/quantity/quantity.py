@@ -1186,6 +1186,11 @@ def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
     return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
 
 
+@implements(np.apply_along_axis)
+def np_apply_along_axis(func1d, axis, arr, *args, **kwargs):
+    res = np.apply_along_axis(func1d, axis, arr.value, *args, **kwargs)
+    return res
+
 @implements(np.ndim)
 def np_ndim(a):
     return np.ndim(a.value)
