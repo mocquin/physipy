@@ -76,6 +76,24 @@ class TestQuantity(unittest.TestCase):
             "id":cls.ids,
         })
         
+    def test_hard_equal(self):
+        q1 = Quantity(1, Dimension('L'))
+        q2 = Quantity(1, Dimension('L'))
+        self.assertTrue(hard_equal(q1, q2))
+        
+        q1 = Quantity(1, Dimension('L'), symbol="toto")
+        q2 = Quantity(1, Dimension('L'), symbol="toto")
+        self.assertTrue(hard_equal(q1, q2))
+        
+        q1 = Quantity(1, Dimension('L'))
+        q2 = Quantity(2, Dimension('L'))
+        self.assertFalse(hard_equal(q1, q2))
+        
+        q1 = Quantity(1, Dimension('L'), symbol="toto")
+        q2 = Quantity(1, Dimension('L'), symbol="tata")
+        self.assertFalse(hard_equal(q1, q2))
+        
+        
     def test_very_hard_equal(self):
         q1 = Quantity(1, Dimension('L'))
         q1.favunit = V
