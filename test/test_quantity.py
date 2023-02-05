@@ -22,7 +22,7 @@ from physipy.quantity import SI_units, units#, custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit
-from physipy.quantity.utils import asqarray
+from physipy.quantity.utils import asqarray, hard_equal, very_hard_equal
 from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
 import physipy
@@ -75,6 +75,26 @@ class TestQuantity(unittest.TestCase):
             "time":cls.times,
             "id":cls.ids,
         })
+        
+    def test_very_hard_equal(self):
+        q1 = Quantity(1, Dimension('L'))
+        q1.favunit = V
+        q2 = Quantity(1, Dimension('L'))
+        q2.favunit = V
+        self.assertTrue(very_hard_equal(q1, q2))
+        
+        q1 = Quantity(1, Dimension('L'), symbol="toto")
+        q1.favunit = V
+        q2 = Quantity(1, Dimension('L'), symbol="toto")
+        q2.favunit = V
+        self.assertTrue(very_hard_equal(q1, q2))
+        
+        q1 = Quantity(1, Dimension('L'), symbol="toto")
+        q1.favunit = V
+        q2 = Quantity(1, Dimension('L'), symbol="toto")
+        q2.favunit = 1*V
+        self.assertFalse(very_hard_equal(q1, q2))
+        
         
     def test_03_test_Quantity_creation(self):
         
