@@ -76,6 +76,26 @@ class TestQuantity(unittest.TestCase):
             "id":cls.ids,
         })
         
+    def test_pickle(self):
+        import pickle
+        
+        q = 2.345*K / s
+        q.symbol = "toto"
+        s2 = s**2
+        s2.symbol = "s**2"
+        q.favunit = s2
+        saved_object = pickle.dumps(q)
+        new = pickle.loads(saved_object)
+        self.assertTrue(very_hard_equal(q, new))
+        
+        q = 2.345*K 
+        q.favunit = s
+        saved_object = pickle.dumps(q)
+        new = pickle.loads(saved_object)
+        self.assertTrue(very_hard_equal(q, new))
+        
+        
+        
     def test_hard_equal(self):
         q1 = Quantity(1, Dimension('L'))
         q2 = Quantity(1, Dimension('L'))

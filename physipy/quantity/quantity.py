@@ -346,6 +346,18 @@ class Quantity(object):
 
     def __hash__(self):
         return hash(str(self.value)+str(self.dimension))
+    
+    def __reduce__(self):
+        """
+        Overload pickle behavior : 
+         - https://docs.python.org/3/library/pickle.html#object.__reduce__
+         - https://stackoverflow.com/questions/19855156/whats-the-exact-usage-of-reduce-in-pickler
+        TODO : form the doc : 
+            "Although powerful, implementing __reduce__() directly in your classes is 
+            error prone. For this reason, class designers should use the high-level 
+            interface (i.e., __getnewargs_ex__(), __getstate__() and __setstate__()) whenever possible.
+        """
+        return (self.__class__, (self.value, self.dimension, self.symbol, self.favunit))
 
     def __ceil__(self):
         """
