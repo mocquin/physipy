@@ -106,7 +106,10 @@ def hard_equal(q1: Quantity, q2: Quantity) -> bool:
 
 def very_hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """Check if 2 Quantities are hard_equal, and have same favunit"""
-    return hard_equal(q1, q2) and q1.favunit == q2.favunit
+    if q1.favunit is None and q2.favunit is  None:
+        return hard_equal(q1, q2) 
+    else:
+        return very_hard_equal(q1.favunit, q2.favunit)
     
 
 def hard_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
