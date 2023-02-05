@@ -94,7 +94,18 @@ class Quantity(object):
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     __array_priority__ = 100
-    __slots__ = '_value', 'dimension', 'symbol', '_favunit'
+    
+    # adding a __slots__ removes the presence of __dict__, which also
+    # makes vars(q) to fail.
+    # when this is commented, q.__dict__ returns something like : 
+    #    {'_value': 2.345,
+    #     'dimension': <Dimension : {'L': 0, 'M': 0, 'T': -1, 'I': 0, 'theta': 1, 'N': 0, 'J': 0, 'RAD': 0, 'SR': 0}>,
+    #     'symbol': 'toto',
+    #     '_favunit': <Quantity : 1 s**2, symbol=s**2>}
+    # using __dict__ instead of '_value', 'dimension', 'symbol', '_favunit' allows for both slots and
+    # pickle to work (with __reduce__).
+    __slots__ = ('__dict__') 
+    
 
     def __init__(self, value, dimension: Dimension, symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
         self.value = value
