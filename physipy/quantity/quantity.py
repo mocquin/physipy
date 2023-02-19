@@ -604,6 +604,10 @@ class Quantity(object):
 
     def mean(self, **kwargs): return np.mean(self, **kwargs)
 
+    def std(self, **kwargs): return np.std(self, **kwargs)
+
+    def var(self, **kwargs): return np.var(self, **kwargs)
+
     def integrate(self, *args, **kwargs): return np.trapz(self,
                                                           *args, **kwargs)
 

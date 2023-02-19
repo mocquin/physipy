@@ -517,7 +517,15 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(2*self.z_q.integrate(),2*Quantity(2,Dimension("L")))
 
     def test_150_mean(self):
-        self.assertEqual(self.z_q.mean(),Quantity(1,Dimension("L")))
+        self.assertEqual(self.z_q.mean(), Quantity(1,Dimension("L")))
+        
+    def test_151_std(self):
+        self.assertEqual(self.z_q.std(), np.std(self.z_q))
+        
+    def test_152_var(self):
+        self.assertEqual(self.z_q.var(), np.var(self.z_q))
+        
+    
 
     def test_160_sum(self):
         self.assertEqual(self.z_q.sum(),Quantity(3,Dimension("L")))
