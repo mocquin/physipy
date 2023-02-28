@@ -24,6 +24,7 @@ def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:
     Use on computation-heavy attributes.
 
     From https://stackoverflow.com/questions/48262273/python-bookkeeping-dependencies-in-cached-attributes-that-might-change
+    For a version that handles arrays : https://gist.github.com/mocquin/e188c5c360fa6b53dd04427162d53f99
 
     Examples :
     ==========
