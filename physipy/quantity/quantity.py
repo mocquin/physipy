@@ -1083,14 +1083,16 @@ def np_flipud(m):
                     favunit=m.favunit)
 
 
-@implements(np.random.normal)
-def np_random_normal(loc=0.0, scale=1.0, **kwargs):
-    loc = quantify(loc)
-    scale = quantify(scale)
-    if not loc.dimension == scale.dimension:
-        raise DimensionError(loc.dimension, scale.dimension)
-    return Quantity(np.random.normal(loc=loc.value, scale=scale.value,
-                                     **kwargs))
+# random function are not supported
+# see https://github.com/numpy/numpy/issues/19382
+#@implements(np.random.normal)
+#def np_random_normal(loc=0.0, scale=1.0, **kwargs):
+#    loc = quantify(loc)
+#    scale = quantify(scale)
+#    if not loc.dimension == scale.dimension:
+#        raise DimensionError(loc.dimension, scale.dimension)
+#    return Quantity(np.random.normal(loc=loc.value, scale=scale.value,
+#                                     **kwargs))
 
 
 @implements(np.may_share_memory)
