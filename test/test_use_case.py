@@ -30,7 +30,7 @@ sr = units["sr"]
 
 
 class TestQuantity(unittest.TestCase):
-    
+
     def setUp(self):
         self.startTime = time.time()
         self.tottime = 0
@@ -41,7 +41,7 @@ class TestQuantity(unittest.TestCase):
         print(f"{self.id():70} : {t:10.6f}")
         self.times.append(t)
         self.ids.append(str(self.id()))
-    
+
     @classmethod
     def setUpClass(cls):
         cls.times = []
@@ -53,6 +53,6 @@ class TestQuantity(unittest.TestCase):
             "time":cls.times,
             "id":cls.ids,
         })
-        
+
     def use_case_1(self):
         pass

@@ -117,4 +117,3 @@ class BasicPhysipy:
         lmbdas = ech_lmbda_mum*mum
         Tbb = 300*K
         integral = np.trapz(plancks_law(lmbdas, Tbb), x=lmbdas)
-

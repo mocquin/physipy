@@ -2271,7 +2271,7 @@ class TestQuantity(unittest.TestCase):
          
         def RHS_dydt(t, y):
             return 1/(tau)*(Ve - y)
-         
+
         t_span = (0, 10*tau)
         
         # solution with no units
@@ -2286,7 +2286,7 @@ class TestQuantity(unittest.TestCase):
         
         
         from physipy import units, s, set_favunit
-            
+
         ohm = units["ohm"]
         F = units["F"]
         V = units["V"]
@@ -2305,7 +2305,7 @@ class TestQuantity(unittest.TestCase):
 
         def source_tension(t):
             return Ve
-         
+
         def RHS_dydt(t, y):
             return 1/(tau)*(Ve - y)
          
@@ -2328,10 +2328,8 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all( solution_res.sol(ech_t)==solution_exp.sol(ech_t.value)*V))
         with self.assertRaises(DimensionError):
             solution_res.sol(1)
-            
-        
-    
+
+
+
 if __name__ == "__main__":
     unittest.main()
-        
-        

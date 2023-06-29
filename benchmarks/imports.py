@@ -44,5 +44,3 @@ def timeraw_import_physipy_units():
 
 def timeraw_import_physipy_units():
     return r"from physipy.quantity import utils"
-
-

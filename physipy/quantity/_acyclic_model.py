@@ -288,5 +288,3 @@ if __name__ == '__main__':
     print('Attribute a4 is '+str(program_good.a4))
     print('Getting the value of a7 auto-triggers only the remaining dependencies.')
     print('Attribute a7 is '+str(program_good.a7))
-
-
