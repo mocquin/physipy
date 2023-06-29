@@ -201,13 +201,7 @@ hypot = decorator_mute(math.hypot)
 prod = decorator_mute(math.prod)
 
 
-def decorator_dimless_to_dimless(math_func):
-    def decorated(x):
-        x = quantify(x)
-        if not x.dimension == Dimension(None):
-            raise DimensionError(x.dimension, Dimension(None))
-        return math_func(x.value)
-    return decorated
+
 
 
 erf = decorator_dimless_to_dimless(math.erf)
