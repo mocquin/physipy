@@ -16,7 +16,7 @@ TODO :
 # setupe
 from math import pi
 
-from .quantity import make_quantity
+from .quantity import make_quantity, Quantity
 from .quantity import m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
 
 cm = SI_units_prefixed["cm"]
@@ -30,7 +30,7 @@ liter = units["L"]
 
 
 # Define here you custom units : key=symbol and value=quantity
-raw_custom_units = {
+raw_custom_units: dict[str, Quantity] = {
 
 }
 

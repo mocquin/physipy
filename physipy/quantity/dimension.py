@@ -29,6 +29,7 @@ PLEASE NOTE :
 from __future__ import annotations
 import json
 import os
+from typing import Union
 
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
@@ -430,7 +431,7 @@ def compute_str(power_dict: dict, default_str: str,
         return str(output)
 
 
-def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol:
+def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> Union[sp_Symbol, 1]:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.

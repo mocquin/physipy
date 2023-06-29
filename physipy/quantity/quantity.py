@@ -61,7 +61,7 @@ PROPOSITIONS/QUESTIONS :
 
 """
 from __future__ import annotations
-from typing import Callable
+from typing import Callable, Union
 import math
 import numbers as nb
 import numpy as np
@@ -442,7 +442,7 @@ class Quantity(object):
             sp_parsing.sympy_parser.parse_expr(formatted_value))
         return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
 
-    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Quantity:
+    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Union[Quantity, None]:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.

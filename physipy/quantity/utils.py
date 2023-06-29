@@ -1,5 +1,6 @@
 from __future__ import annotations
 from collections.abc import Iterable
+from typing import Union
 
 import functools
 from typing import Callable
@@ -176,7 +177,7 @@ def _parse_str_to_dic(exp_str: str) -> dict:
     return exp_dic
 
 
-def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Quantity:
+def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Union[Quantity, int]:
     """
     Helper to expand a dict to a quantity using :
         q = u1**v1 * u2**v2 ...
@@ -191,7 +192,7 @@ def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Quantity:
     return q
 
 
-def expr_to_q(exp_str: str, parsing_dict: dict) -> Quantity:
+def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, 1]:
     """
     Parse a string expression to a quantity.
     """
