@@ -82,7 +82,7 @@ LATEX_VALUE_UNIT_SEPARATOR = "\,"  # " \cdot "
 #DEFAULT_SYMBOL = sp.Symbol("UndefinedSymbol")
 DEFAULT_SYMBOL = "UndefinedSymbol"
 # SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
-#CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
+# CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
 HANDLED_FUNCTIONS = {}
 
@@ -200,7 +200,7 @@ class Quantity(object):
         y = quantify(y)
         return type(self)(self.value @ y.value,
                           self.dimension * y.dimension,
-                          #symbol = self.symbol * y.symbol
+                          # symbol = self.symbol * y.symbol
                           ).rm_dim_if_dimless()
 
     def __truediv__(self, y):
@@ -442,7 +442,8 @@ class Quantity(object):
             sp_parsing.sympy_parser.parse_expr(formatted_value))
         return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
 
-    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Union[Quantity, None]:
+    def _pick_smart_favunit(
+            self, array_to_scal=np.mean) -> Union[Quantity, None]:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
@@ -1115,9 +1116,6 @@ def np_flipud(m):
 #                                     **kwargs))
 
 
-
-
-
 @implements(np.polyfit)
 def np_polyfit(x, y, deg, *args, **kwargs):
     x = quantify(x)
@@ -1462,7 +1460,7 @@ def np_expand_ims(a, axis):
 def np_shape(a):
     return np.shape(a.value)
 
-#_linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
+# _linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 
 
 @implements(np.linspace)

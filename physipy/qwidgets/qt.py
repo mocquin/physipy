@@ -23,7 +23,7 @@ class QuantityQtSlider(QWidget):
                  descr="Quantity", favunit=None, parent=None):
         super(QuantityQtSlider, self).__init__(parent=parent)
         self.setAutoFillBackground(True)
-        #p = self.palette()
+        # p = self.palette()
         # p.setColor(self.backgroundRole(), Qt.Color("#6d6875")) # 6d6875
         # self.setPalette(p)
         self.setStyleSheet('background-color: #e36414;')
@@ -166,8 +166,8 @@ class QuantityQtSlider(QWidget):
 
     def public_to_raw(self, public_value):
         try:
-            raw_value = (public_value - self.qminimum) / (self.qmaximum -
-                                                          self.qminimum) * (self.qtslider.maximum() - self.qtslider.minimum())
+            raw_value = (public_value - self.qminimum) / (self.qmaximum - \
+                         self.qminimum) * (self.qtslider.maximum() - self.qtslider.minimum())
             return raw_value
         except BaseException:
             pass

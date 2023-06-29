@@ -13,7 +13,7 @@ class ObservableQuantityDescriptor():
     def __set__(self, obj, qvalue):
         # if not ObservableQuantity exists already, where value is a quantity
         if not hasattr(obj, self.private_name):
-            #print("setting value")
+            # print("setting value")
             setattr(obj, self.private_name, qvalue)
         # if a ObservableQuantity is there, overwrite it
         else:

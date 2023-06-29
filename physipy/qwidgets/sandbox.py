@@ -39,13 +39,13 @@ class TraitedQuantity(traitlets.HasTraits):
         # def _update_q(change):
         #    q = change.new
         #    self.value = q
-        #self.widget.observe(_update_q, names="value")
+        # self.widget.observe(_update_q, names="value")
 
     # @traitlets.observe("value")
     # def _update_w(self, change):
     #    q = change.new
     #    self.widget.value = q
-    #self.value.observe(_update_w, names="value")
+    # self.value.observe(_update_w, names="value")
 
     def __repr__(self):
         return repr(self.value)

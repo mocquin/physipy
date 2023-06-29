@@ -56,7 +56,7 @@ class WrappedFunction1D():
         self.sliders_dict = {}
 
         def _update_data(change):
-            #print("update data")
+            # print("update data")
             data = self.data()
             self.line.set_label(self.label)
             self.line.set_data(data)
@@ -95,7 +95,7 @@ class WrappedFunction1D():
         sliders_list = []
         for k, v in kwargs.items():
             self.pargs[k] = v
-            #slider = ipyw.FloatSlider(v[0], min=v[0], max=v[-1], description=k, step=0.001)
+            # slider = ipyw.FloatSlider(v[0], min=v[0], max=v[-1], description=k, step=0.001)
             slider = QuantityTextSlider(v[0],
                                         min=v[0],
                                         max=v[-1],
@@ -159,7 +159,7 @@ class WrappedFunction1D():
             if ax is None:
                 ax = plt.gca()
             ix = np.linspace(xmin, xmax)
-            #iy = func(ix, **kwargs)
+            # iy = func(ix, **kwargs)
             try:
                 iy = func(ix, *args, **kwargs)
             except BaseException:

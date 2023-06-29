@@ -201,9 +201,6 @@ hypot = decorator_mute(math.hypot)
 prod = decorator_mute(math.prod)
 
 
-
-
-
 erf = decorator_dimless_to_dimless(math.erf)
 erfc = decorator_dimless_to_dimless(math.erfc)
 gamma = decorator_dimless_to_dimless(math.gamma)
@@ -229,7 +226,7 @@ def decorator_any_to_same(math_func):
 
 
 fsum = decorator_any_to_same(math.fsum)
-#ceil = dec(math.ceil)
+# ceil = dec(math.ceil)
 
 # math_params = {
 #    "acos"     :(math.acos     , a       ),

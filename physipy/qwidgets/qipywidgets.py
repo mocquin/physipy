@@ -323,7 +323,7 @@ class QuantityTextSlider(QuantityText):
         # favunit is passed to the QuantityText for display purpose
         favunit = kwargs.pop("favunit", None)
         # but description is kept in the slider
-        #description = kwargs.pop("description", "")
+        # description = kwargs.pop("description", "")
         # so we leave an empty description for the QuantityText
         super().__init__(*args, description="", favunit=favunit)
 
@@ -430,7 +430,7 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 
         # def update_slider_value(change):
         #    self.slider.value = change.new.value
-        #self.observe(update_slider_value, names="value")
+        # self.observe(update_slider_value, names="value")
 
         # display the quantity value of the slider in label
         self.label = ipyw.Label(
@@ -549,10 +549,10 @@ class QuantitySliderDescriptor():
     def __set__(self, obj, value):
         # todo : find a way to not creat a new slider at each set
         if hasattr(obj, self.private_name):
-            #print("setting value")
+            # print("setting value")
             setattr(getattr(obj, self.private_name), "value", value)
         else:
-            #print("create new widget")
+            # print("create new widget")
             setattr(
                 obj,
                 self.private_name,

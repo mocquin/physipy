@@ -431,7 +431,8 @@ def compute_str(power_dict: dict, default_str: str,
         return str(output)
 
 
-def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> Union[sp_Symbol, 1]:
+def expand_dict_to_expr(
+        power_dict: dict, output_init: int = 1) -> Union[sp_Symbol, 1]:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.
