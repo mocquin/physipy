@@ -11,9 +11,6 @@ from typing import Callable
 import numbers as nb
 
 import numpy as np
-import scipy
-import scipy.integrate
-import scipy.optimize
 import sympy as sp
 
 from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
@@ -103,11 +100,3 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     int_x = np.trapz(Zs, axis=-1, x=ech_x)
     int_xy = np.trapz(int_x, axis=-1, x=ech_y)
     return int_xy
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()
