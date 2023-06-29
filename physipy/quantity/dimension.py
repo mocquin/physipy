@@ -109,7 +109,8 @@ def check_pattern(exp_str: str, symbol_list: list) -> bool:
 class DimensionError(Exception):
     """Exception class for dimension errors."""
 
-    def __init__(self, dim_1: Dimension, dim_2: Dimension, binary: bool = True) -> None:
+    def __init__(self, dim_1: Dimension, dim_2: Dimension,
+                 binary: bool = True) -> None:
         """Init method of DimensionError class."""
         if binary:
             self.message = ("Dimension error : dimensions of "
@@ -257,8 +258,8 @@ class Dimension(object):
     def __rtruediv__(self: Dimension, x: Dimension) -> Dimension:
         """Inverse a Dimension by divinding one.
 
-        THe only value a Dimension can divide is 1, in order to invert a Dimension. 
-        The inverse of the Dimension has all it's power negated.       
+        THe only value a Dimension can divide is 1, in order to invert a Dimension.
+        The inverse of the Dimension has all it's power negated.
         Mainly used to raise a TypeError in unallowed uses.
 
         Parameter
@@ -319,7 +320,7 @@ class Dimension(object):
         try:
             return self.dim_dict == y.dim_dict
         # else:
-        except:
+        except BaseException:
             return False
     # def __ne__(self, y):
     #    """Return not (self == y)."""
@@ -338,7 +339,8 @@ class Dimension(object):
         dict
             A dict with keys the SI-unit symbols and values the corresponding exponent.
         """
-        return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
+        return {SI_UNIT_SYMBOL[key]: value for key,
+                value in self.dim_dict.items()}
 
     def str_SI_unit(self: Dimension) -> str:
         """Compute the symbol-wise SI unit equivalent of the Dimension.
@@ -384,17 +386,18 @@ class Dimension(object):
         try:
             return [dimensionality for dimensionality, dimension
                     in DIMENSIONALITY.items() if dimension == self][0]
-        except:
+        except BaseException:
             return str(self)
 
 
 DIMENSIONLESS = Dimension(None)
 
 
-def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str:
+def compute_str(power_dict: dict, default_str: str,
+                output_init: int = 1) -> str:
     """Convert power-dict to a string expression equivalent.
 
-    Compute the product-concatenation of the 
+    Compute the product-concatenation of the
     dict as key**value into a string.
     Only used for 'str' and 'repr' methods.
 
@@ -410,12 +413,12 @@ def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str
     Returns
     -------
     str
-        The string-casted of the output value if the output value is different from the 
+        The string-casted of the output value if the output value is different from the
         initial output, otherwise default_str.
 
     See also
     --------
-    expand_dict_to_expr : compute the value from a power-dict.    
+    expand_dict_to_expr : compute the value from a power-dict.
     """
     output = expand_dict_to_expr(power_dict, output_init)
     if output == output_init:
@@ -438,7 +441,7 @@ def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol:
 
     Returns
     -------
-    expr 
+    expr
         A sympy-expression equivalent to the power-dict.
 
     See also
