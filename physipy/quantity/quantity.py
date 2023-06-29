@@ -6,14 +6,14 @@
 TODO:
  - [X] : find a better way to include SI units in
  - [ ] : sum() : problem with init of iterator, using radd, needs to start with sum(y_q,Quantity(1,Dimension("L")))
- - [ ] : avec Q_vectorize qui utilise interp, lève une erreur pas claire si on renvoi une valeur dans un array déjà initialisé avec une autre dimension 
+ - [ ] : avec Q_vectorize qui utilise interp, lève une erreur pas claire si on renvoi une valeur dans un array déjà initialisé avec une autre dimension
  - [ ] : make DISPLAY_DIGITS and EXP_THRESHOLD variable-attribute, not constant
  - [X] : PENDING : make __true_div__ = __div__
  - [ ] : try to factor quantify and make_quantity
  - [X] : add a method for fast-friendly display in another unit
  - [X] : add methods to check dimensions (is_length, is_surface, etc)
  - [ ] : factorize quad and dblquad, and make nquad
- - [X] : make a decorator for trigo functions 
+ - [X] : make a decorator for trigo functions
  - [ ] : deal with precision of quads
  - [X] : make a round method
  - [ ] : quick plot method for array value (matplotlib)
@@ -37,16 +37,16 @@ TODO:
  - [ ] : better tests for Fraction support
 
 
-PROPOSITIONS/QUESTIONS : 
+PROPOSITIONS/QUESTIONS :
  - make sum, mean, integrate, is_dimensionless properties IO methods ?
  - add a 0 quantity to radd to allow magic function sum ?
- - should __pow__ be allowed with array, returning an array of quantities 
+ - should __pow__ be allowed with array, returning an array of quantities
      (and quantity of array if power is scalar)
- - should mul and rmul be different : 
-    - [1,2,3]*m = ([1,2,3])m 
-    - m*[1,2,3] = [1m, 2m, 3m] 
+ - should mul and rmul be different :
+    - [1,2,3]*m = ([1,2,3])m
+    - m*[1,2,3] = [1m, 2m, 3m]
  - make Quantity self)converted to numpy : ex : np.cos(q) if q is dimensionless
-     'Quantity' object has no attribute 'cos' ??? 
+     'Quantity' object has no attribute 'cos' ???
  -  when multiplying or dividing not quanity with quantity, propagate favunit ?
  - should setting dimension be forbiden ? or with a warning ?
  - make a floordiv ?
@@ -106,7 +106,8 @@ class Quantity(object):
     # pickle to work (with __reduce__).
     __slots__ = ('__dict__')
 
-    def __init__(self, value, dimension: Dimension, symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
+    def __init__(self, value, dimension: Dimension,
+                 symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
@@ -140,7 +141,7 @@ class Quantity(object):
 
     @favunit.setter
     def favunit(self, value):
-        if isinstance(value, Quantity) or value == None:
+        if isinstance(value, Quantity) or value is None:
             self._favunit = value
         elif np.isscalar(value):
             self._favunit = None
@@ -186,7 +187,7 @@ class Quantity(object):
                               self.dimension * y.dimension,
                               symbol=self.symbol + "*" + y.symbol,
                               ).rm_dim_if_dimless()
-        except:
+        except BaseException:
             y = quantify(y)
             return type(self)(self.value * y.value,
                               self.dimension * y.dimension,
@@ -213,7 +214,7 @@ class Quantity(object):
 
     def __floordiv__(self, y):
         """
-        Any returned quantity should be dimensionless, but leaving the 
+        Any returned quantity should be dimensionless, but leaving the
         Quantity().remove() because more intuitive
         """
         y = quantify(y)
@@ -231,7 +232,7 @@ class Quantity(object):
 
     def __mod__(self, y):
         """
-        There is no rm_dim_if_dimless() because a 
+        There is no rm_dim_if_dimless() because a
         modulo operation would not change the dimension.
 
         """
@@ -243,9 +244,9 @@ class Quantity(object):
 
     def __pow__(self, power):
         """
-        A power must always be a dimensionless scalar. 
+        A power must always be a dimensionless scalar.
         If a = 1*m, we can't do a ** [1,2], because the result would be
-        an array of quantity, and can't be a quantity with array-value, 
+        an array of quantity, and can't be a quantity with array-value,
         since the quantities won't be the same dimension.
 
         """
@@ -335,39 +336,43 @@ class Quantity(object):
                           favunit=self.favunit)
 
     def __copy__(self):
-        return type(self)(self.value, self.dimension, favunit=self.favunit, symbol=self.symbol)
+        return type(self)(self.value, self.dimension,
+                          favunit=self.favunit, symbol=self.symbol)
 
     def copy(self):
         return self.__copy__()
 
     def __repr__(self) -> str:
         if str(self.symbol) != "UndefinedSymbol":
-            sym = ", symbol="+str(self.symbol)
+            sym = ", symbol=" + str(self.symbol)
         else:
             sym = ""
-        return f'<{self.__class__.__name__} : ' + str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"
+        return f'<{self.__class__.__name__} : ' + \
+            str(self.value) + " " + str(self.dimension.str_SI_unit()) + sym + ">"
 
     def __str__(self) -> str:
         complement_value_for_repr = self._compute_complement_value()
         if not complement_value_for_repr == "":
-            return str(self._compute_value()) + UNIT_PREFIX + complement_value_for_repr + UNIT_SUFFIX
+            return str(self._compute_value()) + UNIT_PREFIX + \
+                complement_value_for_repr + UNIT_SUFFIX
         else:
             return str(self._compute_value()) + UNIT_SUFFIX
 
     def __hash__(self):
-        return hash(str(self.value)+str(self.dimension))
+        return hash(str(self.value) + str(self.dimension))
 
     def __reduce__(self):
         """
-        Overload pickle behavior : 
+        Overload pickle behavior :
          - https://docs.python.org/3/library/pickle.html#object.__reduce__
          - https://stackoverflow.com/questions/19855156/whats-the-exact-usage-of-reduce-in-pickler
-        TODO : form the doc : 
-            "Although powerful, implementing __reduce__() directly in your classes is 
-            error prone. For this reason, class designers should use the high-level 
+        TODO : form the doc :
+            "Although powerful, implementing __reduce__() directly in your classes is
+            error prone. For this reason, class designers should use the high-level
             interface (i.e., __getnewargs_ex__(), __getstate__() and __setstate__()) whenever possible.
         """
-        return (self.__class__, (self.value, self.dimension, self.symbol, self.favunit))
+        return (self.__class__, (self.value,
+                self.dimension, self.symbol, self.favunit))
 
     def __ceil__(self):
         """
@@ -419,7 +424,7 @@ class Quantity(object):
         q = self.__copy__()
         # to set a favunit for display purpose
         # only change the favunit if not already defined
-        if q.favunit == None:
+        if q.favunit is None:
             q.favunit = self._pick_smart_favunit()
         formatted_value = q._format_value()
         complemented = q._compute_complement_value()
@@ -441,7 +446,7 @@ class Quantity(object):
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
-        In case self.value is an array, array_to_scal is 
+        In case self.value is an array, array_to_scal is
         used to convert the array to a single value.
         """
         from .units import units
@@ -481,10 +486,11 @@ class Quantity(object):
     #    return self._repr_latex_()
 
     # def __format_raw__(self, format_spec):
-    #    return format(self.value, format_spec) + " " + str(self.dimension.str_SI_unit())
+    # return format(self.value, format_spec) + " " +
+    # str(self.dimension.str_SI_unit())
 
     def __format__(self, format_spec: str) -> str:
-        """This method is used when using format or f-string. 
+        """This method is used when using format or f-string.
         The format is applied to the numerical value part only."""
         complement_value_for_repr = self._compute_complement_value()
         prefix = UNIT_PREFIX
@@ -492,14 +498,15 @@ class Quantity(object):
             format_spec = format_spec.replace("~", "")
             prefix = ""
         if not complement_value_for_repr == "":
-            return format(self._compute_value(), format_spec) + prefix + complement_value_for_repr + UNIT_SUFFIX
+            return format(self._compute_value(), format_spec) + \
+                prefix + complement_value_for_repr + UNIT_SUFFIX
         else:
             return format(self._compute_value(), format_spec) + prefix
 
     def _compute_value(self):
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
-            ratio_favunit = make_quantity(self/self.favunit)
+            ratio_favunit = make_quantity(self / self.favunit)
             return ratio_favunit.value
         else:
             return self.value
@@ -511,7 +518,7 @@ class Quantity(object):
         else:
             favunit = custom_favunit
         if isinstance(favunit, Quantity):
-            ratio_favunit = make_quantity(self/favunit)
+            ratio_favunit = make_quantity(self / favunit)
             dim_SI = ratio_favunit.dimension
             if dim_SI == DIMENSIONLESS:
                 return str(favunit.symbol)
@@ -527,7 +534,8 @@ class Quantity(object):
 
         Such that self = self.value * self._SI_unitary_quantity
         """
-        return type(self)(1, self.dimension, symbol=self.dimension.str_SI_unit())
+        return type(self)(1, self.dimension,
+                          symbol=self.dimension.str_SI_unit())
 
     def __getitem__(self, idx):
         """
@@ -575,7 +583,8 @@ class Quantity(object):
         return FlatQuantityIterator(self)
 
     def flatten(self):
-        return type(self)(self.value.flatten(), self.dimension, favunit=self.favunit)
+        return type(self)(self.value.flatten(),
+                          self.dimension, favunit=self.favunit)
 
     def tolist(self) -> list:
         return [type(self)(i, self.dimension) for i in self.value]
@@ -597,7 +606,7 @@ class Quantity(object):
 
     def inverse(self):
         """is this method usefull ?"""
-        return type(self)(1/self.value, 1/self.dimension)
+        return type(self)(1 / self.value, 1 / self.dimension)
 
     def sum(self, **kwargs): return np.sum(self, **kwargs)
 
@@ -620,7 +629,8 @@ class Quantity(object):
             return self
 
     def has_integer_dimension_power(self) -> bool:
-        return all(value == int(value) for value in self.dimension.dim_dict.values())
+        return all(value == int(value)
+                   for value in self.dimension.dim_dict.values())
 
     def to(self, y: Quantity):
         """return quantity with another favunit."""
@@ -694,12 +704,13 @@ class Quantity(object):
         q_unit = quantify(q_unit)
         if not self.dimension == q_unit.dimension:
             raise DimensionError(self.dimension, q_unit.dimension)
-        return self/q_unit
+        return self / q_unit
 
     # for munits support
     def _plot_extract_q_for_axe(self, units_list):
         if self.favunit is None:
-            favs = [unit for unit in units_list if self._SI_unitary_quantity == unit]
+            favs = [
+                unit for unit in units_list if self._SI_unitary_quantity == unit]
             if len(favs) >= 1:
                 favunit = favs[0]
             else:
@@ -707,7 +718,7 @@ class Quantity(object):
         else:
             favunit = self.favunit
         if isinstance(favunit, Quantity):
-            ratio_favunit = make_quantity(self/favunit)
+            ratio_favunit = make_quantity(self / favunit)
             dim_SI = ratio_favunit.dimension
             if dim_SI == DIMENSIONLESS:
                 return favunit
@@ -719,12 +730,12 @@ class Quantity(object):
 
     def __getattr__(self, item):
         """
-        Called when an attribute lookup has not found the attribute 
+        Called when an attribute lookup has not found the attribute
         in the usual places (i.e. it is not an instance attribute
-        nor is it found in the class tree for self). name is the 
-        attribute name. This method should return the (computed) 
+        nor is it found in the class tree for self). name is the
+        attribute name. This method should return the (computed)
         attribute value or raise an AttributeError exception.
-        Note that if the attribute is found through the normal mechanism, 
+        Note that if the attribute is found through the normal mechanism,
         __getattr__() is not called.
         """
         # if item == '__iter__':
@@ -857,7 +868,8 @@ class Quantity(object):
             if ufunc_name == "multiply" or ufunc_name == "matmul":
                 return type(self)(res, left.dimension * other.dimension)
             elif ufunc_name == 'divide' or ufunc_name == "true_divide":
-                return type(self)(res, left.dimension / other.dimension).rm_dim_if_dimless()
+                return type(self)(res, left.dimension /
+                                  other.dimension).rm_dim_if_dimless()
             elif ufunc_name == "copysign" or ufunc_name == "nextafter":
                 return type(self)(res, left.dimension)
         elif ufunc_name in no_dim_1:
@@ -877,10 +889,11 @@ class Quantity(object):
         elif ufunc_name in special_dict:
             if ufunc_name == "sqrt":
                 res = ufunc.__call__(left.value)
-                return type(self)(res, left.dimension**(1/2))
+                return type(self)(res, left.dimension**(1 / 2))
             elif ufunc_name == "power":
                 power_num = args[1]
-                if not (isinstance(power_num, int) or isinstance(power_num, float)):
+                if not (isinstance(power_num, int)
+                        or isinstance(power_num, float)):
                     raise TypeError(("Power must be a number, "
                                      "not {}").format(type(power_num)))
                 res = ufunc.__call__(left.value, power_num)
@@ -889,20 +902,21 @@ class Quantity(object):
                                   symbol=left.symbol ** power_num).rm_dim_if_dimless()
             elif ufunc_name == "reciprocal":
                 res = ufunc.__call__(left.value)
-                return type(self)(res, 1/left.dimension)
+                return type(self)(res, 1 / left.dimension)
             elif ufunc_name == "square":
                 res = ufunc.__call__(left.value)
                 return type(self)(res, left.dimension**2)
             elif ufunc_name == "cbrt":
                 res = ufunc.__call__(left.value)
-                return type(self)(res, left.dimension**(1/3))
+                return type(self)(res, left.dimension**(1 / 3))
             elif ufunc_name == "modf":
                 res = ufunc.__call__(left.value)
                 frac, integ = res
                 return (type(self)(frac, left.dimension),
                         type(self)(integ, left.dimension))
             elif ufunc_name == "arctan2":
-                # both x and y should have same dim such that the ratio is dimless
+                # both x and y should have same dim such that the ratio is
+                # dimless
                 other = quantify(args[1])
                 if not left.dimension == other.dimension:
                     raise DimensionError(left.dimension, other.dimension)
@@ -933,7 +947,8 @@ class Quantity(object):
             return res
         elif ufunc_name in no_dim_2:
             other = quantify(args[1])
-            if not (left.dimension == DIMENSIONLESS and other.dimension == DIMENSIONLESS):
+            if not (left.dimension ==
+                    DIMENSIONLESS and other.dimension == DIMENSIONLESS):
                 raise DimensionError(left.dimension, DIMENSIONLESS)
             res = ufunc.__call__(left.value, other.value)
             return res
@@ -977,7 +992,8 @@ def np_append(arr, values, **kwargs):
     values = quantify(values)
     if not arr.dimension == values.dimension:
         raise DimensionError(arr.dimension, values.dimension)
-    return Quantity(np.append(arr.value, values.value, **kwargs), arr.dimension)
+    return Quantity(
+        np.append(arr.value, values.value, **kwargs), arr.dimension)
 
 
 @implements(np.argmax)
@@ -1032,7 +1048,8 @@ def np_average(q): return Quantity(
 
 @implements(np.broadcast_to)
 def np_broadcast_to(array, *args, **kwargs):
-    return Quantity(np.broadcast_to(array.value, *args, **kwargs), array.dimension)
+    return Quantity(np.broadcast_to(
+        array.value, *args, **kwargs), array.dimension)
 
 
 @implements(np.broadcast_arrays)
@@ -1050,12 +1067,12 @@ def np_linalg_lstsq(a, b, **kwargs):
     a = quantify(a)
     b = quantify(b)
     sol = np.linalg.lstsq(a.value, b.value, **kwargs)
-    return Quantity(sol, b.dimension/a.dimension)
+    return Quantity(sol, b.dimension / a.dimension)
 
 
 @implements(np.linalg.inv)
 def np_inv(a):
-    return Quantity(np.linalg.inv(a.value), 1/a.dimension)
+    return Quantity(np.linalg.inv(a.value), 1 / a.dimension)
 
 
 @implements(np.flip)
@@ -1104,7 +1121,7 @@ def np_polyfit(x, y, deg, *args, **kwargs):
     x = quantify(x)
     y = quantify(y)
     p = np.polyfit(x.value, y.value, deg, *args, **kwargs)
-    qp = tuple(Quantity(coef, y.dimension / x.dimension**(deg-i))
+    qp = tuple(Quantity(coef, y.dimension / x.dimension**(deg - i))
                for i, coef in enumerate(p))
     return qp
 
@@ -1177,7 +1194,7 @@ def np_count_nonzero(a, *args, **kwargs):
 @implements(np.cross)
 def np_cross(a, b, **kwargs):
     return Quantity(np.cross(a.value, b.value),
-                    a.dimension*b.dimension)
+                    a.dimension * b.dimension)
 
 
 # np.cumprod : cant have an array with different dimensions
@@ -1220,7 +1237,8 @@ def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
     if append != np._NoValue:
         if append.dimension != a.dimension:
             raise DimensionError(a.dimension, append.dimension)
-    return Quantity(np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append), a.dimension)
+    return Quantity(np.diff(a.value, n=n, axis=axis,
+                    prepend=prepend, append=append), a.dimension)
 
 
 @implements(np.apply_along_axis)
@@ -1247,7 +1265,7 @@ def np_cov(m, y=None, *args, **kwargs):
     if y is not None:
         y = quantify(y)
         raw = np.cov(m.value, y.value, *args, **kwargs)
-        return Quantity(raw, m.dimension*y.dimension)
+        return Quantity(raw, m.dimension * y.dimension)
     raw = np.cov(m.value, y, *args, **kwargs)
     return Quantity(raw, m.dimension**2)
 
@@ -1446,7 +1464,8 @@ def np_shape(a):
 
 
 @implements(np.linspace)
-def np_linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):
+def np_linspace(start, stop, num=50, endpoint=True,
+                retstep=False, dtype=None, axis=0):
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:
@@ -1702,7 +1721,8 @@ def np_gradient(f, *varargs, **kwargs):
             "High dimension not implemented (but very doable")
     dx = quantify(varargs[0])
     f = quantify(f)
-    return Quantity(np.gradient(f.value, dx.value, **kwargs), f.dimension/dx.dimension)
+    return Quantity(np.gradient(f.value, dx.value, **kwargs),
+                    f.dimension / dx.dimension)
 
 
 @implements(np.vstack)
@@ -1795,7 +1815,7 @@ def dimensionify(x):
         return x
     elif isinstance(x, Quantity):
         return x.dimension
-    elif np.isscalar(x) and not type(x) == str:
+    elif np.isscalar(x) and not isinstance(x, str):
         return DIMENSIONLESS
     elif isinstance(x, np.ndarray):
         return DIMENSIONLESS

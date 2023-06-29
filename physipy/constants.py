@@ -8,7 +8,7 @@ The constants values are retrieved from scipy.constants, and are separeted in 2 
  - "scipy_constants_codata" for all the others
 A third "constants" dictionnary merges these two.
 
-TODO : 
+TODO :
  - create a function to wrap dict creation ?
  - should constants and units be in the same module ?
 
@@ -211,11 +211,11 @@ scipy_constants_codata_raw = {
 
 
 # scipy constants codata
-scipy_constants_codata = {key: make_quantity(value[0]*value[1],
+scipy_constants_codata = {key: make_quantity(value[0] * value[1],
                                              symbol=key) for key, value in scipy_constants_codata_raw.items()}
 
 # scipy constants
-scipy_constants = {key: make_quantity(value[0]*value[1],
+scipy_constants = {key: make_quantity(value[0] * value[1],
                                       symbol=key) for key, value in scipy_constants_raw.items()}
 
 # constants : concatenation of the two dicts

@@ -26,10 +26,10 @@ def xvectorize(func: Callable) -> Callable:
     1-D vectorize func.
 
     func must have signature 'func(arg)', and vectorization is made along arg.
-    Returned value will be a Quantity object, even if returned values are 
+    Returned value will be a Quantity object, even if returned values are
     dimensionless (because of the use of asqarray).
 
-    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
+    Just like np.vectorize, this decorator is a utility to wrap a for loop -
     it does not improve performance in any way.
 
     Parameter
@@ -53,13 +53,13 @@ def ndvectorize(func: Callable) -> Callable:
     1-D vectorize func and accept input as ndarray.
 
     func must have signature 'func(arg)', and vectorization is made along arg.
-    Returned value will be a Quantity object, even if returned values are 
+    Returned value will be a Quantity object, even if returned values are
     dimensionless (because of the use of asqarray).
 
-    Basically, func is applied to each value in arg input (as a flat list), 
+    Basically, func is applied to each value in arg input (as a flat list),
     and output is reshaped to input shape.
 
-    Just like np.vectorize, this decorator is a utility to wrap a for loop - 
+    Just like np.vectorize, this decorator is a utility to wrap a for loop -
     it does not improve performance in any way.
 
     Parameter
@@ -86,7 +86,7 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     ech_y is vertical sampling, along column
 
 
-    Example : 
+    Example :
     ---------
         #sample a 2 squared meter, in both direction with different spacing
         nx = 12

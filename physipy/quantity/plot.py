@@ -72,7 +72,7 @@ def setup_matplotlib(enable: bool = True) -> None:
 
 def plotting_context():
     """Context for plotting with Quantity objects
-    Based on : 
+    Based on :
         https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
     """
 

@@ -60,7 +60,8 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         value = quantify(value)
         self.dimension = value.dimension
 
-        # if true, any change in value must have same dimension as initial dimension
+        # if true, any change in value must have same dimension as initial
+        # dimension
         self.fixed_dimension = fixed_dimension
 
         # set quantity
@@ -114,7 +115,7 @@ class QuantityText(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                 # self.value.favunit is used here
                 self.text.value = str(self.value)
 
-            except:
+            except BaseException:
                 # if anything fails, do nothing
                 # self.value.favunit is used here
                 self.text.value = str(self.value)
@@ -210,11 +211,12 @@ class QuantitySlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         if value is not None:
             value = quantify(value)
         elif min is not None:
-            value = min*1  # to reset favunit
+            value = min * 1  # to reset favunit
         else:
             value = 0.0
         self.dimension = value.dimension
-        # if true, any change in value must have same dimension as initial dimension
+        # if true, any change in value must have same dimension as initial
+        # dimension
         self.fixed_dimension = fixed_dimension
 
         # set quantity
@@ -350,7 +352,7 @@ class QuantityTextSlider(QuantityText):
 
 class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
     """
-    TODO : 
+    TODO :
      - value_left and value_right are useless, could be done with only value (and should be)
 
     """
@@ -381,7 +383,8 @@ class QuantityRangeSlider(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
         value = quantify(min)
         self.favunit = value.favunit or favunit
         self.dimension = value.dimension
-        # if true, any change in value must have same dimension as initial dimension
+        # if true, any change in value must have same dimension as initial
+        # dimension
         self.fixed_dimension = fixed_dimension
 
         qmin = quantify(min)
@@ -501,15 +504,15 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
 class QuantityTextWithFavunitDropdown(QuantityText):
     """
     Wraps a QuantitText and a FavunitDropdown
-    Remembering that : 
-        QuantityText has traits : 
+    Remembering that :
+        QuantityText has traits :
             - dimension
             - value
             - favunit
-        FavunitDropdown : 
+        FavunitDropdown :
             - dimension
             - value : the favunit
-    So we should be able to link the favunit 
+    So we should be able to link the favunit
     """
 
     def __init__(self, *args, **kwargs):

@@ -23,7 +23,7 @@ class ObservableQuantityDescriptor():
                 change = {"old": old, "new": new}
                 setattr(obj, self.private_name, new)
                 for dep in self.deps:
-                    getattr(obj, "compute_"+dep)(change)
+                    getattr(obj, "compute_" + dep)(change)
             else:
                 pass
         if hasattr(obj, "_observables_dict"):
@@ -47,7 +47,7 @@ class ObservableQuantityDescriptor():
         else:
             # first compute to set the value
             # the compute_toto() call should set a .toto value
-            getattr(obj, "compute_"+self.public_name)({})
+            getattr(obj, "compute_" + self.public_name)({})
             # return the newly set value .toto
             return getattr(obj, self.public_name)
 
@@ -71,11 +71,11 @@ if __name__ == "__main__":
             self.tau = self.R * self.C
             self.tau.favunit = ms
 
-    rc = RC(1*ohm, 1*F)
+    rc = RC(1 * ohm, 1 * F)
     print("First getting")
     print(rc.tau)
 
     print("second")
-    rc.R = 2*ohm
+    rc.R = 2 * ohm
     print(rc.C, rc.R, rc.tau)
     rc._observables_dict

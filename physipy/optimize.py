@@ -22,7 +22,8 @@ def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
     return Quantity(res, start_dim)
 
 
-def brentq(func_cal: Callable, start, stop, *oargs, args=(), **kwargs) -> Quantity:
+def brentq(func_cal: Callable, start, stop, *
+           oargs, args=(), **kwargs) -> Quantity:
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:

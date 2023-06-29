@@ -3,10 +3,10 @@
 
 """Define non-SI-units.
 
-This module provides for now 2 dictionnaries of units : 
+This module provides for now 2 dictionnaries of units :
  - custom_units : for user-defined units
  - imperial_units : retard units
- 
+
 TODO :
  - create a function wrapper for dict creation ?
  - Should custom units and constants be in the same module ?

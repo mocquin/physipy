@@ -51,4 +51,4 @@ class TraitedQuantity(traitlets.HasTraits):
         return repr(self.value)
 
 
-Q = TraitedQuantity(3*m)
+Q = TraitedQuantity(3 * m)

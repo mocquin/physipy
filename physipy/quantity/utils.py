@@ -83,7 +83,7 @@ def hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """
     Check if value, dimension, and symbols are equal for Quantities.
 
-    This differs from standard equality ("==", or "__eq__") in that the 
+    This differs from standard equality ("==", or "__eq__") in that the
     symbols msut be equal as well, in additiion to value and dimension.
 
     Parameters
@@ -123,11 +123,11 @@ def hard_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
     q : Quantity
         Quantity object to test if present in the list.
     units_list : list of Quantity
-        List of Quantity objects 
+        List of Quantity objects
 
     Returns
     -------
-    bool 
+    bool
         Weither q is present in units_list
 
     See also
@@ -273,19 +273,19 @@ def _iterify(x):
 def check_dimension(units_in=None, units_out=None) -> Callable:
     """Check dimensions of inputs and ouputs of function.
 
-    Will check that all inputs and outputs have the same dimension 
-    than the passed units/quantities. Dimensions for inputs and 
+    Will check that all inputs and outputs have the same dimension
+    than the passed units/quantities. Dimensions for inputs and
     outputs expects a tuple.
 
     Parameters
     ----------
     units_in : quantity_like or tuple of quantity_like
-        quantity_like means an Quantity object or a 
+        quantity_like means an Quantity object or a
         numeric value (that will be treated as dimensionless Quantity).
         The inputs dimension will be checked with the units_in.
         Defaults to None to skip any check.
     units_out : quantity_like or tuple of quantity_like
-        quantity_like means an Quantity object or a 
+        quantity_like means an Quantity object or a
         numeric value (that will be treated as dimensionless Quantity).
         The outputs dimension will be checked with the units_out.
         Default to None to skip any check.
@@ -371,7 +371,7 @@ def set_favunit(*favunits_out) -> Callable:
     Parameters
     ----------
     favunits_out : quantity_like or tuple of quantity_like
-        quantity_like means an Quantity object or a 
+        quantity_like means an Quantity object or a
         numeric value (that will be treated as dimensionless Quantity).
         `favunits_out` should be a list of Quantity object that have a defined symbol,
         hence making them suitables favunits.
@@ -405,7 +405,8 @@ def set_favunit(*favunits_out) -> Callable:
             # turn outputs to quantity with favunit
             ress_with_favunit = [make_quantity(
                 res, favunit=favunit) for res, favunit in zip(ress, favunits_out)]
-            return tuple(ress_with_favunit) if len(ress_with_favunit) > 1 else ress_with_favunit[0]
+            return tuple(ress_with_favunit) if len(
+                ress_with_favunit) > 1 else ress_with_favunit[0]
         return decorated_func
     return decorator
 
@@ -413,7 +414,7 @@ def set_favunit(*favunits_out) -> Callable:
 def dimension_and_favunit(inputs=[], outputs=[]) -> Callable:
     """Check dimensions of outputs and inputs, and add favunit to outputs.
 
-    A wrapper of `check_dimension` and `set_favunit` decorators. The inputs will 
+    A wrapper of `check_dimension` and `set_favunit` decorators. The inputs will
     be dimension-checked, and the output will be both dimension-checked and have
     a favunit. The outputs favunit hence must have same dimension than the
     expected outputs.
@@ -452,9 +453,9 @@ def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
             arg_unitless = []
             for arg, unit in zip(args, unit_in):
                 if not keep_dim:
-                    arg_unitless.append(arg/unit)
+                    arg_unitless.append(arg / unit)
                 else:
-                    arg_unitless.append(Quantity(arg/unit, unit.dimension))
+                    arg_unitless.append(Quantity(arg / unit, unit.dimension))
             return func(*arg_unitless, **kwargs)
         return decorated
     return decorator
@@ -509,12 +510,12 @@ def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
 
 def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
     """
-    allow abitrary specification of dimension and unit: 
+    allow abitrary specification of dimension and unit:
     @decorate_with_various_unit(("A", "A"), "A")
     def func(x, y):
         return x+y
 
-    It will do 2 things : 
+    It will do 2 things :
         - check that the inputs have coherent units vs each others
         - set the specified unit to the output
 
@@ -546,7 +547,8 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
                     # store input value
                     list_inputs_value.append(arg.value)
                     # check if input name (=unit or expression) already exists
-                    if input_name in dict_of_units and (not si_unit == dict_of_units[input_name]):
+                    if input_name in dict_of_units and (
+                            not si_unit == dict_of_units[input_name]):
                         raise DimensionError((arg._SI_unitary_quantity).dimension,
                                              (dict_of_units[input_name]).dimension)
                     # if input_name is new, add it's unit to dict
@@ -605,7 +607,7 @@ def composed_decs(*decs: tuple[Callable]) -> Callable:
 
 
 def latex_parse_eq(eq):
-    """Tests cases :  
+    """Tests cases :
      - v = d/t
      - 2piRC
      - 1/(2piRC)

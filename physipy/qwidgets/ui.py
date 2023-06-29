@@ -77,7 +77,8 @@ def ui_widget_decorate(inits_values, kind="Text"):
         out = ipyw.interactive_output(display_func,
                                       {k: qwidget_list[i] for i, k in enumerate([l[0] for l in inits_values])})
 
-        # if func has a "name" attribute, create a Label for display, else use default function __name__
+        # if func has a "name" attribute, create a Label for display, else use
+        # default function __name__
         if hasattr(func, "name"):
             wlabel = ipyw.Label(func.name + ":")
         else:
@@ -116,7 +117,7 @@ def ui_widget_decorate_from_annotations(func, kind="Text"):
     for k, v in sig.parameters.items():
         # only turn quantity annotations to widgets,
         # standards params are "passed"
-        if type(v.annotation) == Quantity:
+        if isinstance(v.annotation, Quantity):
             inits_values.append((v.name,
                                  v.annotation,  # initial value
                                  v.name))

@@ -3,7 +3,7 @@
 
 """Define unit dictionnaries.
 
-This module defines dictionnaries of units : 
+This module defines dictionnaries of units :
  - SI_units : all the seven base SI units
  - SI_units_prefixed : same, with the prefixed version
  - SI_derived_units : other accepted units
@@ -11,13 +11,13 @@ This module defines dictionnaries of units :
  - other_units : other various units
  - units : all of the above
 
-TODO : 
+TODO :
  - [ ] : should 'SI_units_derived' have another name ?
  - [X] : deal with prefixed kg
  - [ ] : add other dicts of units : imperial, astrophys
  - [ ] : add scipy.constants.physical_constants units
- 
-Questions : 
+
+Questions :
  - should the definition of other packages units be fixed or relative ?
  - should other packages units/constants be in the same dict ?
  - should make a proper data structure, where a new unit added is checked if already taken ?
@@ -54,7 +54,8 @@ PREFIX_DICT = {
 }
 
 
-def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic: dict = {}) -> dict:
+def _CREATE_BASE_SI_UNIT_DICT(
+        prefix_dic: dict, base_units_symbol_dim: dict, dic: dict = {}) -> dict:
     """
     Extends the dic by adding the combination between prefix_dic and base_units.
 
@@ -69,7 +70,7 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
 
     Returns
     -------
-    dict 
+    dict
         Dict with keys the prefixed-unit symbol, and values the corresponding Quantity.
     """
     for prefix_symbol, prefix_value in prefix_dic.items():
@@ -88,7 +89,8 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
     return dic
 
 
-def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dict:
+def prefix_units(prefix_dic: dict, unit_dict: dict,
+                 extend: bool = False) -> dict:
     """Return a dict of unit with all combination between the input unit dict and the prefix dict.
 
     Parameters
@@ -116,7 +118,8 @@ def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dic
 
 
 def _make_quantity_dict_with_symbols(dic):
-    return {key: make_quantity(value, symbol=key) for key, value in dic.items()}
+    return {key: make_quantity(value, symbol=key)
+            for key, value in dic.items()}
 
 
 # Init of SI inits dict

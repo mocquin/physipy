@@ -19,7 +19,8 @@ class QuantityQtSlider(QWidget):
     Quantity : qmin ----------- qmax   : public_value
     """
 
-    def __init__(self, qminimum, qmaximum, value=None, descr="Quantity", favunit=None, parent=None):
+    def __init__(self, qminimum, qmaximum, value=None,
+                 descr="Quantity", favunit=None, parent=None):
         super(QuantityQtSlider, self).__init__(parent=parent)
         self.setAutoFillBackground(True)
         #p = self.palette()
@@ -149,9 +150,10 @@ class QuantityQtSlider(QWidget):
             # update slider value
             self.qtslider.setValue(self.public_to_raw(res))
 
-        except:
+        except BaseException:
             # if anything fails, do nothing
-            # self.text.value = str(self.value) # self.value.favunit is used here
+            # self.text.value = str(self.value) # self.value.favunit is used
+            # here
             pass
 
     def raw_to_public(self, raw_value):
@@ -159,15 +161,15 @@ class QuantityQtSlider(QWidget):
             public_value = self.qminimum + float(raw_value) * (self.qmaximum - self.qminimum) / (
                 self.qtslider.maximum() - self.qtslider.minimum())
             return public_value
-        except:
+        except BaseException:
             pass
 
     def public_to_raw(self, public_value):
         try:
-            raw_value = (public_value - self.qminimum)/(self.qmaximum -
-                                                        self.qminimum) * (self.qtslider.maximum() - self.qtslider.minimum())
+            raw_value = (public_value - self.qminimum) / (self.qmaximum -
+                                                          self.qminimum) * (self.qtslider.maximum() - self.qtslider.minimum())
             return raw_value
-        except:
+        except BaseException:
             pass
 
     def setLabelValue(self, qt_value):

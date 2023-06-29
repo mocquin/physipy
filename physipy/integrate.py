@@ -13,7 +13,7 @@ from physipy.quantity.utils import check_dimension
 
 
 def quad(func, x0, x1, *oargs, args=(), **kwargs):
-    """A wrapper on scipy.integrate.quad : 
+    """A wrapper on scipy.integrate.quad :
          - will check dimensions of x0 and x1 bounds
          - returned value's dimension is infered by calling func(x0)
     """
