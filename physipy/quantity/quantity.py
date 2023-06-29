@@ -94,18 +94,17 @@ class Quantity(object):
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
     __array_priority__ = 100
-    
+
     # adding a __slots__ removes the presence of __dict__, which also
     # makes vars(q) to fail.
-    # when this is commented, q.__dict__ returns something like : 
+    # when this is commented, q.__dict__ returns something like :
     #    {'_value': 2.345,
     #     'dimension': <Dimension : {'L': 0, 'M': 0, 'T': -1, 'I': 0, 'theta': 1, 'N': 0, 'J': 0, 'RAD': 0, 'SR': 0}>,
     #     'symbol': 'toto',
     #     '_favunit': <Quantity : 1 s**2, symbol=s**2>}
     # using __dict__ instead of '_value', 'dimension', 'symbol', '_favunit' allows for both slots and
     # pickle to work (with __reduce__).
-    __slots__ = ('__dict__') 
-    
+    __slots__ = ('__dict__')
 
     def __init__(self, value, dimension: Dimension, symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
         self.value = value
@@ -357,7 +356,7 @@ class Quantity(object):
 
     def __hash__(self):
         return hash(str(self.value)+str(self.dimension))
-    
+
     def __reduce__(self):
         """
         Overload pickle behavior : 
@@ -411,7 +410,7 @@ class Quantity(object):
                 ax.plot(self, other)
             else:
                 raise ValueError("kind must be y of x with other")
-                
+
     def _repr_latex_(self) -> str:
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
@@ -1085,8 +1084,8 @@ def np_flipud(m):
 
 # random function are not supported
 # see https://github.com/numpy/numpy/issues/19382
-#@implements(np.random.normal)
-#def np_random_normal(loc=0.0, scale=1.0, **kwargs):
+# @implements(np.random.normal)
+# def np_random_normal(loc=0.0, scale=1.0, **kwargs):
 #    loc = quantify(loc)
 #    scale = quantify(scale)
 #    if not loc.dimension == scale.dimension:
@@ -1206,7 +1205,7 @@ def np_histogram2d(x, y, bins=10, range=None, weights=None, **kwargs):
     hist, xedges, yedges = np.histogram2d(
         x.value, y.value, bins=bins, range=range, weights=weights)
     return hist, Quantity(xedges, x.dimension), Quantity(yedges, y.dimension)
-    
+
 
 @implements(np.diagonal)
 def np_diagonal(a, **kwargs):
@@ -1228,6 +1227,7 @@ def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
 def np_apply_along_axis(func1d, axis, arr, *args, **kwargs):
     res = np.apply_along_axis(func1d, axis, arr.value, *args, **kwargs)
     return res
+
 
 @implements(np.ndim)
 def np_ndim(a):
@@ -1766,7 +1766,7 @@ same_out = ("ceil", "conjugate", "conj", "floor",
 # 1 in : dimless -> out : dimless
 inv_angle_1 = ("arcsin", "arccos", "arctan",
                "arcsinh", "arccosh", "arctanh",
-              )
+               )
 # 1 in : dimless -> dimless
 deg_rad = ("deg2rad", "rad2deg")
 

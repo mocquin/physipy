@@ -77,7 +77,7 @@ def _CREATE_BASE_SI_UNIT_DICT(prefix_dic: dict, base_units_symbol_dim: dict, dic
             prefixed_unit_symbol = prefix_symbol + unit_symbol
             # handle the gram, which is a milli-kilogram
             if prefixed_unit_symbol == "mkg":
-                # loop-invariant but should not be executed so not a 
+                # loop-invariant but should not be executed so not a
                 # speed-loss
                 dic["g"] = Quantity(0.001, Dimension("M"), symbol="g")
                 continue
@@ -135,7 +135,8 @@ rad = SI_units["rad"]
 sr  = SI_units["sr"]
 
 # Derived SI units with all prefixes
-SI_units_prefixed = _CREATE_BASE_SI_UNIT_DICT(PREFIX_DICT, SI_UNIT_SYMBOL, SI_units) # extends SI_units
+SI_units_prefixed = _CREATE_BASE_SI_UNIT_DICT(
+    PREFIX_DICT, SI_UNIT_SYMBOL, SI_units)  # extends SI_units
 
 
 # SI derived units
@@ -162,7 +163,8 @@ _SI_derived_units_raw = {
     }
 # create the actual dict of units, with symbols
 SI_derived_units = _make_quantity_dict_with_symbols(_SI_derived_units_raw)
-SI_derived_units_prefixed = prefix_units(PREFIX_DICT, SI_derived_units, extend=True)
+SI_derived_units_prefixed = prefix_units(
+    PREFIX_DICT, SI_derived_units, extend=True)
 
 
 # Other units
@@ -184,7 +186,8 @@ other_units = _make_quantity_dict_with_symbols(_other_accepted_units_raw)
 
 
 # Concatenating units
-units = {**SI_units_prefixed, **SI_derived_units, **other_units} #including base SI units to units dict
+# including base SI units to units dict
+units = {**SI_units_prefixed, **SI_derived_units, **other_units}
 
 all_units = {**SI_units_prefixed, **SI_derived_units_prefixed, **other_units}
 

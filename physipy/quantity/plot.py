@@ -1,15 +1,14 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from .units import all_units
+from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
 import matplotlib
 import numpy as np
 import matplotlib.units as munits
 
 # import registry as used trouhout, faster
 munits_registry = munits.registry
-
-from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
-from .units import all_units
 
 
 class QuantityConverter(munits.ConversionInterface):

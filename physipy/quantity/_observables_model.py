@@ -1,15 +1,15 @@
 
 class ObservableQuantityDescriptor():
-    
+
     def __init__(self, deps=[]):
         self.deps = deps
-        
+
     def __set_name__(self, owner, name):
         # self.R
         self.public_name = name
         # actually refers to self._R_w
         self.private_name = '_' + name + "_observable_proxy_descriptor"
-    
+
     def __set__(self, obj, qvalue):
         # if not ObservableQuantity exists already, where value is a quantity
         if not hasattr(obj, self.private_name):
@@ -20,7 +20,7 @@ class ObservableQuantityDescriptor():
             if not qvalue is getattr(obj, self.private_name):
                 old = getattr(obj, self.private_name)
                 new = qvalue
-                change = {"old":old, "new":new}
+                change = {"old": old, "new": new}
                 setattr(obj, self.private_name, new)
                 for dep in self.deps:
                     getattr(obj, "compute_"+dep)(change)
@@ -30,14 +30,14 @@ class ObservableQuantityDescriptor():
             if self.public_name in obj._observables_dict:
                 return
             else:
-                obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
+                obj._observables_dict[self.public_name] = getattr(
+                    obj, self.private_name)
         else:
             # create a list of the observables
             setattr(obj, "_observables_dict", {})
-            obj._observables_dict[self.public_name] = getattr(obj, self.private_name)
+            obj._observables_dict[self.public_name] = getattr(
+                obj, self.private_name)
 
-            
-        
     def __get__(self, obj, objtype=None):
         if hasattr(obj, self.private_name):
             # get the ObservableQuantity instance, so basically a Quantity
@@ -51,7 +51,7 @@ class ObservableQuantityDescriptor():
             # return the newly set value .toto
             return getattr(obj, self.public_name)
 
-        
+
 if __name__ == "__main__":
 
     ms = units["ms"]
@@ -70,7 +70,6 @@ if __name__ == "__main__":
         def compute_tau(self, change):
             self.tau = self.R * self.C
             self.tau.favunit = ms
-
 
     rc = RC(1*ohm, 1*F)
     print("First getting")

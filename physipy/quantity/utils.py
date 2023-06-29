@@ -8,7 +8,7 @@ from functools import lru_cache
 from operator import attrgetter
 
 import numpy as np
-from numpy import array as np_array # faster to import once since used in a loop
+from numpy import array as np_array  # faster to import once since used in a loop
 import sympy as sp
 
 from sympy.parsing.sympy_parser import parse_expr
@@ -105,13 +105,14 @@ def hard_equal(q1: Quantity, q2: Quantity) -> bool:
     except Exception as e:
         return False
 
+
 def very_hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """Check if 2 Quantities are hard_equal, and have same favunit"""
     if q1.favunit is None and q2.favunit is None:
-        return hard_equal(q1, q2) 
+        return hard_equal(q1, q2)
     else:
         return hard_equal(q1, q2) and very_hard_equal(q1.favunit, q2.favunit)
-    
+
 
 def hard_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
     """
@@ -568,16 +569,16 @@ def wrap_with_unit(dim_as_str):
     """
     Idea to wrap a function regardless of absolut unit, but relative
     to input unit.
-    
+
     Examples
     --------
     # add one only to float/dimensionless
     def increment(x):
         return x + 1
-    
+
     # add one for any unit
     dec_increment = generator("x")(increment)
-    
+
     # increment(2*m) would fail but not
     dec_increment(2*m)
     """
@@ -589,9 +590,10 @@ def wrap_with_unit(dim_as_str):
             x = quantify(x)
             dim_in = x.dimension
             res = func(x.value)
-            return Quantity(res, eval(dim_as_str, {"x":dim_in}))
+            return Quantity(res, eval(dim_as_str, {"x": dim_in}))
         return decorated_func
     return decorator
+
 
 def composed_decs(*decs: tuple[Callable]) -> Callable:
     """A wrapper to combine multiple decorators"""
