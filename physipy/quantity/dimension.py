@@ -113,12 +113,14 @@ class DimensionError(Exception):
                  binary: bool = True) -> None:
         """Init method of DimensionError class."""
         if binary:
-            self.message = ("Dimension error : dimensions of "
-                            f"operands are {dim_1} and {dim_2}, and are "
-                            f"differents ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
+            self.message = (
+                "Dimension error : dimensions of "
+                f"operands are {dim_1} and {dim_2}, and are "
+                f"differents ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
         else:
-            self.message = (f"Dimension error : dimension is {dim_1} "
-                            f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
+            self.message = (
+                f"Dimension error : dimension is {dim_1} "
+                f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
 
     def __str__(self) -> str:
         """Str method of DimensionError class."""
@@ -165,8 +167,9 @@ class Dimension(object):
             for my_si_symbol, dim_power in definition.items():
                 if dim_power == int(dim_power):
                     dim_power = int(dim_power)
-                dim_symbol = [dim_symbol for dim_symbol, si_symbol in SI_UNIT_SYMBOL.items(
-                ) if my_si_symbol == si_symbol][0]
+                dim_symbol = [
+                    dim_symbol for dim_symbol,
+                    si_symbol in SI_UNIT_SYMBOL.items() if my_si_symbol == si_symbol][0]
                 self.dim_dict[dim_symbol] = dim_power
         else:
             raise TypeError(("Dimension can be constructed with either a "

@@ -112,8 +112,8 @@ def prefix_units(prefix_dic: dict, unit_dict: dict,
     for prefix_symbol, prefix_value in prefix_dic.items():
         for unit_symbol, unit_quantity in unit_dict.items():
             prefixed_symbol = prefix_symbol + str(unit_quantity.symbol)
-            prefixed_dict[prefixed_symbol] = make_quantity(prefix_value * unit_quantity,
-                                                           symbol=prefixed_symbol)
+            prefixed_dict[prefixed_symbol] = make_quantity(
+                prefix_value * unit_quantity, symbol=prefixed_symbol)
     return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
 
 

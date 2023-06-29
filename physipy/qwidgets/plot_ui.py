@@ -96,7 +96,10 @@ class WrappedFunction1D():
         for k, v in kwargs.items():
             self.pargs[k] = v
             #slider = ipyw.FloatSlider(v[0], min=v[0], max=v[-1], description=k, step=0.001)
-            slider = QuantityTextSlider(v[0], min=v[0], max=v[-1], description=k,
+            slider = QuantityTextSlider(v[0],
+                                        min=v[0],
+                                        max=v[-1],
+                                        description=k,
                                         step=(v[-1] - v[0]) / 1000)  # we override a default step
             slider.observe(_update_data, names="value")
 
@@ -111,8 +114,9 @@ class WrappedFunction1D():
             self.cursor_vline.set_data(
                 asqarray([self.get_xcursor(), self.get_xcursor()]), asqarray([0 * y, y]))
 
-        self.cursor_slider = QuantityTextSlider(xmin, min=xmin, max=xmax, description="Cursor",
-                                                step=(xmax - xmin) / 1000)
+        self.cursor_slider = QuantityTextSlider(
+            xmin, min=xmin, max=xmax, description="Cursor", step=(
+                xmax - xmin) / 1000)
         self.cursor_slider.observe(_update_cursor_data, names="value")
 
         # print(self.sliders_list)
@@ -181,7 +185,11 @@ class WrappedFunction1D():
     @property
     def label(self):
         params = ",".join(
-            [k + "=" + f"{v.value:~}" for k, v in zip(self.sliders_dict.keys(), self.sliders_dict.values())])
+            [
+                k + "=" + f"{v.value:~}" for k,
+                v in zip(
+                    self.sliders_dict.keys(),
+                    self.sliders_dict.values())])
         return f"{self.name}({params})"
 
     def get_pvalue(self, pname):

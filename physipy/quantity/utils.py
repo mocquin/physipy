@@ -403,8 +403,10 @@ def set_favunit(*favunits_out) -> Callable:
             # compute outputs and iterable it
             ress = _iterify(func(*args, **kwargs))
             # turn outputs to quantity with favunit
-            ress_with_favunit = [make_quantity(
-                res, favunit=favunit) for res, favunit in zip(ress, favunits_out)]
+            ress_with_favunit = [
+                make_quantity(
+                    res, favunit=favunit) for res, favunit in zip(
+                    ress, favunits_out)]
             return tuple(ress_with_favunit) if len(
                 ress_with_favunit) > 1 else ress_with_favunit[0]
         return decorated_func
@@ -549,8 +551,9 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
                     # check if input name (=unit or expression) already exists
                     if input_name in dict_of_units and (
                             not si_unit == dict_of_units[input_name]):
-                        raise DimensionError((arg._SI_unitary_quantity).dimension,
-                                             (dict_of_units[input_name]).dimension)
+                        raise DimensionError(
+                            (arg._SI_unitary_quantity).dimension,
+                            (dict_of_units[input_name]).dimension)
                     # if input_name is new, add it's unit to dict
                     else:
                         dict_of_units[input_name] = arg._SI_unitary_quantity

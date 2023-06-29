@@ -102,8 +102,9 @@ class DependentAttr(object):
             # Trigger the calculation of any attributes this one depends upon.
             for dependency in self.dependencies_list_of_attr_str:
                 if not hasattr(obj, dependency):
-                    raise ValueError('Attribute %s is a dependency of %s but is not an attribute of %s'
-                                     % (dependency, self.name, obj))
+                    raise ValueError(
+                        'Attribute %s is a dependency of %s but is not an attribute of %s' %
+                        (dependency, self.name, obj))
                 # Get the dependency's descriptor via the defined
                 # type(obj).attr
                 parent = getattr(type(obj), dependency, None)
@@ -118,9 +119,14 @@ class DependentAttr(object):
                 # have been.
                 if attr_value is AttrNullState:
                     if isinstance(
-                            getattr(type(obj), dependency, None), DependentAttr):
-                        raise ValueError('Attribute %s requires %s but value was None'
-                                         % (self.name, dependency))
+                            getattr(
+                                type(obj),
+                                dependency,
+                                None),
+                            DependentAttr):
+                        raise ValueError(
+                            'Attribute %s requires %s but value was None' %
+                            (self.name, dependency))
             # Execute function that re-calculates the value now all
             # dependencies are ready.
             if self.calc_func_str is not None:
@@ -128,12 +134,14 @@ class DependentAttr(object):
                 if update_func is not None:
                     update_func()
                 else:
-                    raise ValueError('Attribute %s cannot find method %s in object %s'
-                                     % (self.name, self.calc_func_str, obj))
+                    raise ValueError(
+                        'Attribute %s cannot find method %s in object %s' %
+                        (self.name, self.calc_func_str, obj))
         # By now, __set__ should have been called and has set the value.
         if self.value is AttrNullState:
-            raise ValueError('Attribute %s calling %s did not result in an updated value.'
-                             % (self.name, self.calc_func_str))
+            raise ValueError(
+                'Attribute %s calling %s did not result in an updated value.' %
+                (self.name, self.calc_func_str))
         return self.value
 
     def __set__(self, obj, value):
@@ -162,9 +170,13 @@ class IndependentAttr(DependentAttr):
     """
 
     def __init__(self, init_value, name):
-        return super(IndependentAttr, self).__init__(init_value=init_value,
-                                                     dependencies_list_of_attr_str=[], calc_func_str=None,
-                                                     name=name)
+        return super(
+            IndependentAttr,
+            self).__init__(
+            init_value=init_value,
+            dependencies_list_of_attr_str=[],
+            calc_func_str=None,
+            name=name)
 
 
 class DeterminantAttr(DependentAttr):
@@ -185,10 +197,13 @@ class DeterminantAttr(DependentAttr):
     """
 
     def __init__(self, dependencies_list_of_attr_str, calc_func_str, name):
-        return super(DeterminantAttr, self).__init__(init_value=AttrNullState,
-                                                     dependencies_list_of_attr_str=dependencies_list_of_attr_str,
-                                                     calc_func_str=calc_func_str,
-                                                     name=name)
+        return super(
+            DeterminantAttr,
+            self).__init__(
+            init_value=AttrNullState,
+            dependencies_list_of_attr_str=dependencies_list_of_attr_str,
+            calc_func_str=calc_func_str,
+            name=name)
 
 
 if __name__ == '__main__':
@@ -240,8 +255,12 @@ if __name__ == '__main__':
             self.a7 = '(' + self.a4 + '*' + self.a5 + '+7)'
             print('a7 updated to ' + self.a7)
             answer = eval(self.a7)
-            target = eval('((a1*(a1+2)+4)*(a1+(a1+2)+((a1+2)+3)*a6+5)+7)'.replace(
-                'a6', str(self.a6)).replace('a1', str(self.a1)))
+            target = eval(
+                '((a1*(a1+2)+4)*(a1+(a1+2)+((a1+2)+3)*a6+5)+7)'.replace(
+                    'a6', str(
+                        self.a6)).replace(
+                    'a1', str(
+                        self.a1)))
             print(
                 'Expression equals ' +
                 str(answer) +

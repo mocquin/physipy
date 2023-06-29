@@ -470,7 +470,8 @@ class FavunitDropdown(ipyw.Box, ipyw.ValueWidget, ipyw.DOMWidget):
                 u_str for u_str, u_q in self.units.items()]
         else:
             self.favunit_str_list = [
-                u_str for u_str, u_q in self.units.items() if self.dimension == u_q.dimension]
+                u_str for u_str,
+                u_q in self.units.items() if self.dimension == u_q.dimension]
         self.favunit_str_list.append("-")
         self.value = self.units["-"]
 
@@ -552,16 +553,24 @@ class QuantitySliderDescriptor():
             setattr(getattr(obj, self.private_name), "value", value)
         else:
             #print("create new widget")
-            setattr(obj, self.private_name, QuantityTextSlider(value,
-                                                               description=self.public_name,
-                                                               min=self.min,
-                                                               max=self.max))
+            setattr(
+                obj,
+                self.private_name,
+                QuantityTextSlider(
+                    value,
+                    description=self.public_name,
+                    min=self.min,
+                    max=self.max))
 
     def __get__(self, obj, objtype=None):
         if hasattr(obj, self.private_name):
             value = getattr(obj, self.private_name).value
             return value
         else:
-            setattr(obj, self.private_name, QuantityTextSlider(description=self.public_name,
-                                                               min=self.min,
-                                                               max=self.max))
+            setattr(
+                obj,
+                self.private_name,
+                QuantityTextSlider(
+                    description=self.public_name,
+                    min=self.min,
+                    max=self.max))

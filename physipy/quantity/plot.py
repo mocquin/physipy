@@ -64,7 +64,7 @@ def setup_matplotlib(enable: bool = True) -> None:
     """
     if matplotlib.__version__ < '2.0':
         raise RuntimeError('Matplotlib >= 2.0 required to work with units.')
-    if enable == False:
+    if not enable:
         munits_registry.pop(Quantity, None)
     else:
         munits_registry[Quantity] = QuantityConverter()

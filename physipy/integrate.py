@@ -73,8 +73,8 @@ def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
                                                   x0.value, x1.value,
                                                   y0.value, y1.value,
                                                   *oargs, **kwargs)
-    return Quantity(dblquad_value,
-                    res_dim * x0.dimension * y0.dimension).rm_dim_if_dimless(), prec
+    return Quantity(dblquad_value, res_dim * x0.dimension *
+                    y0.dimension).rm_dim_if_dimless(), prec
 
 
 def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
@@ -109,16 +109,21 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
                                                   y0.value, y1.value,
                                                   z0.value, z1.value,
                                                   args=args)
-    return Quantity(tplquad_value,
-                    res_dim * x0.dimension * y0.dimension * z0.dimension).rm_dim_if_dimless(), prec
+    return Quantity(tplquad_value, res_dim * x0.dimension *
+                    y0.dimension * z0.dimension).rm_dim_if_dimless(), prec
 
 
-def solve_ivp(fun,
-              t_span,
-              Y0,
-              method='RK45',
-              t_eval=None,
-              dense_output=False, events=None, vectorized=False, args=None, **options):
+def solve_ivp(
+        fun,
+        t_span,
+        Y0,
+        method='RK45',
+        t_eval=None,
+        dense_output=False,
+        events=None,
+        vectorized=False,
+        args=None,
+        **options):
 
     not_scalar = len(Y0) > 1
 

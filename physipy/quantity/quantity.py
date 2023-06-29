@@ -553,7 +553,7 @@ class Quantity(object):
         q = quantify(q)
         if not q.dimension == self.dimension:
             raise DimensionError(q.dimension, self.dimension)
-        if isinstance(idx, np.bool_) and idx == True:
+        if isinstance(idx, np.bool_) and idx:
             self.valeur = q.value
         elif isinstance(idx, np.bool_) and idx == False:
             pass
@@ -723,8 +723,13 @@ class Quantity(object):
             if dim_SI == DIMENSIONLESS:
                 return favunit
             else:
-                return make_quantity(favunit * ratio_favunit._SI_unitary_quantity,
-                                     symbol=str(favunit.symbol) + "*" + ratio_favunit._SI_unitary_quantity.dimension.str_SI_unit())
+                return make_quantity(
+                    favunit *
+                    ratio_favunit._SI_unitary_quantity,
+                    symbol=str(
+                        favunit.symbol) +
+                    "*" +
+                    ratio_favunit._SI_unitary_quantity.dimension.str_SI_unit())
         else:
             return self._SI_unitary_quantity
 
@@ -897,9 +902,10 @@ class Quantity(object):
                     raise TypeError(("Power must be a number, "
                                      "not {}").format(type(power_num)))
                 res = ufunc.__call__(left.value, power_num)
-                return type(self)(res,
-                                  left.dimension ** power_num,
-                                  symbol=left.symbol ** power_num).rm_dim_if_dimless()
+                return type(self)(
+                    res,
+                    left.dimension ** power_num,
+                    symbol=left.symbol ** power_num).rm_dim_if_dimless()
             elif ufunc_name == "reciprocal":
                 res = ufunc.__call__(left.value)
                 return type(self)(res, 1 / left.dimension)
@@ -1470,8 +1476,16 @@ def np_linspace(start, stop, num=50, endpoint=True,
     stop = quantify(stop)
     if not start.dimension == stop.dimension:
         raise DimensionError(start.dimension, stop.dimension)
-    return Quantity(np.linspace(start.value, stop.value, num=num, endpoint=endpoint, retstep=retstep, dtype=dtype, axis=axis),
-                    start.dimension)
+    return Quantity(
+        np.linspace(
+            start.value,
+            stop.value,
+            num=num,
+            endpoint=endpoint,
+            retstep=retstep,
+            dtype=dtype,
+            axis=axis),
+        start.dimension)
 
 
 @implements(np.corrcoef)
@@ -1762,8 +1776,14 @@ def np_where(cond, x, y):
 same_dim_out_2 = ("add", "subtract", "hypot", "maximum",
                   "minimum", "fmax", "fmin", "remainder", "mod", "fmod")
 # 2 in : same dim ---> out : not a quantity
-same_dim_in_2_nodim_out = ("greater", "greater_equal",
-                           "less", "less_equal", "not_equal", "equal", "floor_divide")
+same_dim_in_2_nodim_out = (
+    "greater",
+    "greater_equal",
+    "less",
+    "less_equal",
+    "not_equal",
+    "equal",
+    "floor_divide")
 # 1 in :
 same_dim_in_1_nodim_out = ("sign", "isfinite", "isinf", "isnan")
 # 2 in : any ---> out : depends
@@ -1799,8 +1819,18 @@ cant_be_implemented = ("logical_and",
 ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
 unary_ufuncs = no_dim_1 + angle_1 + same_out + inv_angle_1 + \
     special_dict + deg_rad + same_dim_in_1_nodim_out
-implemented = (same_dim_out_2 + same_dim_in_2_nodim_out + same_dim_in_1_nodim_out + skip_2 + special_dict +
-               no_dim_1 + no_dim_2 + angle_1 + same_out + inv_angle_1 + deg_rad)
+implemented = (
+    same_dim_out_2 +
+    same_dim_in_2_nodim_out +
+    same_dim_in_1_nodim_out +
+    skip_2 +
+    special_dict +
+    no_dim_1 +
+    no_dim_2 +
+    angle_1 +
+    same_out +
+    inv_angle_1 +
+    deg_rad)
 
 
 def quantify(x):
@@ -1833,7 +1863,7 @@ def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
         q = x.__copy__()
         q.symbol = symbol
         if favunit is None:
-            if not x.favunit is None:
+            if x.favunit is not None:
                 q.favunit = x.favunit
         else:
             q.favunit = favunit

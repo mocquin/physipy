@@ -17,7 +17,7 @@ class ObservableQuantityDescriptor():
             setattr(obj, self.private_name, qvalue)
         # if a ObservableQuantity is there, overwrite it
         else:
-            if not qvalue is getattr(obj, self.private_name):
+            if qvalue is not getattr(obj, self.private_name):
                 old = getattr(obj, self.private_name)
                 new = qvalue
                 change = {"old": old, "new": new}

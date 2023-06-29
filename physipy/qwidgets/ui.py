@@ -74,8 +74,8 @@ def ui_widget_decorate(inits_values, kind="Text"):
         input_ui = ipyw.VBox(qwidget_list)
 
         # create output widget, using inputs widgets
-        out = ipyw.interactive_output(display_func,
-                                      {k: qwidget_list[i] for i, k in enumerate([l[0] for l in inits_values])})
+        out = ipyw.interactive_output(display_func, {
+                                      k: qwidget_list[i] for i, k in enumerate([l[0] for l in inits_values])})
 
         # if func has a "name" attribute, create a Label for display, else use
         # default function __name__
