@@ -80,12 +80,12 @@ raw_imperial_units = {
 
 
 # custom units dict
-custom_units = {key:make_quantity(value, symbol=key) 
+custom_units = {key: make_quantity(value, symbol=key)
                 for key, value in raw_custom_units.items()}
 
 
 # imperial unit dict
-imperial_units = {key:make_quantity(value, symbol=key) 
+imperial_units = {key: make_quantity(value, symbol=key)
                   for key, value in raw_imperial_units.items()}
 
 # cleanup
