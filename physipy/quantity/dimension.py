@@ -60,7 +60,7 @@ def parse_str_to_dic(exp_str: str) -> dict:
 
     Returns
     -------
-    exp_dic : dict 
+    exp_dic : dict
         A dict with keys the string symbol of the expression, and values the corresponding
         exponent.
 
@@ -79,7 +79,7 @@ def parse_str_to_dic(exp_str: str) -> dict:
 def check_pattern(exp_str: str, symbol_list: list) -> bool:
     """Check that all symbols used in exp_str are present in symbol_list.
 
-    Start by parsing the string expression into a power_dict, then check that 
+    Start by parsing the string expression into a power_dict, then check that
     all the keys of the power_dict are present in the symbol_list.
 
     Parameters
