@@ -122,14 +122,7 @@ Checkout the [dedicated notebook on matplotlib support](https://github.com/mocqu
 
 ## Widgets
 
-Some ipywidgets are provided to make your physical researches and results more interactive :
-
-<img src="./docs/notebooks/ressources/widgets_examples.png" height="200px" />
-
-Checkout the [dedicated notebook on ipywidgets](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Widgets.ipynb).
-
-<img src="./docs/notebooks/ressources/widget_function.gif" height="200px" />
-
+Some ipywidgets and PyQt widgets are provided to make your physical researches and results more interactive : everything is stored in a separate package.
 
 ## Known issues
 
