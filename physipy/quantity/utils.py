@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from typing import Union
 
 import functools
-from typing import Callable
+from typing import Callable, Literal
 
 from functools import lru_cache
 from operator import attrgetter
@@ -192,7 +192,7 @@ def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Union[Quantity, int]:
     return q
 
 
-def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, 1]:
+def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, Literal[1]]:
     """
     Parse a string expression to a quantity.
     """

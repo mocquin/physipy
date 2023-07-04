@@ -29,7 +29,7 @@ PLEASE NOTE :
 from __future__ import annotations
 import json
 import os
-from typing import Union
+from typing import Literal
 
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
@@ -306,7 +306,7 @@ class Dimension(object):
             raise TypeError(("The power of a dimension must be a scalar,"
                              "not {}").format(type(y)))
 
-    def __eq__(self: Dimension, y: Dimension) -> bool:
+    def __eq__(self, y: Dimension) -> bool:
         """Check equality between Dimension objects.
 
         Dimensions are equal if their dim_dict are equal.
@@ -432,7 +432,7 @@ def compute_str(power_dict: dict, default_str: str,
 
 
 def expand_dict_to_expr(
-        power_dict: dict, output_init: int = 1) -> Union[sp_Symbol, 1]:
+        power_dict: dict, output_init: int = 1) -> sp_Symbol | int:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.

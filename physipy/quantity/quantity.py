@@ -107,7 +107,8 @@ class Quantity(object):
     __slots__ = ('__dict__')
 
     def __init__(self, value, dimension: Dimension,
-                 symbol=DEFAULT_SYMBOL, favunit: Quantity = None) -> None:
+                 symbol=DEFAULT_SYMBOL, 
+                 favunit: Quantity | None = None) -> None:
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
@@ -443,7 +444,7 @@ class Quantity(object):
         return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
 
     def _pick_smart_favunit(
-            self, array_to_scal=np.mean) -> Union[Quantity, None]:
+            self, array_to_scal=np.mean) -> Quantity | None:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
