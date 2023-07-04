@@ -2088,7 +2088,6 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
     def test_np_greater_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
         arr = np.arange(10)
 
         # with dtype bool
@@ -2101,14 +2100,13 @@ class TestQuantity(unittest.TestCase):
         res = np.greater.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.greater.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.greater.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.greater.reduce(arr)
+        res = np.greater.reduce(arr*m)
+        self.assertEqual(res, exp)
 
     def test_np_greater_equal_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
         arr = np.arange(10)
 
         # with dtype bool
@@ -2121,14 +2119,14 @@ class TestQuantity(unittest.TestCase):
         res = np.greater_equal.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.greater_equal.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.greater_equal.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.greater_equal.reduce(arr)
+        res = np.greater_equal.reduce(arr*m)
+        self.assertEqual(res, exp)
 
     def test_np_less_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
+
         arr = np.arange(10)
 
         # with dtype bool
@@ -2141,14 +2139,14 @@ class TestQuantity(unittest.TestCase):
         res = np.less.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.less.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.less.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.less.reduce(arr)
+        res = np.less.reduce(arr*m)
+        self.assertEqual(res, exp)
 
     def test_np_less_equal_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
+
         arr = np.arange(10)
 
         # with dtype bool
@@ -2161,14 +2159,14 @@ class TestQuantity(unittest.TestCase):
         res = np.less_equal.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.less_equal.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.less_equal.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.less_equal.reduce(arr)
+        res = np.less_equal.reduce(arr*m)
+        self.assertEqual(res, exp)
 
     def test_np_not_equal_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
+
         arr = np.arange(10)
 
         # with dtype bool
@@ -2181,14 +2179,13 @@ class TestQuantity(unittest.TestCase):
         res = np.not_equal.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.not_equal.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.not_equal.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.not_equal.reduce(arr)
+        res = np.not_equal.reduce(arr*m)
+        self.assertEqual(res, exp)
 
     def test_np_equal_reduce(self):
-        # see https://github.com/numpy/numpy/issues/20929
         arr = np.arange(10)
 
         # with dtype bool
@@ -2201,11 +2198,12 @@ class TestQuantity(unittest.TestCase):
         res = np.equal.reduce(arr.astype(object)*m)
         self.assertEqual(res, exp)
 
-        # error on raw input
-        with self.assertRaises(TypeError):
-            np.equal.reduce(arr)
-        with self.assertRaises(TypeError):
-            np.equal.reduce(arr*m)
+        # see https://github.com/numpy/numpy/issues/20929
+        # -> fixed since
+        exp = np.equal.reduce(arr)
+        res = np.equal.reduce(arr*m)
+        self.assertEqual(res, exp)
+
 
     def test_np_floor_dividel_reduce(self):
         res = np.floor_divide.reduce(np.arange(10)*m)
