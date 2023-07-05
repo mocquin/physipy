@@ -165,7 +165,7 @@ def _parse_str_to_dic(exp_str: str) -> dict:
     Example
     -------
     >>> _parse_str_to_dic("m/s**2")
-    {"m":1, "s":-2}
+    {'m': 1, 's': -2}
 
     See also
     --------
@@ -315,12 +315,15 @@ def check_dimension(units_in=None, units_out=None) -> Callable:
 
     Examples (written in doctest format)
     --------
+    >>> from physipy import m, s
     >>> def add_meter(x): return x + 1*m
     >>> add_meter = check_dimension((m), (m))(add_meter)
     >>> add_meter(1*m)
-    2 m
+    <Quantity : 2 m>
     >>> add_meter(1*s)
-    raise DimensionError
+    Traceback (most recent call last):
+        ...
+    physipy.quantity.dimension.DimensionError: Dimension error : dimensions of operands are T and L, and are differents (time vs length).
     """
 
     # reading args and making them iterable
@@ -388,10 +391,11 @@ def set_favunit(*favunits_out) -> Callable:
 
     Examples (written in doctest format)
     --------
+    >>> from physipy import m, units; mm = units['mm']
     >>> def add_meter(x): return x + 1*m
     >>> add_meter_favmm = set_favunit(mm)(add_meter)
-    >>> add_meter(1*m)
-    2000 mm
+    >>> print(add_meter_favmm(1*m))
+    2000.0 mm
     """
     # make favunits iterable
     favunits_out = _iterify(favunits_out)
@@ -438,15 +442,15 @@ def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
     Decorator to convert the function's inputs values in terms
     of specified units.
 
-
-    Examples (written in doctest format)
+    Examples
     --------
+    >>> from physipy import m, units; mm = units['mm']
     >>> @convert_to_unit(mm, mm)
-        def add_one_mm(x_mm, y_mm):
-            "Expects values as floats in mm"
-            return x_mm + y_mm + 1
-    >>> print(add_one_mm(1.2*m, 2*m))
-    2201
+    ... def add_one_mm(x_mm, y_mm):
+    ...     "Expects values as floats in mm"
+    ...     return x_mm + y_mm + 1
+    >>> print(add_one_mm(1*m, 2*m))
+    3001.0
     """
     unit_in = _iterify(unit_in)
 
@@ -473,12 +477,13 @@ def drop_dimension(func: Callable) -> Callable:
 
     Examples
     --------
+    >>> from physipy import m
     >>> @drop_dimension
-        def sum_length_from_floats(x, y):
-           "Expect dimensionless objects"
-           return x + y
+    ... def sum_length_from_floats(x, y):
+    ...     "Expect dimensionless objects"
+    ...     return x + y
     >>> print(sum_length_from_floats(1.2*m, 2*m))
-    2.2
+    3.2
     """
     @functools.wraps(func)
     def dimension_dropped(*args, **kwargs):

@@ -68,7 +68,7 @@ def parse_str_to_dic(exp_str: str) -> dict:
     Examples
     --------
     >>> parse_str_to_dic("L**2/M")
-    {"L":2, "M":1}
+    {'L': 2, 'M': -1}
     """
     parsed = parse_expr(exp_str, global_dict={
                         'Symbol': sp_Symbol, 'Integer': sp_Integer})
