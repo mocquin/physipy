@@ -26,6 +26,26 @@ from physipy import imperial_units, setup_matplotlib
 from physipy.quantity.utils import qarange
 import physipy
 
+import doctest
+from physipy import quantity, constants, integrate, math, optimize, random
+from physipy.quantity import calculus, utils
+
+# The load_tests() function is automatically called by unittest
+# see https://docs.python.org/3/library/doctest.html#unittest-api
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite(quantity))
+    tests.addTests(doctest.DocTestSuite(calculus))
+    # TODO : dict and module share the same name
+    # tests.addTests(doctest.DocTestSuite(physipy.quantity.units))
+    tests.addTests(doctest.DocTestSuite(utils))
+    # TODO : dict and module share the same name
+    # tests.addTests(doctest.DocTestSuite(constants))
+    tests.addTests(doctest.DocTestSuite(integrate))
+    tests.addTests(doctest.DocTestSuite(math))
+    tests.addTests(doctest.DocTestSuite(optimize))
+    tests.addTests(doctest.DocTestSuite(random))
+    return tests
+
 
 km = units["km"]
 m = units["m"]

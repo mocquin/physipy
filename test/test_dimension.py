@@ -3,8 +3,18 @@ from fractions import Fraction
 import time
 
 from physipy import Dimension, DimensionError
+from physipy.quantity import dimension
 
 import pandas as pd
+
+import doctest
+import unittest
+
+# The load_tests() function is automatically called by unittest
+# see https://docs.python.org/3/library/doctest.html#unittest-api
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite(dimension))
+    return tests
 
 
 class TestClassDimension(unittest.TestCase):
