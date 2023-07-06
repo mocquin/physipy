@@ -272,7 +272,7 @@ def _iterify(x):
 
 
 def check_dimension(units_in=None, units_out=None) -> Callable:
-    """Check dimensions of inputs and ouputs of function.
+    r"""Check dimensions of inputs and ouputs of function.
 
     Will check that all inputs and outputs have the same dimension
     than the passed units/quantities. Dimensions for inputs and
