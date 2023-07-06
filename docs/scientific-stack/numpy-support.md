@@ -267,3 +267,20 @@ numpy_functions = set(attr for attr in dir(np) if hasattr(getattr(np, attr), '_i
 
 print(sorted(numpy_functions - physipy_implemented))
 ```
+
+# Proxy support for numpy.random functions
+
+```python
+from physipy import random as phyrandom, s
+import numpy as np
+```
+
+```python
+np.random.normal(1, 2, 10000)*s
+```
+
+```python
+print(phyrandom.normal(1, 2, 10000))
+print(phyrandom.normal(1, 2, 10000)*s)
+print(phyrandom.normal(1*s, 2*s, 10000))
+```

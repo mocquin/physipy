@@ -64,15 +64,32 @@ markdown_extensions:
 #      base_path: './'
 
 nav:                                                                            # All paths in the navigation configuration must be relative to the docs_dir configuration option
-  - README: ./../README.md
   - physipy: index.md
   - tutorials.md
-  - User-guide : 
-    - How-to Guides: user-guide\how-to-guides.md
-    - How-to-guides : user-guide\how-to-guides_other.md
-  - reference.md
-  - explanation.md
   - Others: ./../docs_/
+  - Known issues :                                      known-issues.md
+  - API :                                               API\api.md
+  - Alternative packages:
+    - Pint :                                            alternative-packages\alternative-pint.md
+    - Astropy :                                         alternative-packages\alternative-astropy.md
+    - For all people :                                  alternative-packages\alternative-forallpeople.md
+  - Scientific stack :
+    - physipy and the standard math module :            scientific-stack\math-support.md
+    - physipy and numpy :                               scientific-stack\numpy-support.md
+    - physipy and matplotlib :                          scientific-stack\matplotlib-support.md
+    - physipy and pandas :                              scientific-stack\pandas-support.md
+    - physipy and scipy :                               scientific-stack\scipy-support.md
+  - Development and performance : 
+    - Benchmarking with AirSpeedVelocity :              development-guide\dev-benchmarking-with-asv.md
+    - Performance and comparison with other packages :  development-guide\dev-performance-comparison.md
+    - Performance of the Dimension class :              development-guide\dev-performance-dimension.md
+  - Support for other value-packages :
+    - Support for the decimal module :                  support-for-other-backend-packages\decimal-support.md
+    - Support for handcalcs :                           support-for-other-backend-packages\handcalcs-support.md
+    - Support for mcerp :                               support-for-other-backend-packages\mcerp-support.md
+    - Support for uncertainties :                       support-for-other-backend-packages\uncertainties-support.md
+    
+    
 
 extra:
   social:
