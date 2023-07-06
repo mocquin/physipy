@@ -6,7 +6,7 @@ repo_name: mocquin/physipy                                                      
 use_directory_urls: false                                                       # see https://stackoverflow.com/questions/60354731/why-are-my-local-html-links-going-to-parent-folder-instead-of-the-html
 
 docs_dir: docs                                                                  # name of dir containing md files for docs. Defaults to docs
-site_dir: site                                                                  # the directory where the output HTML and other files are created, Defaults to site
+site_dir: _mkdocks_site                                                                  # the directory where the output HTML and other files are created, Defaults to site
 edit_uri: edit/master/docs                                                      # https://www.mkdocs.org/user-guide/configuration/#edit_uri
 
 theme:
@@ -41,6 +41,7 @@ theme:
     view: material/eye                                                          # Material/repo : icon for view button
   features:
 
+
 # watch:                                                                          # https://www.mkdocs.org/user-guide/configuration/#watch : Determines additional directories to watch when running mkdocs serve
 # - ./../                                                                         
 watch: [mkdocs.yml, README.md, physipy/]
@@ -59,6 +60,9 @@ markdown_extensions:
       permalink: true
       title: On this page                                                       # Name of toc, default to "Table of content"
       toc_depth: 3                                                              # define the range of levels to be included in the table of contents.
+  - markdown_include.include
+#  - markdown_include.include:
+#      base_path: './../'
 #  - pymdownx.snippets:
 #      check_paths: true
 #      base_path: './'
@@ -66,7 +70,6 @@ markdown_extensions:
 nav:                                                                            # All paths in the navigation configuration must be relative to the docs_dir configuration option
   - physipy: index.md
   - tutorials.md
-  - Others: ./../docs_/
   - Known issues :                                      known-issues.md
   - API :                                               API\api.md
   - Alternative packages:

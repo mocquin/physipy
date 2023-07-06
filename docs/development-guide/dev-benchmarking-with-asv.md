@@ -86,4 +86,4 @@ The results of benchmarks are available online at :
 https://mocquin.github.io/physipy/
 
 
-![](./ressources/asv_screenshot.png)
+![](../ressources/asv_screenshot.png)
