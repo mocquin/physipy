@@ -82,7 +82,8 @@ nav:                                                                            
     - physipy and matplotlib :                          scientific-stack/matplotlib-support.md
     - physipy and pandas :                              scientific-stack/pandas-support.md
     - physipy and scipy :                               scientific-stack/scipy-support.md
-  - Development and performance : 
+  - Development and performance :
+    - General guidances :                               development-guide/index.md
     - Benchmarking with AirSpeedVelocity :              development-guide/dev-benchmarking-with-asv.md
     - Performance and comparison with other packages :  development-guide/dev-performance-comparison.md
     - Performance of the Dimension class :              development-guide/dev-performance-dimension.md

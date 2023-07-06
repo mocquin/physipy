@@ -1,5 +1,5 @@
 This site contains the project documentation for the
-`physipy` project.
+[`physipy`](https://github.com/mocquin/physipy/) project.
 
 {!README.md!}
 

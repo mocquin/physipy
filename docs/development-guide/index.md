@@ -1,8 +1,20 @@
 # Setup the environment
 
+## General checks
+
+ - `perflint physipy`
+
+## Benchmarking versions
+
+Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :
+
+[![./../ressources/asv_screenshot.png](./../ressources/asv_screenshot.png)](https://mocquin.github.io/physipy/)
+
+For more information, see the dedicated documentation page on [benchmarking with airspeedvelocity].
+
 ## For documentation
 
-The documentation system of physipy is based on [mkdocs](). It relies additionnaly on [mkdocs-material] for easy customisation, [mkdocstrings] to automaticaly include all physipy's docstrings into the documentation.
+The documentation system of physipy is based on [mkdocs]. It relies additionnaly on [mkdocs-material] for easy customisation and [mkdocstrings] to automaticaly include all physipy's docstrings into the documentation.
 
  - `pip install mkdocs`
  - `pip install mkdocs-material`
