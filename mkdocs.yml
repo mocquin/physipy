@@ -1,4 +1,4 @@
-site_name: Calculation Docs                                                     # name of your documentation site, which will appear in the navigation and page titles
+site_name: "physipy : make python unit-aware"                                        # name of your documentation site, which will appear in the navigation and page titles
 site_description: Official documentation for the physipy python package         # This description may appear in search results or metadata
 
 repo_url: https://github.com/mocquin/physipy/                                   # MAterial : In order to display a link to the repository of your project as part of your documentation
