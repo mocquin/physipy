@@ -1,0 +1,82 @@
+site_name: Calculation Docs                                                     # name of your documentation site, which will appear in the navigation and page titles
+site_description: Official documentation for the physipy python package         # This description may appear in search results or metadata
+
+repo_url: https://github.com/mocquin/physipy/                                   # MAterial : In order to display a link to the repository of your project as part of your documentation
+repo_name: mocquin/physipy                                                      # Material : MkDocs will infer the source provider by examining the URL and try to set the repository name automatically. If you wish to customize the name, set repo_name
+use_directory_urls: false                                                       # see https://stackoverflow.com/questions/60354731/why-are-my-local-html-links-going-to-parent-folder-instead-of-the-html
+
+docs_dir: docs                                                                  # name of dir containing md files for docs. Defaults to docs
+site_dir: site                                                                  # the directory where the output HTML and other files are created, Defaults to site
+edit_uri: edit/master/docs                                                      # https://www.mkdocs.org/user-guide/configuration/#edit_uri
+
+theme:
+  name: "material"                                                              # declare the theme use (defaults installed are readthedocs and mkdocs)
+  scheme: slate
+  palette:                                                                      # optionnal coloration 
+    # primary: teal
+    # accent: orange
+    - scheme: default   # Palette toggle for light mode
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - scheme: slate     # Palette toggle for dark mode
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs                                                           # Material : When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports above 1220px, but remain as-is on mobile.
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - search.suggest                                                            # the search will display the likeliest completion for the last word which can be accepted with the Right key.
+    - search.highlight                                                          # When search highlighting is enabled and a user clicks on a search result, Material for MkDocs will highlight all occurrences after following the link
+    - search.share                                                              # When search sharing is activated, a  share button is rendered next to the reset button, which allows to deep link to the current search query and result
+    - content.action.edit                                                       # Material/repo : After making sure that edit_uri is correctly configured, buttons for code actions can be added.
+    - toc.follow
+    - navigation.top
+  icon:
+    repo: fontawesome/brands/github                                             # Material/repo : While the default repository icon is a generic git icon, it can be set to any icon bundled with the theme by referencing a valid icon path
+    edit: material/pencil                                                       # Material/repo : icon for edit button 
+    view: material/eye                                                          # Material/repo : icon for view button
+  features:
+
+# watch:                                                                          # https://www.mkdocs.org/user-guide/configuration/#watch : Determines additional directories to watch when running mkdocs serve
+# - ./../                                                                         
+watch: [mkdocs.yml, README.md, physipy/]
+
+
+plugins:
+- search
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_submodules: true                                                 # To automaticaly generate sub-modules docstrings
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      title: On this page                                                       # Name of toc, default to "Table of content"
+      toc_depth: 3                                                              # define the range of levels to be included in the table of contents.
+#  - pymdownx.snippets:
+#      check_paths: true
+#      base_path: './'
+
+nav:                                                                            # All paths in the navigation configuration must be relative to the docs_dir configuration option
+  - README: ./../README.md
+  - physipy: index.md
+  - tutorials.md
+  - User-guide : 
+    - How-to Guides: user-guide\how-to-guides.md
+    - How-to-guides : user-guide\how-to-guides_other.md
+  - reference.md
+  - explanation.md
+  - Others: ./../docs_/
+
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/mocquin
+  - icon: fontawesome/brands/python
+    link: https://pypi.org/project/physipy/
