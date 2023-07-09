@@ -10,8 +10,6 @@ import matplotlib
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
 
-print(np.__version__)
-
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 # from physipy.quantity import vectorize #turn_scalar_to_str
@@ -30,6 +28,7 @@ from physipy import calculus, utils, setup_matplotlib, plotting_context
 # The load_tests() function is automatically called by unittest
 # see https://docs.python.org/3/library/doctest.html#unittest-api
 def load_tests(loader, tests, ignore):
+    # /!\ dimension doctest is tested in test_dimension
     tests.addTests(doctest.DocTestSuite(quantity))
     tests.addTests(doctest.DocTestSuite(calculus))
     # TODO : dict and module share the same name

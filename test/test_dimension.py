@@ -17,7 +17,7 @@ def load_tests(loader, tests, ignore):
     return tests
 
 
-class TestClassDimension(unittest.TestCase):
+class TestDimension(unittest.TestCase):
 
     def setUp(self):
         self.startTime = time.time()
