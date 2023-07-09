@@ -1,3 +1,107 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Usefull calculus fonctions compatible with Quantity objects.
+
+These are basically numpy function wrapped with dimensions checks.
+"""
+from __future__ import annotations
+from typing import Callable
+
+import numbers as nb
+
+import numpy as np
+import sympy as sp
+
+from .quantity.dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
+from .quantity.quantity import quantify, Quantity
+from .quantity.utils import decorate_with_various_unit, asqarray
+
+
+def xvectorize(func: Callable) -> Callable:
+    """
+    1-D vectorize func.
+
+    func must have signature 'func(arg)', and vectorization is made along arg.
+    Returned value will be a Quantity object, even if returned values are
+    dimensionless (because of the use of asqarray).
+
+    Just like np.vectorize, this decorator is a utility to wrap a for loop -
+    it does not improve performance in any way.
+
+    Parameter
+    ---------
+    func : callable
+        A function of one parameter.
+
+    Returns
+    -------
+    callable
+        Decorated function.
+    """
+    def vec_func(x):
+        res = asqarray([func(i) for i in x])
+        return res
+    return vec_func
+
+
+def ndvectorize(func: Callable) -> Callable:
+    """
+    1-D vectorize func and accept input as ndarray.
+
+    func must have signature 'func(arg)', and vectorization is made along arg.
+    Returned value will be a Quantity object, even if returned values are
+    dimensionless (because of the use of asqarray).
+
+    Basically, func is applied to each value in arg input (as a flat list),
+    and output is reshaped to input shape.
+
+    Just like np.vectorize, this decorator is a utility to wrap a for loop -
+    it does not improve performance in any way.
+
+    Parameter
+    ---------
+    func : callable
+        A function of one parameter.
+
+    Returns
+    -------
+    callable
+        Decorated function.
+    """
+    def vec_func(x):
+        res = asqarray([func(i) for i in x.flat])
+        res.value = res.value.reshape(x.shape)
+        return res
+    return vec_func
+
+
+def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
+    """
+    2D integral based on trapz.
+    ech_x is horizontal sampling, along row
+    ech_y is vertical sampling, along column
+
+
+    Example :
+    ---------
+        #sample a 2 squared meter, in both direction with different spacing
+        nx = 12
+        ny = 30
+        ech_dx = np.linspace(0*m, 2*m, num=nx)
+        ech_dy = np.linspace(0*m, 1*m ,num=ny)
+        X, Y = np.meshgrid(ech_dx, ech_dy)
+        # make a uniform ponderation
+        Zs = np.ones_like(X)
+        print(trapz2(Zs, ech_dx, ech_dy))
+        #prints 2 m**2
+
+    """
+    int_x = np.trapz(Zs, axis=-1, x=ech_x)
+    int_xy = np.trapz(int_x, axis=-1, x=ech_y)
+    return int_xy
+
+
 """
 scipy.integrate wrapped functions
 
@@ -202,3 +306,47 @@ def solve_ivp(
         return Quantity(func_sol(t), Y0[0].dimension)  # /t_span[0].dimension)
     sol.sol = sol_q
     return sol
+
+
+
+from typing import Callable
+
+
+import numbers as nb
+import numpy as np
+import scipy.optimize
+
+from physipy import quantify, Quantity, Dimension, DimensionError
+
+
+# Generique
+def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
+    start = quantify(start)
+    start_val = start.value
+    start_dim = start.dimension
+
+    def func_cal_float(x_float):
+        q = Quantity(x_float, start_dim)
+        return func_cal(q, *args)
+    res = scipy.optimize.root(func_cal_float, start_val, **kwargs).x[0]
+    return Quantity(res, start_dim)
+
+
+def brentq(func_cal: Callable, start, stop, *
+           oargs, args=(), **kwargs) -> Quantity:
+    start = quantify(start)
+    stop = quantify(stop)
+    if not start.dimension == stop.dimension:
+        raise DimensionError(start.dimension, stop.dimension)
+
+    start_val = start.value
+    start_dim = start.dimension
+    stop_val = stop.value
+
+    def func_float(x):
+        res = func_cal(Quantity(x, start_dim), *args)
+        return quantify(res).value
+
+    res = scipy.optimize.brentq(func_float, start_val, stop.value, *oargs)
+
+    return Quantity(res, start_dim)

@@ -9,7 +9,7 @@ from .utils import (check_dimension, set_favunit,
                     add_back_unit_param,
                     decorate_with_various_unit, asqarray)
 
-from .calculus import *
+from ..calculus import *
 
 from .plot import setup_matplotlib
 
