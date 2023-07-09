@@ -104,7 +104,9 @@ nav:                                                                            
     - Introduction :                                    API/api-reference.md
     - Dimension :                                       API/dimension-api.md
     - Quantity :                                        API/quantity-api.md
-    - Units and constants :                             API/units-constants.md
+    - Units :                                           API/units-api.md
+    - Constants :                                       API/constants-api.md
+    - Plotting :                                        API/plotting-api.md
   - Alternative packages:
     - Pint :                                            alternative-packages/alternative-pint.md
     - Astropy :                                         alternative-packages/alternative-astropy.md
