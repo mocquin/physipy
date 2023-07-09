@@ -1,1 +1,1 @@
-::: physipy.quantity.plot
+::: physipy.quantity._plot

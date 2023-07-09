@@ -42,7 +42,7 @@ To profile a specific benchmark on a specific commit :
 `asv profile benchmarks.BasicPhysipy.time_QuantityCreationByArray master --gui=snakeviz`
 (make sure to have pip install snakeviz).
 
-To benchmark only a list of commits : use `git log --pretty=oneline f1.py f2.py` to get the list of commits that modify files then : 
+It seems this must be run outside of conda: to benchmark only a list of commits : use `git log --pretty=oneline f1.py f2.py` to get the list of commits that modify files then : 
 ```
 asv run HASHFILE:hashestobenchmark.txt
 ```
