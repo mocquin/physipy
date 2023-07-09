@@ -21,15 +21,26 @@ Questions :
  - should the definition of other packages units be fixed or relative ?
  - should other packages units/constants be in the same dict ?
  - should make a proper data structure, where a new unit added is checked if already taken ?
+
+ Define non-SI-units.
+
+This module provides for now 2 dictionnaries of units :
+ - custom_units : for user-defined units
+ - imperial_units : retard units
+
+TODO :
+ - create a function wrapper for dict creation ?
+ - Should custom units and constants be in the same module ?
+
 """
 from __future__ import annotations
 
-from numpy import pi
+from math import pi
 from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
 
 
 # Dictionnary of prefixes
-PREFIX_DICT = {
+_PREFIX_DICT = {
     'Y': 1e24,
     'Z': 1e21,
     'E': 1e18,
@@ -139,7 +150,7 @@ sr  = SI_units["sr"]
 
 # Derived SI units with all prefixes
 SI_units_prefixed = _CREATE_BASE_SI_UNIT_DICT(
-    PREFIX_DICT, SI_UNIT_SYMBOL, SI_units)  # extends SI_units
+    _PREFIX_DICT, SI_UNIT_SYMBOL, SI_units)  # extends SI_units
 
 
 # SI derived units
@@ -167,7 +178,7 @@ _SI_derived_units_raw = {
 # create the actual dict of units, with symbols
 SI_derived_units = _make_quantity_dict_with_symbols(_SI_derived_units_raw)
 SI_derived_units_prefixed = prefix_units(
-    PREFIX_DICT, SI_derived_units, extend=True)
+    _PREFIX_DICT, SI_derived_units)
 
 
 # Other units
@@ -187,37 +198,26 @@ _other_accepted_units_raw = {
 
 other_units = _make_quantity_dict_with_symbols(_other_accepted_units_raw)
 
+assert SI_units['m'] == m
+
 
 # Concatenating units
 # including base SI units to units dict
-units = {**SI_units_prefixed, **SI_derived_units, **other_units}
+units = {
+    **SI_units, 
+    **SI_units_prefixed,
+    **SI_derived_units,
+    **other_units,
+    **SI_derived_units_prefixed,
+}
 
-all_units = {**SI_units_prefixed, **SI_derived_units_prefixed, **other_units}
+if 'm' in SI_derived_units_prefixed:
+    print('derived', SI_derived_units_prefixed['m'])
 
-del pi
-del Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
-del _SI_derived_units_raw, _other_accepted_units_raw
 
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-"""Define non-SI-units.
-
-This module provides for now 2 dictionnaries of units :
- - custom_units : for user-defined units
- - imperial_units : retard units
-
-TODO :
- - create a function wrapper for dict creation ?
- - Should custom units and constants be in the same module ?
-
-"""
-
-# setupe
-from math import pi
-
-from .quantity import make_quantity, Quantity
-from .quantity import m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
+assert units['m'] == m
+assert units['mm'] == m/1000
 
 cm = SI_units_prefixed["cm"]
 g = units['g']
@@ -227,12 +227,6 @@ W = units["W"]
 kJ = J * 1000
 kJ.symbol = 'kJ'
 liter = units["L"]
-
-
-# Define here you custom units : key=symbol and value=quantity
-raw_custom_units: dict[str, Quantity] = {
-
-}
 
 
 # imperial units from astropy. This is ridiculous...
@@ -279,16 +273,6 @@ raw_imperial_units = {
 }
 
 
-# custom units dict
-custom_units = {key: make_quantity(value, symbol=key)
-                for key, value in raw_custom_units.items()}
-
-
 # imperial unit dict
 imperial_units = {key: make_quantity(value, symbol=key)
                   for key, value in raw_imperial_units.items()}
-
-# cleanup
-del pi
-del m, kg, s, A, K, cd, mol, rad, sr, SI_units, SI_units_prefixed, SI_derived_units, other_units, units
-del cm, g, h, J, W, kJ

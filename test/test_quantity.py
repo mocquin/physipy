@@ -13,22 +13,18 @@ import matplotlib.pyplot as plt
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
-from physipy.integrate import quad, dblquad, tplquad, solve_ivp
-from physipy.optimize import root, brentq
 # from physipy.quantity import vectorize #turn_scalar_to_str
-from physipy.quantity.calculus import xvectorize, ndvectorize
-from physipy.quantity import SI_units, units  # , custom_units
+from physipy.calculus import xvectorize, ndvectorize,  quad, dblquad, tplquad, solve_ivp, root, brentq
+from physipy.quantity import units, imperial_units  # , custom_units
 from physipy.quantity import m, s, kg, A, cd, K, mol
 from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, add_back_unit_param, decorate_with_various_unit
-from physipy.quantity.utils import asqarray, hard_equal, very_hard_equal
-from physipy import imperial_units, setup_matplotlib
-from physipy.quantity.utils import qarange
+from physipy.quantity.utils import asqarray, hard_equal, very_hard_equal, qarange
 import physipy
 
 import doctest
-from physipy import quantity, constants, integrate, math, optimize, random
-from physipy.quantity import calculus, utils
+from physipy import quantity, constants, math
+from physipy import calculus, utils
 
 # The load_tests() function is automatically called by unittest
 # see https://docs.python.org/3/library/doctest.html#unittest-api
@@ -40,10 +36,7 @@ def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(utils))
     # TODO : dict and module share the same name
     # tests.addTests(doctest.DocTestSuite(constants))
-    tests.addTests(doctest.DocTestSuite(integrate))
     tests.addTests(doctest.DocTestSuite(math))
-    tests.addTests(doctest.DocTestSuite(optimize))
-    tests.addTests(doctest.DocTestSuite(random))
     return tests
 
 

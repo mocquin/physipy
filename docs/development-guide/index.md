@@ -4,6 +4,15 @@
 
  - `perflint physipy`
 
+## Testing
+
+### With doctest
+Run each file with doctest: 
+```
+python -m doctest physipy/quantity/dimension.py
+python -m doctest physipy/quantity/quantity.py
+```
+
 ## Benchmarking versions
 
 Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :

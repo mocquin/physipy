@@ -451,7 +451,7 @@ class Quantity(object):
         In case self.value is an array, array_to_scal is
         used to convert the array to a single value.
         """
-        from .units import units
+        from ._units import units
         from .utils import asqarray
         same_dim_unit_list = [
             value for value in units.values() if self.dimension == value.dimension]
