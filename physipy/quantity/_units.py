@@ -198,8 +198,6 @@ _other_accepted_units_raw = {
 
 other_units = _make_quantity_dict_with_symbols(_other_accepted_units_raw)
 
-assert SI_units['m'] == m
-
 
 # Concatenating units
 # including base SI units to units dict
@@ -211,13 +209,6 @@ units = {
     **SI_derived_units_prefixed,
 }
 
-if 'm' in SI_derived_units_prefixed:
-    print('derived', SI_derived_units_prefixed['m'])
-
-
-
-assert units['m'] == m
-assert units['mm'] == m/1000
 
 cm = SI_units_prefixed["cm"]
 g = units['g']

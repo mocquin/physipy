@@ -9,8 +9,7 @@
 ### With doctest
 Run each file with doctest: 
 ```
-python -m doctest physipy/quantity/dimension.py
-python -m doctest physipy/quantity/quantity.py
+python -m doctest -v physipy/quantity/dimension.py
 ```
 
 ## Benchmarking versions

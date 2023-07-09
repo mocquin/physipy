@@ -10,6 +10,7 @@ import matplotlib
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
 
+print(np.__version__)
 
 from physipy.quantity import Dimension, Quantity, DimensionError
 #from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
@@ -24,7 +25,7 @@ import physipy
 
 import doctest
 from physipy import quantity, constants, math
-from physipy import calculus, utils
+from physipy import calculus, utils, setup_matplotlib, plotting_context
 
 # The load_tests() function is automatically called by unittest
 # see https://docs.python.org/3/library/doctest.html#unittest-api
@@ -561,13 +562,22 @@ class TestQuantity(unittest.TestCase):
 
     def test_init_SI_init(self):
         # Not checking symbols
-        self.assertEqual(SI_units["kg"], Quantity(1, Dimension("M")))
-        self.assertEqual(SI_units["m"], Quantity(1, Dimension("L")))
-        self.assertEqual(SI_units["s"], Quantity(1, Dimension("T")))
-        self.assertEqual(SI_units["K"], Quantity(1, Dimension("theta")))
-        self.assertEqual(SI_units["cd"], Quantity(1, Dimension("J")))
-        self.assertEqual(SI_units["A"], Quantity(1, Dimension("I")))
-        self.assertEqual(SI_units["mol"], Quantity(1, Dimension("N")))
+        self.assertEqual(units["kg"], Quantity(1, Dimension("M")))
+        self.assertEqual(units["m"], Quantity(1, Dimension("L")))
+        self.assertEqual(units["s"], Quantity(1, Dimension("T")))
+        self.assertEqual(units["K"], Quantity(1, Dimension("theta")))
+        self.assertEqual(units["cd"], Quantity(1, Dimension("J")))
+        self.assertEqual(units["A"], Quantity(1, Dimension("I")))
+        self.assertEqual(units["mol"], Quantity(1, Dimension("N")))
+
+    def test_m_mm_kg_g(self):
+        self.assertEqual(units["m"], Quantity(1, Dimension("L")))
+        self.assertEqual(units["mm"], Quantity(1, Dimension("L"))/1000)
+
+        self.assertEqual(units["g"], Quantity(1, Dimension("M"))/1000)
+        self.assertEqual(units["kg"], Quantity(1, Dimension("M")))
+        
+
 
     def test_eq_ne(self):
         self.assertEqual(self.x_q, self.x_q)
@@ -1753,7 +1763,7 @@ class TestQuantity(unittest.TestCase):
 
     def test_matplotlib_axhlines(self):
         # was not working due to np.iterable(3*m) returning True
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
             y = np.linspace(0, 30) * mm
             x = np.linspace(0, 5) * s
 
@@ -1763,7 +1773,7 @@ class TestQuantity(unittest.TestCase):
 
     def test_matplotlib_axvlines(self):
         # was not working due to np.iterable(3*m) returning True
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
             y = np.linspace(0, 30) * mm
             x = np.linspace(0, 5) * s
 
@@ -1772,7 +1782,7 @@ class TestQuantity(unittest.TestCase):
             ax.axvline(0.02 * s, color='tab:red')
 
     def test_matplotlib_twinx(self):
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
 
             fig, ax = plt.subplots()
             ax.plot(asqarray([m, 2*m]),
@@ -1781,7 +1791,7 @@ class TestQuantity(unittest.TestCase):
             ax2.plot(m, 3*s, "*", color="r")
 
     def test_matplotlib_favunit_volts(self):
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
 
             fig, ax = plt.subplots()
             ax.plot(3*m, 5*V, "-o")
@@ -1795,7 +1805,7 @@ class TestQuantity(unittest.TestCase):
         y.plot()
 
     def test_matplotlib_scatter_masked(self):
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
             secs = units["s"]
             hertz = units["Hz"]
             minutes = units["min"]
@@ -1816,7 +1826,7 @@ class TestQuantity(unittest.TestCase):
             self.assertTrue(ax3.yaxis.units == minutes)
 
     def test_matplotlib_set_limits_on_blank_plot(self):
-        with physipy.quantity.plot.plotting_context():
+        with plotting_context():
             from physipy import units, s, imperial_units, setup_matplotlib, m
             inch = imperial_units["in"]
             fig, ax = plt.subplots()
@@ -2114,10 +2124,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.greater.reduce(arr)
-        res = np.greater.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.greater.reduce(arr)
+        # res = np.greater.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
     def test_np_greater_equal_reduce(self):
         arr = np.arange(10)
@@ -2133,10 +2143,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.greater_equal.reduce(arr)
-        res = np.greater_equal.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.greater_equal.reduce(arr)
+        # res = np.greater_equal.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
     def test_np_less_reduce(self):
 
@@ -2153,10 +2163,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.less.reduce(arr)
-        res = np.less.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.less.reduce(arr)
+        # res = np.less.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
     def test_np_less_equal_reduce(self):
 
@@ -2173,10 +2183,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.less_equal.reduce(arr)
-        res = np.less_equal.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.less_equal.reduce(arr)
+        # res = np.less_equal.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
     def test_np_not_equal_reduce(self):
 
@@ -2193,10 +2203,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.not_equal.reduce(arr)
-        res = np.not_equal.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.not_equal.reduce(arr)
+        # res = np.not_equal.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
     def test_np_equal_reduce(self):
         arr = np.arange(10)
@@ -2212,11 +2222,19 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
-        # -> fixed since
-        exp = np.equal.reduce(arr)
-        res = np.equal.reduce(arr*m)
-        self.assertEqual(res, exp)
+        # and https://github.com/numpy/numpy/pull/22223
+        # exp = np.equal.reduce(arr)
+        # res = np.equal.reduce(arr*m)
+        # self.assertEqual(res, exp)
 
+    def test_np_min_max(self):
+        res = np.max(np.arange(10)*m)
+        exp = np.max(np.arange(10))*m
+        self.assertTrue(np.all(res == exp))
+
+        res = np.min(np.arange(10)*m)
+        exp = np.min(np.arange(10))*m
+        self.assertTrue(np.all(res == exp))
 
     def test_np_floor_dividel_reduce(self):
         res = np.floor_divide.reduce(np.arange(10)*m)

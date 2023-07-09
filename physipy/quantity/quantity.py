@@ -269,15 +269,15 @@ class Quantity(object):
     def __bool__(self): return bool(self.value)
 
     # min and max uses the iterator
-    # def __min__(self):
-    #    return Quantity(min(self.value),
-    #                    self.dimension,
-    #                    favunit=self.favunit)
+    def __min__(self):
+       return Quantity(min(self.value),
+                       self.dimension,
+                       favunit=self.favunit)
 
-    # def __max__(self):
-    #    return Quantity(max(self.value),
-    #                    self.dimension,
-    #                    favunit=self.favunit)
+    def __max__(self):
+       return Quantity(max(self.value),
+                       self.dimension,
+                       favunit=self.favunit)
 
     def __eq__(self, y):
         try:
@@ -404,8 +404,9 @@ class Quantity(object):
     #    print("repr_pretty")
     #    return p.text(self._repr_latex_())
 
+    # TODO : assess the usefullness of this...
     def plot(self, kind: str = "y", other=None, ax=None) -> None:
-        from physipy.quantity.plot import plotting_context
+        from physipy import plotting_context
         if ax is None:
             import matplotlib.pyplot as plt
             fig, ax = plt.subplots()
@@ -1269,6 +1270,14 @@ def np_cov(m, y=None, *args, **kwargs):
         return Quantity(raw, m.dimension * y.dimension)
     raw = np.cov(m.value, y, *args, **kwargs)
     return Quantity(raw, m.dimension**2)
+
+@implements(np.max)
+def np_max(qarr, *args, **kwargs):
+    return Quantity(np.max(qarr.value, *args, **kwargs), qarr.dimension)
+
+@implements(np.min)
+def np_min(qarr, *args, **kwargs):
+    return Quantity(np.min(qarr.value, *args, **kwargs), qarr.dimension)
 
 
 @implements(np.percentile)

@@ -9,8 +9,7 @@ from .utils import (check_dimension, set_favunit,
                     add_back_unit_param,
                     decorate_with_various_unit, asqarray)
 
-from ._plot import setup_matplotlib
+from ._plot import setup_matplotlib, plotting_context
 
 from ._units import m, s, kg, A, cd, K, mol, rad, sr
 from ._units import units, imperial_units
-assert m == Quantity(1, Dimension('L'))
