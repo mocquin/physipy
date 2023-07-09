@@ -84,11 +84,8 @@ $$\frac{\partial^2 u}{\partial x^2} \approx \frac{\frac{1}{2}\left( u_{i+1}^k + 
 
 
 
-SPlitting time k and k+1 : 
-
-
+SPlitting time k and k+1 :  
 $$\frac{\partial^2 u}{\partial x^2} \approx \frac{1}{2} \left( \frac{u_{i+1}^{k+1} -2 u_i^{k+1} + u_{i-1}^{k+1}}{\Delta z^2} + \frac{u_{i+1}^{k} -2 u_i^{k} + u_{i-1}^{k}}{\Delta z^2}\right)$$
-
 
 So the global PDE becomes : 
 

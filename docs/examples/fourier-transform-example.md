@@ -47,7 +47,8 @@ print(np.std(sig))
 print(np.var(sig))
 ```
 
-Fourier transform of a signal has the same unit : 
+Fourier transform of a signal has the same unit :  
+
 $$X[k] = \sum_n^{N-1} x[k] e^{-i2\pi k n /N }$$
 
 ```python
@@ -55,10 +56,10 @@ tf = np.fft.fft(sig, norm="ortho")
 print(sig.dimension == tf.dimension)
 ```
 
-Note that several versions of numpy's fft are available : 
- - `norm=backward` : $X[k]=\sum x[k]e^{-2ikn/N}$
- - `norm=forward` : $X[k]=\frac{1}{N}\sum x[k]e^{-2ikn/N}$
- - `norm=ortho`: $X[k]=\frac{1}{\sqrt{N}}\sum x[k]e^{-2ikn/N}$
+Note that several versions of numpy's fft are available :  
+ - `norm=backward` : $X[k]=\sum x[k]e^{-2ikn/N}$  
+ - `norm=forward` : $X[k]=\frac{1}{N}\sum x[k]e^{-2ikn/N}$  
+ - `norm=ortho`: $X[k]=\frac{1}{\sqrt{N}}\sum x[k]e^{-2ikn/N}$  
 
 ```python
 sig_test = np.ones(10)
