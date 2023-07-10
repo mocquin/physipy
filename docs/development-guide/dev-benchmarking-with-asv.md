@@ -30,11 +30,13 @@ asv quickstart
 ```
 Creates json file, fill the matrix parameter with reqs packages.
 
+The actual python code that describe the code run for benchmarking are stored in the `benchmarks` directory.
+
 Once setup and benchmarks written : 
 ```
 asv run ALL  # to run all benchmarks on all comiits
 asv run v0.1..master # to all benchmarks from master to commit tagged v0.1
-asv publish  # convert results to html
+asv publish  # convert results to html in the "html_dir" of the config file, ".asv/html" for now
 asv preview  # display html on server
 ```
 
