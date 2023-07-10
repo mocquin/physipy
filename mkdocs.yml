@@ -88,7 +88,7 @@ markdown_extensions:
 
 nav:                                                                            # All paths in the navigation configuration must be relative to the docs_dir configuration option
   - physipy:                                            index.md
-  - Quickstrat :                                        quickstart.md
+  - Quickstart :                                        quickstart.md
   - Scientific stack support:
     - physipy and the standard math module :            scientific-stack/math-support.md
     - physipy and numpy :                               scientific-stack/numpy-support.md
