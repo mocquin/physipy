@@ -4,6 +4,18 @@
 
  - `perflint physipy`
 
+## Release
+
+### On Github
+Once the package is shipped to pypi, you can create a release on Github : ([help from github](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)) : 
+ - Go to the package home
+ - On the right-side menu, click on Release
+ - Draft a new release
+ - Select the tag version
+ - Write a title and description
+ - The source code from the repo are packed in zip/tar.gz files. You can add wheel or other packages by drag-n-drop.
+
+
 ## Testing
 
 ### With doctest
