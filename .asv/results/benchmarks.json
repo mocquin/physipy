@@ -1,13 +1,13 @@
 {
     "benchmarks.BasicPhysipy.mem_unit": {
-        "code": "class BasicPhysipy:\n    def mem_unit(self):\n        \"\"\"\n        Memory consumption of the meter\n        \"\"\"\n        return mq\n\n    def setup(self):\n        self.arr = np.arange(10)",
+        "code": "class BasicPhysipy:\n    def mem_unit(self):\n        \"\"\"\n        Memory consumption of the meter\n        \"\"\"\n        return m\n\n    def setup(self):\n        self.arr = np.arange(10)",
         "name": "benchmarks.BasicPhysipy.mem_unit",
         "param_names": [],
         "params": [],
         "timeout": 60.0,
         "type": "memory",
         "unit": "bytes",
-        "version": "3a93ad08a52470b6b9e88e28669db9c9726ec25e667f5e9a53914f128cc7290b"
+        "version": "76ca626c1a763b3788bf35f26cdcaf4f81e15d26f3ad75c9d363bc23c137362c"
     },
     "benchmarks.BasicPhysipy.time_QuantityAdd": {
         "code": "class BasicPhysipy:\n    def time_QuantityAdd(self):\n        q = m + m\n\n    def setup(self):\n        self.arr = np.arange(10)",
@@ -377,22 +377,6 @@
         "version": "46313936f7fbd3cf13f078012868681e2e50a95ff8515d545ede6e1da7e63a25",
         "warmup_time": -1
     },
-    "benchmarks.TimeSuite.time_range": {
-        "code": "class TimeSuite:\n    def time_range(self):\n        d = self.d\n        for key in range(500):\n            x = d[key]\n\n    def setup(self):\n        self.d = {}\n        for x in range(500):\n            self.d[x] = None",
-        "min_run_count": 2,
-        "name": "benchmarks.TimeSuite.time_range",
-        "number": 0,
-        "param_names": [],
-        "params": [],
-        "repeat": 0,
-        "rounds": 2,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "cc3e85248a6284df968bcf8afe866da285261eb2487c10e9dd9e2d17a05deb47",
-        "warmup_time": -1
-    },
     "imports.timeraw_import_constants": {
         "code": "def timeraw_import_constants():\n    return r\"from physipy import constants\"",
         "min_run_count": 2,
@@ -506,7 +490,7 @@
         "warmup_time": -1
     },
     "imports.timeraw_import_physipy_units": {
-        "code": "def timeraw_import_physipy_units():\n    return r\"from physipy.quantity import utils\"",
+        "code": "def timeraw_import_physipy_units():\n    return r\"from physipy.quantity import units\"",
         "min_run_count": 2,
         "name": "imports.timeraw_import_physipy_units",
         "number": 1,
@@ -518,7 +502,23 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c9bab35b0660403f98b700e93b6c6f0f351bd0b9e5bb8a36f718cfa30c8e6494",
+        "version": "56c429deb9d3b0ab7befa3f7f675615b91ec28f0d08a66d0c688aa4b8030c731",
+        "warmup_time": -1
+    },
+    "imports.timeraw_import_physipy_utils": {
+        "code": "def timeraw_import_physipy_utils():\n    return r\"from physipy.quantity import utils\"",
+        "min_run_count": 2,
+        "name": "imports.timeraw_import_physipy_utils",
+        "number": 1,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "a19960d74ffda856741cb86710f37e479c3d99bd4e8144682704ae36d6f962d8",
         "warmup_time": -1
     },
     "imports.timeraw_import_units": {
