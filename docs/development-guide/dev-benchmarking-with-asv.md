@@ -39,6 +39,8 @@ asv run v0.1..master # to all benchmarks from master to commit tagged v0.1
 asv publish  # convert results to html in the "html_dir" of the config file, ".asv/html" for now
 asv preview  # display html on server
 ```
+To check that no problem is found in the benchmarks, run : 
+`asv check --python=same`
 
 To profile a specific benchmark on a specific commit : 
 `asv profile benchmarks.BasicPhysipy.time_QuantityCreationByArray master --gui=snakeviz`
@@ -47,6 +49,7 @@ To profile a specific benchmark on a specific commit :
 It seems this must be run outside of conda: to benchmark only a list of commits : use `git log --pretty=oneline f1.py f2.py` to get the list of commits that modify files then : 
 ```
 asv run HASHFILE:hashestobenchmark.txt
+asv gh-pages --rewrite 
 ```
 
 To benchmark only a specific commit, add ^! after the commit hash : 

@@ -409,22 +409,6 @@
         "version": "9b458b9d6c3893bb97062df57745e4a2f222c83480c11a933fb75d02691bcf03",
         "warmup_time": -1
     },
-    "imports.timeraw_import_customunits": {
-        "code": "def timeraw_import_customunits():\n    return r\"from physipy import custom_units\"",
-        "min_run_count": 2,
-        "name": "imports.timeraw_import_customunits",
-        "number": 1,
-        "param_names": [],
-        "params": [],
-        "repeat": 0,
-        "rounds": 2,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "53efed816caafe0cbe9eb3ee562d870bef525e4aa2a190d20f6cf7b92645efad",
-        "warmup_time": -1
-    },
     "imports.timeraw_import_math": {
         "code": "def timeraw_import_math():\n    return r\"from physipy import math\"",
         "min_run_count": 2,
@@ -458,7 +442,7 @@
         "warmup_time": -1
     },
     "imports.timeraw_import_physipy_calculus": {
-        "code": "def timeraw_import_physipy_calculus():\n    return r\"from physipy.quantity import calculus\"",
+        "code": "def timeraw_import_physipy_calculus():\n    return r\"from physipy import calculus\"",
         "min_run_count": 2,
         "name": "imports.timeraw_import_physipy_calculus",
         "number": 1,
@@ -470,7 +454,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1c2508d5d46fab835edda44eaea181a356a54b49250d4c223bd126aae0b5e52d",
+        "version": "7b0487200f7b1f22a74c149ac5a82418630ef7785116cf381678f877c5b57961",
         "warmup_time": -1
     },
     "imports.timeraw_import_physipy_dimension": {
@@ -490,7 +474,7 @@
         "warmup_time": -1
     },
     "imports.timeraw_import_physipy_plot": {
-        "code": "def timeraw_import_physipy_plot():\n    return r\"from physipy.quantity import plot\"",
+        "code": "def timeraw_import_physipy_plot():\n    return r\"from physipy.quantity import _plot\"",
         "min_run_count": 2,
         "name": "imports.timeraw_import_physipy_plot",
         "number": 1,
@@ -502,7 +486,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "361f6180d981cb3eb8525e43799290d48632ab38d05e82d1f716cbfd33bb49e0",
+        "version": "43d3cdad461d182c1604c5318ca2a87baa49e0b46bc755809cc15266180e91f1",
         "warmup_time": -1
     },
     "imports.timeraw_import_physipy_quantity": {
@@ -535,22 +519,6 @@
         "type": "time",
         "unit": "seconds",
         "version": "c9bab35b0660403f98b700e93b6c6f0f351bd0b9e5bb8a36f718cfa30c8e6494",
-        "warmup_time": -1
-    },
-    "imports.timeraw_import_random": {
-        "code": "def timeraw_import_random():\n    return r\"from physipy import random\"",
-        "min_run_count": 2,
-        "name": "imports.timeraw_import_random",
-        "number": 1,
-        "param_names": [],
-        "params": [],
-        "repeat": 0,
-        "rounds": 2,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "83236528c4b2c373f3688488f76de5dd5b8988a0b5e673b37fa0b2dd67afdd26",
         "warmup_time": -1
     },
     "imports.timeraw_import_units": {

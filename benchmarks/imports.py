@@ -10,20 +10,12 @@ def timeraw_import_math():
     return r"from physipy import math"
 
 
-def timeraw_import_random():
-    return r"from physipy import random"
-
-
-def timeraw_import_customunits():
-    return r"from physipy import custom_units"
-
-
 def timeraw_import_physipy():
     return r"import physipy"
 
 
 def timeraw_import_physipy_calculus():
-    return r"from physipy.quantity import calculus"
+    return r"from physipy import calculus"
 
 
 def timeraw_import_physipy_dimension():
@@ -31,7 +23,7 @@ def timeraw_import_physipy_dimension():
 
 
 def timeraw_import_physipy_plot():
-    return r"from physipy.quantity import plot"
+    return r"from physipy.quantity import _plot"
 
 
 def timeraw_import_physipy_quantity():
