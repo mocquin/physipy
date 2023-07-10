@@ -9,7 +9,7 @@ HERE = pathlib.Path(__file__).parent
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-VERSIONFILE = (HERE / "_version.py")
+VERSIONFILE = "physipy/_version.py"
 verstrline = open(VERSIONFILE, "rt", encoding="utf8").read()
 VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
 mo = re.search(VSRE, verstrline, re.M)
