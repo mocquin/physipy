@@ -88,6 +88,7 @@ markdown_extensions:
 
 nav:                                                                            # All paths in the navigation configuration must be relative to the docs_dir configuration option
   - physipy:                                            index.md
+  - Installation :                                      installation.md
   - Quickstart :                                        quickstart.md
   - Scientific stack support:
     - physipy and the standard math module :            scientific-stack/math-support.md
@@ -108,6 +109,7 @@ nav:                                                                            
     - Constants :                                       API/constants-api.md
     - Plotting :                                        API/plotting-api.md
   - Alternative packages:
+    - Alternative packages :                            alternative-packages/alternative-home.md
     - Pint :                                            alternative-packages/alternative-pint.md
     - Astropy :                                         alternative-packages/alternative-astropy.md
     - For all people :                                  alternative-packages/alternative-forallpeople.md

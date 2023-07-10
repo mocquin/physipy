@@ -1,4 +1,4 @@
-This page gives you a quick tour of physipy possibilities. For installation instructions, see [index](index.md).
+This page gives you a quick tour of physipy possibilities. For installation instructions, see [here](installation.md).
 
 ## Quickstart with physipy by examples
 
@@ -43,17 +43,39 @@ print(bmi_calculator(my_weight, my_height))
 # --> 20.99605274208449 kg/m**2
 ```
 
-Let's play with numpy : 
+### Example 2 : Kinetic energy
+Say you want to compute the kinetic energy of some planets of our solar system using  
+
+$$E_K = \frac{1}{2}m v^2$$
+
+Using list notation or numpy, we can define the mass and speed of 3 planets : 
 ```python
 import numpy as np
 from physipy import units, m, kg, s
 
-mass_of_sun = 1.9891 * 10**30 * kg
+# we'll do mercury, venus, mars and the earth
+masses = [
+    3.301 * 10**31, # mercury's mass
+    4.867 * 10**24, # venus'
+    5.972 * 10**31, # mars'
+    6.441 * 10**23, # earth
+] * kg
 
+# pop-up the kilometer
+km = units['km']
 
+# same order as for the masses
+speeds =[47.9, 35, 29.8, 24.1] * km/s
+
+kinetics = 1/2 * masses * speeds**2
+# extract the mega-joule unit 
+MJ = units['MJ']
+kinetics.favunit = MJ
+print(kinetics) 
+# [3.78692370e+34 2.98103750e+27 2.65168744e+34 1.87049860e+26] MJ
 ```
 
-### Example 3 : Plotting Planck's law (blackbody law)
+### Example 3 : Plotting Planck's law
 In this example, we use :
  - physipy units system to attach physical units to numerical quantities
  - the `set_favunit` decorator to apply a 'display' unit to the output of our function
@@ -96,7 +118,6 @@ plt.plot(ech_wl, planck_W(ech_wl, T_bb))
 
 ```python
 import numpy as np
-
 import physipy
 ```
 
@@ -106,13 +127,11 @@ is basically a dictionnary that stores the dimensions' name and power. When usin
 ```python
 a_length_dimension = physipy.Dimension("L") # "L" represents the 'length' dimension, associated with the SI unit meter "m"
 print(a_length_dimension)
-a_length_dimension
-```
+# L
 
-```python
 a_speed_dimension = physipy.Dimension({"L": 1, "T":-1}) # "T" represents the 'time' dimension, associated with the SI unit meter "s"
 print(a_speed_dimension)
-a_speed_dimension
+# L/T
 ```
 
 Dimensions can be multiplied and divided as expected : 
@@ -120,28 +139,26 @@ Dimensions can be multiplied and divided as expected :
 ```python
 product_dim = a_length_dimension * a_speed_dimension
 print(product_dim)
-product_dim
-```
+# L**2/T
 
-```python
 div_dim = a_length_dimension / a_speed_dimension
 print(div_dim)
-div_dim
+# T
 ```
 
 You can display a dimension in terms of corresponding SI unit (returns a string) :
 
 ```python
 print(a_length_dimension.str_SI_unit()) # meters
-print(a_speed_dimension.str_SI_unit()) # meters/second
+print(a_speed_dimension.str_SI_unit())  # meters/second
 ```
 
 Other operations are avalaible : 
 
 ```python
-print((a_length_dimension**2).str_SI_unit())
-print(a_length_dimension == a_speed_dimension)
-print((1/a_length_dimension).str_SI_unit())
+print((a_length_dimension**2).str_SI_unit())    # m**2
+print(a_length_dimension == a_speed_dimension)  # False
+print((1/a_length_dimension).str_SI_unit())     # 1/m
 ```
 
 The list of available dimensions is hard-coded (for now) as a text file, and its content is stored in : 
@@ -189,7 +206,8 @@ SI_units['m'].dimension
 <Dimension : {'L': 1, 'M': 0, 'T': 0, 'I': 0, 'theta': 0, 'N': 0, 'J': 0, 'RAD': 0, 'SR': 0}>
 ```
 
-Hence, we see that the dimension of the meter `m` has 1 for length dimension, and 0s for all other dimensions. The complete list is given by the SI-unit system and contains : 
+Hence, we see that the dimension of the meter `m` has 1 for length dimension, and 0s for all other dimensions. The complete list is given by the SI-unit system and contains :  
+
  - `L` : lenght, for a meter `m`
  - `M` :  mass, for a kilogram `kg`
  - `T` : time, for a second `s`
@@ -203,7 +221,7 @@ Hence, we see that the dimension of the meter `m` has 1 for length dimension, an
 For more information, see [the wikipedia page for the international system of units "SI-units"](https://en.wikipedia.org/wiki/International_System_of_Units) and [the wikipedia page for the SI base units](https://en.wikipedia.org/wiki/SI_base_unit).
 
 ### Quantity object
-Now that you what a `Dimension` object is and represents, we can use it to define physical quantities using another kind of object : `Quantity`. Note that `Dimension` and `Quantity` are the two and only classes that implement the unit logic, the rest is just boilerplate and numpy compatibility.
+Now that you know what a `Dimension` object is and represents, we can use it to define physical quantities using another kind of object : `Quantity`. Note that `Dimension` and `Quantity` are the two and only classes that implement the physical unit logic in physipy, the rest is just boilerplate and numpy compatibility.
 
 The `Quantity` class is simply the association of a numerical value, and a dimension. It can be created 2 ways :
 - using the class creator : you won't use this notation much : 
@@ -242,126 +260,67 @@ If dimension analysis allows it, you can perform standard operations on and betw
 ```python
 print(yo_mama_weight + yo_papa_weight)
 ```
+If dimension analysis does not allow it, you get a `DimensionError` - remember your teacher explaning you cannot add carrots with potatoes :
+```python
+5 * m + 3 * s
+# raises DimensionError
+```
 
-
-
-
+You can then start to compute more complex physical quantities, here is my energy computed using Einstein famous equation $E = m c^2$ : 
 
 ```python
+# my mass
+mass = (75*kg)
 # speed of light
 c = physipy.constants["c"]
-E_mama = yo_mama_weight * c**2
-print(E_mama)
+# my energy
+energy_myself = mass * c**2
+
+print(energy_myself)
+# 6.740663840526132e+18 kg*m**2/s**2
 ```
 
-### Unit conversion and displaying
+### Favorite unit and symbol
 
+It works, but energy quantities are usually not displayed in units of `kg*m**2/s**2`, most likely in joules `J = 1 kg*m**2/s**2` or in electron-Volt `eV = 1.602176634×10−19 J`. Both of these units are available in physipy (more on units below), so let's make use of this to display the energy with a more user-friendly notation. 
 
-You can change the unit a Quantity displays by changing its ```favunit``` attribute, which means "favorite unit". It default to ```None```which displays the Quantity in SI-units.
+To do this, we can set the `favunit` attribute of our energy `Quantity` : the `favunit` must be `None` or another `Quantity` that has a `symbol`.
+
+If the favunit is `None` - the default - a `Quantity` is displayed using SI units, like the energy in the previous example is displayed in `kg*m**2/s**2`. If a `favunit` is set, it will be used on display.
 
 ```python
-print(yo_mama_weight.favunit)
+from physipy import units
+eV = units['eV']
+J = units['J']
+
+# no favunit -> use SI-units
+print(energy_myself)
+# 6.740663840526132e+18 kg*m**2/s**2
+
+energy_myself.favunit = J
+print(energy_myself)
+# 6.740663840526132e+18 J
+
+energy_myself.favunit = eV
+print(energy_myself)
+# 4.2071914528533386e+37 eV
 ```
 
+Remember that `favunit` absolutely does not change the `Quantity` value or dimension : remember that in the background, the data is stored using a numerical value along with the associated dimension, in this case : 
 ```python
-# displaying in SI-unit, kg
-print(yo_mama_weight)
+print(energy_myself.value)
+print(energy_myself.dimension)
 ```
 
+I could define another variable that stores the same physical quantity, but with different favourite units - those variables are hence equal :
 ```python
-# changing the favunit
-g = physipy.units["g"]
-yo_mama_weight.favunit = g
-```
+energy_myself = mass * c**2
+same_but_different = mass * c**2
+same_but_different.favunit = eV
 
-```python
-# now displayed in grams
-print(yo_mama_weight)
-```
-
-Another example : 
-
-```python
-speed_of_light = c
-print(c)
-```
-
-```python
-mile = physipy.imperial_units["mil"]
-one_hour = physipy.units["h"]
-retarded_speed_unit = mile / one_hour
-print(c.to(retarded_speed_unit))
-```
-
-### Units and constants
-
-
-Lots of units and constants are packed up in various dicts. The keys are the symbol of the units/constant, and the value is the corresponding quantity.
-
-```python
-# pico-Ampere
-pA = physipy.units["pA"]
-print(pA)
-```
-
-```python
-# Planck's constant
-h_p = physipy.constants["h"] 
-print(h_p)
-```
-
-Note that units and constants are just Quantity objects !
-
-```python
-print(type(pA))
-print(type(h_p))
-```
-
-### Numpy compatibility
-
-
-You can define a Quantity with a numpy.ndarray value :
-
-```python
-position_sampling = np.array([1,2,3]) * physipy.m
-print(position_sampling)
-```
-
-```python
-time_sampling = physipy.Quantity([0.1, 0.2, 0.3], physipy.Dimension("T"))
-print(time_sampling)
-```
-
-You can then play with those as you would with regular ndarrays, as long as you respect dimensional analysis :
-
-```python
-print(position_sampling / time_sampling)
-```
-
-```python
-print(2 * position_sampling)
-```
-
-```python
-try:
-    position_sampling + time_sampling
-except Exception as e:
-    print("You can't add a length and a time dummy !")
-    print(e)
-```
-
-```python
-from math import pi
-try:
-    # you cant compute the cos of a length
-    np.cos(position_sampling)
-except:
-    # but you can for a plane angle
-    an_angle_array = np.array([0, pi/2, pi]) * physipy.rad
-    print(np.cos(an_angle_array))
-    # it also works with degrees of course
-    another_angle_array = np.array([0, 90, 180]) * physipy.units["deg"]
-    print(np.cos(another_angle_array))
+print(energy_myself)                        # 6.740663840526132e+18 kg*m**2/s**2
+print(same_but_different)                   # 4.2071914528533386e+37 eV
+print(energy_myself == same_but_different)  # True
 ```
 
 ### Units and constants
@@ -377,7 +336,8 @@ list(SI_units.keys())
 # ['m', 'kg', 's', 'A', 'K', 'mol', 'cd', 'rad', 'sr']
 ```
 
-From those SI units, many other units can be derived ; again those are just a convention that everybody agrees for the association of a name (or notation), a value and a dimension : 
+From those SI units, many other units can be derived ; again those are just a convention that everybody agrees for the association of a name (or notation), a value and a dimension :  
+
  - their "prefixed" version : like mm is a prefixed m (0.001 m) or kA is a prefixed ampere (1000 A)
  - other units derived from the SI units : their values are 1, but their dimension is a combination of the base SI units using integer powers : like the newton is `1 N = 1 kg.m.s^-2` is the combination of powers of 1 kilogram, 1 meter, and -2 second
  - anything else : with respect to the SI unit, imperial units are again just the association of a name, a value (that is not 1), and a dimension (that can have anything as their power) : like an inch is 0.0254 meter or a horse-power is about 745.7 kg*m**2/s**3
@@ -585,3 +545,88 @@ list(constants.keys())
  'kgf',
  'kilogram_force']
 ```
+
+
+### Numpy compatibility
+Numpy is very well supported, thanks to the proposed interfaces exposed by numpy and the fact that `Quantity` is (almost) agnostic to the type of its value : it can be a float just as much as an array.
+
+To define a Quantity with a numpy.ndarray value you can use again both approaches (constructor and multiplication), while you'll most likely just use multiplication :
+
+```python
+# using constructor approach
+time_sampling = physipy.Quantity([0.1, 0.2, 0.3], physipy.Dimension("T"))
+print(time_sampling) # [0.1 0.2 0.3] s
+
+# using multiplication
+position_sampling = np.array([1,2,3]) * m
+print(position_sampling) # [1 2 3] m
+```
+
+You can then play with those as you would with regular ndarrays, as long as you respect dimensional analysis :
+
+```python
+print(position_sampling / time_sampling)    # [10. 10. 10.] m/s
+print(2 * position_sampling)                # [2 4 6] m
+```
+
+You still cannot add carrots and potatoes : 
+```python
+try:
+    position_sampling + time_sampling
+except Exception as e:
+    print("You can't add a length and a time dummy !")
+    print(e)
+# You can't add a length and a time dummy !
+# Dimension error : dimensions of operands are L and T, and are differents (length vs time).
+```
+
+Dimensional analysis still applies for functions :
+```python
+from math import pi
+try:
+    # you cant compute the cos of a length
+    np.cos(position_sampling)
+except:
+    # but you can for a plane angle
+    an_angle_array = np.array([0, pi/2, pi]) * physipy.rad
+    print(np.cos(an_angle_array))
+    # it also works with degrees of course
+    another_angle_array = np.array([0, 90, 180]) * physipy.units["deg"]
+    print(np.cos(another_angle_array))
+
+# [ 1.000000e+00  6.123234e-17 -1.000000e+00]
+# [ 1.000000e+00  6.123234e-17 -1.000000e+00]
+```
+
+For more information on numpy's support see [here](scientific-stack/numpy-support.md).
+
+### Matplotlib compatibility
+Using just one additionnal line of code, you can make matplotlib aware of physipy's units, and automaticaly add labels to the axes.
+
+```python
+import matplotlib.pyplot as plt
+from physipy import setup_matplotlib, units, kg, s
+km = units['km']
+
+# this is the line that makes matplotlib aware of physipy
+setup_matplotlib()
+
+# we'll do mercury, venus, mars and the earth
+masses = [
+    3.301 * 10**31, # mercury's mass
+    4.867 * 10**24, # venus'
+    5.972 * 10**31, # mars'
+    6.441 * 10**23, # earth
+] * kg
+
+# same order as for the masses
+speeds =[47.9, 35, 29.8, 24.1] * km/s
+
+fig, ax = plt.subplots()
+ax.plot(masses, speeds, 'o')
+```
+
+For more information on matplotlib's support see [here](scientific-stack/matplotlib-support.md).
+
+### Pandas compatibility
+You can also make pandas handle physipy quantities almost transparently using [`physipandas`](https://github.com/mocquin/physipandas), which is another package that extends physipy capabilities to pandas.
