@@ -43,7 +43,11 @@ The documentation system of physipy is based on [mkdocs]. It relies additionnaly
 
 The documentation configuration is set in the `mkdocs.yml` configuration file at the root of the project.
 
-The raw documentation is stored in the [docs] directory as markdown files. 
+The raw documentation is stored in the [docs] directory as markdown files. Markdown files can converted back-and-forth with notebook format, using : 
+```
+jupyter nbconvert --to markdown .\docs\scientific-stack\math-support.ipynb # from nb to md
+jupytext --to ipynb .\docs\scientific-stack\numpy-support.md               # from md to nb
+```
 
 During development, cd to physipy root directory, and run the following command to launch a live server :
 `mkdocs serve`
