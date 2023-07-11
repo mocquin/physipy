@@ -91,13 +91,13 @@ nav:                                                                            
   - Installation :                                      installation.md
   - Quickstart :                                        quickstart.md
   - Scientific stack support:
-    - physipy and the standard math module :            scientific-stack/math-support.md
-    - physipy and numpy :                               scientific-stack/numpy-support.md
-    - physipy and matplotlib :                          scientific-stack/matplotlib-support.md
-    - physipy and pandas :                              scientific-stack/pandas-support.md
-    - physipy and scipy :                               scientific-stack/scipy-support.md
+    - standard math module :                            scientific-stack/math-support.md
+    - numpy :                                           scientific-stack/numpy-support.md
+    - matplotlib :                                      scientific-stack/matplotlib-support.md
+    - pandas :                                          scientific-stack/pandas-support.md
+    - scipy :                                           scientific-stack/scipy-support.md
   - Examples:
-    - Boltzmann lattice:                                examples/physics-examples.md
+    - Physics :                                         examples/physics-examples.md
     - Thermal equation using Finite Difference Method:  examples/thermal-equation-using-fdm.md
     - Fourier transform:                                examples/fourier-transform-example.md
   - Known issues :                                      known-issues.md
@@ -108,21 +108,22 @@ nav:                                                                            
     - Units :                                           API/units-api.md
     - Constants :                                       API/constants-api.md
     - Plotting :                                        API/plotting-api.md
-  - Alternative packages:
-    - Alternative packages :                            alternative-packages/alternative-home.md
-    - Pint :                                            alternative-packages/alternative-pint.md
-    - Astropy :                                         alternative-packages/alternative-astropy.md
-    - For all people :                                  alternative-packages/alternative-forallpeople.md
   - Development and performance :
     - General guidances :                               development-guide/index.md
     - Benchmarking with AirSpeedVelocity :              development-guide/dev-benchmarking-with-asv.md
     - Performance and comparison with other packages :  development-guide/dev-performance-comparison.md
     - Performance of the Dimension class :              development-guide/dev-performance-dimension.md
-  - Support for other value-packages :
-    - Support for the decimal module :                  support-for-other-backend-packages/decimal-support.md
-    - Support for handcalcs :                           support-for-other-backend-packages/handcalcs-support.md
-    - Support for mcerp :                               support-for-other-backend-packages/mcerp-support.md
-    - Support for uncertainties :                       support-for-other-backend-packages/uncertainties-support.md
+  - Misc : 
+    - Alternative packages:
+      - Alternative packages :                            misc/alternative-packages/alternative-home.md
+      - Pint :                                            misc/alternative-packages/alternative-pint.md
+      - Astropy :                                         misc/alternative-packages/alternative-astropy.md
+      - For all people :                                  misc/alternative-packages/alternative-forallpeople.md
+    - Support for other value-packages :
+      - Support for the decimal module :                  misc/support-for-other-backend-packages/decimal-support.md
+      - Support for handcalcs :                           misc/support-for-other-backend-packages/handcalcs-support.md
+      - Support for mcerp :                               misc/support-for-other-backend-packages/mcerp-support.md
+      - Support for uncertainties :                       misc/support-for-other-backend-packages/uncertainties-support.md
     
 extra_javascript:                                     # Following lines for mathjax, along with the ./docs/javascripts/mathjax.js
  # - javascripts/mathjax.js
