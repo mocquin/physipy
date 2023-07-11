@@ -1,162 +1,127 @@
----
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.3'
-      jupytext_version: 1.13.4
-  kernelspec:
-    display_name: Python 3 (ipykernel)
-    language: python
-    name: python3
----
+## Use of `scipy` in `physipy`
+`scipy` is used in `physipy` for 2 reasons : 
 
-# Scipy.spatial.distance
+1. To define the values of the physical constants available in `physipy.constants`
+2. To provide wrapped versions of usefull `scipy` functions and make them unit-aware, available in `physipy.calculus`
 
+It could be discussed as constants' values could be hardcoded, and wrapped functions could be defined by the user on the go. This way `scipy` would not be a dependency of `physipy`
 
-Scipy first casts arrays into numpy array so no dimension checking is done.
+### Constants
+See the [constant section of the quickstart](./../quickstart.md).
 
-```python
-import scipy.spatial.distance
-from  scipy.spatial.distance import squareform
-import numpy as np
-from physipy import K, m, s, units
+### Wrapped functions
+Some functions are regularly used in the physics/engineering world, hence we provide some functions that wrapped the units around the underlying `scipy` functions. Those functions are : 
 
-```
+ - quad
+ - dblquad
+ - tplquad
+ - solve_ivp
+ - root
+ - brentq
 
-```python
-nd_space = 20
-m_obs = 4
-arr = np.random.randn(m_obs, nd_space) * m
+#### Integrals `quad`
 
-# returned matrix will be of shape m_obs x m_obs
-print(squareform(scipy.spatial.distance.pdist(arr.value, "euclidean")))         # same dim
-print(squareform(scipy.spatial.distance.pdist(arr.value, "minkowski", p=2)))    # same dim, # same as euclidean for p=2
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'cityblock')))         # same dim
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'seuclidean')))        # same dim
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'sqeuclidean')))       # same dim
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'cosine')))            # any
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'correlation')))       # any
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'hamming')))           # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'chebyshev')))         # same dim 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'canberra')))          # same dim 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'braycurtis')))        # same dim 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'yule')))              # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'dice')))              # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'kulsinski')))         # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'rogerstanimoto')))    # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'russellrao')))        # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalmichener')))     # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalsneath')))       # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'kulczynski1')))       # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, 'sokalmichener')))     # bool 
-print(squareform(scipy.spatial.distance.pdist(arr.value, lambda u, v: np.sqrt(((u-v)**2).sum()))))
-```
+Those functions can be used to compute integral of functions from `a` to `b`:
 
-```python
-
-```
-
-```python
-import scipy
-from scipy import optimize
-import numpy as np
-import matplotlib.pyplot as plt
-
-from physipy import K, m, s, units
-```
-
-```python
-# some model to fit
-def model(time, gain):
-    return 2*time*gain
-```
-
-```python
-x_time = np.array([1, 2, 3, 4, 5])*s
-true_gain = 1.2*m/s
-
-noise = np.random.randn(x_time.shape[0])
-true_y = 2*x_time*true_gain
-y_height = true_y + noise*m
-```
-
-
-```python
-fig, ax = plt.subplots()
-ax.plot(x_time, true_y, label="True y")
-ax.plot(x_time, noise, label="Noise")
-ax.plot(x_time, y_height, label="Data y")
-plt.legend()
-```
-
-
-```python
-optimize.curve_fit(model, x_time.value, y_height.value, p0=[(1*m/s).value])
-```
-
-Must use an initial guess, otherwise it tries a float and fail the dimension comparisons.
-With an initial guess, "ValueError: setting an array element with a sequence"
-
-```python
-print(np.atleast_1d(x_time))
-print(np.atleast_1d(y_height))
-print(np.atleast_1d([1*m/s]))
-print(np.asanyarray([1*m/s]))
-```
-
-```python
-
-```
-
-
-# Using scipy wrappers
-
-
-Scipy offers various solver algorithms in `scipy.optimize`. Some of the solvers are wrapped and presented below.
-
-
-## Root solver
-
-
-A wrapper of `scipy.optimize.root`:
 
 ```python
 from physipy import s
-from physipy.optimize import root
+from physipy.calculus import quad
+
+def toto(t):
+    return 2*s + t
+
+solution, abserr = quad(toto, 0*s, 5*s)
+print(solution)
+```
+
+    22.5 s**2
+    
+
+You can compute integrals of 2D and 3D functions using `dblquad` and `tplquad` respectively.
+
+#### Initial Value Problem of ODE system
+Solve an initial value problem for a system of ODEs. This function numerically integrates a system of ordinary differential equations given an initial value:
+        dy / dt = f(t, y)
+        y(t0) = y0
+
+
+
+```python
+from physipy.calculus import solve_ivp
+from physipy import s, units
+
+# voltage unit
+V = units['V']
+
+def exponential_decay(t, y): return -0.5 * y
+
+sol = solve_ivp(exponential_decay, [0, 10]*s, [2, 4, 8]*V)
+print(sol.t)    # time samples
+print(sol.y)    # voltage response
+```
+
+    [ 0.          0.11487653  1.26364188  3.06061781  4.81611105  6.57445806
+      8.33328988 10.        ] s
+    [<Quantity : [2.         1.88836035 1.06327177 0.43319312 0.18017253 0.07483045
+     0.03107158 0.01350781] kg*m**2/(A*s**3)>, <Quantity : [4.         3.7767207  2.12654355 0.86638624 0.36034507 0.14966091
+     0.06214316 0.02701561] kg*m**2/(A*s**3)>, <Quantity : [8.         7.5534414  4.25308709 1.73277247 0.72069014 0.29932181
+     0.12428631 0.05403123] kg*m**2/(A*s**3)>]
+    
+
+#### Root solver `root`
+
+A wrapper of `scipy.optimize.root`:
+
+
+```python
+from physipy import s
+from physipy.calculus import root
 
 def toto(t):
     return -10*s + t
+
+# Find the root for toto(t) = 0*s
+print(root(toto, 0*s))
+
 ```
 
-```python
-print(root(toto, 0*s))
-```
+    10.0 s
+    
+
+The wrapped function signature is the same as the original's one, so additionnal args and kwargs still works :
+
 
 ```python
 def tata(t, p):
     return -10*s*p + t
 
+# Find the root for tata(t, 0.5) = 0*s
 print(root(tata, 0*s, args=(0.5,)))
 ```
 
-### Quadratic Brent method
+    5.0 s
+    
 
+#### Quadratic Brent method `brentq`
+Find a root of a function in a bracketing interval using Brent's method, a wrapper of `scipy.optimize.brentq`:
 
-A wrapper of `scipy.optimize.brentq`:
 
 ```python
-from physipy.optimize import brentq
+from physipy.calculus import brentq
 ```
 
 
 ```python
+# find the solutition for toto(t) = 0*s for t in [-10, 10]*s
 print(brentq(toto, -10*s, 10*s))
+
 print(brentq(tata, -10*s, 10*s, args=(0.5,)))
 ```
 
+    10.0 s
+    5.0 s
+    
 
-```python
-
-```
+### Note
+If you want support for other scipy functions, you can either define it yourself (use the functions above as examples), or open an issue on the github page.

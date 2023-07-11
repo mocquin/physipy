@@ -1,6 +1,7 @@
 # Pandas support
 
-There are 2 ways `pandas` can handle `physipy`:
+There are 2 ways `pandas` can handle `physipy`:  
+
 1. Basic support where it stores each value in a single `Quantity` : works out-of-the-box but with low performance
 2. using `physipandas` : a package that takes care of the interface between `phyisipy` and `pandas`
 
@@ -48,7 +49,6 @@ df = pd.DataFrame({
 })
 # notice the warnings below : Quantities are converted back to regular numpy arrays
 # hence loosing their units.
-
 df["heights"]
 ```
 
