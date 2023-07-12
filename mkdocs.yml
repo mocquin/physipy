@@ -53,7 +53,7 @@ theme:
 # - ./../                                                                         
 watch: [mkdocs.yml, README.md, physipy/]
 
-plugins:
+plugins:                                                                       # TODO : try https://mkdocstrings.github.io/recipes/#automatic-code-reference-pages
 - mkdocs-jupyter:                                                              # https://github.com/danielfrg/mkdocs-jupyter
     ignore_h1_titles: false
     include: ["*.ipynb"] # Default: ["*.py", "*.ipynb"]
