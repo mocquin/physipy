@@ -53,8 +53,19 @@ theme:
 # - ./../                                                                         
 watch: [mkdocs.yml, README.md, physipy/]
 
-
 plugins:
+- mkdocs-jupyter:                                                              # https://github.com/danielfrg/mkdocs-jupyter
+    ignore_h1_titles: false
+    include: ["*.ipynb"] # Default: ["*.py", "*.ipynb"]
+    ignore: ["some-irrelevant-files/*.ipynb"]
+    execute: true
+    allow_errors: false
+    kernel_name: python3
+    show_input: true
+    no_input: false
+    theme: dark
+    execute_ignore:
+      - "my-secret-files/*.ipynb"
 - search
 - mkdocstrings: 
     handlers:
@@ -124,7 +135,10 @@ nav:                                                                            
       - Support for handcalcs :                           misc/support-for-other-backend-packages/handcalcs-support.md
       - Support for mcerp :                               misc/support-for-other-backend-packages/mcerp-support.md
       - Support for uncertainties :                       misc/support-for-other-backend-packages/uncertainties-support.md
-    
+  - Testing jupyter notebooks : 
+      - numpy notebook :                                  scientific-stack/numpy-support-nb.ipynb
+
+
 extra_javascript:                                     # Following lines for mathjax, along with the ./docs/javascripts/mathjax.js
  # - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
