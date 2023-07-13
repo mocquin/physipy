@@ -2,7 +2,7 @@
 
 A Quantity object can have any numerical-like object as its `value` attribute, including numpy's ndarray.
 
-Physipy support numpy for many functionnalties : 
+Physipy support numpy for many functionnalties :   
  - common creation routines
  - mathematical operations
  - numpy's functions and universal functions
