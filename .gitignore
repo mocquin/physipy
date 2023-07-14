@@ -1,5 +1,4 @@
 *.pyc
-.ipynb*
 pycache/
 .ipynb_checkpoints/
 _old/
@@ -9,6 +8,4 @@ dist/
 build/
 *.egg-info/
 MANIFEST
-physipy_venv/
-tutorials/
 .vscode/

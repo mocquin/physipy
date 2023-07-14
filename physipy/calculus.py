@@ -4,17 +4,23 @@
 """Usefull calculus fonctions compatible with Quantity objects.
 
 These are basically numpy function wrapped with dimensions checks.
+
+scipy.integrate wrapped functions
+
+See : https://docs.scipy.org/doc/scipy/reference/integrate.html
 """
 from __future__ import annotations
 from typing import Callable
-
 import numbers as nb
 
 import numpy as np
-import sympy as sp
+import scipy
+import scipy.integrate
+import scipy.optimize
 
-from .quantity.dimension import Dimension, DimensionError, SI_UNIT_SYMBOL
-from .quantity.quantity import quantify, Quantity
+from physipy import quantify, Quantity, Dimension, DimensionError
+from physipy.quantity.utils import check_dimension
+from .quantity.dimension import SI_UNIT_SYMBOL
 from .quantity.utils import decorate_with_various_unit, asqarray
 
 
@@ -102,18 +108,7 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     return int_xy
 
 
-"""
-scipy.integrate wrapped functions
 
-See : https://docs.scipy.org/doc/scipy/reference/integrate.html
-"""
-import numbers as nb
-import numpy as np
-import scipy
-import scipy.integrate
-
-from physipy import quantify, Quantity, Dimension, DimensionError
-from physipy.quantity.utils import check_dimension
 
 
 def quad(func, x0, x1, *oargs, args=(), **kwargs):
@@ -308,15 +303,6 @@ def solve_ivp(
     return sol
 
 
-
-from typing import Callable
-
-
-import numbers as nb
-import numpy as np
-import scipy.optimize
-
-from physipy import quantify, Quantity, Dimension, DimensionError
 
 
 # Generique

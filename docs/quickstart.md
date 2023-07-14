@@ -6,6 +6,7 @@ This page gives you a quick tour of physipy possibilities. For installation inst
 
 The simplest way to use physipy is simply to import some units and write your code
 using those imported units - thats why most of the time you'll use `from physipy import ...` (and not `import physipy`)`.
+
 Here is an example : 
 ```python
 from physipy import kg, m
@@ -76,7 +77,9 @@ print(kinetics)
 ```
 
 ### Example 3 : Plotting Planck's law
+
 In this example, we use :
+
  - physipy units system to attach physical units to numerical quantities
  - the `set_favunit` decorator to apply a 'display' unit to the output of our function
  - the interface with matplotlib, activated using `setup_matplotlib()` so our plot are unit aware
@@ -122,8 +125,10 @@ import physipy
 ```
 
 ### Dimension object
+
 The `Dimension` class is at the core and base of physipy. A `Dimension` object 
 is basically a dictionnary that stores the dimensions' name and power. When using physipy, you'll most likely never need to create such objects - but to undertstand how it works, here are some ways to create a dimension 
+
 ```python
 a_length_dimension = physipy.Dimension("L") # "L" represents the 'length' dimension, associated with the SI unit meter "m"
 print(a_length_dimension)
@@ -221,10 +226,13 @@ Hence, we see that the dimension of the meter `m` has 1 for length dimension, an
 For more information, see [the wikipedia page for the international system of units "SI-units"](https://en.wikipedia.org/wiki/International_System_of_Units) and [the wikipedia page for the SI base units](https://en.wikipedia.org/wiki/SI_base_unit).
 
 ### Quantity object
+
 Now that you know what a `Dimension` object is and represents, we can use it to define physical quantities using another kind of object : `Quantity`. Note that `Dimension` and `Quantity` are the two and only classes that implement the physical unit logic in physipy, the rest is just boilerplate and numpy compatibility.
 
 The `Quantity` class is simply the association of a numerical value, and a dimension. It can be created 2 ways :
+
 - using the class creator : you won't use this notation much : 
+
 ```python
 yo_mama_weight = physipy.Quantity(2000, physipy.Dimension("M"))
 print(yo_mama_weight)
@@ -240,6 +248,7 @@ Let's quickly check that both creations lead to the same amount of mass :
 print(yo_mama_weight == yo_papa_weight)
 ```
 A `Quantity` wraps mainly 2 objects of interest : 
+
  - a `value` that contains the numerical amount, usually a `float` or `np.ndarray`
  - a `dimension` that contains the `Dimension` object to represent its physical dimension
 
@@ -254,13 +263,14 @@ print(kg.value)     # 1
 print(kg.dimension) # M
 ```
 
-
 If dimension analysis allows it, you can perform standard operations on and between `Quantity` objects :
 
 ```python
 print(yo_mama_weight + yo_papa_weight)
 ```
+
 If dimension analysis does not allow it, you get a `DimensionError` - remember your teacher explaning you cannot add carrots with potatoes :
+
 ```python
 5 * m + 3 * s
 # raises DimensionError
@@ -307,12 +317,14 @@ print(energy_myself)
 ```
 
 Remember that `favunit` absolutely does not change the `Quantity` value or dimension : remember that in the background, the data is stored using a numerical value along with the associated dimension, in this case : 
+
 ```python
 print(energy_myself.value)
 print(energy_myself.dimension)
 ```
 
 I could define another variable that stores the same physical quantity, but with different favourite units - those variables are hence equal :
+
 ```python
 energy_myself = mass * c**2
 same_but_different = mass * c**2
@@ -324,10 +336,12 @@ print(energy_myself == same_but_different)  # True
 ```
 
 ### Units and constants
+
 Units and constants are just associations between a specific value and a specific dimension, so physipy implements and exposes
 them in a dict using their name-notation as key, and the associate `Quantity` object as value.
 
 #### Units
+
 Units are just conventional names, value and dimension that every body agrees on. 
 The most basic units physipy defines are the SI units : 
 
@@ -343,12 +357,14 @@ From those SI units, many other units can be derived ; again those are just a co
  - anything else : with respect to the SI unit, imperial units are again just the association of a name, a value (that is not 1), and a dimension (that can have anything as their power) : like an inch is 0.0254 meter or a horse-power is about 745.7 kg*m**2/s**3
 
 For those reasons, physipy wraps these units in specific dict : here for the prefixed SI units : 
+
 ```python
 print(physipy.SI_derived_units.keys())
 ['m', 'kg', 's', 'A', 'K', 'mol', 'cd', 'rad', 'sr', 'Ym', 'Ykg', 'Ys', 'YA', 'YK', 'Ymol', 'Ycd', 'Yrad', 'Ysr', 'Zm', 'Zkg', 'Zs', 'ZA', 'ZK', 'Zmol', 'Zcd', 'Zrad', 'Zsr', 'Em', 'Ekg', 'Es', 'EA', 'EK', 'Emol', 'Ecd', 'Erad', 'Esr', 'Pm', 'Pkg', 'Ps', 'PA', 'PK', 'Pmol', 'Pcd', 'Prad', 'Psr', 'Tm', 'Tkg', 'Ts', 'TA', 'TK', 'Tmol', 'Tcd', 'Trad', 'Tsr', 'Gm', 'Gkg', 'Gs', 'GA', 'GK', 'Gmol', 'Gcd', 'Grad', 'Gsr', 'Mm', 'Mkg', 'Ms', 'MA', 'MK', 'Mmol', 'Mcd', 'Mrad', 'Msr', 'km', 'kkg', 'ks', 'kA', 'kK', 'kmol', 'kcd', 'krad', 'ksr', 'hm', 'hkg', 'hs', 'hA', 'hK', 'hmol', 'hcd', 'hrad', 'hsr', 'dam', 'dakg', 'das', 'daA', 'daK', 'damol', 'dacd', 'darad', 'dasr', 'dm', 'dkg', 'ds', 'dA', 'dK', 'dmol', 'dcd', 'drad', 'dsr', 'cm', 'ckg', 'cs', 'cA', 'cK', 'cmol', 'ccd', 'crad', 'csr', 'mm', 'g', 'ms', 'mA', 'mK', 'mmol', 'mcd', 'mrad', 'msr', 'mum', 'mukg', 'mus', 'muA', 'muK', 'mumol', 'mucd', 'murad', 'musr', 'nm', 'nkg', 'ns', 'nA', 'nK', 'nmol', 'ncd', 'nrad', 'nsr', 'pm', 'pkg', 'ps', 'pA', 'pK', 'pmol', 'pcd', 'prad', 'psr', 'fm', 'fkg', 'fs', 'fA', 'fK', 'fmol', 'fcd', 'frad', 'fsr', 'am', 'akg', 'as', 'aA', 'aK', 'amol', 'acd', 'arad', 'asr', 'zm', 'zkg', 'zs', 'zA', 'zK', 'zmol', 'zcd', 'zrad', 'zsr', 'ym', 'ykg', 'ys', 'yA', 'yK', 'ymol', 'ycd', 'yrad', 'ysr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'ohm', 'S', 'Wb', 'T', 'H', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'min', 'h', 'd', 'au', 'deg', 'ha', 'L', 't', 'Da', 'eV', 'YHz', 'YN', 'YPa', 'YJ', 'YW', 'YC', 'YV', 'YF', 'Yohm', 'YS', 'YWb', 'YT', 'YH', 'Ylm', 'Ylx', 'YBq', 'YGy', 'YSv', 'Ykat', 'ZHz', 'ZN', 'ZPa', 'ZJ', 'ZW', 'ZC', 'ZV', 'ZF', 'Zohm', 'ZS', 'ZWb', 'ZT', 'ZH', 'Zlm', 'Zlx', 'ZBq', 'ZGy', 'ZSv', 'Zkat', 'EHz', 'EN', 'EPa', 'EJ', 'EW', 'EC', 'EV', 'EF', 'Eohm', 'ES', 'EWb', 'ET', 'EH', 'Elm', 'Elx', 'EBq', 'EGy', 'ESv', 'Ekat', 'PHz', 'PN', 'PPa', 'PJ', 'PW', 'PC', 'PV', 'PF', 'Pohm', 'PS', 'PWb', 'PT', 'PH', 'Plm', 'Plx', 'PBq', 'PGy', 'PSv', 'Pkat', 'THz', 'TN', 'TPa', 'TJ', 'TW', 'TC', 'TV', 'TF', 'Tohm', 'TS', 'TWb', 'TT', 'TH', 'Tlm', 'Tlx', 'TBq', 'TGy', 'TSv', 'Tkat', 'GHz', 'GN', 'GPa', 'GJ', 'GW', 'GC', 'GV', 'GF', 'Gohm', 'GS', 'GWb', 'GT', 'GH', 'Glm', 'Glx', 'GBq', 'GGy', 'GSv', 'Gkat', 'MHz', 'MN', 'MPa', 'MJ', 'MW', 'MC', 'MV', 'MF', 'Mohm', 'MS', 'MWb', 'MT', 'MH', 'Mlm', 'Mlx', 'MBq', 'MGy', 'MSv', 'Mkat', 'kHz', 'kN', 'kPa', 'kJ', 'kW', 'kC', 'kV', 'kF', 'kohm', 'kS', 'kWb', 'kT', 'kH', 'klm', 'klx', 'kBq', 'kGy', 'kSv', 'kkat', 'hHz', 'hN', 'hPa', 'hJ', 'hW', 'hC', 'hV', 'hF', 'hohm', 'hS', 'hWb', 'hT', 'hH', 'hlm', 'hlx', 'hBq', 'hGy', 'hSv', 'hkat', 'daHz', 'daN', 'daPa', 'daJ', 'daW', 'daC', 'daV', 'daF', 'daohm', 'daS', 'daWb', 'daT', 'daH', 'dalm', 'dalx', 'daBq', 'daGy', 'daSv', 'dakat', 'dHz', 'dN', 'dPa', 'dJ', 'dW', 'dC', 'dV', 'dF', 'dohm', 'dS', 'dWb', 'dT', 'dH', 'dlm', 'dlx', 'dBq', 'dGy', 'dSv', 'dkat', 'cHz', 'cN', 'cPa', 'cJ', 'cW', 'cC', 'cV', 'cF', 'cohm', 'cS', 'cWb', 'cT', 'cH', 'clm', 'clx', 'cBq', 'cGy', 'cSv', 'ckat', 'mHz', 'mN', 'mPa', 'mJ', 'mW', 'mC', 'mV', 'mF', 'mohm', 'mS', 'mWb', 'mT', 'mH', 'mlm', 'mlx', 'mBq', 'mGy', 'mSv', 'mkat', 'muHz', 'muN', 'muPa', 'muJ', 'muW', 'muC', 'muV', 'muF', 'muohm', 'muS', 'muWb', 'muT', 'muH', 'mulm', 'mulx', 'muBq', 'muGy', 'muSv', 'mukat', 'nHz', 'nN', 'nPa', 'nJ', 'nW', 'nC', 'nV', 'nF', 'nohm', 'nS', 'nWb', 'nT', 'nH', 'nlm', 'nlx', 'nBq', 'nGy', 'nSv', 'nkat', 'pHz', 'pN', 'pPa', 'pJ', 'pW', 'pC', 'pV', 'pF', 'pohm', 'pS', 'pWb', 'pT', 'pH', 'plm', 'plx', 'pBq', 'pGy', 'pSv', 'pkat', 'fHz', 'fN', 'fPa', 'fJ', 'fW', 'fC', 'fV', 'fF', 'fohm', 'fS', 'fWb', 'fT', 'fH', 'flm', 'flx', 'fBq', 'fGy', 'fSv', 'fkat', 'aHz', 'aN', 'aPa', 'aJ', 'aW', 'aC', 'aV', 'aF', 'aohm', 'aS', 'aWb', 'aT', 'aH', 'alm', 'alx', 'aBq', 'aGy', 'aSv', 'akat', 'zHz', 'zN', 'zPa', 'zJ', 'zW', 'zC', 'zV', 'zF', 'zohm', 'zS', 'zWb', 'zT', 'zH', 'zlm', 'zlx', 'zBq', 'zGy', 'zSv', 'zkat', 'yHz', 'yN', 'yPa', 'yJ', 'yW', 'yC', 'yV', 'yF', 'yohm', 'yS', 'yWb', 'yT', 'yH', 'ylm', 'ylx', 'yBq', 'yGy', 'ySv', 'ykat']
 ```
 
 Here for the imperial units : 
+
 ```python
 from physipy import imperial_units
 list(imperial_units.keys())
@@ -383,6 +399,7 @@ list(imperial_units.keys())
 ```
 
 Finally, a dict containing all of those is available and will most frequently used : 
+
 ```python
 from physipy import units
 list(units.keys())
@@ -390,6 +407,7 @@ list(units.keys())
 ```
 
 #### Constants
+
 Constants do not differ much from quantities and units : they are just `Quantity` with a specific value and a specific `Dimension`.
 The `scipy.constants` modules exposes lots of constants' values, that are wrapped in quantities with their associated dimension, and available in a `constants` dict : 
 
@@ -548,6 +566,7 @@ list(constants.keys())
 
 
 ### Numpy compatibility
+
 Numpy is very well supported, thanks to the proposed interfaces exposed by numpy and the fact that `Quantity` is (almost) agnostic to the type of its value : it can be a float just as much as an array.
 
 To define a Quantity with a numpy.ndarray value you can use again both approaches (constructor and multiplication), while you'll most likely just use multiplication :
@@ -570,6 +589,7 @@ print(2 * position_sampling)                # [2 4 6] m
 ```
 
 You still cannot add carrots and potatoes : 
+
 ```python
 try:
     position_sampling + time_sampling
@@ -581,6 +601,7 @@ except Exception as e:
 ```
 
 Dimensional analysis still applies for functions :
+
 ```python
 from math import pi
 try:
@@ -601,6 +622,7 @@ except:
 For more information on numpy's support see [here](scientific-stack/numpy-support.md).
 
 ### Matplotlib compatibility
+
 Using just one additionnal line of code, you can make matplotlib aware of physipy's units, and automaticaly add labels to the axes.
 
 ```python
@@ -629,4 +651,5 @@ ax.plot(masses, speeds, 'o')
 For more information on matplotlib's support see [here](scientific-stack/matplotlib-support.md).
 
 ### Pandas compatibility
+
 You can also make pandas handle physipy quantities almost transparently using [`physipandas`](https://github.com/mocquin/physipandas), which is another package that extends physipy capabilities to pandas.
