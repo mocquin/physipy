@@ -2276,6 +2276,16 @@ class TestQuantity(unittest.TestCase):
         exp = np.where(arr > 4, 1, 10)*m
         self.assertTrue(np.all(res == exp))
 
+    def test_np_full(self):
+        exp = np.full(3, 5.1)*m
+        res = np.full(3, 5.1*m, like=m)
+        self.assertTrue(np.all(res == exp))
+
+        exp = np.full(3, 5.1)*m
+        res = np.full(3, 5.1*m, like=np.arange(10)*m)
+        self.assertTrue(np.all(res == exp))
+
+
     def test_np_histogram2d(self):
         a = np.arange(100)
         b = np.arange(100)*m

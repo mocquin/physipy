@@ -1581,15 +1581,11 @@ def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
 
 
 @implements(np.full)
-def np_full(shape, fill_value, dtype=None, order='C'):
-    print("In np_full")
-    if dtype is None:
-        fill_value = np.asarray(fill_value)
-        dtype = fill_value.dtype
-    a = np.empty(shape, dtype, order)
-    np.copyto(a, fill_value, casting='unsafe')
-    return a
-
+def np_full(shape, fill_value, *args, **kwargs):
+    return Quantity(np.full(shape, fill_value.value, *args, **kwargs),
+                    fill_value.dimension,
+                    # not passing symbol throug since an array cannot be a favunit
+                    favunit=fill_value.favunit)
 
 @implements(np.fft.fft)
 def np_fft_fft(a, *args, **kwargs):
