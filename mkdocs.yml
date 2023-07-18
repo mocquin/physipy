@@ -54,18 +54,18 @@ theme:
 watch: [mkdocs.yml, README.md, physipy/]
 
 plugins:                                                                       # TODO : try https://mkdocstrings.github.io/recipes/#automatic-code-reference-pages
-- mkdocs-jupyter:                                                              # https://github.com/danielfrg/mkdocs-jupyter
-    ignore_h1_titles: false
-    include: [] # Default: ["*.py", "*.ipynb"]
-    ignore: ["some-irrelevant-files/*.ipynb"]
-    execute: true
-    allow_errors: false
-    kernel_name: python3
-    show_input: true
-    no_input: false
-    theme: dark
-    execute_ignore:
-      - "my-secret-files/*.ipynb"
+#- mkdocs-jupyter:                                                              # https://github.com/danielfrg/mkdocs-jupyter
+#    ignore_h1_titles: false
+#    include: [] # Default: ["*.py", "*.ipynb"]
+#    ignore: ["some-irrelevant-files/*.ipynb"]
+#    execute: true
+#    allow_errors: false
+#    kernel_name: python3
+#    show_input: true
+#    no_input: false
+#    theme: dark
+#    execute_ignore:
+#      - "my-secret-files/*.ipynb"
 - search
 - mkdocstrings: 
     handlers:

@@ -151,6 +151,9 @@ See [the documentation for matplotlib support here](scientific-stack/matplotlib-
 
 Some `ipywidgets` and `PyQt` widgets are provided to make your physical researches and results more interactive : [https://github.com/mocquin/physipy-widgets](https://github.com/mocquin/physipy-widgets).
 
+## Known issues
+See the github issues page : [https://github.com/mocquin/physipy/issues](https://github.com/mocquin/physipy/issues).
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/mocquin/physipy/LICENSE.md) file for details
