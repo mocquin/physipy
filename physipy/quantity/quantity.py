@@ -604,16 +604,25 @@ class Quantity(object):
     def T(self):
         return type(self)(self.value.T, self.dimension)
 
-    def std(self, *args, **kwargs):
-        return np.std(self, *args, **kwargs)
-
     def inverse(self):
         """is this method usefull ?"""
         return type(self)(1 / self.value, 1 / self.dimension)
+    
+    # see list of array methods: 
+    # https://numpy.org/doc/stable/reference/arrays.ndarray.html#array-methods
+    def min(self, **kwargs): return np.min(self, **kwargs)
+
+    def max(self, **kwargs): return np.max(self, **kwargs)
 
     def sum(self, **kwargs): return np.sum(self, **kwargs)
 
     def mean(self, **kwargs): return np.mean(self, **kwargs)
+
+    def std(self, *args, **kwargs): return np.std(self, *args, **kwargs)
+
+    def conj(self): return np.conj(self)
+
+    def round(self, *args, **kwargs): return np.round(self, *args, **kwargs)
 
     def var(self, **kwargs): return np.var(self, **kwargs)
 
