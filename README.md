@@ -184,6 +184,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [natu](https://github.com/kdavies4/natu)
  - [misu](https://github.com/cjrh/misu)
  - [units](https://github.com/IAMconsortium/units)
+ - [physunits](https://github.com/pacosalces/physunits) 
  - [openscn](https://github.com/openscm/openscm-units)
  - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
 
