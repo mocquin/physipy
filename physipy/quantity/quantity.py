@@ -280,12 +280,10 @@ class Quantity(object):
                        favunit=self.favunit)
 
     def __eq__(self, y):
+        # TODO : handle array comparison to return arrays
         try:
             y = quantify(y)
-            if self.dimension == y.dimension:
-                return self.value == y.value  # comparing arrays returns array of bool
-            else:
-                return False
+            return np.logical_and((self.value ==y.value), (self.dimension == y.dimension))
         except Exception as e:
             return False
 

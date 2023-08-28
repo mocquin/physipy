@@ -591,6 +591,17 @@ class TestQuantity(unittest.TestCase):
         # comparison to non-quantifiables
         self.assertFalse(self.x_q == "a")
 
+        # tests added to check array-like comparison
+        arr_m = np.arange(10)*m
+        arr_s = np.arange(10)*s
+        arr   = np.arange(10)
+        scalar = 2
+
+        self.assertTrue(np.all((arr_m == arr_m)  ==  np.ones_like(arr_m)))
+        self.assertTrue(np.all((arr_m == arr_s)  == np.zeros_like(arr_m)))
+        self.assertTrue(np.all((arr_m == arr)    == np.zeros_like(arr_m)))
+        self.assertTrue(np.all((arr_m == scalar) == np.zeros_like(arr_m)))
+
     def test_none_comparison(self):
         self.assertTrue(m is not None)
         self.assertTrue(m != None)
