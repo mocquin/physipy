@@ -304,7 +304,7 @@ class Dimension(object):
             return Dimension(new_dim_dict)
         else:
             raise TypeError(("The power of a dimension must be a scalar,"
-                             "not {}").format(type(y)))
+                             f"not {type(y)}"))
 
     def __eq__(self, y: Dimension) -> bool:
         """Check equality between Dimension objects.
