@@ -1427,6 +1427,10 @@ def np_rot90(m, k=1, axes=(0, 1)):
                     favunit=m.favunit,
                     symbol=m.symbol)
 
+@implements(np.angle)
+def np_angle(x, *args, **kwargs):
+    return np.angle(x.value, *args, **kwargs)
+
 
 @implements(np.lib.stride_tricks.sliding_window_view)
 def np_lib_stride_tricks_sliding_window_view(x, *args, **kwargs):
