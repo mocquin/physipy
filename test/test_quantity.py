@@ -569,6 +569,10 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(units["A"], Quantity(1, Dimension("I")))
         self.assertEqual(units["mol"], Quantity(1, Dimension("N")))
 
+    def test_hashable(self):
+        import typing
+        self.assertTrue(isinstance(self.x_q, typing.Hashable))
+
     def test_m_mm_kg_g(self):
         self.assertEqual(units["m"], Quantity(1, Dimension("L")))
         self.assertEqual(units["mm"], Quantity(1, Dimension("L"))/1000)
