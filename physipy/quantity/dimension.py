@@ -326,6 +326,10 @@ class Dimension(object):
         # else:
         except BaseException:
             return False
+        
+    def __hash__(self):
+        return hash(str(self))
+    
     # def __ne__(self, y):
     #    """Return not (self == y)."""
     #    return not self.__eq__(y)

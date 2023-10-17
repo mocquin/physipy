@@ -216,6 +216,10 @@ class TestDimension(unittest.TestCase):
                          'sr': 0}
                         )
 
+    def test_hashable(self):
+        import typing
+        self.assertTrue(isinstance(self.m, typing.Hashable))
+
     def test_repr_latex(self):
         self.assertEqual(Dimension(None)._repr_latex_(),
                         "$1$")
