@@ -111,7 +111,6 @@ nav:                                                                            
     - Physics :                                         examples/physics-examples.md
     - Thermal equation using Finite Difference Method:  examples/thermal-equation-using-fdm.md
     - Fourier transform:                                examples/fourier-transform-example.md
-  - Known issues :                                      known-issues.md
   - API reference:                                      
     - Introduction :                                    API/api-reference.md
     - Dimension :                                       API/dimension-api.md
