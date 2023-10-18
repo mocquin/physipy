@@ -1,6 +1,7 @@
 # physipy
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
 [![PyPI version](https://badge.fury.io/py/physipy.svg)](https://badge.fury.io/py/physipy)
+[![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)]
 
 This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
 
@@ -15,6 +16,9 @@ This python package allows you to manipulate physical quantities, basically cons
 ```
 
 For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
+
+## Documentation
+Full documentation of `physipy` is available here : [https://physipy.readthedocs.io/en/latest](https://physipy.readthedocs.io/en/latest/index.html), generated with mkdocs and hosted on readthedocs.
 
 ## Try physipy online now [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)  
 Get a live python session with physipy [by clicking here](https://mybinder.org/v2/gh/mocquin/physipy/HEAD). After a while, you'll get an interactive notebook session, then open the `quiskstart.ipynb` notebook in the left panel.
