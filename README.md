@@ -18,7 +18,7 @@ This python package allows you to manipulate physical quantities, basically cons
 
 For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
 
-## Documentation
+## Documentation [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest)
 Full documentation of `physipy` is available here : [https://physipy.readthedocs.io/en/latest](https://physipy.readthedocs.io/en/latest/index.html), generated with mkdocs and hosted on readthedocs.
 
 ## Try physipy online now [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)  
@@ -85,7 +85,7 @@ print(lengths.mean())
 ```
 
 Numpy is almost fully and transparently handled in physipy : basic operations, indexing, numpy functions and universal functions are handled. There are more than 150 functions implemented ! Some limitations still exist but can be can be circumvented.
-See the documentation for numpy support : [https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Numpy.ipynb).
+See the [documentation for numpy support](https://physipy.readthedocs.io/en/latest/scientific-stack/numpy-support.html).
 
 ## Pandas' support
 
@@ -141,9 +141,9 @@ fig, ax = plt.subplots()
 ax.plot(x, y)
 ```
 
-<img src="./ressources/matplotlib_plot_with_units.png" height="100px" />
+[<img src="./docs/ressources/matplotlib_plot_with_units.png" height="150px" />](https://physipy.readthedocs.io/en/latest/scientific-stack/matplotlib-support.html)
 
-Checkout the [dedicated notebook on matplotlib support](https://github.com/mocquin/physipy/blob/master/docs/notebooks/Plotting%20with%20matplotlib.ipynb).
+Checkout the [matplotlib page on physipy documentation](https://physipy.readthedocs.io/en/latest/scientific-stack/matplotlib-support.html).
 
 ## Widgets
 
@@ -153,11 +153,11 @@ Some ipywidgets and PyQt widgets are provided to make your physical researches a
 
 A quick performance benchmark show that physipy is just as fast (or faster) than other well-known physical packages, both when computing scalars (int or float) and numpy arrays :  
 
-<img src="./ressources/performance_alternative_packages.png" height="200px" />
+<img src="./docs/ressources/performance_alternative_packages.png" height="200px" />
 
 For a more in-depth comparison, checkout this repository (not maintenained be it should!) : https://github.com/mocquin/quantities-comparison : 
 
-<img src="./ressources/quantites-comparison.png" height="200px" />
+<img src="./docs/ressources/quantites-comparison.png" height="200px" />
 
 There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
 
@@ -195,8 +195,9 @@ If you know another package that is not in this list yet, feel free to contribut
 Some C/C++ alternatives :  
  - [units](https://units.readthedocs.io/en/latest/index.html)
 
-## Performance
+## Performance [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
 Performance of `physipy` are tracked using [`airspeedvelocity`](https://asv.readthedocs.io/en/v0.6.1/). Results are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/).
+[<img src="./docs/ressources/asv_screenshot.png" height="200px" />](https://mocquin.github.io/physipy/)
 
 ## License
 
