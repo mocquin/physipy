@@ -2,6 +2,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
 [![PyPI version](https://badge.fury.io/py/physipy.svg)](https://pypi.org/project/physipy/)
 [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest)
+[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
 
 This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
 
@@ -50,9 +51,6 @@ Also :
  - lots of unit tests
  - computation performances tracked with airspeed-velocity (see below)
  - Jupyter widgets that handle units (as ipywidgets and Qt, see below)
-
-## Documentation
-The full documentation of physipy is available at : [].
 
 ## Goals of the project
 The project focuses on keeping these goals in the center of any new development : 
@@ -196,6 +194,9 @@ If you know another package that is not in this list yet, feel free to contribut
 
 Some C/C++ alternatives :  
  - [units](https://units.readthedocs.io/en/latest/index.html)
+
+## Performance
+Performance of `physipy` are tracked using [`airspeedvelocity`](https://asv.readthedocs.io/en/v0.6.1/). Results are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/).
 
 ## License
 
