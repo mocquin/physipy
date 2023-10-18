@@ -2124,6 +2124,21 @@ class TestQuantity(unittest.TestCase):
         exp = np.multiply.reduce(np.arange(10))*m**10
         self.assertEqual(res, exp)
 
+    def test_np_piecewise(self):
+        x = np.linspace(-2.5, 2.5, 6)
+        exp = np.piecewise(x, [x < 0, x >= 0], [-1, 1])
+        
+        x = np.linspace(-2.5, 2.5, 6)*m
+        res = np.piecewise(x, [x < 0*m, x >= 0*m], [-1, 1])
+        self.assertTrue(np.all(res==exp))
+
+        funclist = [lambda x: -x, lambda x: x]
+        x = np.linspace(-2.5, 2.5, 6)
+        exp = np.piecewise(x, [x < 0, x >= 0], funclist)*m
+        x = np.linspace(-2.5, 2.5, 6)*m
+        res = np.piecewise(x, [x < 0*m, x >= 0*m], funclist)
+        self.assertTrue(np.all(res==exp))
+
     def test_np_greater_reduce(self):
         arr = np.arange(10)
 

@@ -1163,6 +1163,15 @@ def np_copyto(dst, src, **kwargs):
         raise DimensionError(dst.dimension, src.dimension)
     return np.copyto(dst.value, src.value, **kwargs)
 
+@implements(np.piecewise)
+def np_piecewise(x, condlist, funclist, *args, **kw):
+    newfunc = [lambda x_, f=f:f(x_*x._SI_unitary_quantity) if callable(f) else f for f in funclist]
+    res = [quantify(f(x)).dimension if callable(f) else quantify(f).dimension for f in funclist]
+    if not len(set(res)) ==1:
+        raise DimensionError('All functions should return a Quantity with same dimension')
+    raw = np.piecewise(x.value, condlist, newfunc)
+    return Quantity(raw, res[0])
+
 
 @implements(np.column_stack)
 def np_column_stack(tup):
