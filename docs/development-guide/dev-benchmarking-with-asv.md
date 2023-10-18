@@ -83,6 +83,7 @@ To launch a server and inspect results of benchmarks :
 `asv publish  # convert results to html`  
 `asv preview  # display html on server`  
 
+To push the latest results: `asv gh-pages --rewrite`
 
 # Results
 

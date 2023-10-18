@@ -38,7 +38,7 @@ The documentation system of physipy is based on [mkdocs]. It relies additionnaly
 
  - `pip install mkdocs`
  - `pip install mkdocs-material`
- - `pip install mkdocstrings[python]`
+ - `pip install mkdocstrings-python`
  - `pip install markdown_include` : to include the repo README.md directly into the documentation site
 
 The documentation configuration is set in the `mkdocs.yml` configuration file at the root of the project.
@@ -57,3 +57,5 @@ To export the documentation to a static-website use :
 `mkdocs build`
 
 This will generate the content to a directory given by `site_dir` in the `mkdocs.yml` configuration file (currently in `_mkdocs_site`).
+
+To pin the packages needed for the doc, create a new venv, install pip-tools, then the packages specified in docs/requirements.in. Use `mkdocs serve` to review the docs, and then `pip-compile docs/requirements.in` to create a `docs/requirements.txt` file.
