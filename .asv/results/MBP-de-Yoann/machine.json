@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Core(TM) i7-5557U CPU @ 3.10GHz",
+    "machine": "MBP-de-Yoann",
+    "num_cpu": "4",
+    "os": "macOS Big Sur 11.7.10",
+    "ram": "17179869184",
+    "version": 1
+}
