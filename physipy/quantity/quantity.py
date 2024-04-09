@@ -1017,7 +1017,61 @@ def np_argmax(a, **kwargs):
 
 @implements(np.nanmin)
 def np_nanmin(a, **kwargs):
-    return Quantity(np.nanmin(a, **kwargs), a.dimension)
+    return Quantity(np.nanmin(a.value, **kwargs), a.dimension)
+@implements(np.nanmax)
+def np_nanmax(a, **kwargs):
+    return Quantity(np.nanmax(a.value, **kwargs), a.dimension)
+@implements(np.nanargmin)
+def np_nanargmin(a, **kwargs):
+    return np.nanargmin(a.value, **kwargs)
+@implements(np.nanargmax)
+def np_nanargmax(a, **kwargs):
+    return np.nanargmax(a.value, **kwargs)
+@implements(np.nansum)
+def np_nansum(a, **kwargs):
+    return Quantity(np.nansum(a.value, **kwargs), a.dimension)
+@implements(np.nanmean)
+def np_nanmean(a, **kwargs):
+    return Quantity(np.nanmean(a.value, **kwargs), a.dimension)
+@implements(np.nanmedian)
+def np_nanmedian(a, **kwargs):
+    return Quantity(np.nanmedian(a.value, **kwargs), a.dimension)
+@implements(np.nanvar)
+def np_nanvar(a, **kwargs):
+    return Quantity(np.nanvar(a.value, **kwargs), a.dimension**2)
+@implements(np.nanstd)
+def np_nanstd(a, **kwargs):
+    return Quantity(np.nanstd(a.value, **kwargs), a.dimension)
+@implements(np.nanpercentile)
+def np_nanpercentile(a, *args, **kwargs):
+    return Quantity(np.nanpercentile(a.value, *args, **kwargs), a.dimension)
+@implements(np.nanprod)
+def np_nanprod(a, axis=None, **kwargs):
+    if axis is None:
+        n = a.size
+    elif isinstance(axis, int):
+        n = a.shape[axis]
+    elif isinstance(axis, tuple):
+        n = np.prod([a.shape[i] for i in axis])
+    else:
+        raise ValueError('Axis type not handled, use None, int or tuple of int.')
+    # should the dimension be len(a)-number of nan ?
+    return Quantity(np.nanprod(a.value, axis=axis, **kwargs), a.dimension**(n))
+
+@implements(np.nancumsum)
+def np_nancumsum(a, **kwargs):
+    return Quantity(np.nancumsum(a.value, **kwargs), a.dimension)
+
+# np.nancumprod : cant have an array with different dimensions
+
+@implements(np.array_equal)
+def np_array_equal(a1, a2, *args, **kwargs):
+    a1 = quantify(a1)
+    a2 = quantify(a2)
+    return np.array_equal(a1.value, a2.value, *args, **kwargs) and a1.dimension == a2.dimension
+
+
+
 
 @implements(np.argsort)
 def np_argsort(a, **kwargs):
