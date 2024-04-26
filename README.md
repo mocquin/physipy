@@ -11,7 +11,7 @@ This python package allows you to manipulate physical quantities, basically cons
 >>> nm = units['nm'] # nanometer
 >>> hp = constants['h'] # Planck's constant
 >>> c = constants['c'] # speed of light
->>> E_ph = hp * c / (500 * nm)
+>>> E_ph = hp * c / (500 * nm) # energy of a photon at wavelength 500nm
 >>> print(E_ph)
 3.9728916483435158e-19 kg*m**2/s**2
 >>> J = units['J'] # Joule
