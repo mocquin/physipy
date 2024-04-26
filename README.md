@@ -7,10 +7,14 @@
 This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
 
 ```python
->>> from physipy.quickstart import nm, hp, c, J
+>>> from physipy import units, constants
+>>> nm = unit['nm'] # nanometer
+>>> hp = constants['hp']
+>>> c = constants['c']
 >>> E_ph = hp * c / (500 * nm)
 >>> print(E_ph)
 3.9728916483435158e-19 kg*m**2/s**2
+>>> J = units['J'] # Joule
 >>> E_ph.favunit = J
 >>> print(E_ph)
 3.9728916483435158e-19 J
