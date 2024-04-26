@@ -15,7 +15,7 @@ This python package allows you to manipulate physical quantities, basically cons
 >>> print(E_ph)
 3.9728916483435158e-19 kg*m**2/s**2
 >>> J = units['J'] # Joule
->>> E_ph.favunit = J
+>>> E_ph.favunit = J # set the favourite unit for display/print
 >>> print(E_ph)
 3.9728916483435158e-19 J
 ```
