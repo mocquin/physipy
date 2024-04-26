@@ -8,9 +8,9 @@ This python package allows you to manipulate physical quantities, basically cons
 
 ```python
 >>> from physipy import units, constants
->>> nm = unit['nm'] # nanometer
->>> hp = constants['hp']
->>> c = constants['c']
+>>> nm = units['nm'] # nanometer
+>>> hp = constants['h'] # Planck's constant
+>>> c = constants['c'] # speed of light
 >>> E_ph = hp * c / (500 * nm)
 >>> print(E_ph)
 3.9728916483435158e-19 kg*m**2/s**2
