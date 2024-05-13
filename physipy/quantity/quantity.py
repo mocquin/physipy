@@ -986,6 +986,36 @@ def implements(np_function: Callable) -> Callable:
     return decorator
 
 
+@implements(np.arange)
+def np_arange(*args, **kwargs):
+    if len(args)==0:
+        availables = {k: kwargs.pop(k) for k in ['start', 'step', 'stop'] if k in kwargs}
+        first_dimension = next(iter(availables.values())).dimension
+        for k,v in availables.items():
+            if v.dimension != first_dimension:
+                raise DimensionError(first_dimension, v.dimension)
+        start = availables.pop('start', Quantity(0,first_dimension))
+        step  = availables.pop('step', Quantity(1,first_dimension))
+        stop  = availables.pop('stop', Quantity(1,first_dimension))
+    elif len(args) == 1:
+        stop  = quantify(args[0])
+        start = quantify(kwargs.pop('start', Quantity(0, stop.dimension)))
+        step  = quantify(kwargs.pop('step', Quantity(1, stop.dimension)))
+    elif len(args) == 2:
+        start, stop = quantify(args[0]), quantify(args[1])
+        step = quantify(kwargs.pop('step', Quantity(1, start.dimension)))
+    elif len(args) == 3:
+        start, stop, step = args
+        start, stop, step = quantify(start), quantify(stop), quantify(step)
+    else:
+        raise TypeError(f"arange() accepts 1, 2, or 3 arguments. Got {len(args)}")
+    if not (start.dimension == step.dimension):
+        raise DimensionError(start.dimension, step.dimension)
+    if not (step.dimension == stop.dimension):
+        raise DimensionError(step.dimension, stop.dimension)
+    raw_array = np.arange(start.value, stop.value, step.value, **kwargs)
+    return Quantity(raw_array, start.dimension)
+
 @implements(np.asanyarray)
 def np_asanyarray(a):
     return Quantity(np.asanyarray(a.value), a.dimension)
