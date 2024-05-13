@@ -2405,5 +2405,32 @@ class TestQuantity(unittest.TestCase):
             solution_res.sol(1)
 
 
+    def test_np_arange_like(self):
+        function_calls = [
+            np.arange(10),                     # Using only stop
+            np.arange(1, 10),                  # Using start and stop
+            np.arange(1, 10, 2),               # Using start, stop, and step
+            np.arange(stop=10),                # Using named argument for stop
+            np.arange(start=1, stop=10),       # Using named arguments for start and stop
+            np.arange(start=1, stop=10, step=2),  # Using named arguments for start, stop, and step
+            np.arange(5, dtype=float),         # Using start and dtype
+            np.arange(1, 10, step=2, dtype=float),  # Using start, stop, step, and dtype
+            np.arange(10, like=np.arange(5)),  # Using stop and like
+        ]
+
+        function_calls_physipy = [
+            np.arange(10*m, like=m),                     # Using only stop
+            np.arange(1*m, 10*m, like=m),                  # Using start and stop
+            np.arange(1*m, 10*m, 2*m, like=m),               # Using start, stop, and step
+            np.arange(stop=10*m, like=m),                # Using named argument for stop
+            np.arange(start=1*m, stop=10*m, like=m),       # Using named arguments for start and stop
+            np.arange(start=1*m, stop=10*m, step=2*m, like=m),  # Using named arguments for start, stop, and step
+            np.arange(5*m, dtype=float, like=m),         # Using start and dtype
+            np.arange(1*m, 10*m, step=2*m, dtype=float, like=m),  # Using start, stop, step, and dtype
+            np.arange(10*m, like=m),  # Using stop and like
+        ]
+        for raw, psp in zip(function_calls, function_calls_physipy):
+            self.assertTrue((raw == psp.value).all())
+
 if __name__ == "__main__":
     unittest.main()
