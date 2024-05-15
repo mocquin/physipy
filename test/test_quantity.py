@@ -2432,5 +2432,42 @@ class TestQuantity(unittest.TestCase):
         for raw, psp in zip(function_calls, function_calls_physipy):
             self.assertTrue((raw == psp.value).all())
 
+
+    def test_property_backend_getattr_registry(self):
+        try:
+            import uncertainties as uc
+        except:
+            print('Could not run unit test, uncertainties package not available.')
+            return
+        else:
+            from physipy.quantity.quantity import register_property_backend
+
+            uncertainties_property_backend_interface = {
+                # res is the backend result of the attribute lookup, and q the wrapping quantity
+                "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
+                "std_dev":lambda q, res: q._SI_unitary_quantity*res,
+                "n":lambda q, res: q._SI_unitary_quantity*res,
+                "s":lambda q, res: q._SI_unitary_quantity*res,
+            }
+
+            register_property_backend(
+                uc.core.Variable, 
+                uncertainties_property_backend_interface
+            )
+
+            import uncertainties as u
+            # create a pure uncertainties instance
+            x = u.ufloat(0.20, 0.01)  # x = 0.20+/-0.01
+
+            # Creation must be done this way and not by "x*m" because "x*m" 
+            # will multiply the uncerainties variable by 1, and turn it into a
+            # AffineScalarFunc instance, which is not hashable and breaks my 
+            # register_property_backend that relies on dict lookup
+            #x = u.ufloat(0.20, 0.01)  # x = 0.20+/-0.01
+            xq = Quantity(x, Dimension("m")) # xq = x *m
+
+            self.assertTrue(xq.nominal_value == 0.2*m)
+            self.assertTrue(xq.std_dev == 0.01*m)
+
 if __name__ == "__main__":
     unittest.main()

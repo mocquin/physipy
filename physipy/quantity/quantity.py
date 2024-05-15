@@ -87,6 +87,47 @@ DEFAULT_SYMBOL = "UndefinedSymbol"
 HANDLED_FUNCTIONS = {}
 
 
+VALUE_PROPERTY_BACKENDS = {}
+
+def register_property_backend(klass, interface_dict=None):
+    """
+    Idea to better handle value backends, like uncertainties.
+    The idea is to provide to physipy a class and its interface dict, 
+    such that since Quantity looks at its values methods if item not found
+    in the quantity itself
+    
+    Examples
+    --------
+    # BEFORE
+    uv = Normal(1, 0.1, size=1000) # this is from class, with attribute .median()
+    q = uv*m                       # this a quantity, with value of class
+    q.median() # will return uv.median(), loosing the unit
+
+    # AFTER
+    import uncertainties as uc
+    from physipy.quantity.quantity import register_property_backend
+
+    uncertainties_property_backend_interface = {
+        # res is the backend result of the attribute lookup, and q the wrapping quantity
+        "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
+        "std_dev":lambda q, res: q._SI_unitary_quantity*res,
+        "n":lambda q, res: q._SI_unitary_quantity*res,
+        "s":lambda q, res: q._SI_unitary_quantity*res,
+    }
+
+    print("Registering uncertainties")
+    register_property_backend(uc.core.Variable, 
+                            uncertainties_property_backend_interface)
+                                register_value_backend(Normal, {"median":lambda res:res*self.unit})
+    q.median() # will return uv.median()*m
+
+    """
+    if interface_dict is None:
+        VALUE_PROPERTY_BACKENDS.pop(interface_dict)
+    else:
+        VALUE_PROPERTY_BACKENDS[klass] = interface_dict
+
+
 class Quantity(object):
     """Quantity class : """
     DIGITS = DISPLAY_DIGITS
@@ -764,6 +805,29 @@ class Quantity(object):
                 self.value = np.array(self.value)
                 return getattr(self.value, item)
         try:
+            # This block allows to customize specific value-backend attributes
+            # like "nominale_value" when using uncertainties using : 
+            # import uncertainties as uc
+            # from physipy.quantity.quantity import register_property_backend
+            # 
+            # uncertainties_property_backend_interface = {
+            #     # res is the backend result of the attribute lookup, and q the wrapping quantity
+            #     "nominal_value":lambda q, res: q._SI_unitary_quantity*res,
+            #     "std_dev":lambda q, res: q._SI_unitary_quantity*res,
+            #     "n":lambda q, res: q._SI_unitary_quantity*res,
+            #     "s":lambda q, res: q._SI_unitary_quantity*res,
+            # }
+            # 
+            # register_property_backend(
+            #     uc.core.Variable, 
+            #     uncertainties_property_backend_interface
+            # )
+            
+            if type(self.value) in VALUE_PROPERTY_BACKENDS:
+                interface = VALUE_PROPERTY_BACKENDS[type(self.value)]
+                if item in interface:
+                    res = getattr(self.value, item)
+                    return interface[item](self, res)                
             res = getattr(self.value, item)
             return res
         except AttributeError as ex:
