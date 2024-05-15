@@ -986,7 +986,15 @@ def implements(np_function: Callable) -> Callable:
     return decorator
 
 
-@implements(np.arange)
+def implements_like(np_function: Callable) -> Callable:
+    # explicit name to notify that "like=" must be used to trigger the interface
+    def decorator(func: Callable) -> Callable:
+        HANDLED_FUNCTIONS[np_function] = func
+        return func
+    return decorator
+
+
+@implements_like(np.arange)
 def np_arange(*args, **kwargs):
     if len(args)==0:
         availables = {k: kwargs.pop(k) for k in ['start', 'step', 'stop'] if k in kwargs}
@@ -1551,6 +1559,7 @@ def np_zeros_like(a, **kwargs):
 
 
 @implements(np.zeros)
+@implements_like(np.zeros)
 def np_zeros(shape, dtype=float, order='C', *, like=None):
     like = quantify(like)
     return Quantity(np.zeros(shape, dtype=dtype, order=order), like.dimension)
