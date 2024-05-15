@@ -92,7 +92,6 @@ class Quantity(object):
     DIGITS = DISPLAY_DIGITS
     EXP_THRESH = EXP_THRESHOLD
     LATEX_SEP = LATEX_VALUE_UNIT_SEPARATOR
-    __array_priority__ = 100
 
     # adding a __slots__ removes the presence of __dict__, which also
     # makes vars(q) to fail.
