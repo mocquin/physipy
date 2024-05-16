@@ -22,7 +22,7 @@ griffe==0.36.7
     # via mkdocstrings-python
 idna==3.7
     # via requests
-jinja2==3.1.3
+jinja2==3.1.4
     # via
     #   mkdocs
     #   mkdocs-material
