@@ -481,6 +481,10 @@ class Quantity(object):
                 sp_parsing.sympy_parser.parse_expr(formatted_value))
             return "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
         except:
+            # with some custom backend value, sympy has trouble parsing the
+            # the expression: I'd rather have a regular string displayed rather
+            # than an exception raised (since it is only used in notebook 
+            # context)
             return str(self)
 
     def _pick_smart_favunit(
