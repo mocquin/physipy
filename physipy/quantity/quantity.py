@@ -1261,6 +1261,10 @@ def np_eig(a):
     return Quantity(eigenvalues, a.dimension), eigenvectors
 
 
+@implements(np.diag)
+def np_diag(v, *args, **kwargs):
+    return Quantity(np.diag(v.value, *args, **kwargs), v.dimension)
+
 @implements(np.flip)
 def np_flip(m, axis=None):
     return Quantity(np.flip(m.value, axis=axis),

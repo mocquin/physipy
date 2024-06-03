@@ -777,6 +777,15 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual((3*m+2j*m).conjugate(), 3*m-2j*m)
         self.assertEqual((3*m).conjugate(), 3*m)
 
+    def test_np_diag(self):
+        array_1d = np.array([1, 2, 3, 4]) * m
+        diagonal_matrix = np.diag(array_1d)
+        expected = np.array([[1, 0, 0, 0],
+                             [0, 2, 0, 0],
+                             [0, 0, 3, 0],
+                             [0, 0, 0, 4]])*m
+        self.assertTrue((diagonal_matrix==expected).all())
+
     def test_dblquad(self):
         def func2D(y, x):
             # testing dimensions awareness
