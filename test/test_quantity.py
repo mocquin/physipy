@@ -739,6 +739,11 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(5*s,
                          brentq(tata, -10*s, 10*s, args=(0.5,)))
 
+    def test_conjugate(self):
+        self.assertEqual((3*m).conjugate(), 3*m)
+        self.assertEqual((3*m+2j*m).conjugate(), 3*m-2j*m)
+        self.assertEqual((3*m).conjugate(), 3*m)
+
     def test_dblquad(self):
         def func2D(y, x):
             # testing dimensions awareness

@@ -642,6 +642,9 @@ class Quantity(object):
     @property
     def imag(self):
         return type(self)(self.value.imag, self.dimension)
+    
+    def conjugate(self):
+        return type(self)(self.value.conjugate(), self.dimension)
 
     @property
     def T(self):
