@@ -611,6 +611,18 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(m != None)
         self.assertTrue(Quantity(1, Dimension(None)) != None)
 
+    def test_np_allclose(self):
+        self.assertTrue(np.allclose(np.arange(10)*m, np.arange(10)*m))
+        
+        # wrong dimension
+        with self.assertRaises(DimensionError):
+            self.assertTrue(np.allclose(np.arange(10)*m, np.arange(10)*s))
+        # wrong dimension
+        with self.assertRaises(DimensionError):
+            self.assertTrue(np.allclose(np.arange(10)*m, np.arange(10)*m, atol=(1e-8)*s))
+        
+        
+
     # def test_np_all(self):
     #    self.assertTrue(np.all(Quantity([1, 2, 3], Dimension(None))))
     #    self.assertTrue(np.all(Quantity([0, 0, 0], Dimension(None))))

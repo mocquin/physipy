@@ -1720,16 +1720,21 @@ def np_real(a):
     return Quantity(np.real(a.value), a.dimension)
 
 @implements(np.allclose)
-def np_allclose(a, b, rtol=1e-05, atol=1e-8, *args, **kwargs):
+def np_allclose(a, b, rtol=1e-05, atol=None, *args, **kwargs):
     # absolute(a - b) <= (atol + rtol * absolute(b))
     a = quantify(a)
     b = quantify(b)
     rtol = quantify(rtol)
-    atol = quantify(atol)
     if not (a.dimension == b.dimension):
         raise DimensionError(a.dimension, b.dimension)
-    if not (a.dimension == atol.dimension):
-        raise DimensionError(a.dimension, atol.dimension)
+    # override default atol from 1e-8 to None, so comparing two quantities of 
+    # the same dimension uses the "right" atol accordingly
+    if atol is None:
+        atol = Quantity(1e-8, a.dimension)
+    else:
+        atol = quantify(atol)
+        if not atol.dimension == a.dimension:
+            raise DimensionError(atol.dimension, a.dimension)
     if not (Dimension(None) == rtol.dimension):
         raise DimensionError(Dimension(None), rtol.dimension)
     return np.allclose(a.value, b.value, rtol=rtol.value, atol=atol.value, *args, **kwargs)
