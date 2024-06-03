@@ -627,6 +627,27 @@ class TestQuantity(unittest.TestCase):
     #    self.assertTrue(np.all(Quantity([1, 2, 3], Dimension(None))))
     #    self.assertTrue(np.all(Quantity([0, 0, 0], Dimension(None))))
 
+    def test_np_linalg_eig(self):
+        # Create a sample matrix (e.g., a 3x3 matrix with arbitrary values)
+        A = np.array([[4, -2, 1],
+                    [1, 1, -1],
+                    [3, 2, 0]]) * m
+
+        # Perform eigen decomposition
+        eigenvalues, eigenvectors = np.linalg.eig(A)
+
+        # Reconstruct the diagonal matrix of eigenvalues
+        D = np.diag(eigenvalues)
+
+        # Verify the decomposition A = VDV^(-1)
+        # Calculate V * D * V^(-1)
+        V = eigenvectors
+        V_inv = np.linalg.inv(V)
+        A_reconstructed = V @ D @ V_inv
+        
+        self.assertTrue(np.allclose(A, A_reconstructed))
+
+
     def test_lt_gt_le_ge(self):
         self.assertTrue(self.x_q <= self.x_q)
         self.assertTrue(np.all(self.y_q <= self.y_q))

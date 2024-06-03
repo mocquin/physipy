@@ -1255,6 +1255,11 @@ def np_linalg_lstsq(a, b, **kwargs):
 def np_inv(a):
     return Quantity(np.linalg.inv(a.value), 1 / a.dimension)
 
+@implements(np.linalg.eig)
+def np_eig(a):
+    eigenvalues, eigenvectors = np.linalg.eig(a.value)
+    return Quantity(eigenvalues, a.dimension), eigenvectors
+
 
 @implements(np.flip)
 def np_flip(m, axis=None):
