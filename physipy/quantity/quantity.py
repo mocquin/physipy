@@ -1310,6 +1310,10 @@ def np_polyfit(x, y, deg, *args, **kwargs):
                for i, coef in enumerate(p))
     return qp
 
+@implements(np.round)
+def np_round(a, *args, **kwargs):
+    return Quantity(np.round(a.value, *args, **kwargs), a.dimension)
+
 
 @implements(np.polyval)
 def np_polyval(p, x):

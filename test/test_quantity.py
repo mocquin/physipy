@@ -546,6 +546,13 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual("{!r}".format(
             Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
 
+    def test_np_round(self):
+        arr = 1.9+np.linspace(0,1)
+
+        self.assertEqual(np.round(1.9*s), 2*s)
+        self.assertTrue(np.all(np.round(arr*s) == np.round(arr)*s))
+        
+
     def test_round(self):
         self.assertEqual(round(1*s), 1*s)
         self.assertEqual(round(1.0*s), 1.0*s)
