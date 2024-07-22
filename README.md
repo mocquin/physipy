@@ -187,6 +187,7 @@ There are plenty of python packages that handle physical quantities computation.
  - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
  - [pynbody](https://github.com/pynbody/pynbody)
  - [python-units](https://pypi.org/project/python-units/)
+ - [pyansys-units](https://github.com/ansys/pyansys-units/tree/main) (forked from pint?)
  - [natu](https://github.com/kdavies4/natu)
  - [misu](https://github.com/cjrh/misu)
  - [units](https://github.com/IAMconsortium/units)
