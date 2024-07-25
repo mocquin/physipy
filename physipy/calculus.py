@@ -11,7 +11,6 @@ See : https://docs.scipy.org/doc/scipy/reference/integrate.html
 """
 from __future__ import annotations
 from typing import Callable
-import numbers as nb
 
 import numpy as np
 import scipy
@@ -333,6 +332,6 @@ def brentq(func_cal: Callable, start, stop, *
         res = func_cal(Quantity(x, start_dim), *args)
         return quantify(res).value
 
-    res = scipy.optimize.brentq(func_float, start_val, stop.value, *oargs)
+    res = scipy.optimize.brentq(func_float, start_val, stop_val, *oargs)
 
     return Quantity(res, start_dim)
