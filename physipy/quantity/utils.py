@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections.abc import Iterable
 from typing import Union
 
 import functools
@@ -10,11 +9,10 @@ from operator import attrgetter
 
 import numpy as np
 from numpy import array as np_array  # faster to import once since used in a loop
-import sympy as sp
 
 from sympy.parsing.sympy_parser import parse_expr
 
-from .quantity import Quantity, Dimension, DimensionError, dimensionify, quantify, make_quantity
+from .quantity import Quantity, DimensionError, dimensionify, quantify, make_quantity
 
 
 def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:

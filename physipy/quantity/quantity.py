@@ -63,7 +63,6 @@ PROPOSITIONS/QUESTIONS :
 from __future__ import annotations
 from typing import Callable, Union
 import math
-import numbers as nb
 import numpy as np
 
 import sympy.printing as sp_printing
@@ -446,7 +445,7 @@ class Quantity(object):
         from physipy import plotting_context
         if ax is None:
             import matplotlib.pyplot as plt
-            fig, ax = plt.subplots()
+            _, ax = plt.subplots()
         with plotting_context():
             if kind == "y" and other is None:
                 ax.plot(self)
@@ -1344,12 +1343,12 @@ def np_copyto(dst, src, **kwargs):
     return np.copyto(dst.value, src.value, **kwargs)
 
 @implements(np.piecewise)
-def np_piecewise(x, condlist, funclist, *args, **kw):
+def np_piecewise(x, condlist, funclist, *args, **kwargs):
     newfunc = [lambda x_, f=f:f(x_*x._SI_unitary_quantity) if callable(f) else f for f in funclist]
     res = [quantify(f(x)).dimension if callable(f) else quantify(f).dimension for f in funclist]
     if not len(set(res)) ==1:
         raise DimensionError('All functions should return a Quantity with same dimension')
-    raw = np.piecewise(x.value, condlist, newfunc)
+    raw = np.piecewise(x.value, condlist, newfunc, *args, **kwargs)
     return Quantity(raw, res[0])
 
 
@@ -1368,12 +1367,12 @@ def np_compress(condition, a, **kwargs):
 
 
 @implements(np.concatenate)
-def np_concatenate(tup, axis=0, out=None):
+def np_concatenate(tup, *args, **kwargs):
     dim = tup[0].dimension
     for arr in tup:
         if arr.dimension != dim:
             raise DimensionError(arr.dimension, dim)
-    return Quantity(np.concatenate(tuple(arr.value for arr in tup)), dim)
+    return Quantity(np.concatenate(tuple(arr.value for arr in tup), *args, **kwargs), dim)
 
 
 @implements(np.copy)

@@ -70,10 +70,10 @@ def parse_str_to_dic(exp_str: str) -> dict:
     >>> parse_str_to_dic("L**2/M")
     {'L': 2, 'M': -1}
     """
-    parsed = parse_expr(exp_str, global_dict={
-                        'Symbol': sp_Symbol, 'Integer': sp_Integer})
-    exp_dic = {str(key): value for key,
-               value in parsed.as_powers_dict().items()}
+    parsed = parse_expr(
+        exp_str, global_dict={"Symbol": sp_Symbol, "Integer": sp_Integer}
+    )
+    exp_dic = {str(key): value for key, value in parsed.as_powers_dict().items()}
     return exp_dic
 
 
@@ -110,18 +110,19 @@ def check_pattern(exp_str: str, symbol_list: list) -> bool:
 class DimensionError(Exception):
     """Exception class for dimension errors."""
 
-    def __init__(self, dim_1: Dimension, dim_2: Dimension,
-                 binary: bool = True) -> None:
+    def __init__(self, dim_1: Dimension, dim_2: Dimension, binary: bool = True) -> None:
         """Init method of DimensionError class."""
         if binary:
             self.message = (
                 "Dimension error : dimensions of "
                 f"operands are {dim_1} and {dim_2}, and are "
-                f"differents ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
+                f"differents ({dim_1.dimensionality} vs {dim_2.dimensionality})."
+            )
         else:
             self.message = (
                 f"Dimension error : dimension is {dim_1} "
-                f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality}).")
+                f"but should be {dim_2} ({dim_1.dimensionality} vs {dim_2.dimensionality})."
+            )
 
     def __str__(self) -> str:
         """Str method of DimensionError class."""
@@ -134,7 +135,7 @@ class Dimension(object):
     # DEFAULT REPR LATEX can be used to change the way a Dimension
     # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
-    __slots__ = 'dim_dict'
+    __slots__ = "dim_dict"
 
     def __init__(self, definition) -> None:
         """Allow the creation of Dimension object with 3 possibile ways."""
@@ -143,12 +144,14 @@ class Dimension(object):
             pass  # dim_dict already initialized
         # most of the time, the definition is a dim_dict of another quantity
         # so it already has the good shape
-        elif (isinstance(definition, dict) and
-              set(list(definition.keys())) == set(SI_SYMBOL_LIST)):
+        elif isinstance(definition, dict) and set(list(definition.keys())) == set(
+            SI_SYMBOL_LIST
+        ):
             self.dim_dict = definition
         # example : {"L":1, "T":-2}
-        elif (isinstance(definition, dict) and
-              set(list(definition.keys())).issubset(SI_SYMBOL_LIST)):  # and
+        elif isinstance(definition, dict) and set(list(definition.keys())).issubset(
+            SI_SYMBOL_LIST
+        ):  # and
             # all([np.isscalar(v) for v in definition.values()])):
             for dim_symbol, dim_power in definition.items():
                 self.dim_dict[dim_symbol] = dim_power
@@ -156,31 +159,39 @@ class Dimension(object):
         elif definition in list(self.dim_dict.keys()):
             self.dim_dict[definition] = 1
         # example : "L**2/T**3"
-        elif (isinstance(definition, str) and check_pattern(definition, SI_UNIT_SYMBOL.keys())):
+        elif isinstance(definition, str) and check_pattern(
+            definition, SI_UNIT_SYMBOL.keys()
+        ):
             definition = parse_str_to_dic(definition)
             for dim_symbol, dim_power in definition.items():
                 if dim_power == int(dim_power):
                     dim_power = int(dim_power)
                 self.dim_dict[dim_symbol] = dim_power
         # example : "m"
-        elif (isinstance(definition, str) and check_pattern(definition, SI_UNIT_SYMBOL.values())):
+        elif isinstance(definition, str) and check_pattern(
+            definition, SI_UNIT_SYMBOL.values()
+        ):
             definition = parse_str_to_dic(definition)
             for my_si_symbol, dim_power in definition.items():
                 if dim_power == int(dim_power):
                     dim_power = int(dim_power)
                 dim_symbol = [
-                    dim_symbol for dim_symbol,
-                    si_symbol in SI_UNIT_SYMBOL.items() if my_si_symbol == si_symbol][0]
+                    dim_symbol
+                    for dim_symbol, si_symbol in SI_UNIT_SYMBOL.items()
+                    if my_si_symbol == si_symbol
+                ][0]
                 self.dim_dict[dim_symbol] = dim_power
         else:
-            raise TypeError(("Dimension can be constructed with either a "
-                             "string among {}, either None, either a "
-                             "dictionnary with keys included in {}, "
-                             "either a string of sympy expression with "
-                             "those same keys "
-                             "but not {}.").format(SI_SYMBOL_LIST,
-                                                   SI_SYMBOL_LIST,
-                                                   definition))
+            raise TypeError(
+                (
+                    "Dimension can be constructed with either a "
+                    "string among {}, either None, either a "
+                    "dictionnary with keys included in {}, "
+                    "either a string of sympy expression with "
+                    "those same keys "
+                    "but not {}."
+                ).format(SI_SYMBOL_LIST, SI_SYMBOL_LIST, definition)
+            )
 
     def __str__(self: Dimension) -> str:
         """Concatenate symbol-wise the content of the dim_dict attribute."""
@@ -220,13 +231,18 @@ class Dimension(object):
         """
         # if isinstance(y, Dimension):
         try:
-            new_dim_dict = {d: self.dim_dict[d] + y.dim_dict[d] for d
-                            in self.dim_dict.keys()}
+            new_dim_dict = {
+                d: self.dim_dict[d] + y.dim_dict[d] for d in self.dim_dict.keys()
+            }
             return Dimension(new_dim_dict)
         except Exception as e:
-            raise TypeError(("A dimension can only be multiplied "
-                             "by another dimension, not {}."
-                             "Got exception {}").format(y, e))
+            raise TypeError(
+                (
+                    "A dimension can only be multiplied "
+                    "by another dimension, not {}."
+                    "Got exception {}"
+                ).format(y, e)
+            )
 
     __rmul__ = __mul__
 
@@ -248,16 +264,21 @@ class Dimension(object):
         """
         # if isinstance(y, Dimension):
         try:
-            new_dim_dict = {d: self.dim_dict[d] - y.dim_dict[d] for d
-                            in self.dim_dict.keys()}
+            new_dim_dict = {
+                d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()
+            }
             return Dimension(new_dim_dict)
         # elif y == 1:  # allowing division by one
         #    return self
-       # else:
+        # else:
         except Exception as e:
-            raise TypeError(("A dimension can only be divided "
-                             "by another dimension, not {}."
-                             "Got exception {}").format(y, e))
+            raise TypeError(
+                (
+                    "A dimension can only be divided "
+                    "by another dimension, not {}."
+                    "Got exception {}"
+                ).format(y, e)
+            )
 
     def __rtruediv__(self: Dimension, x: Dimension) -> Dimension:
         """Inverse a Dimension by divinding one.
@@ -277,7 +298,7 @@ class Dimension(object):
             The inverse of the input Dimension.
 
         """
-        if x == 1:   # allowing one-divion
+        if x == 1:  # allowing one-divion
             # return self.inverse()
             return self**-1
         else:
@@ -299,12 +320,12 @@ class Dimension(object):
             The raised Dimension.
         """
         if np.isscalar(y):
-            new_dim_dict = {d: self.dim_dict[d]
-                            * y for d in self.dim_dict.keys()}
+            new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
             return Dimension(new_dim_dict)
         else:
-            raise TypeError(("The power of a dimension must be a scalar,"
-                             f"not {type(y)}"))
+            raise TypeError(
+                ("The power of a dimension must be a scalar," f"not {type(y)}")
+            )
 
     def __eq__(self, y: Dimension) -> bool:
         """Check equality between Dimension objects.
@@ -326,10 +347,10 @@ class Dimension(object):
         # else:
         except BaseException:
             return False
-        
+
     def __hash__(self):
         return hash(str(self))
-    
+
     # def __ne__(self, y):
     #    """Return not (self == y)."""
     #    return not self.__eq__(y)
@@ -347,8 +368,7 @@ class Dimension(object):
         dict
             A dict with keys the SI-unit symbols and values the corresponding exponent.
         """
-        return {SI_UNIT_SYMBOL[key]: value for key,
-                value in self.dim_dict.items()}
+        return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
 
     def str_SI_unit(self: Dimension) -> str:
         """Compute the symbol-wise SI unit equivalent of the Dimension.
@@ -392,8 +412,11 @@ class Dimension(object):
         DIMENSIONALITY
         """
         try:
-            return [dimensionality for dimensionality, dimension
-                    in DIMENSIONALITY.items() if dimension == self][0]
+            return [
+                dimensionality
+                for dimensionality, dimension in DIMENSIONALITY.items()
+                if dimension == self
+            ][0]
         except BaseException:
             return str(self)
 
@@ -401,8 +424,7 @@ class Dimension(object):
 DIMENSIONLESS = Dimension(None)
 
 
-def compute_str(power_dict: dict, default_str: str,
-                output_init: int = 1) -> str:
+def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str:
     """Convert power-dict to a string expression equivalent.
 
     Compute the product-concatenation of the
@@ -435,8 +457,7 @@ def compute_str(power_dict: dict, default_str: str,
         return str(output)
 
 
-def expand_dict_to_expr(
-        power_dict: dict, output_init: int = 1) -> sp_Symbol | int:
+def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol | int:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.
@@ -459,7 +480,7 @@ def expand_dict_to_expr(
     """
     output = output_init
     for key, value in power_dict.items():
-        output *= sp_Symbol(key)**value
+        output *= sp_Symbol(key) ** value
     return output
 
 
