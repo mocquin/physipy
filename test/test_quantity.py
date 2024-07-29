@@ -717,8 +717,8 @@ class TestQuantity(unittest.TestCase):
 
     def test_none_comparison(self):
         self.assertTrue(m is not None)
-        self.assertTrue(m != None)
-        self.assertTrue(Quantity(1, Dimension(None)) != None)
+        self.assertTrue(m != None)  # noqa
+        self.assertTrue(Quantity(1, Dimension(None)) != None)  # noqa
 
     def test_np_allclose(self):
         self.assertTrue(np.allclose(np.arange(10) * m, np.arange(10) * m))
@@ -1226,7 +1226,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(np.hypot(arr_m, m) == np.hypot(m, arr_m)))
 
         # greater
-        self.assertTrue(np.all(np.greater(m, m) == False))
+        self.assertTrue(np.all(np.greater(m, m) == False))  # noqa
         self.assertTrue(
             np.all(np.greater(m, arr_m) == np.array([False, False, False]))
         )
@@ -1238,7 +1238,7 @@ class TestQuantity(unittest.TestCase):
         )
 
         # greater_or_equal
-        self.assertTrue(np.all(np.greater_equal(m, m) == True))
+        self.assertTrue(np.all(np.greater_equal(m, m) == True))  # noqa
         self.assertTrue(
             np.all(
                 np.greater_equal(m, arr_m) == np.array([True, False, False])
@@ -1254,7 +1254,7 @@ class TestQuantity(unittest.TestCase):
         )
 
         # less
-        self.assertTrue(np.all(np.less(m, m) == False))
+        self.assertTrue(np.all(np.less(m, m) == False))  # noqa
         self.assertTrue(
             np.all(np.less(m, arr_m) == np.array([False, True, True]))
         )
@@ -1266,7 +1266,7 @@ class TestQuantity(unittest.TestCase):
         )
 
         # less_or_equal
-        self.assertTrue(np.all(np.less_equal(m, m) == True))
+        self.assertTrue(np.all(np.less_equal(m, m) == True))  # noqa
         self.assertTrue(
             np.all(np.less_equal(m, arr_m) == np.array([True, True, True]))
         )
@@ -1677,9 +1677,9 @@ class TestQuantity(unittest.TestCase):
 
         R = np.array([[50, 0, -30], [0, 40, -20], [-30, -20, 100]]) * ohm
         V = np.array([80, 80, 0]) * volt
-        I = np.linalg.inv(R) @ V
-        self.assertTrue(I.dimension == Dimension("A"))
-        self.assertTrue(np.all(I.value == np.linalg.inv(R.value) @ V.value))
+        inv = np.linalg.inv(R) @ V
+        self.assertTrue(inv.dimension == Dimension("A"))
+        self.assertTrue(np.all(inv.value == np.linalg.inv(R.value) @ V.value))
 
     def test_real(self):
         self.assertEqual(m.real, 1 * m)
@@ -1734,8 +1734,8 @@ class TestQuantity(unittest.TestCase):
     def test_500_decorator_check_dimension(self):
         # To check the dimension analysis of inputs
         # Two inputs, one output
-        def speed(l, t):
-            return l / t
+        def speed(length, t):
+            return length / t
 
         wrapped_speed = check_dimension((m, s), m / s)(speed)
 
@@ -1750,8 +1750,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(wrapped_speed(1 * m, 1 * s), 1 * m / (1 * s))
 
         # To check the dimension analysis of outputs
-        def wrong_speed(l, t):
-            return l * t
+        def wrong_speed(length, t):
+            return length * t
 
         wrappred_wrong_speed = check_dimension((m, s), m / s)(wrong_speed)
         with self.assertRaises(DimensionError):
@@ -1759,8 +1759,8 @@ class TestQuantity(unittest.TestCase):
 
         # with Dimension notation
 
-        def speed(l, t):
-            return l / t
+        def speed(length, t):
+            return length / t
 
         wrapped_speed = check_dimension(("L", "T"), "L/T")(speed)
 
@@ -1773,8 +1773,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(wrapped_speed(1 * m, 1 * s), 1 * m / (1 * s))
 
     def test_501_decorator_favunit(self):
-        def speed(l, t):
-            return l / t
+        def speed(length, t):
+            return length / t
 
         mph = imperial_units["mil"] / units["h"]
         mph.symbol = "mph"
@@ -1787,8 +1787,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual((mph_speed(m, s)).favunit, mph)
 
     def test_502_decorator_dimension_and_favunit(self):
-        def speed(l, t):
-            return l / t
+        def speed(length, t):
+            return length / t
 
         mph = imperial_units["mil"] / units["h"]
         mph.symbol = "mph"
@@ -1812,9 +1812,9 @@ class TestQuantity(unittest.TestCase):
     def test_503_decorator_drop_dimension(self):
         # this function will always compare inputs to ints
         # so the inputs must be scalar of dimless Quantitys
-        def speed_dimless(l, t):
-            if not t == 0 and not l < 0:
-                return l / t
+        def speed_dimless(length, t):
+            if not t == 0 and not length < 0:
+                return length / t
             else:
                 return 0
 
@@ -1828,9 +1828,9 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(drop_dimension(speed_dimless)(5 * m, 1 * s), 5)
 
     def test_504_decorator_add_back_unit_param(self):
-        def speed_dimless(l, t):
-            if not t == 0 and not l < 0:
-                return l / t
+        def speed_dimless(length, t):
+            if not t == 0 and not length < 0:
+                return length / t
             else:
                 return 0
 
@@ -2774,7 +2774,7 @@ class TestQuantity(unittest.TestCase):
     def test_property_backend_getattr_registry(self):
         try:
             import uncertainties as uc
-        except:
+        except Exception as e:
             print(
                 "Could not run unit test, uncertainties package not available."
             )
