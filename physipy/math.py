@@ -77,7 +77,6 @@ implementations = {
     "any_to_same": [
         math.fsum,
     ]
-
     # math.pow(x, y)
 }
 
@@ -86,6 +85,7 @@ def decorator_one_in_same_out(math_func):
     def decorated(x):
         x = quantify(x)
         return Quantity(math_func(x.value), x.dimension)
+
     return decorated
 
 
@@ -102,6 +102,7 @@ def decorator_two_same_in_same_out(math_func):
         if not x.dimension == y.dimension:
             raise DimensionError(x.dimension, y.dimension)
         return Quantity(math_func(x.value, y.value), x.dimension)
+
     return decorated
 
 
@@ -113,6 +114,7 @@ def decorator_any_bool(math_func):
     def decorated(x):
         x = quantify(x)
         return math_func(x.value)
+
     return decorated
 
 
@@ -124,10 +126,10 @@ isnan = decorator_any_bool(math.isnan)
 def decorator_angle_or_dimless_to_dimless(math_func):
     def decorated(x):
         x = quantify(x)
-        if not (x.dimension == Dimension(None)
-                or x.dimension == Dimension("RAD")):
+        if not (x.dimension == Dimension(None) or x.dimension == Dimension("RAD")):
             raise DimensionError(x.dimension, Dimension(None))
         return math_func(x.value)
+
     return decorated
 
 
@@ -147,6 +149,7 @@ def decorator_dimless_to_dimless(math_func):
         if not (x.dimension == Dimension(None)):
             raise DimensionError(x.dimension, Dimension(None))
         return math_func(x.value)
+
     return decorated
 
 
@@ -163,6 +166,7 @@ def decorator_two_same_to_dimless(math_func):
         y = quantify(y)
         x = quantify(x)
         return math_func(y.value, x.value)
+
     return decorated
 
 
@@ -178,6 +182,7 @@ def copysign(x, y):
 def decorator_not_implemented(math_func):
     def decorated(*args):
         raise NotImplementedError
+
     return decorated
 
 
@@ -222,6 +227,7 @@ def decorator_any_to_same(math_func):
     def decorated(x):
         x = quantify(x)
         return Quantity(math_func(x.value), x.dimension)
+
     return decorated
 
 

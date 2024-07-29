@@ -30,13 +30,14 @@ setup(
     author="mocquin",
     author_email="mocquin@me.com",
     license="MIT",
-    keywords='physics physical unit units dimension quantity quantities',
+    keywords="physics physical unit units dimension quantity quantities",
     packages=find_packages(exclude=("test", "benchmarks")),
     # add content of MANIFEST
     include_package_data=True,
-    install_requires=["numpy",
-                      "scipy",
-                      "sympy",
-                      "matplotlib",
-                      ]
+    install_requires=[
+        "numpy",
+        "scipy",
+        "sympy",
+        "matplotlib",
+    ],
 )

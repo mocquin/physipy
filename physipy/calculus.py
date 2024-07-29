@@ -44,9 +44,11 @@ def xvectorize(func: Callable) -> Callable:
     callable
         Decorated function.
     """
+
     def vec_func(x):
         res = asqarray([func(i) for i in x])
         return res
+
     return vec_func
 
 
@@ -74,10 +76,12 @@ def ndvectorize(func: Callable) -> Callable:
     callable
         Decorated function.
     """
+
     def vec_func(x):
         res = asqarray([func(i) for i in x.flat])
         res.value = res.value.reshape(x.shape)
         return res
+
     return vec_func
 
 
@@ -107,13 +111,10 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     return int_xy
 
 
-
-
-
 def quad(func, x0, x1, *oargs, args=(), **kwargs):
     """A wrapper on scipy.integrate.quad :
-         - will check dimensions of x0 and x1 bounds
-         - returned value's dimension is infered by calling func(x0)
+    - will check dimensions of x0 and x1 bounds
+    - returned value's dimension is infered by calling func(x0)
     """
     # Cast x bounds in Quantity and check dimension
     x0 = quantify(x0)
@@ -137,12 +138,11 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
         return raw.value
 
     # compute integral with float-value version
-    quad_value, prec = scipy.integrate.quad(func_value,
-                                            x0.value, x1.value,
-                                            *oargs, **kwargs)
+    quad_value, prec = scipy.integrate.quad(
+        func_value, x0.value, x1.value, *oargs, **kwargs
+    )
     # cast back in Quantity with dimension f(x)dx
-    return Quantity(quad_value,
-                    res_dim * x0.dimension).rm_dim_if_dimless(), prec
+    return Quantity(quad_value, res_dim * x0.dimension).rm_dim_if_dimless(), prec
 
 
 def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
@@ -167,12 +167,15 @@ def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
         raw = quantify(res_raw)
         return raw.value
 
-    dblquad_value, prec = scipy.integrate.dblquad(func_value,
-                                                  x0.value, x1.value,
-                                                  y0.value, y1.value,
-                                                  *oargs, **kwargs)
-    return Quantity(dblquad_value, res_dim * x0.dimension *
-                    y0.dimension).rm_dim_if_dimless(), prec
+    dblquad_value, prec = scipy.integrate.dblquad(
+        func_value, x0.value, x1.value, y0.value, y1.value, *oargs, **kwargs
+    )
+    return (
+        Quantity(
+            dblquad_value, res_dim * x0.dimension * y0.dimension
+        ).rm_dim_if_dimless(),
+        prec,
+    )
 
 
 def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
@@ -202,27 +205,36 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
         raw = quantify(res_raw)
         return raw.value
 
-    tplquad_value, prec = scipy.integrate.tplquad(func_value,
-                                                  x0.value, x1.value,
-                                                  y0.value, y1.value,
-                                                  z0.value, z1.value,
-                                                  args=args)
-    return Quantity(tplquad_value, res_dim * x0.dimension *
-                    y0.dimension * z0.dimension).rm_dim_if_dimless(), prec
+    tplquad_value, prec = scipy.integrate.tplquad(
+        func_value,
+        x0.value,
+        x1.value,
+        y0.value,
+        y1.value,
+        z0.value,
+        z1.value,
+        args=args,
+    )
+    return (
+        Quantity(
+            tplquad_value, res_dim * x0.dimension * y0.dimension * z0.dimension
+        ).rm_dim_if_dimless(),
+        prec,
+    )
 
 
 def solve_ivp(
-        fun,
-        t_span,
-        Y0,
-        method='RK45',
-        t_eval=None,
-        dense_output=False,
-        events=None,
-        vectorized=False,
-        args=None,
-        **options):
-
+    fun,
+    t_span,
+    Y0,
+    method="RK45",
+    t_eval=None,
+    dense_output=False,
+    events=None,
+    vectorized=False,
+    args=None,
+    **options,
+):
     not_scalar = len(Y0) > 1
 
     # first, quantify everything that could be quantity
@@ -252,8 +264,10 @@ def solve_ivp(
         # add back the units
         t = Quantity(t_value, t_span[0].dimension)
         if not_scalar:
-            Y = np.array([Quantity(y_value, y0.dimension)
-                         for y_value, y0 in zip(Y_value, Y0)], dtype=object)
+            Y = np.array(
+                [Quantity(y_value, y0.dimension) for y_value, y0 in zip(Y_value, Y0)],
+                dtype=object,
+            )
         else:
             Y = Quantity(Y_value, Y0[0].dimension)
         # compute with units
@@ -278,7 +292,7 @@ def solve_ivp(
         events=events,
         vectorized=vectorized,
         args=args,
-        **options
+        **options,
     )
 
     # "decorate" the solution with units
@@ -287,8 +301,7 @@ def solve_ivp(
     if not_scalar:
         # soly_q =
         # arr_q = soly_q  # np.array(soly_q, dtype=object)
-        sol.y = [Quantity(y_value, y0.dimension)
-                 for y_value, y0 in zip(sol.y, Y0)]
+        sol.y = [Quantity(y_value, y0.dimension) for y_value, y0 in zip(sol.y, Y0)]
     else:
         sol.y = Quantity(sol.y, Y0[0].dimension)
 
@@ -298,10 +311,9 @@ def solve_ivp(
     @check_dimension(t_span[0].dimension)
     def sol_q(t):
         return Quantity(func_sol(t), Y0[0].dimension)  # /t_span[0].dimension)
+
     sol.sol = sol_q
     return sol
-
-
 
 
 # Generique
@@ -313,12 +325,12 @@ def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
     def func_cal_float(x_float):
         q = Quantity(x_float, start_dim)
         return func_cal(q, *args)
+
     res = scipy.optimize.root(func_cal_float, start_val, **kwargs).x[0]
     return Quantity(res, start_dim)
 
 
-def brentq(func_cal: Callable, start, stop, *
-           oargs, args=(), **kwargs) -> Quantity:
+def brentq(func_cal: Callable, start, stop, *oargs, args=(), **kwargs) -> Quantity:
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:

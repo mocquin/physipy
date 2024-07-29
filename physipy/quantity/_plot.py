@@ -12,8 +12,8 @@ munits_registry = munits.registry
 
 all_units = {**units, **imperial_units}
 
-class QuantityConverter(munits.ConversionInterface):
 
+class QuantityConverter(munits.ConversionInterface):
     @staticmethod
     def default_units(q, axis):
         if axis.units is not None:
@@ -35,7 +35,7 @@ class QuantityConverter(munits.ConversionInterface):
         if axis.units is not None:
             if not q_unit.dimension == axis.units.dimension:
                 raise DimensionError(q_unit.dimension, axis.units.dimension)
-        return munits.AxisInfo(label='{}'.format(q_unit.symbol))
+        return munits.AxisInfo(label="{}".format(q_unit.symbol))
 
     def convert(self, q, q_unit, axis):
         if isinstance(q, (tuple, list)):
@@ -46,7 +46,8 @@ class QuantityConverter(munits.ConversionInterface):
     def _convert(self, q, q_unit, axis):
         if not isinstance(q_unit, Quantity):
             raise TypeError(
-                f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}")
+                f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}"
+            )
         return q._plot_get_value_for_plot(q_unit)
 
 
@@ -63,8 +64,8 @@ def setup_matplotlib(enable: bool = True) -> None:
     None
 
     """
-    if matplotlib.__version__ < '2.0':
-        raise RuntimeError('Matplotlib >= 2.0 required to work with units.')
+    if matplotlib.__version__ < "2.0":
+        raise RuntimeError("Matplotlib >= 2.0 required to work with units.")
     if not enable:
         munits_registry.pop(Quantity, None)
     else:
@@ -83,15 +84,12 @@ def plotting_context():
     # Get all subclass for Quantity, since matplotlib checks on class,
     # not subclass.
     def all_issubclass(cls):
-        return {cls}.union(
-            [s for c in cls.__subclasses__() for s in all_issubclass(c)])
+        return {cls}.union([s for c in cls.__subclasses__() for s in all_issubclass(c)])
 
     class MplQuantityConverter(QuantityConverter):
-
         _all_issubclass_quantity = all_issubclass(Quantity)
 
         def __init__(self):
-
             # Keep track of original converter in case the context manager is
             # used in a nested way.
             self._original_converter = {}

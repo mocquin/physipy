@@ -74,7 +74,9 @@ def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:
 
         def _with_tracked(self):
             return _cache(self, attrs(self))
+
         return property(_with_tracked, doc=func.__doc__)
+
     return decorator
 
 
@@ -170,8 +172,7 @@ def _parse_str_to_dic(exp_str: str) -> dict:
     parse_expr
     """
     parsed = parse_expr(exp_str)
-    exp_dic = {str(key): value for key,
-               value in parsed.as_powers_dict().items()}
+    exp_dic = {str(key): value for key, value in parsed.as_powers_dict().items()}
     return exp_dic
 
 
@@ -244,8 +245,7 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     else:
         final_stop = quantify(stop)
         if not final_stop.dimension == final_start_or_stop.dimension:
-            raise DimensionError(
-                final_start_or_stop.dimension, final_stop.dimension)
+            raise DimensionError(final_start_or_stop.dimension, final_stop.dimension)
         qwargs["stop"] = final_stop.value
 
     # step param
@@ -254,8 +254,7 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     else:
         final_step = quantify(step)
         if not final_step.dimension == final_start_or_stop.dimension:
-            raise DimensionError(
-                final_start_or_stop.dimension, final_step.dimension)
+            raise DimensionError(final_start_or_stop.dimension, final_step.dimension)
         qwargs["step"] = final_step.value
 
     # final call
@@ -361,7 +360,9 @@ def check_dimension(units_in=None, units_out=None) -> Callable:
 
             # still return funcntion outputs
             return tuple(ress) if len(ress) > 1 else ress[0]
+
         return decorated_func
+
     return decorator
 
 
@@ -407,12 +408,17 @@ def set_favunit(*favunits_out) -> Callable:
             ress = _iterify(func(*args, **kwargs))
             # turn outputs to quantity with favunit
             ress_with_favunit = [
-                make_quantity(
-                    res, favunit=favunit) for res, favunit in zip(
-                    ress, favunits_out)]
-            return tuple(ress_with_favunit) if len(
-                ress_with_favunit) > 1 else ress_with_favunit[0]
+                make_quantity(res, favunit=favunit)
+                for res, favunit in zip(ress, favunits_out)
+            ]
+            return (
+                tuple(ress_with_favunit)
+                if len(ress_with_favunit) > 1
+                else ress_with_favunit[0]
+            )
+
         return decorated_func
+
     return decorator
 
 
@@ -429,8 +435,10 @@ def dimension_and_favunit(inputs=[], outputs=[]) -> Callable:
     set_favunit : Decorator to add favunit to outputs.
     check_dimension : Decorator to check dimension of inputs and outputs.
     """
+
     def decorator(func):
         return set_favunit(outputs)(check_dimension(inputs, outputs)(func))
+
     return decorator
 
 
@@ -462,7 +470,9 @@ def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
                 else:
                     arg_unitless.append(Quantity(arg / unit, unit.dimension))
             return func(*arg_unitless, **kwargs)
+
         return decorated
+
     return decorator
 
 
@@ -483,11 +493,13 @@ def drop_dimension(func: Callable) -> Callable:
     >>> print(sum_length_from_floats(1.2*m, 2*m))
     3.2
     """
+
     @functools.wraps(func)
     def dimension_dropped(*args, **kwargs):
         args = _iterify(args)
         value_args = [quantify(arg).value for arg in args]
         return func(*value_args, **kwargs)
+
     return dimension_dropped
 
 
@@ -510,7 +522,9 @@ def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
             # multiply each output by the unit
             ress_q = [res * unit for res, unit in zip(ress, unit_out)]
             return tuple(ress_q) if len(ress_q) > 1 else ress_q[0]
+
         return dimension_added_back_func
+
     return decorator
 
 
@@ -554,23 +568,27 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
                     list_inputs_value.append(arg.value)
                     # check if input name (=unit or expression) already exists
                     if input_name in dict_of_units and (
-                            not si_unit == dict_of_units[input_name]):
+                        not si_unit == dict_of_units[input_name]
+                    ):
                         raise DimensionError(
                             (arg._SI_unitary_quantity).dimension,
-                            (dict_of_units[input_name]).dimension)
+                            (dict_of_units[input_name]).dimension,
+                        )
                     # if input_name is new, add it's unit to dict
                     else:
                         dict_of_units[input_name] = arg._SI_unitary_quantity
             # compute expression using decorator ouputs
-            list_outputs_units = [eval(out_str, dict_of_units)
-                                  for out_str in outputs_str]
+            list_outputs_units = [
+                eval(out_str, dict_of_units) for out_str in outputs_str
+            ]
             # compute function res on values
             res_brute = _iterify(func(*list_inputs_value, **kwargs))
             # turn back raw outputs into quantities
-            res_q = [res * unit for res,
-                     unit in zip(res_brute, list_outputs_units)]
+            res_q = [res * unit for res, unit in zip(res_brute, list_outputs_units)]
             return tuple(res_q) if len(res_q) > 1 else res_q[0]
+
         return decorated
+
     return decorator
 
 
@@ -591,6 +609,7 @@ def wrap_with_unit(dim_as_str):
     # increment(2*m) would fail but not
     dec_increment(2*m)
     """
+
     # define the decorator
     def decorator(func: Callable):
         # create a decorated func
@@ -600,26 +619,30 @@ def wrap_with_unit(dim_as_str):
             dim_in = x.dimension
             res = func(x.value)
             return Quantity(res, eval(dim_as_str, {"x": dim_in}))
+
         return decorated_func
+
     return decorator
 
 
 def composed_decs(*decs: tuple[Callable]) -> Callable:
     """A wrapper to combine multiple decorators"""
+
     def deco(f):
         for dec in reversed(decs):
             f = dec(f)
         return f
+
     return deco
 
 
 def latex_parse_eq(eq):
     """Tests cases :
-     - v = d/t
-     - 2piRC
-     - 1/(2piRC)
-     - use of sqrt, quad
-     - parse lmbda, nu, exp
+    - v = d/t
+    - 2piRC
+    - 1/(2piRC)
+    - use of sqrt, quad
+    - parse lmbda, nu, exp
     """
     # if "$" in eq:
     #    return eq
@@ -635,17 +658,21 @@ def latex_parse_eq(eq):
 def latex_eq(eqn) -> Callable:
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
+
     def wrapper(f):
         f.latex = latex_parse_eq(eqn)
         return f
+
     return wrapper
 
 
 def name_eq(name) -> Callable:
     """add a 'name' attribute (a string most likely) to a function"""
+
     def wrapper(f):
         f.name = name
         return f
+
     return wrapper
 
 
@@ -665,9 +692,10 @@ def _shape(lst):
         shapes = [ishape(x) if isinstance(x, list) else [] for x in lst]
         shape = shapes[0]
         if shapes.count(shape) != len(shapes):
-            raise ValueError('Ragged list')
+            raise ValueError("Ragged list")
         shape.append(len(lst))
         return shape
+
     return tuple(reversed(ishape(lst)))
 
 

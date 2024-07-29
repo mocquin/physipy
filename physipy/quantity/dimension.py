@@ -485,27 +485,25 @@ def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol | i
 
 
 DIMENSIONALITY = {
-    "dimensionless":      Dimension(None),
+    "dimensionless": Dimension(None),
     # Base dimension
-    "length":             Dimension("L"),
-    "mass":               Dimension("M"),
-    "time":               Dimension("T"),
-    "electric_current":   Dimension("I"),
-    "temperature":        Dimension("theta"),
+    "length": Dimension("L"),
+    "mass": Dimension("M"),
+    "time": Dimension("T"),
+    "electric_current": Dimension("I"),
+    "temperature": Dimension("theta"),
     "amount_of_substance": Dimension("N"),
     "luminous_intensity": Dimension("J"),
-    "plane_angle":        Dimension("RAD"),
-    "solid_angle":        Dimension("SR"),
-
+    "plane_angle": Dimension("RAD"),
+    "solid_angle": Dimension("SR"),
     #
-    "area":               Dimension({"L": 2}),
-    "volume":             Dimension({"L": 3}),
-
-    "speed":              Dimension({"L": 1, "T": -1}),
-    "acceleration":       Dimension({"L": 1, "T": -2}),
-    "force":              Dimension({"M": 1, "L": 1, "T": -2}),
-    "energy":             Dimension({"M": 1, "L": 2, "T": -2}),
-    "power":              Dimension({"M": 1, "L": 2, "T": -3}),
-    "capacitance":        Dimension({"M": -1, "L": -2, "T": 4, "I": 2}),
-    "voltage":            Dimension({"M": 1, "L": 2, "T": -3, "I": -1}),
+    "area": Dimension({"L": 2}),
+    "volume": Dimension({"L": 3}),
+    "speed": Dimension({"L": 1, "T": -1}),
+    "acceleration": Dimension({"L": 1, "T": -2}),
+    "force": Dimension({"M": 1, "L": 1, "T": -2}),
+    "energy": Dimension({"M": 1, "L": 2, "T": -2}),
+    "power": Dimension({"M": 1, "L": 2, "T": -3}),
+    "capacitance": Dimension({"M": -1, "L": -2, "T": 4, "I": 2}),
+    "voltage": Dimension({"M": 1, "L": 2, "T": -3, "I": -1}),
 }

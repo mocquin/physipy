@@ -7,8 +7,23 @@ This is the __init__ docstring of physipy.
 
 from ._version import __version__
 
-from .quantity import Quantity, Dimension, make_quantity, quantify, DimensionError, dimensionify
-from .quantity import check_dimension, set_favunit, dimension_and_favunit, drop_dimension, decorate_with_various_unit, add_back_unit_param, asqarray
+from .quantity import (
+    Quantity,
+    Dimension,
+    make_quantity,
+    quantify,
+    DimensionError,
+    dimensionify,
+)
+from .quantity import (
+    check_dimension,
+    set_favunit,
+    dimension_and_favunit,
+    drop_dimension,
+    decorate_with_various_unit,
+    add_back_unit_param,
+    asqarray,
+)
 
 from .quantity import setup_matplotlib, plotting_context
 from .quantity import utils
