@@ -83,10 +83,10 @@ DEFAULT_SYMBOL = "UndefinedSymbol"
 # SCIENTIFIC = '%.' + str(DISPLAY_DIGITS) + 'E' # (syntaxe : "%.2f" % mon_nombre
 # CLASSIC =  '%.' + str(DISPLAY_DIGITS) + 'f'
 
-HANDLED_FUNCTIONS = {}
+HANDLED_FUNCTIONS: dict[Callable, Callable] = {}
 
 
-VALUE_PROPERTY_BACKENDS = {}
+VALUE_PROPERTY_BACKENDS: dict[type, dict] = {}
 
 
 def register_property_backend(klass, interface_dict=None):
