@@ -10,3 +10,4 @@ repos:
         entry: python hooks/run_unittests.py
         language: system
         verbose: true
+        files: \.py$
