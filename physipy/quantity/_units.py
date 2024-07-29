@@ -36,7 +36,13 @@ TODO :
 from __future__ import annotations
 
 from math import pi
-from .quantity import Quantity, Dimension, SI_UNIT_SYMBOL, quantify, make_quantity
+from .quantity import (
+    Quantity,
+    Dimension,
+    SI_UNIT_SYMBOL,
+    quantify,
+    make_quantity,
+)
 
 
 # Dictionnary of prefixes
@@ -96,12 +102,16 @@ def _CREATE_BASE_SI_UNIT_DICT(
                 continue
             # Update dic
             dic[prefixed_unit_symbol] = Quantity(
-                prefix_value, Dimension(dim_symbol), symbol=prefixed_unit_symbol
+                prefix_value,
+                Dimension(dim_symbol),
+                symbol=prefixed_unit_symbol,
             )
     return dic
 
 
-def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dict:
+def prefix_units(
+    prefix_dic: dict, unit_dict: dict, extend: bool = False
+) -> dict:
     """Return a dict of unit with all combination between the input unit dict and the prefix dict.
 
     Parameters
@@ -130,7 +140,9 @@ def prefix_units(prefix_dic: dict, unit_dict: dict, extend: bool = False) -> dic
 
 
 def _make_quantity_dict_with_symbols(dic):
-    return {key: make_quantity(value, symbol=key) for key, value in dic.items()}
+    return {
+        key: make_quantity(value, symbol=key) for key, value in dic.items()
+    }
 
 
 # Init of SI inits dict
@@ -252,7 +264,10 @@ raw_imperial_units = {
     "kn": 1852 * m / h,
     # FORCE
     "lbf": (32.174049 * 16 * 28.349523125 * g) * (12 * 2.54 * cm) * s ** (-2),
-    "kip": 1000 * (32.174049 * 16 * 28.349523125 * g) * (12 * 2.54 * cm) * s ** (-2),
+    "kip": 1000
+    * (32.174049 * 16 * 28.349523125 * g)
+    * (12 * 2.54 * cm)
+    * s ** (-2),
     # ENERGY
     "BTU": 1.05505585 * kJ,
     "cal": 4.184 * J,
@@ -271,5 +286,6 @@ raw_imperial_units = {
 
 # imperial unit dict
 imperial_units = {
-    key: make_quantity(value, symbol=key) for key, value in raw_imperial_units.items()
+    key: make_quantity(value, symbol=key)
+    for key, value in raw_imperial_units.items()
 }

@@ -2,7 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from ._units import units, imperial_units
-from .quantity import Quantity, Dimension, quantify, make_quantity, DimensionError
+from .quantity import (
+    Quantity,
+    Dimension,
+    quantify,
+    make_quantity,
+    DimensionError,
+)
 import matplotlib
 import numpy as np
 import matplotlib.units as munits
@@ -84,7 +90,9 @@ def plotting_context():
     # Get all subclass for Quantity, since matplotlib checks on class,
     # not subclass.
     def all_issubclass(cls):
-        return {cls}.union([s for c in cls.__subclasses__() for s in all_issubclass(c)])
+        return {cls}.union(
+            [s for c in cls.__subclasses__() for s in all_issubclass(c)]
+        )
 
     class MplQuantityConverter(QuantityConverter):
         _all_issubclass_quantity = all_issubclass(Quantity)

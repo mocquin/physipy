@@ -74,7 +74,9 @@ class TestNumpyFunctions(unittest.TestCase):
 
     def test_nanpercentile(self):
         expected_percentile = 3 * m
-        self.assertAlmostEqual(np.nanpercentile(self.arr, 50), expected_percentile)
+        self.assertAlmostEqual(
+            np.nanpercentile(self.arr, 50), expected_percentile
+        )
 
     def test_nanprod(self):
         # 4 or 5 ? should nan's dimension be ignored ?
@@ -88,7 +90,9 @@ class TestNumpyFunctions(unittest.TestCase):
     def test_nancumsum(self):
         expected_cumsum = np.array([1, 3, 3, 7, 12]) * m
         self.assertTrue(
-            np.allclose(np.nancumsum(self.arr), expected_cumsum, atol=1e-08 * m)
+            np.allclose(
+                np.nancumsum(self.arr), expected_cumsum, atol=1e-08 * m
+            )
         )
 
     def test_nanmin_1d(self):
@@ -126,7 +130,9 @@ class TestNumpyFunctions(unittest.TestCase):
 
     def test_nanmin_3d_extra_axis_none(self):
         expected_min = 1 * m
-        self.assertAlmostEqual(np.nanmin(self.arr_3d_extra, axis=None), expected_min)
+        self.assertAlmostEqual(
+            np.nanmin(self.arr_3d_extra, axis=None), expected_min
+        )
 
     def test_nanvar_3d_extra_axis_1_2(self):
         res = np.nanvar(self.arr_3d_extra, axis=(1, 2))

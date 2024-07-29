@@ -98,7 +98,8 @@ class TestDimension(unittest.TestCase):
 
     def test_040_mul(self):
         self.assertEqual(
-            self.m * self.dim_complexe, Dimension({"J": 1, "L": 1, "theta": -3})
+            self.m * self.dim_complexe,
+            Dimension({"J": 1, "L": 1, "theta": -3}),
         )
 
         # Multipliying by a number, not a Dimension object
@@ -107,7 +108,8 @@ class TestDimension(unittest.TestCase):
 
     def test_050_div(self):
         self.assertEqual(
-            self.m / self.dim_complexe, Dimension({"J": -1, "L": 1, "theta": 3})
+            self.m / self.dim_complexe,
+            Dimension({"J": -1, "L": 1, "theta": 3}),
         )
         # Testing the inversion by dividing 1
         self.assertEqual(1 / self.m, Dimension({"L": -1}))
@@ -123,7 +125,9 @@ class TestDimension(unittest.TestCase):
         self.assertEqual(self.m**2, Dimension({"L": 2}))
         self.assertEqual(self.m ** (1 / 2), Dimension({"L": 1 / 2}))
         self.assertEqual(self.m**1.2, Dimension({"L": 1.2}))
-        self.assertEqual(self.m ** Fraction(1 / 2), Dimension({"L": Fraction(1 / 2)}))
+        self.assertEqual(
+            self.m ** Fraction(1 / 2), Dimension({"L": Fraction(1 / 2)})
+        )
 
         # complex
         # self.assertRaises(TypeError, lambda: self.m ** 1.2j)

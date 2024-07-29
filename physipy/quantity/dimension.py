@@ -73,7 +73,9 @@ def parse_str_to_dic(exp_str: str) -> dict:
     parsed = parse_expr(
         exp_str, global_dict={"Symbol": sp_Symbol, "Integer": sp_Integer}
     )
-    exp_dic = {str(key): value for key, value in parsed.as_powers_dict().items()}
+    exp_dic = {
+        str(key): value for key, value in parsed.as_powers_dict().items()
+    }
     return exp_dic
 
 
@@ -110,7 +112,9 @@ def check_pattern(exp_str: str, symbol_list: list) -> bool:
 class DimensionError(Exception):
     """Exception class for dimension errors."""
 
-    def __init__(self, dim_1: Dimension, dim_2: Dimension, binary: bool = True) -> None:
+    def __init__(
+        self, dim_1: Dimension, dim_2: Dimension, binary: bool = True
+    ) -> None:
         """Init method of DimensionError class."""
         if binary:
             self.message = (
@@ -144,12 +148,14 @@ class Dimension(object):
             pass  # dim_dict already initialized
         # most of the time, the definition is a dim_dict of another quantity
         # so it already has the good shape
-        elif isinstance(definition, dict) and set(list(definition.keys())) == set(
-            SI_SYMBOL_LIST
-        ):
+        elif isinstance(definition, dict) and set(
+            list(definition.keys())
+        ) == set(SI_SYMBOL_LIST):
             self.dim_dict = definition
         # example : {"L":1, "T":-2}
-        elif isinstance(definition, dict) and set(list(definition.keys())).issubset(
+        elif isinstance(definition, dict) and set(
+            list(definition.keys())
+        ).issubset(
             SI_SYMBOL_LIST
         ):  # and
             # all([np.isscalar(v) for v in definition.values()])):
@@ -232,7 +238,8 @@ class Dimension(object):
         # if isinstance(y, Dimension):
         try:
             new_dim_dict = {
-                d: self.dim_dict[d] + y.dim_dict[d] for d in self.dim_dict.keys()
+                d: self.dim_dict[d] + y.dim_dict[d]
+                for d in self.dim_dict.keys()
             }
             return Dimension(new_dim_dict)
         except Exception as e:
@@ -265,7 +272,8 @@ class Dimension(object):
         # if isinstance(y, Dimension):
         try:
             new_dim_dict = {
-                d: self.dim_dict[d] - y.dim_dict[d] for d in self.dim_dict.keys()
+                d: self.dim_dict[d] - y.dim_dict[d]
+                for d in self.dim_dict.keys()
             }
             return Dimension(new_dim_dict)
         # elif y == 1:  # allowing division by one
@@ -320,7 +328,9 @@ class Dimension(object):
             The raised Dimension.
         """
         if np.isscalar(y):
-            new_dim_dict = {d: self.dim_dict[d] * y for d in self.dim_dict.keys()}
+            new_dim_dict = {
+                d: self.dim_dict[d] * y for d in self.dim_dict.keys()
+            }
             return Dimension(new_dim_dict)
         else:
             raise TypeError(
@@ -368,7 +378,9 @@ class Dimension(object):
         dict
             A dict with keys the SI-unit symbols and values the corresponding exponent.
         """
-        return {SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()}
+        return {
+            SI_UNIT_SYMBOL[key]: value for key, value in self.dim_dict.items()
+        }
 
     def str_SI_unit(self: Dimension) -> str:
         """Compute the symbol-wise SI unit equivalent of the Dimension.
@@ -424,7 +436,9 @@ class Dimension(object):
 DIMENSIONLESS = Dimension(None)
 
 
-def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str:
+def compute_str(
+    power_dict: dict, default_str: str, output_init: int = 1
+) -> str:
     """Convert power-dict to a string expression equivalent.
 
     Compute the product-concatenation of the
@@ -457,7 +471,9 @@ def compute_str(power_dict: dict, default_str: str, output_init: int = 1) -> str
         return str(output)
 
 
-def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> sp_Symbol | int:
+def expand_dict_to_expr(
+    power_dict: dict, output_init: int = 1
+) -> sp_Symbol | int:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
     Used for 'str' and 'repr' methods of Dimension.

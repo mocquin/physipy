@@ -8,11 +8,19 @@ from functools import lru_cache
 from operator import attrgetter
 
 import numpy as np
-from numpy import array as np_array  # faster to import once since used in a loop
+from numpy import (
+    array as np_array,
+)  # faster to import once since used in a loop
 
 from sympy.parsing.sympy_parser import parse_expr
 
-from .quantity import Quantity, DimensionError, dimensionify, quantify, make_quantity
+from .quantity import (
+    Quantity,
+    DimensionError,
+    dimensionify,
+    quantify,
+    make_quantity,
+)
 
 
 def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:
@@ -172,7 +180,9 @@ def _parse_str_to_dic(exp_str: str) -> dict:
     parse_expr
     """
     parsed = parse_expr(exp_str)
-    exp_dic = {str(key): value for key, value in parsed.as_powers_dict().items()}
+    exp_dic = {
+        str(key): value for key, value in parsed.as_powers_dict().items()
+    }
     return exp_dic
 
 
@@ -245,7 +255,9 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     else:
         final_stop = quantify(stop)
         if not final_stop.dimension == final_start_or_stop.dimension:
-            raise DimensionError(final_start_or_stop.dimension, final_stop.dimension)
+            raise DimensionError(
+                final_start_or_stop.dimension, final_stop.dimension
+            )
         qwargs["stop"] = final_stop.value
 
     # step param
@@ -254,7 +266,9 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     else:
         final_step = quantify(step)
         if not final_step.dimension == final_start_or_stop.dimension:
-            raise DimensionError(final_start_or_stop.dimension, final_step.dimension)
+            raise DimensionError(
+                final_start_or_stop.dimension, final_step.dimension
+            )
         qwargs["step"] = final_step.value
 
     # final call
@@ -584,7 +598,9 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
             # compute function res on values
             res_brute = _iterify(func(*list_inputs_value, **kwargs))
             # turn back raw outputs into quantities
-            res_q = [res * unit for res, unit in zip(res_brute, list_outputs_units)]
+            res_q = [
+                res * unit for res, unit in zip(res_brute, list_outputs_units)
+            ]
             return tuple(res_q) if len(res_q) > 1 else res_q[0]
 
         return decorated

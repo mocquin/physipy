@@ -76,7 +76,7 @@ implementations = {
     ],
     "any_to_same": [
         math.fsum,
-    ]
+    ],
     # math.pow(x, y)
 }
 
@@ -126,7 +126,9 @@ isnan = decorator_any_bool(math.isnan)
 def decorator_angle_or_dimless_to_dimless(math_func):
     def decorated(x):
         x = quantify(x)
-        if not (x.dimension == Dimension(None) or x.dimension == Dimension("RAD")):
+        if not (
+            x.dimension == Dimension(None) or x.dimension == Dimension("RAD")
+        ):
             raise DimensionError(x.dimension, Dimension(None))
         return math_func(x.value)
 

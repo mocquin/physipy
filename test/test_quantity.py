@@ -35,7 +35,12 @@ from physipy.quantity import (
     add_back_unit_param,
     decorate_with_various_unit,
 )
-from physipy.quantity.utils import asqarray, hard_equal, very_hard_equal, qarange
+from physipy.quantity.utils import (
+    asqarray,
+    hard_equal,
+    very_hard_equal,
+    qarange,
+)
 import physipy
 
 import doctest
@@ -165,23 +170,34 @@ class TestQuantity(unittest.TestCase):
         # creation
         # from list
         self.assertTrue(
-            np.all(Quantity([1, 2, 3], Dimension("L")) == np.array([1, 2, 3]) * m)
+            np.all(
+                Quantity([1, 2, 3], Dimension("L")) == np.array([1, 2, 3]) * m
+            )
         )
-        self.assertTrue(np.all(Quantity([1], Dimension("L")) == np.array([1]) * m))
+        self.assertTrue(
+            np.all(Quantity([1], Dimension("L")) == np.array([1]) * m)
+        )
         # from tuple
         self.assertTrue(
-            np.all(Quantity((1, 2, 3), Dimension("L")) == np.array([1, 2, 3]) * m)
+            np.all(
+                Quantity((1, 2, 3), Dimension("L")) == np.array([1, 2, 3]) * m
+            )
         )
-        self.assertTrue(np.all(Quantity((1,), Dimension("L")) == np.array([1]) * m))
+        self.assertTrue(
+            np.all(Quantity((1,), Dimension("L")) == np.array([1]) * m)
+        )
 
         # from ndarray
         self.assertTrue(
             np.all(
-                Quantity(np.array([1, 2, 3]), Dimension("L")) == np.array([1, 2, 3]) * m
+                Quantity(np.array([1, 2, 3]), Dimension("L"))
+                == np.array([1, 2, 3]) * m
             )
         )
         self.assertTrue(
-            np.all(Quantity(np.array([1]), Dimension("L")) == np.array([1]) * m)
+            np.all(
+                Quantity(np.array([1]), Dimension("L")) == np.array([1]) * m
+            )
         )
         self.assertTrue(
             np.all(Quantity(np.array(1), Dimension("L")) == np.array(1) * m)
@@ -223,15 +239,22 @@ class TestQuantity(unittest.TestCase):
         # by multiplicatin value with unit
         self.assertEqual(3 * m, Quantity(3, Dimension("L")))
         self.assertEqual(3.0 * m, Quantity(3.0, Dimension("L")))
-        self.assertEqual(Fraction(1, 2) * m, Quantity(Fraction(1, 2), Dimension("L")))
+        self.assertEqual(
+            Fraction(1, 2) * m, Quantity(Fraction(1, 2), Dimension("L"))
+        )
 
-        self.assertTrue(np.all([1, 2, 3] * m == Quantity([1, 2, 3], Dimension("L"))))
+        self.assertTrue(
+            np.all([1, 2, 3] * m == Quantity([1, 2, 3], Dimension("L")))
+        )
 
-        self.assertTrue(np.all((1, 2, 3) * m == Quantity((1, 2, 3), Dimension("L"))))
+        self.assertTrue(
+            np.all((1, 2, 3) * m == Quantity((1, 2, 3), Dimension("L")))
+        )
 
         self.assertTrue(
             np.all(
-                np.array([1, 2, 3]) * m == Quantity(np.array([1, 2, 3]), Dimension("L"))
+                np.array([1, 2, 3]) * m
+                == Quantity(np.array([1, 2, 3]), Dimension("L"))
             )
         )
 
@@ -337,7 +360,9 @@ class TestQuantity(unittest.TestCase):
         u = np.array([1, 2, 3, 4, 5]) * m
         u.favunit = Quantity(0.001, Dimension("L"), symbol="mm")
         self.assertEqual(u[2], 3 * m)
-        self.assertEqual(u[2].favunit, Quantity(0.001, Dimension("L"), symbol="mm"))
+        self.assertEqual(
+            u[2].favunit, Quantity(0.001, Dimension("L"), symbol="mm")
+        )
 
         # set item
         with self.assertRaises(DimensionError):
@@ -384,25 +409,38 @@ class TestQuantity(unittest.TestCase):
     def test_60_add_sub(self):
         with self.assertRaises(DimensionError):
             self.x_q + 1
-        self.assertEqual(self.x_q + self.x_q, Quantity(self.x * 2, Dimension("L")))
+        self.assertEqual(
+            self.x_q + self.x_q, Quantity(self.x * 2, Dimension("L"))
+        )
         self.assertEqual(self.x_q - self.x_q, Quantity(0, Dimension("L")))
 
     def test_70_mul(self):
         # Scalaire
         # Q * 2 et 2 * Q
-        self.assertEqual(self.x_q * 2, Quantity(self.x_q.value * 2, self.x_q.dimension))
-        self.assertEqual(2 * self.x_q, Quantity(2 * self.x_q.value, self.x_q.dimension))
+        self.assertEqual(
+            self.x_q * 2, Quantity(self.x_q.value * 2, self.x_q.dimension)
+        )
+        self.assertEqual(
+            2 * self.x_q, Quantity(2 * self.x_q.value, self.x_q.dimension)
+        )
         # Q * Q
         self.assertEqual(
-            self.x_q * self.x_q, Quantity(self.x_q.value**2, self.x_q.dimension**2)
+            self.x_q * self.x_q,
+            Quantity(self.x_q.value**2, self.x_q.dimension**2),
         )
         # array
         # Q * 2 et 2 * Q
         self.assertTrue(
-            np.all(self.y_q * 2 == Quantity(self.y_q.value * 2, self.y_q.dimension))
+            np.all(
+                self.y_q * 2
+                == Quantity(self.y_q.value * 2, self.y_q.dimension)
+            )
         )
         self.assertTrue(
-            np.all(2 * self.y_q == Quantity(2 * self.y_q.value, self.y_q.dimension))
+            np.all(
+                2 * self.y_q
+                == Quantity(2 * self.y_q.value, self.y_q.dimension)
+            )
         )
         # Q * Q
         self.assertTrue(
@@ -454,7 +492,8 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(self.y_q**1 == self.y_q))
         self.assertTrue(
             np.all(
-                self.y_q**2 == Quantity(self.y_q.value**2, self.y_q.dimension**2)
+                self.y_q**2
+                == Quantity(self.y_q.value**2, self.y_q.dimension**2)
             )
         )
         with self.assertRaises(TypeError):
@@ -468,7 +507,8 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(self.z_q**1 == self.z_q))
         self.assertTrue(
             np.all(
-                self.z_q**2 == Quantity(self.z_q.value**2, self.z_q.dimension**2)
+                self.z_q**2
+                == Quantity(self.z_q.value**2, self.z_q.dimension**2)
             )
         )
         with self.assertRaises(TypeError):
@@ -514,7 +554,8 @@ class TestQuantity(unittest.TestCase):
         # x_qsu
         self.assertEqual(self.x_qsu**1, self.x_qsu)
         self.assertEqual(
-            self.x_qsu**2, Quantity(self.x_qsu.value**2, self.x_qsu.dimension**2)
+            self.x_qsu**2,
+            Quantity(self.x_qsu.value**2, self.x_qsu.dimension**2),
         )
         self.assertEqual(self.x_qsu ** (self.x_qsu / self.x_qsu), self.x_qsu)
 
@@ -531,7 +572,8 @@ class TestQuantity(unittest.TestCase):
 
     def test_inverse(self):
         self.assertTrue(
-            Quantity(1, Dimension("M")).inverse() == Quantity(1, Dimension({"M": -1}))
+            Quantity(1, Dimension("M")).inverse()
+            == Quantity(1, Dimension({"M": -1}))
         )
 
     def test_90_getteur(self):
@@ -571,7 +613,9 @@ class TestQuantity(unittest.TestCase):
 
     def test_140_integrate(self):
         self.assertEqual(self.z_q.integrate(), Quantity(2, Dimension("L")))
-        self.assertEqual(2 * self.z_q.integrate(), 2 * Quantity(2, Dimension("L")))
+        self.assertEqual(
+            2 * self.z_q.integrate(), 2 * Quantity(2, Dimension("L"))
+        )
 
     def test_150_mean(self):
         self.assertEqual(self.z_q.mean(), Quantity(1, Dimension("L")))
@@ -586,7 +630,9 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(self.z_q.sum(), Quantity(3, Dimension("L")))
 
     def test_170_str(self):
-        self.assertEqual(str(Quantity(np.array([1, 2, 3]), Dimension(None))), "[1 2 3]")
+        self.assertEqual(
+            str(Quantity(np.array([1, 2, 3]), Dimension(None))), "[1 2 3]"
+        )
 
     def test_180_repr(self):
         self.assertEqual(repr(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
@@ -597,7 +643,9 @@ class TestQuantity(unittest.TestCase):
 
     def test_190_format(self):
         self.assertEqual("{!s}".format(Quantity(1, Dimension("L"))), "1 m")
-        self.assertEqual("{!r}".format(Quantity(1, Dimension("L"))), "<Quantity : 1 m>")
+        self.assertEqual(
+            "{!r}".format(Quantity(1, Dimension("L"))), "<Quantity : 1 m>"
+        )
 
     def test_np_round(self):
         arr = 1.9 + np.linspace(0, 1)
@@ -678,7 +726,9 @@ class TestQuantity(unittest.TestCase):
         # wrong dimension
         with self.assertRaises(DimensionError):
             self.assertTrue(
-                np.allclose(np.arange(10) * m, np.arange(10) * m, atol=(1e-8) * s)
+                np.allclose(
+                    np.arange(10) * m, np.arange(10) * m, atol=(1e-8) * s
+                )
             )
 
     # def test_np_all(self):
@@ -731,24 +781,34 @@ class TestQuantity(unittest.TestCase):
 
         # Numpy's min/max
         self.assertEqual(
-            np.max(self.y_q), Quantity(np.max(self.y_q.value), self.y_q.dimension)
+            np.max(self.y_q),
+            Quantity(np.max(self.y_q.value), self.y_q.dimension),
         )
         self.assertEqual(
-            np.min(self.y_q), Quantity(np.min(self.y_q.value), self.y_q.dimension)
+            np.min(self.y_q),
+            Quantity(np.min(self.y_q.value), self.y_q.dimension),
         )
         self.assertEqual(
-            np.amax(self.y_q), Quantity(np.amax(self.y_q.value), self.y_q.dimension)
+            np.amax(self.y_q),
+            Quantity(np.amax(self.y_q.value), self.y_q.dimension),
         )
         self.assertEqual(
-            np.amin(self.y_q), Quantity(np.amin(self.y_q.value), self.y_q.dimension)
+            np.amin(self.y_q),
+            Quantity(np.amin(self.y_q.value), self.y_q.dimension),
         )
 
     def test_has_integer_dimension_power(self):
-        self.assertTrue(Quantity(1, Dimension("L")).has_integer_dimension_power())
         self.assertTrue(
-            Quantity(1, Dimension({"L": -2, "M": 2})).has_integer_dimension_power()
+            Quantity(1, Dimension("L")).has_integer_dimension_power()
         )
-        self.assertTrue(Quantity(1, Dimension(None)).has_integer_dimension_power())
+        self.assertTrue(
+            Quantity(
+                1, Dimension({"L": -2, "M": 2})
+            ).has_integer_dimension_power()
+        )
+        self.assertTrue(
+            Quantity(1, Dimension(None)).has_integer_dimension_power()
+        )
 
         self.assertFalse(
             Quantity(1, Dimension({"L": 1.2})).has_integer_dimension_power()
@@ -800,7 +860,9 @@ class TestQuantity(unittest.TestCase):
             return x * y
 
         self.assertEqual(1.5, quad(toto, 0, 1, args=(3,))[0])
-        self.assertEqual(1.5 * m**2 * s, quad(toto, 0 * m, 1 * m, args=(3 * s,))[0])
+        self.assertEqual(
+            1.5 * m**2 * s, quad(toto, 0 * m, 1 * m, args=(3 * s,))[0]
+        )
 
     def test_root(self):
         def toto(t):
@@ -833,7 +895,8 @@ class TestQuantity(unittest.TestCase):
         array_1d = np.array([1, 2, 3, 4]) * m
         diagonal_matrix = np.diag(array_1d)
         expected = (
-            np.array([[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 4]]) * m
+            np.array([[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 4]])
+            * m
         )
         self.assertTrue((diagonal_matrix == expected).all())
 
@@ -861,11 +924,15 @@ class TestQuantity(unittest.TestCase):
             np.cos(self.x_q)
 
     def test_300_define_fraction(self):
-        self.assertEqual(Fraction(1, 2) * m, Quantity(Fraction(1, 2), Dimension("L")))
+        self.assertEqual(
+            Fraction(1, 2) * m, Quantity(Fraction(1, 2), Dimension("L"))
+        )
 
     def test_310_fraction_operation(self):
         self.assertEqual(Fraction(1, 2) * m * 2, Fraction(1, 1) * m)
-        self.assertEqual(Fraction(1, 2) * m + Fraction(1, 2) * m, Fraction(1, 1) * m)
+        self.assertEqual(
+            Fraction(1, 2) * m + Fraction(1, 2) * m, Fraction(1, 1) * m
+        )
         self.assertEqual(Fraction(1, 2) * m / 2, Fraction(1, 4) * m)
         self.assertEqual(2 / (Fraction(1, 2) * m), 4 * 1 / m)
         with self.assertRaises(DimensionError):
@@ -874,14 +941,18 @@ class TestQuantity(unittest.TestCase):
 
     def test_400_complex(self):
         self.assertEqual((1j + 1) * m, Quantity((1j + 1), Dimension("L")))
-        self.assertEqual((1j + 1) * m + 1 * m, Quantity((1j + 2), Dimension("L")))
+        self.assertEqual(
+            (1j + 1) * m + 1 * m, Quantity((1j + 2), Dimension("L"))
+        )
         self.assertEqual(
             (2j + 4) * m + (5j - 1) * m, Quantity((7j + 3), Dimension("L"))
         )
 
     def test_pos_neg(self):
         self.assertEqual(+m, m)
-        self.assertTrue(np.all(+np.array([1, 2, 3]) * m == np.array([1, 2, 3]) * m))
+        self.assertTrue(
+            np.all(+np.array([1, 2, 3]) * m == np.array([1, 2, 3]) * m)
+        )
         self.assertEqual(-m, Quantity(-1, Dimension("L")))
 
     def test_500_numpy_ufuncs(self):
@@ -906,47 +977,71 @@ class TestQuantity(unittest.TestCase):
             np.all(np.subtract(arr_m, m) == Quantity(arr - 1, Dimension("L")))
         )
         self.assertTrue(
-            np.all(np.subtract(arr_m, arr_m) == Quantity(0 * arr, Dimension("L")))
+            np.all(
+                np.subtract(arr_m, arr_m) == Quantity(0 * arr, Dimension("L"))
+            )
         )
 
         # mul
-        self.assertTrue(np.all(m * arr_m == Quantity(1 * arr, Dimension({"L": 2}))))
-        self.assertTrue(np.all(arr_m * m == Quantity(arr * 1, Dimension({"L": 2}))))
-
         self.assertTrue(
-            np.all(np.multiply(m, arr_m) == Quantity(1 * arr, Dimension({"L": 2})))
+            np.all(m * arr_m == Quantity(1 * arr, Dimension({"L": 2})))
         )
         self.assertTrue(
-            np.all(np.multiply(arr_m, m) == Quantity(arr * 1, Dimension({"L": 2})))
+            np.all(arr_m * m == Quantity(arr * 1, Dimension({"L": 2})))
+        )
+
+        self.assertTrue(
+            np.all(
+                np.multiply(m, arr_m) == Quantity(1 * arr, Dimension({"L": 2}))
+            )
         )
         self.assertTrue(
             np.all(
-                np.multiply(arr_m, arr_m) == Quantity(arr * arr, Dimension({"L": 2}))
+                np.multiply(arr_m, m) == Quantity(arr * 1, Dimension({"L": 2}))
+            )
+        )
+        self.assertTrue(
+            np.all(
+                np.multiply(arr_m, arr_m)
+                == Quantity(arr * arr, Dimension({"L": 2}))
             )
         )
 
         # matmul
         self.assertTrue(
-            np.all(np.matmul(arr_m, arr_m) == Quantity(arr @ arr, Dimension({"L": 2})))
+            np.all(
+                np.matmul(arr_m, arr_m)
+                == Quantity(arr @ arr, Dimension({"L": 2}))
+            )
         )
 
         # div
         self.assertTrue(np.all(m / arr_m == np.array([1 / 1, 1 / 2, 1 / 3])))
         self.assertTrue(np.all(arr_m / m == np.array([1.0, 2.0, 3.0])))
 
-        self.assertTrue(np.all(np.divide(m, arr_m) == np.array([1 / 1, 1 / 2, 1 / 3])))
-        self.assertTrue(np.all(np.divide(arr_m, m) == np.array([1.0, 2.0, 3.0])))
-        self.assertTrue(np.all(np.divide(arr_m, arr_m) == np.array([1.0, 1.0, 1.0])))
+        self.assertTrue(
+            np.all(np.divide(m, arr_m) == np.array([1 / 1, 1 / 2, 1 / 3]))
+        )
+        self.assertTrue(
+            np.all(np.divide(arr_m, m) == np.array([1.0, 2.0, 3.0]))
+        )
+        self.assertTrue(
+            np.all(np.divide(arr_m, arr_m) == np.array([1.0, 1.0, 1.0]))
+        )
 
         # logaddexp
         self.assertTrue(
             np.logaddexp(1, 2)
-            == np.logaddexp(Quantity(1, Dimension(None)), Quantity(2, Dimension(None)))
+            == np.logaddexp(
+                Quantity(1, Dimension(None)), Quantity(2, Dimension(None))
+            )
         )
 
         # true_divide
         self.assertTrue(np.true_divide(3 * m, 2 * m) == np.true_divide(3, 2))
-        self.assertTrue(np.true_divide(3 * m, 2 * s) == np.true_divide(3 * m, 2 * s))
+        self.assertTrue(
+            np.true_divide(3 * m, 2 * s) == np.true_divide(3 * m, 2 * s)
+        )
         self.assertTrue(np.true_divide(3 * m, 2) == np.true_divide(3, 2) * m)
 
         # floor_divide
@@ -974,7 +1069,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.mod(5 * m, 2 * m), 1 * m)
         self.assertTrue(
             np.all(
-                np.mod(np.arange(7) * m, 5 * m) == np.array([0, 1, 2, 3, 4, 0, 1]) * m
+                np.mod(np.arange(7) * m, 5 * m)
+                == np.array([0, 1, 2, 3, 4, 0, 1]) * m
             )
         )
 
@@ -1025,10 +1121,15 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.conjugate(3 * m), 3 * m)
         self.assertEqual(np.conjugate(3 * m + 2j * m), 3 * m - 2j * m)
         self.assertTrue(
-            np.all(np.conj(np.arange(3) * m + 1j * m) == np.arange(3) * m - 1j * m)
+            np.all(
+                np.conj(np.arange(3) * m + 1j * m) == np.arange(3) * m - 1j * m
+            )
         )
         self.assertTrue(
-            np.all(np.conjugate(np.arange(3) * m + 1j * m) == np.arange(3) * m - 1j * m)
+            np.all(
+                np.conjugate(np.arange(3) * m + 1j * m)
+                == np.arange(3) * m - 1j * m
+            )
         )
 
         # exp
@@ -1077,13 +1178,16 @@ class TestQuantity(unittest.TestCase):
 
         # square
         self.assertEqual(np.square(3 * m), (3 * m) ** 2)
-        self.assertTrue(np.all(np.square(np.arange(3) * m) == (np.arange(3) * m) ** 2))
+        self.assertTrue(
+            np.all(np.square(np.arange(3) * m) == (np.arange(3) * m) ** 2)
+        )
 
         # cbrt
         self.assertEqual(np.cbrt((3 * m)), (3 * m) ** (1 / 3))
         self.assertTrue(
             np.allclose(
-                np.cbrt((np.arange(3) * m)).value, ((np.arange(3) * m) ** (1 / 3)).value
+                np.cbrt((np.arange(3) * m)).value,
+                ((np.arange(3) * m) ** (1 / 3)).value,
             )
         )
 
@@ -1106,7 +1210,9 @@ class TestQuantity(unittest.TestCase):
 
         # hypot
         self.assertTrue(
-            np.all(np.hypot(m, m) == Quantity((1 + 1) ** (1 / 2), Dimension("L")))
+            np.all(
+                np.hypot(m, m) == Quantity((1 + 1) ** (1 / 2), Dimension("L"))
+            )
         )
         self.assertTrue(
             np.all(
@@ -1118,8 +1224,12 @@ class TestQuantity(unittest.TestCase):
 
         # greater
         self.assertTrue(np.all(np.greater(m, m) == False))
-        self.assertTrue(np.all(np.greater(m, arr_m) == np.array([False, False, False])))
-        self.assertTrue(np.all(np.greater(arr_m, m) == np.array([False, True, True])))
+        self.assertTrue(
+            np.all(np.greater(m, arr_m) == np.array([False, False, False]))
+        )
+        self.assertTrue(
+            np.all(np.greater(arr_m, m) == np.array([False, True, True]))
+        )
         self.assertTrue(
             np.all(np.greater(arr_m, arr_m) == np.array([False, False, False]))
         )
@@ -1127,26 +1237,36 @@ class TestQuantity(unittest.TestCase):
         # greater_or_equal
         self.assertTrue(np.all(np.greater_equal(m, m) == True))
         self.assertTrue(
-            np.all(np.greater_equal(m, arr_m) == np.array([True, False, False]))
+            np.all(
+                np.greater_equal(m, arr_m) == np.array([True, False, False])
+            )
         )
         self.assertTrue(
             np.all(np.greater_equal(arr_m, m) == np.array([True, True, True]))
         )
         self.assertTrue(
-            np.all(np.greater_equal(arr_m, arr_m) == np.array([True, True, True]))
+            np.all(
+                np.greater_equal(arr_m, arr_m) == np.array([True, True, True])
+            )
         )
 
         # less
         self.assertTrue(np.all(np.less(m, m) == False))
-        self.assertTrue(np.all(np.less(m, arr_m) == np.array([False, True, True])))
-        self.assertTrue(np.all(np.less(arr_m, m) == np.array([False, False, False])))
+        self.assertTrue(
+            np.all(np.less(m, arr_m) == np.array([False, True, True]))
+        )
+        self.assertTrue(
+            np.all(np.less(arr_m, m) == np.array([False, False, False]))
+        )
         self.assertTrue(
             np.all(np.less(arr_m, arr_m) == np.array([False, False, False]))
         )
 
         # less_or_equal
         self.assertTrue(np.all(np.less_equal(m, m) == True))
-        self.assertTrue(np.all(np.less_equal(m, arr_m) == np.array([True, True, True])))
+        self.assertTrue(
+            np.all(np.less_equal(m, arr_m) == np.array([True, True, True]))
+        )
         self.assertTrue(
             np.all(np.less_equal(arr_m, m) == np.array([True, False, False]))
         )
@@ -1182,8 +1302,12 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.copysign(m, 1), m)
         self.assertEqual(np.copysign(m, -1), -m)
 
-        self.assertTrue(np.all(np.copysign(m, arr_m) == np.array([1, 1, 1]) * m))
-        self.assertTrue(np.all(np.copysign(m, -arr_m) == -np.array([1, 1, 1]) * m))
+        self.assertTrue(
+            np.all(np.copysign(m, arr_m) == np.array([1, 1, 1]) * m)
+        )
+        self.assertTrue(
+            np.all(np.copysign(m, -arr_m) == -np.array([1, 1, 1]) * m)
+        )
 
         # nextafter
         eps = np.finfo(np.float64).eps
@@ -1200,7 +1324,9 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(
             np.all(
                 np.sqrt(arr_m)
-                == Quantity(np.sqrt(np.array([1.0, 2.0, 3.0])), Dimension({"L": 1 / 2}))
+                == Quantity(
+                    np.sqrt(np.array([1.0, 2.0, 3.0])), Dimension({"L": 1 / 2})
+                )
             )
         )
 
@@ -1270,16 +1396,20 @@ class TestQuantity(unittest.TestCase):
 
         # np.amax
         self.assertEqual(
-            np.amax(self.y_q), Quantity(np.amax(self.y_q.value), self.y_q.dimension)
+            np.amax(self.y_q),
+            Quantity(np.amax(self.y_q.value), self.y_q.dimension),
         )
 
         # np.amin
         self.assertEqual(
-            np.amin(self.y_q), Quantity(np.amin(self.y_q.value), self.y_q.dimension)
+            np.amin(self.y_q),
+            Quantity(np.amin(self.y_q.value), self.y_q.dimension),
         )
 
         # np.any
-        self.assertTrue(np.all(np.append(3 * m, 4 * m) == np.array([3, 4]) * m))
+        self.assertTrue(
+            np.all(np.append(3 * m, 4 * m) == np.array([3, 4]) * m)
+        )
         with self.assertRaises(DimensionError):
             np.append(3 * m, 4 * kg)
         self.assertTrue(
@@ -1311,7 +1441,9 @@ class TestQuantity(unittest.TestCase):
 
         # np.atleast_1d
         self.assertTrue(np.all(np.atleast_1d(4 * m) == np.array([4]) * m))
-        self.assertTrue(np.all(np.atleast_1d(np.arange(3) * m) == np.arange(3) * m))
+        self.assertTrue(
+            np.all(np.atleast_1d(np.arange(3) * m) == np.arange(3) * m)
+        )
         left_in = np.arange(5) * m
         right_in = 4 * m
         res_in1, res_in2 = np.atleast_1d(left_in, right_in)
@@ -1386,7 +1518,10 @@ class TestQuantity(unittest.TestCase):
         a = np.array([1, 2, 3]) * m
         b = np.array([2, 3, 4]) * m
         self.assertTrue(
-            np.all(np.column_stack((a, b)) == np.array([[1, 2], [2, 3], [3, 4]]) * m)
+            np.all(
+                np.column_stack((a, b))
+                == np.array([[1, 2], [2, 3], [3, 4]]) * m
+            )
         )
 
         # np.compress
@@ -1400,7 +1535,8 @@ class TestQuantity(unittest.TestCase):
         b = np.array([[5, 6]]) * m
         self.assertTrue(
             np.all(
-                np.concatenate((a, b), axis=0) == np.array([[1, 2], [3, 4], [5, 6]]) * m
+                np.concatenate((a, b), axis=0)
+                == np.array([[1, 2], [3, 4], [5, 6]]) * m
             )
         )
 
@@ -1418,7 +1554,9 @@ class TestQuantity(unittest.TestCase):
         # np.cumprod
 
         # np.cumsum
-        self.assertTrue(np.all(np.cumsum(np.arange(3) * m) == np.array([0, 1, 3]) * m))
+        self.assertTrue(
+            np.all(np.cumsum(np.arange(3) * m) == np.array([0, 1, 3]) * m)
+        )
 
         # np.diagonal
         a = np.arange(4).reshape(2, 2) * m
@@ -1431,7 +1569,9 @@ class TestQuantity(unittest.TestCase):
         # np.dot
         a = np.array([[1, 0], [0, 1]]) * m
         b = np.array([[4, 1], [2, 2]]) * m
-        self.assertTrue(np.all(np.dot(a, b) == np.array([[4, 1], [2, 2]]) * m**2))
+        self.assertTrue(
+            np.all(np.dot(a, b) == np.array([[4, 1], [2, 2]]) * m**2)
+        )
 
         # np.dstack
         a = np.array((1, 2, 3)) * m
@@ -1497,18 +1637,21 @@ class TestQuantity(unittest.TestCase):
         # np.linspace
         self.assertTrue(
             np.all(
-                np.linspace(0 * m, 5 * m) == Quantity(np.linspace(0, 5), Dimension("L"))
+                np.linspace(0 * m, 5 * m)
+                == Quantity(np.linspace(0, 5), Dimension("L"))
             )
         )
 
         # np.max
         self.assertEqual(
-            np.max(self.y_q), Quantity(np.max(self.y_q.value), self.y_q.dimension)
+            np.max(self.y_q),
+            Quantity(np.max(self.y_q.value), self.y_q.dimension),
         )
 
         # np.min
         self.assertEqual(
-            np.min(self.y_q), Quantity(np.min(self.y_q.value), self.y_q.dimension)
+            np.min(self.y_q),
+            Quantity(np.min(self.y_q.value), self.y_q.dimension),
         )
 
         # np.interp
@@ -1577,7 +1720,9 @@ class TestQuantity(unittest.TestCase):
             sum(self.y_q)
         # mixin
         self.assertTrue(
-            np.all(sum([self.x_q, self.y_q], 0 * m) == sum([self.x, self.y]) * m)
+            np.all(
+                sum([self.x_q, self.y_q], 0 * m) == sum([self.x, self.y]) * m
+            )
         )
         with self.assertRaises(DimensionError):
             sum([self.x_q, self.y_q])
@@ -1652,7 +1797,8 @@ class TestQuantity(unittest.TestCase):
 
         # favunit
         self.assertEqual(
-            dimension_and_favunit((km, s), mph)(speed)(5 * m, 2 * s).favunit, mph
+            dimension_and_favunit((km, s), mph)(speed)(5 * m, 2 * s).favunit,
+            mph,
         )
 
         # dimension check
@@ -1689,7 +1835,9 @@ class TestQuantity(unittest.TestCase):
             speed_dimless(5, 1) > 5 * m / s
 
         # will multiplu each raw output by m/s
-        self.assertEqual(add_back_unit_param(m / s)(speed_dimless)(5, 1), 5 * m / s)
+        self.assertEqual(
+            add_back_unit_param(m / s)(speed_dimless)(5, 1), 5 * m / s
+        )
 
     def test_505_decorator_decorate_with_various_unit(self):
         # interp = decorate_with_various_unit(("A", "A", "B"), ("B"))(np.interp)
@@ -1714,7 +1862,9 @@ class TestQuantity(unittest.TestCase):
 
     def test_600_asqarray(self):
         self.assertTrue(
-            np.all(asqarray([1 * s, 2 * s]) == Quantity([1, 2], Dimension("T")))
+            np.all(
+                asqarray([1 * s, 2 * s]) == Quantity([1, 2], Dimension("T"))
+            )
         )
 
         self.assertTrue(
@@ -1736,7 +1886,10 @@ class TestQuantity(unittest.TestCase):
         )
 
         self.assertTrue(
-            np.all(asqarray(np.array([1.0, 2.0])) == Quantity([1, 2], Dimension(None)))
+            np.all(
+                asqarray(np.array([1.0, 2.0]))
+                == Quantity([1, 2], Dimension(None))
+            )
         )
 
         arrq_1 = np.array([1, 2, 3]) * m
@@ -1926,7 +2079,8 @@ class TestQuantity(unittest.TestCase):
         arr_m = np.linspace(1, 3, 2) * 1000 * m
         fig, ax = matplotlib.pyplot.subplots()
         ax.plot(
-            np.linspace(1, 3, 2), Quantity(np.linspace(1, 3, 2), Dimension(None), "o")
+            np.linspace(1, 3, 2),
+            Quantity(np.linspace(1, 3, 2), Dimension(None), "o"),
         )
         with self.assertRaises(DimensionError):
             ax.plot(np.linspace(1, 3, 2), arr_m**2, "o")
@@ -2153,7 +2307,9 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(
             np.all(qarange(0 * s, 1 * s, 0.1 * s) == np.arange(0, 1, 0.1) * s)
         )
-        self.assertTrue(np.all(qarange(0 * s, 0.1 * s) == np.arange(0, 0.1) * s))
+        self.assertTrue(
+            np.all(qarange(0 * s, 0.1 * s) == np.arange(0, 0.1) * s)
+        )
         self.assertTrue(
             np.all(qarange(0 * s, step=0.1 * s) == np.arange(0, step=0.1) * s)
         )
@@ -2172,7 +2328,10 @@ class TestQuantity(unittest.TestCase):
         arr = np.ones(10)
 
         self.assertTrue(
-            np.all(np.convolve(arr_s, arr) == np.convolve(np.ones(10), np.ones(10)) * s)
+            np.all(
+                np.convolve(arr_s, arr)
+                == np.convolve(np.ones(10), np.ones(10)) * s
+            )
         )
         self.assertTrue(
             np.all(
@@ -2186,8 +2345,12 @@ class TestQuantity(unittest.TestCase):
         b = np.array([1, 0.5, 3]) * m
         c = np.array([1, 0.5, 3]) * K
 
-        self.assertTrue(np.all(np.vstack((a, a)) == np.vstack((a.value, a.value)) * m))
-        self.assertTrue(np.all(np.vstack((a, b)) == np.vstack((a.value, b.value)) * m))
+        self.assertTrue(
+            np.all(np.vstack((a, a)) == np.vstack((a.value, a.value)) * m)
+        )
+        self.assertTrue(
+            np.all(np.vstack((a, b)) == np.vstack((a.value, b.value)) * m)
+        )
 
         with self.assertRaises(DimensionError):
             np.vstack((a, c))
@@ -2197,8 +2360,12 @@ class TestQuantity(unittest.TestCase):
         b = np.array([[1], [0.5], [3]]) * m
         c = np.array([[1], [0.5], [3]]) * K
 
-        self.assertTrue(np.all(np.hstack((a, a)) == np.hstack((a.value, a.value)) * m))
-        self.assertTrue(np.all(np.hstack((a, b)) == np.hstack((a.value, b.value)) * m))
+        self.assertTrue(
+            np.all(np.hstack((a, a)) == np.hstack((a.value, a.value)) * m)
+        )
+        self.assertTrue(
+            np.all(np.hstack((a, b)) == np.hstack((a.value, b.value)) * m)
+        )
 
         with self.assertRaises(DimensionError):
             np.hstack((a, c))
@@ -2208,8 +2375,12 @@ class TestQuantity(unittest.TestCase):
         b = np.array([[1], [0.5], [3]]) * m
         c = np.array([[1], [0.5], [3]]) * K
 
-        self.assertTrue(np.all(np.stack((a, a)) == np.stack((a.value, a.value)) * m))
-        self.assertTrue(np.all(np.stack((a, b)) == np.stack((a.value, b.value)) * m))
+        self.assertTrue(
+            np.all(np.stack((a, a)) == np.stack((a.value, a.value)) * m)
+        )
+        self.assertTrue(
+            np.all(np.stack((a, b)) == np.stack((a.value, b.value)) * m)
+        )
 
         with self.assertRaises(DimensionError):
             np.stack((a, c))
@@ -2421,7 +2592,8 @@ class TestQuantity(unittest.TestCase):
         arr = np.arange(100).reshape(10, 10)
         res = np.lib.stride_tricks.sliding_window_view(arr * m, (4, 4))
         exp = Quantity(
-            np.lib.stride_tricks.sliding_window_view(arr, (4, 4)), Dimension("L")
+            np.lib.stride_tricks.sliding_window_view(arr, (4, 4)),
+            Dimension("L"),
         )
         self.assertTrue(np.all(res == exp))
 
@@ -2547,7 +2719,9 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(solution_res.y == solution_exp.y * V))
         ech_t = np.linspace(0 * s, 2 * tau)
         self.assertTrue(
-            np.all(solution_res.sol(ech_t) == solution_exp.sol(ech_t.value) * V)
+            np.all(
+                solution_res.sol(ech_t) == solution_exp.sol(ech_t.value) * V
+            )
         )
         with self.assertRaises(DimensionError):
             solution_res.sol(1)
@@ -2558,19 +2732,25 @@ class TestQuantity(unittest.TestCase):
             np.arange(1, 10),  # Using start and stop
             np.arange(1, 10, 2),  # Using start, stop, and step
             np.arange(stop=10),  # Using named argument for stop
-            np.arange(start=1, stop=10),  # Using named arguments for start and stop
+            np.arange(
+                start=1, stop=10
+            ),  # Using named arguments for start and stop
             np.arange(
                 start=1, stop=10, step=2
             ),  # Using named arguments for start, stop, and step
             np.arange(5, dtype=float),  # Using start and dtype
-            np.arange(1, 10, step=2, dtype=float),  # Using start, stop, step, and dtype
+            np.arange(
+                1, 10, step=2, dtype=float
+            ),  # Using start, stop, step, and dtype
             np.arange(10, like=np.arange(5)),  # Using stop and like
         ]
 
         function_calls_physipy = [
             np.arange(10 * m, like=m),  # Using only stop
             np.arange(1 * m, 10 * m, like=m),  # Using start and stop
-            np.arange(1 * m, 10 * m, 2 * m, like=m),  # Using start, stop, and step
+            np.arange(
+                1 * m, 10 * m, 2 * m, like=m
+            ),  # Using start, stop, and step
             np.arange(stop=10 * m, like=m),  # Using named argument for stop
             np.arange(
                 start=1 * m, stop=10 * m, like=m
@@ -2591,7 +2771,9 @@ class TestQuantity(unittest.TestCase):
         try:
             import uncertainties as uc
         except:
-            print("Could not run unit test, uncertainties package not available.")
+            print(
+                "Could not run unit test, uncertainties package not available."
+            )
             return
         else:
             from physipy.quantity.quantity import register_property_backend

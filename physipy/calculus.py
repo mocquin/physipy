@@ -142,7 +142,10 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
         func_value, x0.value, x1.value, *oargs, **kwargs
     )
     # cast back in Quantity with dimension f(x)dx
-    return Quantity(quad_value, res_dim * x0.dimension).rm_dim_if_dimless(), prec
+    return (
+        Quantity(quad_value, res_dim * x0.dimension).rm_dim_if_dimless(),
+        prec,
+    )
 
 
 def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
@@ -265,7 +268,10 @@ def solve_ivp(
         t = Quantity(t_value, t_span[0].dimension)
         if not_scalar:
             Y = np.array(
-                [Quantity(y_value, y0.dimension) for y_value, y0 in zip(Y_value, Y0)],
+                [
+                    Quantity(y_value, y0.dimension)
+                    for y_value, y0 in zip(Y_value, Y0)
+                ],
                 dtype=object,
             )
         else:
@@ -301,7 +307,9 @@ def solve_ivp(
     if not_scalar:
         # soly_q =
         # arr_q = soly_q  # np.array(soly_q, dtype=object)
-        sol.y = [Quantity(y_value, y0.dimension) for y_value, y0 in zip(sol.y, Y0)]
+        sol.y = [
+            Quantity(y_value, y0.dimension) for y_value, y0 in zip(sol.y, Y0)
+        ]
     else:
         sol.y = Quantity(sol.y, Y0[0].dimension)
 
@@ -330,7 +338,9 @@ def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
     return Quantity(res, start_dim)
 
 
-def brentq(func_cal: Callable, start, stop, *oargs, args=(), **kwargs) -> Quantity:
+def brentq(
+    func_cal: Callable, start, stop, *oargs, args=(), **kwargs
+) -> Quantity:
     start = quantify(start)
     stop = quantify(stop)
     if not start.dimension == stop.dimension:
