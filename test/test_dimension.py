@@ -26,7 +26,7 @@ class TestDimension(unittest.TestCase):
     def tearDown(self):
         t = time.time() - self.startTime
         self.tottime = self.tottime + t
-        print(f"{self.id():70} : {t:10.6f}")
+        # print(f"{self.id():70} : {t:10.6f}")
         self.times.append(t)
         self.ids.append(str(self.id()))
 

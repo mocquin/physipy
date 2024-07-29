@@ -11,7 +11,7 @@ class TestCodeFormat(unittest.TestCase):
     def tearDown(self):
         t = time.time() - self.startTime
         self.tottime = self.tottime + t
-        print(f"{self.id():70} : {t:10.6f}")
+        # print(f"{self.id():70} : {t:10.6f}")
 
     # TODO : improve style and uncomment this test
     # def test_conformance(self):
