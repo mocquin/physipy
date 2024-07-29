@@ -7,3 +7,21 @@ min_confidence = 60
 # paths = ["myscript.py", "mydir", "whitelist.py"]
 # sort_by_size = true
 # verbose = true
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | \.asv
+)/
+'''
