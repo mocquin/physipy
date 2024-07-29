@@ -43,7 +43,10 @@ scipy_constants_raw = {
     "e": (csts.e, A * s),
     "elementary_charge": (csts.elementary_charge, A * s),
     "R": (csts.R, m**2 * kg * s**-2 * K**-1 * mol**-1),
-    "gas_constant": (csts.gas_constant, m**2 * kg * s**-2 * K**-1 * mol**-1),
+    "gas_constant": (
+        csts.gas_constant,
+        m**2 * kg * s**-2 * K**-1 * mol**-1,
+    ),
     "alpha": (csts.alpha, 1),
     "fine_structure": (csts.fine_structure, 1),
     "N_A": (csts.N_A, mol**-1),

@@ -485,7 +485,8 @@ class TestQuantity(unittest.TestCase):
         # x_q
         self.assertEqual(self.x_q**1, self.x_q)
         self.assertEqual(
-            self.x_q**2, Quantity(self.x_q.value**2, self.x_q.dimension**2)
+            self.x_q**2,
+            Quantity(self.x_q.value**2, self.x_q.dimension**2),
         )
         self.assertEqual(self.x_q ** (self.x_q / self.x_q), self.x_q)
         # y_q
@@ -518,7 +519,8 @@ class TestQuantity(unittest.TestCase):
         # x_qs
         self.assertEqual(self.x_qs**1, self.x_qs)
         self.assertEqual(
-            self.x_qs**2, Quantity(self.x_qs.value**2, self.x_qs.dimension**2)
+            self.x_qs**2,
+            Quantity(self.x_qs.value**2, self.x_qs.dimension**2),
         )
         self.assertEqual(self.x_qs ** (self.x_qs / self.x_qs), self.x_qs)
 
@@ -536,7 +538,8 @@ class TestQuantity(unittest.TestCase):
         # x_qu
         self.assertEqual(self.x_qu**1, self.x_qu)
         self.assertEqual(
-            self.x_qu**2, Quantity(self.x_qu.value**2, self.x_qu.dimension**2)
+            self.x_qu**2,
+            Quantity(self.x_qu.value**2, self.x_qu.dimension**2),
         )
         self.assertEqual(self.x_qu ** (self.x_qu / self.x_qu), self.x_qu)
 
@@ -1658,7 +1661,8 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.interp(1 * m, arr_m, arr_m**2), 1 * m**2)
         self.assertEqual(np.interp(1.5 * m, arr_m, arr_m**2), (2.5) * m**2)
         self.assertEqual(
-            np.interp(1.5 * m, arr_m, arr_m**2, left=0 * m**2), 2.5 * m**2
+            np.interp(1.5 * m, arr_m, arr_m**2, left=0 * m**2),
+            2.5 * m**2,
         )
 
         with self.assertRaises(DimensionError):
