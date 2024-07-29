@@ -1,6 +1,6 @@
 """
-To run locally : 
-1. Install required packages : 
+To run locally :
+1. Install required packages :
 use github to get version 0.5 that has not been published to pypi:
 pip install git+git://github.com/airspeed-velocity/asv@master
 ```
