@@ -5,7 +5,7 @@ import sys
 
 def main():
     # Define the command to run your tests. Here we're using unittest.
-    test_command = ["python", "-m", "unittest", "-vv"]
+    test_command = ["python", "-m", "unittest"]  # , "-vv"]
 
     print(f"Running tests with command: '{' '.join(test_command)}'")
     result = subprocess.run(test_command, capture_output=True, text=True)
