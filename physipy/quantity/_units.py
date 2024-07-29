@@ -136,7 +136,7 @@ def prefix_units(
             prefixed_dict[prefixed_symbol] = make_quantity(
                 prefix_value * unit_quantity, symbol=prefixed_symbol
             )
-    return prefixed_dict if extend == False else {**unit_dict, **prefix_dic}
+    return prefixed_dict if not extend else {**unit_dict, **prefix_dic}
 
 
 def _make_quantity_dict_with_symbols(dic):

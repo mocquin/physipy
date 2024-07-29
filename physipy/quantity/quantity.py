@@ -529,7 +529,7 @@ class Quantity(object):
             return (
                 "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
             )
-        except:
+        except Exception as e:
             # with some custom backend value, sympy has trouble parsing the
             # the expression: I'd rather have a regular string displayed rather
             # than an exception raised (since it is only used in notebook
@@ -663,7 +663,7 @@ class Quantity(object):
             raise DimensionError(q.dimension, self.dimension)
         if isinstance(idx, np.bool_) and idx:
             self.valeur = q.value
-        elif isinstance(idx, np.bool_) and idx == False:
+        elif isinstance(idx, np.bool_) and idx is False:
             pass
         else:
             self.value[idx] = q.value
