@@ -44,7 +44,7 @@ from physipy.quantity.utils import (
 import physipy
 
 import doctest
-from physipy import quantity, constants, math
+from physipy import quantity, constants, math as physipy_math
 from physipy import calculus, utils, setup_matplotlib, plotting_context
 
 
@@ -59,7 +59,7 @@ def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(utils))
     # TODO : dict and module share the same name
     # tests.addTests(doctest.DocTestSuite(constants))
-    tests.addTests(doctest.DocTestSuite(math))
+    tests.addTests(doctest.DocTestSuite(physipy_math))
     return tests
 
 
@@ -1993,15 +1993,15 @@ class TestQuantity(unittest.TestCase):
 
     def test_math_ceil(self):
         a = 5.123 * m
-        self.assertEqual(math.ceil(a), math.ceil(5.123) * m)
+        self.assertEqual(physipy_math.ceil(a), math.ceil(5.123) * m)
 
     def test_math_floor(self):
         a = 5.123 * m
-        self.assertEqual(math.floor(a), math.floor(5.123) * m)
+        self.assertEqual(physipy_math.floor(a), math.floor(5.123) * m)
 
     def test_math_trunc(self):
         a = 5.123 * m
-        self.assertEqual(math.trunc(a), math.trunc(5.123) * m)
+        self.assertEqual(physipy_math.trunc(a), math.trunc(5.123) * m)
 
     def test_check_dim(self):
         self.assertTrue(m.check_dim(Dimension("L")))
