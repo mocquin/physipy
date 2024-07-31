@@ -56,6 +56,7 @@ Here are some reasons that might encourage you to choose this package for quanti
  - As fast (if not faster) than the main other units packages (see below)
 
 Also : 
+
  - lots of unit tests
  - computation performances tracked with airspeed-velocity (see below)
  - Jupyter widgets that handle units (as ipywidgets and Qt, see below)
@@ -163,7 +164,7 @@ A quick performance benchmark show that physipy is just as fast (or faster) than
 
 <img src="./docs/ressources/performance_alternative_packages.png" height="200px" />
 
-For a more in-depth comparison, checkout this repository (not maintenained be it should!) : https://github.com/mocquin/quantities-comparison : 
+For a more in-depth comparison, checkout this repository (not maintenained but it should!) : https://github.com/mocquin/quantities-comparison : 
 
 <img src="./docs/ressources/quantites-comparison.png" height="200px" />
 
