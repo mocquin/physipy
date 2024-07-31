@@ -72,10 +72,11 @@
     // followed by the pip installed packages).
     //
     "matrix": {
-        "numpy":"",
-        "sympy":"",
-        "scipy":"",
-        "matplotlib":""
+        "setuptools":"",
+        "numpy":     [""], //]["1.26", "1.25", "1.24"],
+        "sympy":     [""], //]["1.12", "1.13"],
+        "scipy":     [""], //]["1.12", "1.13", "1.14"],
+        "matplotlib":[""] //]["3.7", "3.8", "3.9"]
     //     "six": ["", null],        // test with and without six installed
     //     "pip+emcee": [""],   // emcee is only available for install with pip.
     },
