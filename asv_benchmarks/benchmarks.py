@@ -1,9 +1,6 @@
 # Write the benchmarking functions here.
 # See "Writing benchmarks" in the asv docs for more information.
 import physipy
-from physipy import m
-import numpy as np
-
 import numpy as np
 from physipy import m, s, Quantity, Dimension
 
@@ -119,6 +116,6 @@ class BasicPhysipy:
                 / (np.exp(hp * c / (lmbda * kB * Tbb)) - 1)
             )
 
-        lmbdas = ech_lmbda_mum * mum
+        lmbdas = np.linspace(2, 5) * mum
         Tbb = 300 * K
         integral = np.trapz(plancks_law(lmbdas, Tbb), x=lmbdas)
