@@ -1352,11 +1352,3 @@ class FlatQuantityIterator(object):
     def __getitem__(self, indx):
         value = self._flatiter.__getitem__(indx)
         return Quantity(value, self.dimension)
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()
