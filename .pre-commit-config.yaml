@@ -1,3 +1,5 @@
+fail_fast: true # so that hooks are stopped at the first fail
+
 repos:
   - repo: https://github.com/psf/black
     rev: 23.7.0
