@@ -1041,3 +1041,114 @@ def np_where(cond, x, y):
     if not x.dimension == y.dimension:
         raise DimensionError(x.dimension, y.dimension)
     return Quantity(np.where(cond, x.value, y.value), x.dimension)
+
+
+# ufuncs
+
+# 2 in : same dimension ---> out : same dim as in
+same_dim_out_2 = (
+    "add",
+    "subtract",
+    "hypot",
+    "maximum",
+    "minimum",
+    "fmax",
+    "fmin",
+    "remainder",
+    "mod",
+    "fmod",
+)
+# 2 in : same dim ---> out : not a quantity
+same_dim_in_2_nodim_out = (
+    "greater",
+    "greater_equal",
+    "less",
+    "less_equal",
+    "not_equal",
+    "equal",
+    "floor_divide",
+)
+# 1 in :
+same_dim_in_1_nodim_out = ("sign", "isfinite", "isinf", "isnan")
+# 2 in : any ---> out : depends
+skip_2 = (
+    "multiply",
+    "divide",
+    "true_divide",
+    "copysign",
+    "nextafter",
+    "matmul",
+)
+# 1 in : any ---> out : depends
+special_dict = (
+    "sqrt",
+    "power",
+    "reciprocal",
+    "square",
+    "cbrt",
+    "modf",
+    "arctan2",
+)
+# 1 in : no dim ---> out : no dim
+no_dim_1 = ("exp", "log", "exp2", "log2", "log10", "expm1", "log1p")
+# 2 in : no dim ---> out : no dim
+no_dim_2 = ("logaddexp", "logaddexp2")
+# 1 in : dimless or angle ---> out : dimless
+angle_1 = ("cos", "sin", "tan", "cosh", "sinh", "tanh")
+# 1 in : any --> out : same
+same_out = (
+    "ceil",
+    "conjugate",
+    "conj",
+    "floor",
+    "rint",
+    "trunc",
+    "fabs",
+    "negative",
+    "absolute",
+)
+# 1 in : dimless -> out : dimless
+inv_angle_1 = (
+    "arcsin",
+    "arccos",
+    "arctan",
+    "arcsinh",
+    "arccosh",
+    "arctanh",
+)
+# 1 in : dimless -> dimless
+deg_rad = ("deg2rad", "rad2deg")
+
+
+not_implemented_yet = ("isreal", "iscomplex", "signbit", "ldexp", "frexp")
+cant_be_implemented = (
+    "logical_and",
+    "logical_or",
+    "logical_xor",
+    "logical_not",
+)
+
+
+ufunc_2_args = same_dim_out_2 + skip_2 + no_dim_2
+unary_ufuncs = (
+    no_dim_1
+    + angle_1
+    + same_out
+    + inv_angle_1
+    + special_dict
+    + deg_rad
+    + same_dim_in_1_nodim_out
+)
+implemented_ufuncs = (
+    same_dim_out_2
+    + same_dim_in_2_nodim_out
+    + same_dim_in_1_nodim_out
+    + skip_2
+    + special_dict
+    + no_dim_1
+    + no_dim_2
+    + angle_1
+    + same_out
+    + inv_angle_1
+    + deg_rad
+)
