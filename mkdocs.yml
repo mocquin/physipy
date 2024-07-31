@@ -79,7 +79,8 @@ markdown_extensions:
       permalink: true
       title: On this page                                                       # Name of toc, default to "Table of content"
       toc_depth: 3                                                              # define the range of levels to be included in the table of contents.
-  - markdown_include.include
+  - markdown_include.include:
+      base_path: docs
   - pymdownx.highlight:                                                       # The below block allows for code-block syntax colors
       auto_title: false                                                       # This option will automatically add a title to all code blocks that shows the name of the language being used, e.g. Python is printed for a py block
       use_pygments: true                                                      # This option allows to control whether highlighting should be carried out during build time using Pygments or in the browser with a JavaScript syntax highlighter
