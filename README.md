@@ -1,7 +1,7 @@
 # physipy
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
 [![PyPI version](https://badge.fury.io/py/physipy.svg)](https://pypi.org/project/physipy/)
-[![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](physipy.readthedocs.io)
+[![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest/)
 [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
@@ -26,7 +26,7 @@ This python package allows you to manipulate physical quantities, basically cons
 
 For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
 
-## Documentation [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](physipy.readthedocs.io)
+## Documentation [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest/)
 Full documentation of `physipy` is available here : [https://physipy.readthedocs.io/en/latest/](https://physipy.readthedocs.io/en/latest/), generated with mkdocs and hosted on readthedocs.
 
 ## Try physipy online now [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)  
