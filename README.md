@@ -27,7 +27,7 @@ This python package allows you to manipulate physical quantities, basically cons
 For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
 
 ## Documentation [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](physipy.readthedocs.io)
-Full documentation of `physipy` is available here : [physipy.readthedocs.io](physipy.readthedocs.io), generated with mkdocs and hosted on readthedocs.
+Full documentation of `physipy` is available here : [https://physipy.readthedocs.io/en/latest/](https://physipy.readthedocs.io/en/latest/), generated with mkdocs and hosted on readthedocs.
 
 ## Try physipy online now [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)  
 Get a live python session with physipy [by clicking here](https://mybinder.org/v2/gh/mocquin/physipy/HEAD). After a while, you'll get an interactive notebook session, then open the `quiskstart.ipynb` notebook in the left panel.
