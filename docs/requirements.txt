@@ -6,7 +6,7 @@
 #
 babel==2.13.0
     # via mkdocs-material
-certifi==2023.7.22
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.0
     # via requests
@@ -85,11 +85,11 @@ pyyaml-env-tag==0.1
     # via mkdocs
 regex==2023.10.3
     # via mkdocs-material
-requests==2.31.0
+requests==2.32.0
     # via mkdocs-material
 six==1.16.0
     # via python-dateutil
-urllib3==2.0.7
+urllib3==2.2.2
     # via requests
 watchdog==3.0.0
     # via mkdocs
