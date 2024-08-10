@@ -284,6 +284,7 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(abs(left) == right)
         self.assertFalse(abs(left).symbol == right.symbol)
 
+
     def test_20_test_inv(self):
         pass
 
@@ -413,6 +414,45 @@ class TestQuantity(unittest.TestCase):
             self.x_q + self.x_q, Quantity(self.x * 2, Dimension("L"))
         )
         self.assertEqual(self.x_q - self.x_q, Quantity(0, Dimension("L")))
+
+    def test_symbol_sympy(self):
+        # This test demonstrates why we'd want symbols treated as sympy.Symbol
+
+        W = units["W"]
+        from physipy import scipy_constants
+        c = scipy_constants["c"]
+        hp = scipy_constants["h"]
+        kB = scipy_constants["k"]
+        pi = np.pi        
+        mum = units["mum"]
+        Hz = units["Hz"]
+
+        u_lum_spec_en = W * m**-2 * sr**-1 / m
+        Tbb = 300 * K
+        nu = c / (5 * mum)
+
+        @dimension_and_favunit((m, K), u_lum_spec_en)
+        def wien_spec_en(lmbda, T):
+            """Blackbody radiation according to Wien's law."""
+            x = (hp*c)/(lmbda*kB*T)
+            lum_spec_en = 2 * hp * c**2 / (lmbda**5) * 1 / (np.exp(x)) / sr
+            return lum_spec_en
+
+        def wien_freq_en(nu, T):
+            lmbda = c / nu
+            val_spec = wien_spec_en(lmbda, T)
+            val_freq = lmbda**2 / c * val_spec
+            if not val_spec.favunit is None:
+                favunit = val_spec.favunit * m / Hz
+                # using symbol as sp.Symbol allows us to skip the following line (treating as string): 
+                #favunit.symbol = val_spec.favunit.symbol + "*" + (m/Hz).symbol
+                val_freq.favunit = favunit
+            return val_freq
+        
+        self.assertEqual(str(wien_freq_en(nu, Tbb).favunit.symbol),
+                        "W/(Hz*m**2*sr)")
+        
+
 
     def test_70_mul(self):
         # Scalaire

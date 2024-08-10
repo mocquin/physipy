@@ -64,7 +64,7 @@ from __future__ import annotations
 from typing import Callable, Union
 import math
 import numpy as np
-
+import sympy as sp
 import sympy.printing as sp_printing
 import sympy.parsing as sp_parsing
 
@@ -163,20 +163,20 @@ class Quantity(object):
         else:
             return 1
 
-    # @property
-    # def symbol(self):
-    #    return self._symbol
+    @property
+    def symbol(self):
+        return self._symbol
 
-    # @symbol.setter
-    # def symbol(self, value):
-    #    if isinstance(value,sp.Expr):
-    #        self._symbol = value
-    #    elif isinstance(value,str):
-    #        self._symbol = sp.Symbol(value)
-    #    else:
-    #        raise TypeError(("Symbol of Quantity must be a string "
-    #                         "or a sympy-symbol, "
-    #                         "not {}").format(type(value)))
+    @symbol.setter
+    def symbol(self, value):
+       if isinstance(value, sp.Expr):
+           self._symbol = value
+       elif isinstance(value,str):
+           self._symbol = sp.Symbol(value)
+       else:
+           raise TypeError(("Symbol of Quantity must be a string "
+                            "or a sympy-symbol, "
+                            "not {}").format(type(value)))
 
     @property
     def favunit(self):
@@ -233,14 +233,14 @@ class Quantity(object):
             return type(self)(
                 self.value * y.value,
                 self.dimension * y.dimension,
-                symbol=self.symbol + "*" + y.symbol,
+                symbol=self.symbol * y.symbol,
             ).rm_dim_if_dimless()
         except BaseException:
             y = quantify(y)
             return type(self)(
                 self.value * y.value,
                 self.dimension * y.dimension,
-                symbol=self.symbol + "*" + y.symbol,
+                symbol=self.symbol * y.symbol,
             ).rm_dim_if_dimless()
 
     __rmul__ = __mul__
@@ -258,7 +258,7 @@ class Quantity(object):
         return type(self)(
             self.value / y.value,
             self.dimension / y.dimension,
-            symbol=self.symbol + "/" + y.symbol,
+            symbol=self.symbol / y.symbol,
         ).rm_dim_if_dimless()
 
     def __rtruediv__(self, x):
@@ -311,7 +311,7 @@ class Quantity(object):
         return type(self)(
             self.value**power,
             self.dimension**power,
-            symbol=self.symbol + "**" + str(power),
+            symbol=self.symbol ** power,
         ).rm_dim_if_dimless()
 
     def __neg__(self):
