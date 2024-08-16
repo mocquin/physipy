@@ -91,7 +91,15 @@ markdown_extensions:
       linenums_style: pymdownx-inline                                         # pymdownx-inline renders line numbers as part of the line itself
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: py                                                            #  how the Markdown will be used or defined
+          class: 'highlight'
+          format: !!python/object/apply:docs._static.playground.color_command_formatter   # This references the functions color_command_formatter and color_command_validator in the docs/_static/playground.py file
+            kwds:
+              init: |                                                         # this can be left blank
+                from physipy import *; import numpy as np                                     
+          validator: !!python/name:docs._static.playground.color_command_validator        # This references the functions color_command_formatter and color_command_validator in the docs/_static/playground.py file
   - pymdownx.arithmatex:                                                      # support for latex, along additionnal javascript below
       generic: true
   - attr_list                                                                 # For inline button : This configuration allows to add attributes to all inline- and block-level elements with a simple syntax, turning any link into a button
@@ -143,11 +151,16 @@ extra_javascript:                                     # Following lines for math
  # - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - _static/playground-config.js  # generated in runtime by playground_whl.py
+  - _static/playground.js
+  - https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js  # open source
+
 # end of mathjax block
 
 # For additionnal css, like custom scheme
 extra_css:
-  - stylesheets/extra.css
+  - _static/extra.css
+  - _static/playground.css
 
 extra:
   social:

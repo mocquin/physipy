@@ -10,6 +10,10 @@ build:
   os: ubuntu-22.04 # Possible values ubuntu-20.04, ubuntu-22.04
   tools:
     python: "3.11"
+
+  jobs:
+    pre_build:
+      - python docs/_static/playground_whl.py
   #jobs:
   #  pre_create_environment:
   #    - echo "Command run at 'pre_create_environment' step"
