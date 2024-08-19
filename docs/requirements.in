@@ -3,3 +3,6 @@ mkdocs-material==9.4.6
 mkdocstrings-python==1.7.3
 markdown_include==0.8.1
 numpy
+sympy
+scipy
+matplotlib
