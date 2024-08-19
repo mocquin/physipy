@@ -1043,6 +1043,13 @@ def np_where(cond, x, y):
     return Quantity(np.where(cond, x.value, y.value), x.dimension)
 
 
+@implements(np.outer)
+def np_outer(a, b, *args, **kwargs):
+    a = quantify(a)
+    b = quantify(b)
+    return Quantity(np.outer(a.value, b.value, *args, **kwargs), a.dimension * b.dimension)
+
+
 # ufuncs
 
 # 2 in : same dimension ---> out : same dim as in

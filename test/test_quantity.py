@@ -2561,6 +2561,13 @@ class TestQuantity(unittest.TestCase):
         # res = np.less.reduce(arr*m)
         # self.assertEqual(res, exp)
 
+    def test_np_outer(self):
+        a = np.arange(10)*m
+        b = np.arange(5)*s
+        res = np.outer(a, b)
+        exp = np.outer(np.arange(10), np.arange(5))*m*s
+        self.assertTrue(np.all(res==exp))
+
     def test_np_less_equal_reduce(self):
         arr = np.arange(10)
 
