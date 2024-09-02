@@ -2856,6 +2856,13 @@ class TestQuantity(unittest.TestCase):
             self.assertTrue(xq.nominal_value == 0.2 * m)
             self.assertTrue(xq.std_dev == 0.01 * m)
 
+    def test_rpow(self):
+        # we allow dimensionless quantities as exponents
+        base = 2
+        exponent = Quantity(14, Dimension(None))
+        res = base ** exponent
+        self.assertEqual(res, 2**14)
+
 
 if __name__ == "__main__":
     unittest.main()

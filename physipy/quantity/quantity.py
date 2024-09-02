@@ -296,6 +296,11 @@ class Quantity(object):
         return type(self)(
             self.value % y.value, self.dimension
         )  # .rm_dim_if_dimless()
+    
+    def __rpow__(power_self, base_other):
+        if power_self.is_dimensionless:
+            return Quantity(base_other**power_self.value, base_other.dimension**power_self.value)
+        raise TypeError
 
     def __pow__(self, power):
         """
