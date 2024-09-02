@@ -2863,6 +2863,15 @@ class TestQuantity(unittest.TestCase):
         res = base ** exponent
         self.assertEqual(res, 2**14)
 
+    def test_pow_dimless_quantity(self):
+        # we allow dimensionless quantities as exponents
+        # base can be quantity, in which case .__pow__ is used
+        base = 2*m
+        exponent = Quantity(14, Dimension(None))
+        res = base ** exponent
+        self.assertEqual(res, Quantity(2**14, Dimension({"L":14})))
+
+
 
 if __name__ == "__main__":
     unittest.main()

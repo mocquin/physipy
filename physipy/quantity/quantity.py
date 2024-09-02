@@ -314,6 +314,7 @@ class Quantity(object):
         # if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
+        power = quantify(power).rm_dim_if_dimless() # TODO : this feels ugly
         return type(self)(
             self.value**power,
             self.dimension**power,
