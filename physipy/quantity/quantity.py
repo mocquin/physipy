@@ -298,8 +298,9 @@ class Quantity(object):
         )  # .rm_dim_if_dimless()
     
     def __rpow__(power_self, base_other):
+        base_other = quantify(base_other)
         if power_self.is_dimensionless:
-            return Quantity(base_other**power_self.value, base_other.dimension**power_self.value)
+            return Quantity(base_other.value**power_self.value, base_other.dimension**power_self.value).rm_dim_if_dimless()
         raise TypeError
 
     def __pow__(self, power):
