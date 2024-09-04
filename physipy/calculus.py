@@ -148,6 +148,45 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
     )
 
 
+def quad_vec(func, x0, x1, *oargs, args=(), **kwargs):
+    """
+    A wrapper on scipy.integrate.quad_vec:
+    - Will check dimensions of x0 and x1 bounds.
+    - The returned value's dimension is inferred by calling func(x0).
+    - Supports vector-valued functions that return arrays of same-dimension quantities.
+
+    Example
+    =======
+    y = np.arange(100)*m
+    def f(x, y=y):
+        z = x**2 * y
+        return z
+    tmin = 0*s
+    tmax = 5*s
+    res, prec = quad_vec(f, tmin, tmax)
+    """
+    x0 = quantify(x0)
+    x1 = quantify(x1)
+    if not x0.dimension == x1.dimension:
+        raise DimensionError(x0.dimension, x1.dimension)
+
+    res = func(x0, *args)
+    res = quantify(res)
+    res_dim = res.dimension
+
+    def func_value(x_value, *args):
+        x = Quantity(x_value, x0.dimension)
+        res_raw = func(x, *args)
+        res_quant = quantify(res_raw)
+        return res_quant.value
+
+    quad_value, prec = scipy.integrate.quad_vec(
+        func_value, x0.value, x1.value, *oargs, **kwargs
+    )
+    result_quantity = Quantity(quad_value, res_dim * x0.dimension)
+    return result_quantity.rm_dim_if_dimless(), prec
+
+
 def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
     x0 = quantify(x0)
     x1 = quantify(x1)

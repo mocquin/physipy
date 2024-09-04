@@ -20,6 +20,7 @@ from physipy.calculus import (
     quad,
     dblquad,
     tplquad,
+    quad_vec,
     solve_ivp,
     root,
     brentq,
@@ -284,7 +285,6 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(abs(left) == right)
         self.assertFalse(abs(left).symbol == right.symbol)
 
-
     def test_20_test_inv(self):
         pass
 
@@ -420,10 +420,11 @@ class TestQuantity(unittest.TestCase):
 
         W = units["W"]
         from physipy import scipy_constants
+
         c = scipy_constants["c"]
         hp = scipy_constants["h"]
         kB = scipy_constants["k"]
-        pi = np.pi        
+        pi = np.pi
         mum = units["mum"]
         Hz = units["Hz"]
 
@@ -434,7 +435,7 @@ class TestQuantity(unittest.TestCase):
         @dimension_and_favunit((m, K), u_lum_spec_en)
         def wien_spec_en(lmbda, T):
             """Blackbody radiation according to Wien's law."""
-            x = (hp*c)/(lmbda*kB*T)
+            x = (hp * c) / (lmbda * kB * T)
             lum_spec_en = 2 * hp * c**2 / (lmbda**5) * 1 / (np.exp(x)) / sr
             return lum_spec_en
 
@@ -444,15 +445,14 @@ class TestQuantity(unittest.TestCase):
             val_freq = lmbda**2 / c * val_spec
             if not val_spec.favunit is None:
                 favunit = val_spec.favunit * m / Hz
-                # using symbol as sp.Symbol allows us to skip the following line (treating as string): 
-                #favunit.symbol = val_spec.favunit.symbol + "*" + (m/Hz).symbol
+                # using symbol as sp.Symbol allows us to skip the following line (treating as string):
+                # favunit.symbol = val_spec.favunit.symbol + "*" + (m/Hz).symbol
                 val_freq.favunit = favunit
             return val_freq
-        
-        self.assertEqual(str(wien_freq_en(nu, Tbb).favunit.symbol),
-                        "W/(Hz*m**2*sr)")
-        
 
+        self.assertEqual(
+            str(wien_freq_en(nu, Tbb).favunit.symbol), "W/(Hz*m**2*sr)"
+        )
 
     def test_70_mul(self):
         # Scalaire
@@ -906,6 +906,25 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(
             1.5 * m**2 * s, quad(toto, 0 * m, 1 * m, args=(3 * s,))[0]
         )
+
+    def test_quad_vec(self):
+        N = 1000
+        y = np.arange(N) * m
+
+        def f(x, y=y):
+            z = x**2 * y
+            return z
+
+        tmin = 0 * s
+        tmax = 5 * s
+
+        # %timeit [q_quad(f, tmin, tmax, args=(y_,)) for y_ in y]
+        # %timeit q_quad_vec(f, tmin, tmax)
+
+        loop_results = [quad(f, tmin, tmax, args=(y_,))[0] for y_ in y]
+        loop_results = np.stack(loop_results)
+        vec_results = quad_vec(f, tmin, tmax)[0]
+        self.assertTrue(np.allclose(loop_results, vec_results))
 
     def test_root(self):
         def toto(t):
@@ -2562,11 +2581,11 @@ class TestQuantity(unittest.TestCase):
         # self.assertEqual(res, exp)
 
     def test_np_outer(self):
-        a = np.arange(10)*m
-        b = np.arange(5)*s
+        a = np.arange(10) * m
+        b = np.arange(5) * s
         res = np.outer(a, b)
-        exp = np.outer(np.arange(10), np.arange(5))*m*s
-        self.assertTrue(np.all(res==exp))
+        exp = np.outer(np.arange(10), np.arange(5)) * m * s
+        self.assertTrue(np.all(res == exp))
 
     def test_np_less_equal_reduce(self):
         arr = np.arange(10)
@@ -2860,17 +2879,16 @@ class TestQuantity(unittest.TestCase):
         # we allow dimensionless quantities as exponents
         base = 2
         exponent = Quantity(14, Dimension(None))
-        res = base ** exponent
+        res = base**exponent
         self.assertEqual(res, 2**14)
 
     def test_pow_dimless_quantity(self):
         # we allow dimensionless quantities as exponents
         # base can be quantity, in which case .__pow__ is used
-        base = 2*m
+        base = 2 * m
         exponent = Quantity(14, Dimension(None))
-        res = base ** exponent
-        self.assertEqual(res, Quantity(2**14, Dimension({"L":14})))
-
+        res = base**exponent
+        self.assertEqual(res, Quantity(2**14, Dimension({"L": 14})))
 
 
 if __name__ == "__main__":
