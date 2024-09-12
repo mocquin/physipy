@@ -627,6 +627,28 @@ def np_trapz(q, x=None, dx=1, **kwargs):
             np.trapz(q.value, x=x.value, **kwargs),
             q.dimension * x.dimension,
         )
+    
+
+try:
+    @implements(np.trapezoid)
+    def np_trapz(q, x=None, dx=1, **kwargs):
+        # if not isinstance(q.value,np.ndarray):
+        #        raise TypeError("Quantity value must be array-like to integrate.")
+        q = quantify(q)
+        if x is None:
+            dx = quantify(dx)
+            return Quantity(
+                np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+                q.dimension * dx.dimension,
+            )
+        else:
+            x = quantify(x)
+            return Quantity(
+                np.trapz(q.value, x=x.value, **kwargs),
+                q.dimension * x.dimension,
+            )
+except:
+    pass
 
 
 @implements(np.transpose)
