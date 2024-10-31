@@ -651,8 +651,11 @@ try:
                 q.dimension * x.dimension,
             )
 
-except:
-    pass
+except (
+    Exception
+) as e:  # This is still okay if you need to catch other exceptions
+    print("When trying to declare np.trapz wrapper:")
+    print(f"An unexpected error occurred: {e}")
 
 
 @implements(np.transpose)
