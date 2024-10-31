@@ -1,0 +1,8 @@
+setuptools
+numpy
+sympy
+scipy
+matplotlib
+pycodestyle
+pandas
+isort
