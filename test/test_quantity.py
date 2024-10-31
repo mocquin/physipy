@@ -1,52 +1,62 @@
 ###############################################################################
-import numpy as np
-import unittest
-from fractions import Fraction
+import doctest
 import math
 import time
+import unittest
+from fractions import Fraction
 
-import pandas as pd
 import matplotlib
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-from physipy.quantity import Dimension, Quantity, DimensionError
+from physipy import calculus, constants
+from physipy import math as physipy_math
+from physipy import plotting_context, quantity, setup_matplotlib, utils
 
 # from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 # from physipy.quantity import vectorize #turn_scalar_to_str
 from physipy.calculus import (
-    xvectorize,
+    brentq,
+    dblquad,
     ndvectorize,
     quad,
-    dblquad,
-    tplquad,
     quad_vec,
-    solve_ivp,
     root,
-    brentq,
+    solve_ivp,
+    tplquad,
+    xvectorize,
 )
-from physipy.quantity import units, imperial_units  # , custom_units
-from physipy.quantity import m, s, kg, A, cd, K, mol
-from physipy.quantity import quantify, make_quantity, dimensionify
 from physipy.quantity import (
-    check_dimension,
-    set_favunit,
-    dimension_and_favunit,
-    drop_dimension,
+    A,
+    Dimension,
+    DimensionError,  # , custom_units
+    K,
+    Quantity,
     add_back_unit_param,
+    cd,
+    check_dimension,
     decorate_with_various_unit,
+    dimension_and_favunit,
+    dimensionify,
+    drop_dimension,
+    imperial_units,
+    kg,
+    m,
+    make_quantity,
+    mol,
+    quantify,
+    s,
+    set_favunit,
+    units,
 )
 from physipy.quantity.utils import (
     asqarray,
     hard_equal,
-    very_hard_equal,
     qarange,
+    very_hard_equal,
 )
-import physipy
-
-import doctest
-from physipy import quantity, constants, math as physipy_math
-from physipy import calculus, utils, setup_matplotlib, plotting_context
 
 
 # The load_tests() function is automatically called by unittest
@@ -2209,7 +2219,7 @@ class TestQuantity(unittest.TestCase):
 
     def test_matplotlib_set_limits_on_blank_plot(self):
         with plotting_context():
-            from physipy import units, s, imperial_units, setup_matplotlib, m
+            from physipy import imperial_units, m, s, setup_matplotlib, units
 
             inch = imperial_units["in"]
             fig, ax = plt.subplots()
@@ -2719,8 +2729,8 @@ class TestQuantity(unittest.TestCase):
 
     def test_scipy_integrate_solveivp(self):
         # Expected
-        import scipy.integrate
         import numpy as np
+        import scipy.integrate
 
         # in Ohms
         R = 10000
@@ -2749,7 +2759,7 @@ class TestQuantity(unittest.TestCase):
             dense_output=True,
         )
 
-        from physipy import units, s, set_favunit
+        from physipy import s, set_favunit, units
 
         ohm = units["ohm"]
         F = units["F"]

@@ -2,10 +2,9 @@
 A simple wrapped version of math module that handles Quantity
 """
 
-from physipy import quantify, Quantity, Dimension, DimensionError
-
 import math
 
+from physipy import Dimension, DimensionError, Quantity, quantify
 
 implementations = {
     "one_in_same_out": [

@@ -6,28 +6,34 @@ This is the __init__ docstring of physipy.
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from ._constants import constants, scipy_constants, scipy_constants_codata
 from ._version import __version__
-
 from .quantity import (
-    Quantity,
+    A,
     Dimension,
-    make_quantity,
-    quantify,
     DimensionError,
-    dimensionify,
-)
-from .quantity import (
-    check_dimension,
-    set_favunit,
-    dimension_and_favunit,
-    drop_dimension,
-    decorate_with_various_unit,
+    K,
+    Quantity,
     add_back_unit_param,
     asqarray,
+    cd,
+    check_dimension,
+    decorate_with_various_unit,
+    dimension_and_favunit,
+    dimensionify,
+    drop_dimension,
+    imperial_units,
+    kg,
+    m,
+    make_quantity,
+    mol,
+    plotting_context,
+    quantify,
+    rad,
+    s,
+    set_favunit,
+    setup_matplotlib,
+    sr,
+    units,
+    utils,
 )
-
-from .quantity import setup_matplotlib, plotting_context
-from .quantity import utils
-
-from .quantity import m, kg, s, A, K, cd, mol, rad, sr, units, imperial_units
-from ._constants import constants, scipy_constants, scipy_constants_codata

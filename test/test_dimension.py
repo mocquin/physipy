@@ -1,14 +1,12 @@
+import doctest
+import time
 import unittest
 from fractions import Fraction
-import time
-
-from physipy import Dimension, DimensionError
-from physipy.quantity import dimension
 
 import pandas as pd
 
-import doctest
-import unittest
+from physipy import Dimension
+from physipy.quantity import dimension
 
 
 # The load_tests() function is automatically called by unittest

@@ -10,6 +10,7 @@ scipy.integrate wrapped functions
 See : https://docs.scipy.org/doc/scipy/reference/integrate.html
 """
 from __future__ import annotations
+
 from typing import Callable
 
 import numpy as np
@@ -17,10 +18,11 @@ import scipy
 import scipy.integrate
 import scipy.optimize
 
-from physipy import quantify, Quantity, Dimension, DimensionError
+from physipy import Dimension, DimensionError, Quantity, quantify
 from physipy.quantity.utils import check_dimension
+
 from .quantity.dimension import SI_UNIT_SYMBOL
-from .quantity.utils import decorate_with_various_unit, asqarray
+from .quantity.utils import asqarray, decorate_with_various_unit
 
 
 def xvectorize(func: Callable) -> Callable:

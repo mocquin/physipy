@@ -27,18 +27,18 @@ PLEASE NOTE :
 
 """
 from __future__ import annotations
+
 import json
 import os
 from typing import Literal
 
 import numpy as np
-from sympy.parsing.sympy_parser import parse_expr
 import sympy.printing.latex as latex
 
 # import Symbol once as used in a loop, faster this way
-from sympy import Symbol as sp_Symbol
 from sympy import Integer as sp_Integer
-
+from sympy import Symbol as sp_Symbol
+from sympy.parsing.sympy_parser import parse_expr
 
 dirname = os.path.dirname(__file__)
 with open(os.path.join(dirname, "dimension.txt")) as file:

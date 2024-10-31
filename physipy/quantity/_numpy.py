@@ -1,6 +1,8 @@
 from typing import Callable, Union
+
 import numpy as np
-from .quantity import Quantity, quantify, Dimension, DimensionError
+
+from .quantity import Dimension, DimensionError, Quantity, quantify
 
 HANDLED_FUNCTIONS: dict[Callable, Callable] = {}
 
@@ -627,9 +629,10 @@ def np_trapz(q, x=None, dx=1, **kwargs):
             np.trapz(q.value, x=x.value, **kwargs),
             q.dimension * x.dimension,
         )
-    
+
 
 try:
+
     @implements(np.trapezoid)
     def np_trapz(q, x=None, dx=1, **kwargs):
         # if not isinstance(q.value,np.ndarray):
@@ -647,6 +650,7 @@ try:
                 np.trapz(q.value, x=x.value, **kwargs),
                 q.dimension * x.dimension,
             )
+
 except:
     pass
 
@@ -1069,7 +1073,9 @@ def np_where(cond, x, y):
 def np_outer(a, b, *args, **kwargs):
     a = quantify(a)
     b = quantify(b)
-    return Quantity(np.outer(a.value, b.value, *args, **kwargs), a.dimension * b.dimension)
+    return Quantity(
+        np.outer(a.value, b.value, *args, **kwargs), a.dimension * b.dimension
+    )
 
 
 # ufuncs

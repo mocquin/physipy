@@ -36,14 +36,14 @@ TODO :
 from __future__ import annotations
 
 from math import pi
-from .quantity import (
-    Quantity,
-    Dimension,
-    SI_UNIT_SYMBOL,
-    quantify,
-    make_quantity,
-)
 
+from .quantity import (
+    SI_UNIT_SYMBOL,
+    Dimension,
+    Quantity,
+    make_quantity,
+    quantify,
+)
 
 # Dictionnary of prefixes
 _PREFIX_DICT = {

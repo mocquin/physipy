@@ -1,25 +1,22 @@
 from __future__ import annotations
-from typing import Union
 
 import functools
-from typing import Callable, Literal
-
 from functools import lru_cache
 from operator import attrgetter
+from typing import Callable, Literal, Union
 
 import numpy as np
 from numpy import (
     array as np_array,
 )  # faster to import once since used in a loop
-
 from sympy.parsing.sympy_parser import parse_expr
 
 from .quantity import (
-    Quantity,
     DimensionError,
+    Quantity,
     dimensionify,
-    quantify,
     make_quantity,
+    quantify,
 )
 
 

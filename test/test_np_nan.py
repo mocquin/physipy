@@ -1,7 +1,9 @@
-import unittest
-import numpy as np
-from physipy import m
 import time
+import unittest
+
+import numpy as np
+
+from physipy import m
 
 
 class TestNumpyFunctions(unittest.TestCase):

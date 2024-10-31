@@ -61,16 +61,17 @@ PROPOSITIONS/QUESTIONS :
 
 """
 from __future__ import annotations
-from typing import Callable, Union
+
 import math
+import warnings
+from typing import Callable, Union
+
 import numpy as np
 import sympy as sp
-import sympy.printing as sp_printing
 import sympy.parsing as sp_parsing
+import sympy.printing as sp_printing
 
-import warnings
-
-from .dimension import Dimension, DimensionError, SI_UNIT_SYMBOL, DIMENSIONLESS
+from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
 
 # # Constantes
 UNIT_PREFIX = " "
@@ -169,14 +170,18 @@ class Quantity(object):
 
     @symbol.setter
     def symbol(self, value):
-       if isinstance(value, sp.Expr):
-           self._symbol = value
-       elif isinstance(value,str):
-           self._symbol = sp.Symbol(value)
-       else:
-           raise TypeError(("Symbol of Quantity must be a string "
-                            "or a sympy-symbol, "
-                            "not {}").format(type(value)))
+        if isinstance(value, sp.Expr):
+            self._symbol = value
+        elif isinstance(value, str):
+            self._symbol = sp.Symbol(value)
+        else:
+            raise TypeError(
+                (
+                    "Symbol of Quantity must be a string "
+                    "or a sympy-symbol, "
+                    "not {}"
+                ).format(type(value))
+            )
 
     @property
     def favunit(self):
@@ -296,11 +301,14 @@ class Quantity(object):
         return type(self)(
             self.value % y.value, self.dimension
         )  # .rm_dim_if_dimless()
-    
+
     def __rpow__(power_self, base_other):
         base_other = quantify(base_other)
         if power_self.is_dimensionless:
-            return Quantity(base_other.value**power_self.value, base_other.dimension**float(power_self.value)).rm_dim_if_dimless()
+            return Quantity(
+                base_other.value**power_self.value,
+                base_other.dimension ** float(power_self.value),
+            ).rm_dim_if_dimless()
         raise TypeError
 
     def __pow__(self, power):
@@ -314,11 +322,11 @@ class Quantity(object):
         # if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
-        power = quantify(power).rm_dim_if_dimless() # TODO : this feels ugly
+        power = quantify(power).rm_dim_if_dimless()  # TODO : this feels ugly
         return type(self)(
             self.value**power,
             self.dimension**power,
-            symbol=self.symbol ** power,
+            symbol=self.symbol**power,
         ).rm_dim_if_dimless()
 
     def __neg__(self):
@@ -1000,17 +1008,17 @@ class Quantity(object):
         ufunc_name = ufunc.__name__
         left = args[0]  # removed quantify...
         from ._numpy import (
-            same_dim_out_2,
-            skip_2,
-            no_dim_1,
             angle_1,
-            same_out,
-            special_dict,
-            same_dim_in_2_nodim_out,
-            unary_ufuncs,
             inv_angle_1,
-            same_dim_in_1_nodim_out,
+            no_dim_1,
             no_dim_2,
+            same_dim_in_1_nodim_out,
+            same_dim_in_2_nodim_out,
+            same_dim_out_2,
+            same_out,
+            skip_2,
+            special_dict,
+            unary_ufuncs,
         )
 
         # hypot doesn't have a reduce
@@ -1049,16 +1057,16 @@ class Quantity(object):
         ufunc_name = ufunc.__name__
         left = quantify(args[0])
         from ._numpy import (
-            same_dim_out_2,
-            skip_2,
-            no_dim_1,
             angle_1,
-            same_out,
-            special_dict,
-            same_dim_in_2_nodim_out,
             inv_angle_1,
-            same_dim_in_1_nodim_out,
+            no_dim_1,
             no_dim_2,
+            same_dim_in_1_nodim_out,
+            same_dim_in_2_nodim_out,
+            same_dim_out_2,
+            same_out,
+            skip_2,
+            special_dict,
         )
 
         if ufunc_name in same_dim_out_2:

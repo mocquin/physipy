@@ -1,17 +1,18 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ._units import units, imperial_units
-from .quantity import (
-    Quantity,
-    Dimension,
-    quantify,
-    make_quantity,
-    DimensionError,
-)
 import matplotlib
-import numpy as np
 import matplotlib.units as munits
+import numpy as np
+
+from ._units import imperial_units, units
+from .quantity import (
+    Dimension,
+    DimensionError,
+    Quantity,
+    make_quantity,
+    quantify,
+)
 
 # import registry as used trouhout, faster
 munits_registry = munits.registry
@@ -84,8 +85,7 @@ def plotting_context():
         https://docs.astropy.org/en/stable/_modules/astropy/visualization/units.html#quantity_support
     """
 
-    from matplotlib import units
-    from matplotlib import ticker
+    from matplotlib import ticker, units
 
     # Get all subclass for Quantity, since matplotlib checks on class,
     # not subclass.
