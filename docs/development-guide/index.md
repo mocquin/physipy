@@ -39,6 +39,11 @@ A simple good practice is to sort imports using the isort package:
 To run just check to see if anything import should be sorted : 
 `isort . --check-only`
 
+## Formatting
+pycodestyle --config=setup.cfg --verbose --statistics -qq .
+Given an error number : 
+pycodestyle --show-source --select=E722 .
+
 ## Benchmarking versions
 
 Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :
