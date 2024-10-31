@@ -24,6 +24,21 @@ Run each file with doctest:
 python -m doctest -v physipy/quantity/dimension.py
 ```
 
+Another approach is to use pytest to run all tests, including the doctests 
+```
+pytest --doctest-modules
+pytest -v --doctest-modules --doctest-glob="*.py"
+pytest -vv --doctest-modules --doctest-glob="*.py" .\physipy\
+```
+Note that using `python -m doctest -v .\physipy\quantity\utils.py` (for example) fails because of relative import, as the script is considered a stand-alone file.
+
+## Sorting imports
+A simple good practice is to sort imports using the isort package:
+`pip install isort`
+`isort .\physipy\ --verbose`
+To run just check to see if anything import should be sorted : 
+`isort . --check-only`
+
 ## Benchmarking versions
 
 Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :
