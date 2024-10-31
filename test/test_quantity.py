@@ -454,7 +454,7 @@ class TestQuantity(unittest.TestCase):
             lmbda = c / nu
             val_spec = wien_spec_en(lmbda, T)
             val_freq = lmbda**2 / c * val_spec
-            if not val_spec.favunit is None:
+            if val_spec.favunit is not None:
                 favunit = val_spec.favunit * m / Hz
                 # using symbol as sp.Symbol allows us to skip the following line (treating as string):
                 # favunit.symbol = val_spec.favunit.symbol + "*" + (m/Hz).symbol
