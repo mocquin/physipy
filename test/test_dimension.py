@@ -10,6 +10,7 @@ from physipy.quantity import dimension
 
 
 # The load_tests() function is automatically called by unittest
+# and the returned 'tests' are added
 # see https://docs.python.org/3/library/doctest.html#unittest-api
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(dimension))
