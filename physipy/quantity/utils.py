@@ -324,7 +324,7 @@ def check_dimension(units_in=None, units_out=None) -> Callable:
 
     And even use a Greek symbol like :math:`\omega` inline.
 
-    Examples (written in doctest format)
+    Examples
     --------
     >>> from physipy import m, s
     >>> def add_meter(x): return x + 1*m
@@ -402,7 +402,7 @@ def set_favunit(*favunits_out) -> Callable:
     --------
     Other decorators (TODO)
 
-    Examples (written in doctest format)
+    Examples
     --------
     >>> from physipy import m, units; mm = units['mm']
     >>> def add_meter(x): return x + 1*m
