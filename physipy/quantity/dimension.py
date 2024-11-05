@@ -52,7 +52,7 @@ Scalar = Union[int, float]
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
-NULL_SI_DICT: dict[str, Scalar] = {dim: 0 for dim in SI_SYMBOL_LIST} 
+NULL_SI_DICT: dict[str, Scalar] = {dim: 0 for dim in SI_SYMBOL_LIST}
 
 
 def parse_str_to_dic(exp_str: str) -> dict:
@@ -145,7 +145,10 @@ class Dimension(object):
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
     __slots__ = "dim_dict"
 
-    def __init__(self, definition: Optional[Union[str, dict[str, Union[int, float]]]]) -> None:
+    def __init__(
+        self,
+        definition: Optional[Union[str, dict[str, Union[int, float]]]] = None,
+    ) -> None:
         """Allow the creation of Dimension object with 3 possibile ways."""
         self.dim_dict = NULL_SI_DICT.copy()
         if definition is None:
