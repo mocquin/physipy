@@ -193,8 +193,9 @@ class Quantity(object):
     def favunit(self, value):
         if isinstance(value, Quantity) or value is None:
             self._favunit = value
-        elif np.isscalar(value):
-            self._favunit = None
+        # the following case is no tested, so removing it for now
+        # elif np.isscalar(value):
+        #     self._favunit = None
         else:
             raise TypeError(
                 (
