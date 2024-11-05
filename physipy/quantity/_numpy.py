@@ -632,11 +632,13 @@ def np_trapz(q, x=None, dx=1, **kwargs):
 
 
 try:
+    if not hasattr(np, "trapezoid"):
+        raise AttributeError(
+            "np.trapezoid is not available in this NumPy version."
+        )
 
     @implements(np.trapezoid)
     def np_trapz(q, x=None, dx=1, **kwargs):
-        # if not isinstance(q.value,np.ndarray):
-        #        raise TypeError("Quantity value must be array-like to integrate.")
         q = quantify(q)
         if x is None:
             dx = quantify(dx)
@@ -651,9 +653,10 @@ try:
                 q.dimension * x.dimension,
             )
 
-except (
-    Exception
-) as e:  # This is still okay if you need to catch other exceptions
+except AttributeError as e:
+    print("When trying to declare np.trapz wrapper:")
+    print(f"AttributeError: {e}")
+except Exception as e:
     print("When trying to declare np.trapz wrapper:")
     print(f"An unexpected error occurred: {e}")
 
