@@ -557,7 +557,8 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
         return x + y
     print(another_sum(2*m, 1*m))
 
-    TODO : get rid of eval with a expression parser"""
+    TODO : get rid of eval with a expression parser
+    """
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
 
