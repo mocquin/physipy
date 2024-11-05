@@ -584,8 +584,8 @@ class Quantity(object):
         If the value is > to 10**self.EXP_THRESH, it is displayed with scientific notation.
         Else floating point notation is used.
         """
-        value = self._compute_value()
-        if not np.isscalar(value):
+        value: Any = self._compute_value()
+        if not isinstance(value, numbers.Number):  # np.isscalar(value):
             return str(value)
         else:
             if abs(value) >= 10 ** self.EXP_THRESH or abs(value) < 10 ** (
@@ -1209,7 +1209,9 @@ def dimensionify(x) -> Dimension:
         return Dimension(x)
 
 
-def make_quantity(x, symbol="UndefinedSymbol", favunit: Quantity | None=None) -> Quantity:
+def make_quantity(
+    x, symbol="UndefinedSymbol", favunit: Quantity | None = None
+) -> Quantity:
     """
     Create a new Quantity from x, with optionnal symbol and favunit.
     If x is already a Quantity, also copy its favunit if favunit=None.
