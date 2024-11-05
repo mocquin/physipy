@@ -643,13 +643,13 @@ try:
         if x is None:
             dx = quantify(dx)
             return Quantity(
-                np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+                np.trapezoid(q.value, x=None, dx=dx.value, **kwargs),
                 q.dimension * dx.dimension,
             )
         else:
             x = quantify(x)
             return Quantity(
-                np.trapz(q.value, x=x.value, **kwargs),
+                np.trapezoid(q.value, x=x.value, **kwargs),
                 q.dimension * x.dimension,
             )
 

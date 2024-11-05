@@ -108,8 +108,8 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
         #prints 2 m**2
 
     """
-    int_x = np.trapz(Zs, axis=-1, x=ech_x)
-    int_xy = np.trapz(int_x, axis=-1, x=ech_y)
+    int_x = np.trapezoid(Zs, axis=-1, x=ech_x)
+    int_xy = np.trapezoid(int_x, axis=-1, x=ech_y)
     return int_xy
 
 
