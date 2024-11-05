@@ -169,7 +169,9 @@ class Dimension(object):
             for dim_symbol, dim_power in definition.items():
                 self.dim_dict[dim_symbol] = dim_power
         # example : "L"
-        elif definition in list(self.dim_dict.keys()):
+        elif isinstance(definition, str) and definition in list(
+            self.dim_dict.keys()
+        ):
             self.dim_dict[definition] = 1
         # example : "L**2/T**3"
         elif isinstance(definition, str) and check_pattern(
@@ -358,12 +360,9 @@ class Dimension(object):
         bool
             True if the Dimensions objects are equal, False otherwise.
         """
-        # if type(y)==Dimension:
-        try:
+        if isinstance(y, Dimension):
             return self.dim_dict == y.dim_dict
-        # else:
-        except BaseException:
-            return False
+        return False
 
     def __hash__(self):
         return hash(str(self))
