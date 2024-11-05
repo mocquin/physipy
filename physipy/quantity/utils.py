@@ -20,7 +20,7 @@ from .quantity import (
 )
 
 
-def cached_property_depends_on(*args: tuple[str, ...]) -> Callable:
+def cached_property_depends_on(*args: str) -> Callable:
     """
     Decorator to cache a property that depends on other attributes.
     This differs from functools.cached_property in that functools.cached_property is made for immutable atributes.
@@ -198,7 +198,7 @@ def _exp_dic_to_q(exp_dic: dict, parsing_dict: dict) -> Union[Quantity, int]:
     return q
 
 
-def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, Literal[1]]:
+def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, int]:
     """
     Parse a string expression to a quantity.
     """
