@@ -1203,6 +1203,7 @@ def dimensionify(x) -> Dimension:
     elif isinstance(x, Quantity):
         return x.dimension
     elif np.isscalar(x) and not isinstance(x, str):
+        # mostly to handle x = 1
         return DIMENSIONLESS
     elif isinstance(x, np.ndarray):
         return DIMENSIONLESS
