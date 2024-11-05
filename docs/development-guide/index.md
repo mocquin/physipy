@@ -18,6 +18,9 @@ Once the package is shipped to pypi, you can create a release on Github : ([help
 
 ## Testing
 
+### Run unittests
+`python -W ignore -m unittest -v`
+
 ### Type hints, type checking
 `mypy ./physipy`
 
