@@ -334,7 +334,7 @@ class Dimension(object):
         dim : Dimension
             The raised Dimension.
         """
-        if np.isscalar(y):
+        if isinstance(y, numbers.Number):  # np.isscalar(y):
             new_dim_dict = {
                 d: self.dim_dict[d] * y for d in self.dim_dict.keys()
             }
