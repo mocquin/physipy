@@ -18,6 +18,9 @@ Once the package is shipped to pypi, you can create a release on Github : ([help
 
 ## Testing
 
+### Type hints, type checking
+`mypy ./physipy`
+
 ### With doctest
 Run each file with doctest: 
 ```
