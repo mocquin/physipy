@@ -63,13 +63,15 @@ PROPOSITIONS/QUESTIONS :
 from __future__ import annotations
 
 import math
+import numbers
 import warnings
-from typing import Callable, Union
+from typing import Callable, Union, Any
 
 import numpy as np
 import sympy as sp
 import sympy.parsing as sp_parsing
 import sympy.printing as sp_printing
+from sympy import Expr, Symbol
 
 from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
 
@@ -149,7 +151,7 @@ class Quantity(object):
         self,
         value,
         dimension: Dimension,
-        symbol=DEFAULT_SYMBOL,
+        symbol: Union[str, Symbol, Expr] = DEFAULT_SYMBOL,
         favunit: Quantity | None = None,
     ) -> None:
         self.value = value
@@ -1194,7 +1196,7 @@ def quantify(x):
         return Quantity(x, DIMENSIONLESS)
 
 
-def dimensionify(x):
+def dimensionify(x) -> Dimension:
     if isinstance(x, Dimension):
         return x
     elif isinstance(x, Quantity):
@@ -1207,7 +1209,7 @@ def dimensionify(x):
         return Dimension(x)
 
 
-def make_quantity(x, symbol="UndefinedSymbol", favunit=None):
+def make_quantity(x, symbol="UndefinedSymbol", favunit: Quantity | None=None) -> Quantity:
     """
     Create a new Quantity from x, with optionnal symbol and favunit.
     If x is already a Quantity, also copy its favunit if favunit=None.

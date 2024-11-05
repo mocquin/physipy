@@ -29,11 +29,12 @@ PLEASE NOTE :
 from __future__ import annotations
 
 import json
+import numbers
 import os
-from typing import Literal
+from typing import Literal, Union, Optional
 
 import numpy as np
-import sympy.printing.latex as latex
+from sympy.printing import latex
 
 # import Symbol once as used in a loop, faster this way
 from sympy import Integer as sp_Integer
@@ -45,10 +46,13 @@ with open(os.path.join(dirname, "dimension.txt")) as file:
     SI_UNIT_SYMBOL = json.load(file)
 
 
+Scalar = Union[int, float]
+
+
 SI_SYMBOL_LIST = list(SI_UNIT_SYMBOL.keys())
 NO_DIMENSION_STR = "no-dimension"
 
-NULL_SI_DICT = {dim: 0 for dim in SI_SYMBOL_LIST}  # type: dict[str, int]
+NULL_SI_DICT: dict[str, Scalar] = {dim: 0 for dim in SI_SYMBOL_LIST} 
 
 
 def parse_str_to_dic(exp_str: str) -> dict:
@@ -141,7 +145,7 @@ class Dimension(object):
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
     __slots__ = "dim_dict"
 
-    def __init__(self, definition) -> None:
+    def __init__(self, definition: Optional[Union[str, dict[str, Union[int, float]]]]) -> None:
         """Allow the creation of Dimension object with 3 possibile ways."""
         self.dim_dict = NULL_SI_DICT.copy()
         if definition is None:
@@ -312,7 +316,7 @@ class Dimension(object):
         else:
             raise TypeError("A Dimension can only divide 1 to be inverted.")
 
-    def __pow__(self: Dimension, y) -> Dimension:
+    def __pow__(self: Dimension, y: Scalar) -> Dimension:
         """Raise a Dimension objects to a real power.
 
         Only scalars are allowed.
@@ -337,7 +341,7 @@ class Dimension(object):
                 ("The power of a dimension must be a scalar," f"not {type(y)}")
             )
 
-    def __eq__(self, y: Dimension) -> bool:
+    def __eq__(self, y: object) -> bool:
         """Check equality between Dimension objects.
 
         Dimensions are equal if their dim_dict are equal.
@@ -433,7 +437,7 @@ class Dimension(object):
             return str(self)
 
 
-DIMENSIONLESS = Dimension(None)
+DIMENSIONLESS: Dimension = Dimension(None)
 
 
 def compute_str(
