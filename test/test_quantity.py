@@ -789,6 +789,9 @@ class TestQuantity(unittest.TestCase):
     #    self.assertTrue(np.all(Quantity([1, 2, 3], Dimension(None))))
     #    self.assertTrue(np.all(Quantity([0, 0, 0], Dimension(None))))
 
+    def test_np_linalg_norm(self):
+        self.assertEqual(np.linalg.norm(np.arange(3)*m), 5**0.5*m)
+
     def test_np_linalg_eig(self):
         # Create a sample matrix (e.g., a 3x3 matrix with arbitrary values)
         A = np.array([[4, -2, 1], [1, 1, -1], [3, 2, 0]]) * m

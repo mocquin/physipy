@@ -238,6 +238,10 @@ def np_broadcast_arrays(*args, **kwargs):
     return [Quantity(r, q.dimension) for r, q in zip(res, qargs)]
 
 
+@implements(np.linalg.norm)
+def np_linalg_norm(x, *args, **kwargs):
+    return Quantity(np.linalg.norm(x.value, *args, **kwargs), x.dimension)
+
 @implements(np.linalg.lstsq)
 def np_linalg_lstsq(a, b, **kwargs):
     a = quantify(a)
