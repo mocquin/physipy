@@ -47,6 +47,7 @@ from physipy.quantity import (
     make_quantity,
     mol,
     quantify,
+    rad,
     s,
     set_favunit,
     units,
@@ -2718,6 +2719,11 @@ class TestQuantity(unittest.TestCase):
         exp = np.full(3, 5.1) * m
         res = np.full(3, 5.1 * m, like=np.arange(10) * m)
         self.assertTrue(np.all(res == exp))
+
+    def test_np_full_like(self):
+        self.assertTrue((np.full_like(np.arange(10)*m, 3)     == np.full(10, 3)).all())
+        self.assertTrue((np.full_like(np.arange(10)*m, 3*m)   == np.full(10, 3)*m).all())
+        self.assertTrue((np.full_like(np.arange(10)*m, 3*rad) == np.full(10, 3)*rad).all())
 
     def test_np_histogram2d(self):
         a = np.arange(100)
