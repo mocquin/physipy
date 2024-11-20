@@ -716,18 +716,18 @@ class Quantity(object):
 
     @property
     def real(self):
-        return type(self)(self.value.real, self.dimension)
+        return type(self)(self.value.real, self.dimension, favunit=self.favunit)
 
     @property
     def imag(self):
-        return type(self)(self.value.imag, self.dimension)
+        return type(self)(self.value.imag, self.dimension, favunit=self.favunit)
 
     def conjugate(self):
-        return type(self)(self.value.conjugate(), self.dimension)
+        return type(self)(self.value.conjugate(), self.dimension, favunit=self.favunit)
 
     @property
     def T(self):
-        return type(self)(self.value.T, self.dimension)
+        return type(self)(self.value.T, self.dimension, favunit=self.favunit)
 
     def inverse(self):
         """is this method usefull ?"""
@@ -736,25 +736,25 @@ class Quantity(object):
     # see list of array methods:
     # https://numpy.org/doc/stable/reference/arrays.ndarray.html#array-methods
     def min(self, **kwargs):
-        return np.min(self, **kwargs)
+        return np.min(self, **kwargs).set_favunit(self.favunit)
 
     def max(self, **kwargs):
-        return np.max(self, **kwargs)
+        return np.max(self, **kwargs).set_favunit(self.favunit)
 
     def sum(self, **kwargs):
-        return np.sum(self, **kwargs)
+        return np.sum(self, **kwargs).set_favunit(self.favunit)
 
     def mean(self, **kwargs):
-        return np.mean(self, **kwargs)
+        return np.mean(self, **kwargs).set_favunit(self.favunit)
 
     def std(self, *args, **kwargs):
-        return np.std(self, *args, **kwargs)
+        return np.std(self, *args, **kwargs).set_favunit(self.favunit)
 
     def conj(self):
-        return np.conj(self)
+        return np.conj(self).set_favunit(self.favunit)
 
     def round(self, *args, **kwargs):
-        return np.round(self, *args, **kwargs)
+        return np.round(self, *args, **kwargs).set_favunit(self.favunit)
 
     def var(self, **kwargs):
         return np.var(self, **kwargs)
