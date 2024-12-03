@@ -201,8 +201,9 @@ _other_accepted_units_raw = {
     "h": 3600 * s,
     "d": 86400 * s,
     "au": 149597870700 * m,
-    # how to deal with degree minutes seconds ?
     "deg": pi / 180 * rad,
+    "arcmin": pi / (180 * 60) * rad,
+    "arcsec": pi / (180 * 3600) * rad,
     "ha": 10**4 * m**2,
     "L": 10**-3 * m**3,
     "t": 1000 * kg,
