@@ -808,6 +808,18 @@ def np_real(a):
     return Quantity(np.real(a.value), a.dimension)
 
 
+@implements(np.isclose)
+def np_isclose(a, b, rtol=1e-05, atol=None, equal_nan=False):
+    a = quantify(a)
+    b = quantify(b)
+    if not (a.dimension == b.dimension):
+        raise DimensionError(a.dimension, b.dimension)
+    if atol is None:
+        atol = Quantity(1e-08, a.dimension)
+    if not (atol.dimension==a.dimension):
+        raise DimensionError(atol.dimension, b.dimension)
+    return np.isclose(a.value, b.value, rtol=rtol, atol=atol.value, equal_nan=equal_nan)
+
 @implements(np.allclose)
 def np_allclose(a, b, rtol=1e-05, atol=None, *args, **kwargs):
     # absolute(a - b) <= (atol + rtol * absolute(b))

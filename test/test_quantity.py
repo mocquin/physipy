@@ -772,6 +772,20 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(m != None)  # noqa
         self.assertTrue(Quantity(1, Dimension(None)) != None)  # noqa
 
+
+    def test_np_isclose(self):
+
+        a = Quantity(1.0, Dimension("L")) 
+        b = Quantity(1.000001, Dimension("L")) 
+        assert not np.isclose(a, b, rtol=0, atol=Quantity(0, Dimension("L")))  
+        assert np.isclose(a, a, rtol=0, atol=Quantity(0, Dimension("L"))) 
+
+        a = Quantity(1.0, Dimension("L")) 
+        b = Quantity(1.0001, Dimension("L"))  
+        assert np.isclose(a, b, atol=Quantity(0.001, Dimension("L"))) 
+        assert not np.isclose(a, b, atol=Quantity(0.00001, Dimension("L")))  
+
+
     def test_np_allclose(self):
         self.assertTrue(np.allclose(np.arange(10) * m, np.arange(10) * m))
 
