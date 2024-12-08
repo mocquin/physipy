@@ -798,11 +798,6 @@ class Quantity(object):
         self.symbol = symbol
         return self
 
-    def ito(self, y: Quantity) -> Quantity:
-        """in-place change of favunit."""
-        self.favunit = y
-        return self
-
     def into(self, y: Quantity) -> Quantity:
         """like to, but with same dimension"""
         if not self.dimension == y.dimension:
