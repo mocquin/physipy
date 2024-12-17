@@ -476,7 +476,7 @@ def np_ndim(a):
 def np_dot(a, b, **kwargs):
     a = quantify(a)
     b = quantify(b)
-    return Quantity(np.dot(a.value, b.value), a.dimension * b.dimension)
+    return Quantity(np.dot(a.value, b.value, **kwargs), a.dimension * b.dimension)
 
 
 @implements(np.cov)
