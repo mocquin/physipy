@@ -758,6 +758,9 @@ class Quantity(object):
 
     def var(self, **kwargs):
         return np.var(self, **kwargs)
+    
+    def abs(self):
+        return np.abs(self)
 
     def integrate(self, *args, **kwargs):
         return np.trapz(self, *args, **kwargs)
