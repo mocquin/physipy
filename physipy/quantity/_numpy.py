@@ -857,6 +857,7 @@ def np_reshape(a, *args, **kwargs):
 def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
     x = quantify(x)
     xp = quantify(xp)
+    fp_is_quantity = isinstance(fp, Quantity)
     fp = quantify(fp)
     if not x.dimension == xp.dimension:
         raise DimensionError(x.dimension, xp.dimension)
@@ -878,7 +879,7 @@ def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
     res = np.interp(
         x.value, xp.value, fp.value, left_v, right_v, *args, **kwargs
     )
-    return Quantity(res, fp.dimension)
+    return Quantity(res, fp.dimension) if fp_is_quantity else res
 
 
 # @implements(np.asarray)
