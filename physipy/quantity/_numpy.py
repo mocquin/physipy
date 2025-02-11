@@ -242,6 +242,7 @@ def np_broadcast_arrays(*args, **kwargs):
 def np_linalg_norm(x, *args, **kwargs):
     return Quantity(np.linalg.norm(x.value, *args, **kwargs), x.dimension)
 
+
 @implements(np.linalg.lstsq)
 def np_linalg_lstsq(a, b, **kwargs):
     a = quantify(a)
@@ -476,7 +477,9 @@ def np_ndim(a):
 def np_dot(a, b, **kwargs):
     a = quantify(a)
     b = quantify(b)
-    return Quantity(np.dot(a.value, b.value, **kwargs), a.dimension * b.dimension)
+    return Quantity(
+        np.dot(a.value, b.value, **kwargs), a.dimension * b.dimension
+    )
 
 
 @implements(np.cov)
@@ -665,6 +668,18 @@ except Exception as e:
     print(f"An unexpected error occurred: {e}")
 
 
+@implements(np.bincount)
+def np_bincount(x, weights=None, **kwargs):
+    x = quantify(x)
+    if weights is None:
+        return np.bincount(x.value, **kwargs)
+    weights = quantify(weights)
+    return Quantity(
+        np.bincount(x.value, weights=weights.value, **kwargs),
+        weights.dimension,
+    )
+
+
 @implements(np.transpose)
 def np_transpose(a, axes=None):
     return Quantity(
@@ -816,9 +831,12 @@ def np_isclose(a, b, rtol=1e-05, atol=None, equal_nan=False):
         raise DimensionError(a.dimension, b.dimension)
     if atol is None:
         atol = Quantity(1e-08, a.dimension)
-    if not (atol.dimension==a.dimension):
+    if not (atol.dimension == a.dimension):
         raise DimensionError(atol.dimension, b.dimension)
-    return np.isclose(a.value, b.value, rtol=rtol, atol=atol.value, equal_nan=equal_nan)
+    return np.isclose(
+        a.value, b.value, rtol=rtol, atol=atol.value, equal_nan=equal_nan
+    )
+
 
 @implements(np.allclose)
 def np_allclose(a, b, rtol=1e-05, atol=None, *args, **kwargs):

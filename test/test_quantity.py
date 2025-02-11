@@ -708,6 +708,20 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.round(1.9 * s), 2 * s)
         self.assertTrue(np.all(np.round(arr * s) == np.round(arr) * s))
 
+    def test_np_bincount(self):
+        self.assertTrue(np.all(np.bincount(np.arange(5) * m) == np.ones(5)))
+        self.assertTrue(
+            np.all(
+                np.bincount(np.arange(5), np.arange(5) * m) == np.arange(5) * m
+            )
+        )
+        self.assertTrue(
+            np.all(
+                np.bincount(np.arange(5) * m, np.arange(5) * m)
+                == np.arange(5) * m
+            )
+        )
+
     def test_round(self):
         self.assertEqual(round(1 * s), 1 * s)
         self.assertEqual(round(1.0 * s), 1.0 * s)
@@ -772,19 +786,16 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(m != None)  # noqa
         self.assertTrue(Quantity(1, Dimension(None)) != None)  # noqa
 
-
     def test_np_isclose(self):
+        a = Quantity(1.0, Dimension("L"))
+        b = Quantity(1.000001, Dimension("L"))
+        assert not np.isclose(a, b, rtol=0, atol=Quantity(0, Dimension("L")))
+        assert np.isclose(a, a, rtol=0, atol=Quantity(0, Dimension("L")))
 
-        a = Quantity(1.0, Dimension("L")) 
-        b = Quantity(1.000001, Dimension("L")) 
-        assert not np.isclose(a, b, rtol=0, atol=Quantity(0, Dimension("L")))  
-        assert np.isclose(a, a, rtol=0, atol=Quantity(0, Dimension("L"))) 
-
-        a = Quantity(1.0, Dimension("L")) 
-        b = Quantity(1.0001, Dimension("L"))  
-        assert np.isclose(a, b, atol=Quantity(0.001, Dimension("L"))) 
-        assert not np.isclose(a, b, atol=Quantity(0.00001, Dimension("L")))  
-
+        a = Quantity(1.0, Dimension("L"))
+        b = Quantity(1.0001, Dimension("L"))
+        assert np.isclose(a, b, atol=Quantity(0.001, Dimension("L")))
+        assert not np.isclose(a, b, atol=Quantity(0.00001, Dimension("L")))
 
     def test_np_allclose(self):
         self.assertTrue(np.allclose(np.arange(10) * m, np.arange(10) * m))
@@ -805,7 +816,7 @@ class TestQuantity(unittest.TestCase):
     #    self.assertTrue(np.all(Quantity([0, 0, 0], Dimension(None))))
 
     def test_np_linalg_norm(self):
-        self.assertEqual(np.linalg.norm(np.arange(3)*m), 5**0.5*m)
+        self.assertEqual(np.linalg.norm(np.arange(3) * m), 5**0.5 * m)
 
     def test_np_linalg_eig(self):
         # Create a sample matrix (e.g., a 3x3 matrix with arbitrary values)
@@ -2735,9 +2746,20 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(np.all(res == exp))
 
     def test_np_full_like(self):
-        self.assertTrue((np.full_like(np.arange(10)*m, 3)     == np.full(10, 3)).all())
-        self.assertTrue((np.full_like(np.arange(10)*m, 3*m)   == np.full(10, 3)*m).all())
-        self.assertTrue((np.full_like(np.arange(10)*m, 3*rad) == np.full(10, 3)*rad).all())
+        self.assertTrue(
+            (np.full_like(np.arange(10) * m, 3) == np.full(10, 3)).all()
+        )
+        self.assertTrue(
+            (
+                np.full_like(np.arange(10) * m, 3 * m) == np.full(10, 3) * m
+            ).all()
+        )
+        self.assertTrue(
+            (
+                np.full_like(np.arange(10) * m, 3 * rad)
+                == np.full(10, 3) * rad
+            ).all()
+        )
 
     def test_np_histogram2d(self):
         a = np.arange(100)
