@@ -59,6 +59,17 @@ def np_arange(*args, **kwargs):
     return Quantity(raw_array, start.dimension)
 
 
+@implements(np.unique)
+def np_unique(ar, *args, **kwargs):
+    result = np.unique(ar.value, *args, **kwargs)
+
+    if isinstance(result, tuple):
+        uniques = Quantity(result[0], ar.dimension)
+        return (uniques,) + result[1:]
+    else:
+        uniques = Quantity(result, ar.dimension)
+        return uniques
+
 @implements(np.asanyarray)
 def np_asanyarray(a):
     return Quantity(np.asanyarray(a.value), a.dimension)

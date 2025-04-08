@@ -1770,6 +1770,29 @@ class TestQuantity(unittest.TestCase):
         with self.assertRaises(DimensionError):
             np.interp(1 * s, arr_m, arr_m**2)
 
+    def test_np_unique(self):
+        arr_ = np.array([3, 1, 2, 3, 4, 2, 1])
+        arr  = arr_*m
+        unique_values = np.unique(arr)
+        self.assertTrue(np.all(unique_values==np.unique(arr_)*m))
+
+        arr2d = np.array([
+            [1, 2],
+            [3, 4],
+            [1, 2],
+            [5, 6]
+        ])
+
+        unique_rows = np.unique(arr2d, axis=0)
+        self.assertTrue(np.all(unique_rows*m == np.unique(arr2d*m, axis=0)))    
+
+        uniques_and_counts   = np.unique(np.arange(5), return_counts=True)
+        uniques_and_counts_m = np.unique(np.arange(5)*m, return_counts=True)
+        self.assertTrue(np.all(uniques_and_counts[0]*m == uniques_and_counts_m[0]))
+        self.assertTrue(np.all(uniques_and_counts[1] == uniques_and_counts_m[1]))
+
+
+
     def test_np_linalg_inv(self):
         ohm = units["ohm"]
         volt = units["V"]
