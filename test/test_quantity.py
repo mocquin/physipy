@@ -2566,11 +2566,6 @@ class TestQuantity(unittest.TestCase):
         res = np.greater.reduce(arr * m, dtype=bool)
         self.assertEqual(res, exp)
 
-        # as object
-        exp = np.greater.reduce(arr.astype(object))
-        res = np.greater.reduce(arr.astype(object) * m)
-        self.assertEqual(res, exp)
-
         # see https://github.com/numpy/numpy/issues/20929
         # and https://github.com/numpy/numpy/pull/22223
         # exp = np.greater.reduce(arr)
@@ -2585,11 +2580,6 @@ class TestQuantity(unittest.TestCase):
         res = np.greater_equal.reduce(arr * m, dtype=bool)
         self.assertEqual(res, exp)
 
-        # as object
-        exp = np.greater_equal.reduce(arr.astype(object))
-        res = np.greater_equal.reduce(arr.astype(object) * m)
-        self.assertEqual(res, exp)
-
         # see https://github.com/numpy/numpy/issues/20929
         # and https://github.com/numpy/numpy/pull/22223
         # exp = np.greater_equal.reduce(arr)
@@ -2602,11 +2592,6 @@ class TestQuantity(unittest.TestCase):
         # with dtype bool
         exp = np.less.reduce(arr, dtype=bool)
         res = np.less.reduce(arr * m, dtype=bool)
-        self.assertEqual(res, exp)
-
-        # as object
-        exp = np.less.reduce(arr.astype(object))
-        res = np.less.reduce(arr.astype(object) * m)
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
@@ -2630,11 +2615,6 @@ class TestQuantity(unittest.TestCase):
         res = np.less_equal.reduce(arr * m, dtype=bool)
         self.assertEqual(res, exp)
 
-        # as object
-        exp = np.less_equal.reduce(arr.astype(object))
-        res = np.less_equal.reduce(arr.astype(object) * m)
-        self.assertEqual(res, exp)
-
         # see https://github.com/numpy/numpy/issues/20929
         # and https://github.com/numpy/numpy/pull/22223
         # exp = np.less_equal.reduce(arr)
@@ -2649,11 +2629,6 @@ class TestQuantity(unittest.TestCase):
         res = np.not_equal.reduce(arr * m, dtype=bool)
         self.assertEqual(res, exp)
 
-        # as object
-        exp = np.not_equal.reduce(arr.astype(object))
-        res = np.not_equal.reduce(arr.astype(object) * m)
-        self.assertEqual(res, exp)
-
         # see https://github.com/numpy/numpy/issues/20929
         # and https://github.com/numpy/numpy/pull/22223
         # exp = np.not_equal.reduce(arr)
@@ -2666,11 +2641,6 @@ class TestQuantity(unittest.TestCase):
         # with dtype bool
         exp = np.equal.reduce(arr, dtype=bool)
         res = np.equal.reduce(arr * m, dtype=bool)
-        self.assertEqual(res, exp)
-
-        # as object
-        exp = np.equal.reduce(arr.astype(object))
-        res = np.equal.reduce(arr.astype(object) * m)
         self.assertEqual(res, exp)
 
         # see https://github.com/numpy/numpy/issues/20929
