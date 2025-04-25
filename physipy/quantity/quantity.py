@@ -758,7 +758,7 @@ class Quantity(object):
 
     def var(self, **kwargs):
         return np.var(self, **kwargs)
-    
+
     def abs(self):
         return np.abs(self)
 

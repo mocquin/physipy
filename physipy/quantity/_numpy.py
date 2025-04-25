@@ -70,6 +70,7 @@ def np_unique(ar, *args, **kwargs):
         uniques = Quantity(result, ar.dimension)
         return uniques
 
+
 @implements(np.asanyarray)
 def np_asanyarray(a):
     return Quantity(np.asanyarray(a.value), a.dimension)

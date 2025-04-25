@@ -190,6 +190,7 @@ def quad_vec(func, x0, x1, *oargs, args=(), **kwargs):
 
 
 def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
+    """Double intergral on func(y, x)"""
     x0 = quantify(x0)
     x1 = quantify(x1)
     y0 = quantify(y0)
