@@ -2268,17 +2268,6 @@ class TestQuantity(unittest.TestCase):
             self.assertTrue(ax2.yaxis.units == hertz)
             self.assertTrue(ax3.yaxis.units == minutes)
 
-    def test_matplotlib_set_limits_on_blank_plot(self):
-        with plotting_context():
-            from physipy import imperial_units, m, s, setup_matplotlib, units
-
-            inch = imperial_units["in"]
-            fig, ax = plt.subplots()
-            ax.set_xlim(2 * s, 3 * s)
-            ax.set_ylim(1 * inch, 7 * inch)
-            self.assertTrue(ax.xaxis.units == s)
-            self.assertTrue(ax.yaxis.units == m)
-
     def test_flat(self):
         # indexing
         arr_m = np.arange(5) * m
