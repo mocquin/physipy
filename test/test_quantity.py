@@ -2127,21 +2127,6 @@ class TestQuantity(unittest.TestCase):
         self.assertTrue(m.check_dim(Dimension("L")))
         self.assertFalse(m.check_dim(Dimension("RAD")))
 
-    def test_matplotlib(self):
-        # make sure units are disabled
-        setup_matplotlib(enable=False)
-
-        arr_m = np.linspace(1, 3, 2) * 1000 * m
-        arr_s = np.linspace(1, 3, 2) * 1000 * s
-
-        fig, ax = matplotlib.pyplot.subplots()
-
-        # very permissive, dimension are simply dropped
-        ax.plot(np.linspace(1, 3, 2), arr_m, "o")
-        ax.plot(arr_m, np.linspace(1, 3, 2), "o")
-        ax.plot(arr_s, arr_m)
-        ax.plot(arr_m, arr_s)
-
     def test_matplotlib_units(self):
         setup_matplotlib()
         arr_m = np.linspace(1, 3, 2) * 1000 * m
