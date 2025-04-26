@@ -6,3 +6,4 @@ prune test/.ipynb_checkpoints
 prune physipy/quantity/.ipynb_checkpoints/
 prune physipy.egg-info
 prune .ipynb_checkpoints
+prune asv_benchmarks
