@@ -827,7 +827,7 @@ def np_roll(a, *args, **kwargs):
 def np_meshgrid(*xi, **kwargs):
     xiq = [quantify(x) for x in xi]
     res = np.meshgrid(*(xi.value for xi in xiq), **kwargs)
-    return tuple(Quantity(r, q.dimension) for r, q in zip(res, xiq))
+    return tuple(Quantity(r, q.dimension).set_favunit(q.favunit) for r, q in zip(res, xiq))
 
 
 @implements(np.real)
