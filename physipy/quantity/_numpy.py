@@ -909,7 +909,7 @@ def np_interp(x, xp, fp, left=None, right=None, *args, **kwargs):
     res = np.interp(
         x.value, xp.value, fp.value, left_v, right_v, *args, **kwargs
     )
-    return Quantity(res, fp.dimension) if fp_is_quantity else res
+    return Quantity(res, fp.dimension).set_favunit(fp.favunit) if fp_is_quantity else res
 
 
 # @implements(np.asarray)
