@@ -769,6 +769,20 @@ def np_expand_ims(a, axis):
 def np_shape(a):
     return np.shape(a.value)
 
+@implements(np.pad)
+def np_pad(array, pad_width, mode="constant", **kwargs):
+    if "constant_values" in kwargs:
+        cval = quantify(kwargs['constant_values'])
+        if cval.dimension != array.dimension:
+            raise DimensionError(array.dimension, cval.dimension)
+        kwargs["constant_values"] = cval.value
+    if "end_values" in kwargs:
+        eval = quantify(kwargs['end_values'])
+        if eval.dimension != array.dimension:
+            raise DimensionError(array.dimension, eval.dimension)
+        kwargs["end_values"] = eval.value
+    padded = np.pad(array.value, pad_width, mode=mode, **kwargs)
+    return Quantity(padded, array.dimension, favunit=array.favunit)
 
 # _linspace = decorate_with_various_unit(("A", "A"), "A")(np.linspace)
 
