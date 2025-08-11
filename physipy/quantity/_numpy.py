@@ -435,6 +435,7 @@ def np_cumsum(a, **kwargs):
 
 @implements(np.histogram)
 def np_histogram(a, bins=10, range=None, density=None, weights=None, **kwargs):
+    a = quantify(a)
     if range is not None:
         range = (quantify(range[0]), quantify(range[1]))
         if not range[0].dimension == range[1].dimension:
