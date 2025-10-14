@@ -773,6 +773,11 @@ class Quantity(object):
             return self.value
         else:
             return self
+        
+    def ravel(self):
+        if isinstance(self.value , np.ndarray):
+            return np.ravel(self)
+        raise NotImplementedError
 
     def has_integer_dimension_power(self) -> bool:
         return all(
