@@ -65,7 +65,7 @@ from __future__ import annotations
 import math
 import numbers
 import warnings
-from typing import Callable, Union, Any
+from typing import Any, Callable, SupportsFloat, SupportsInt, Union, cast
 
 import numpy as np
 import sympy as sp
@@ -222,7 +222,7 @@ class Quantity(object):
     @value.setter
     def value(self, value: ValueLike) -> None:
         if isinstance(value, (list, tuple)):
-            self._value = np.array(value)
+            self._value: ValueType = np.array(value)
         else:
             self._value = value
 
@@ -401,12 +401,12 @@ class Quantity(object):
     def __int__(self) -> int:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
-        return int(self.value)
+        return int(cast(SupportsInt, self.value))
 
     def __float__(self) -> float:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
-        return float(self.value)
+        return float(cast(SupportsFloat, self.value))
 
     def __round__(self, i=None):
         return type(self)(
@@ -589,7 +589,7 @@ class Quantity(object):
         Else floating point notation is used.
         """
         value: Any = self._compute_value()
-        if not isinstance(value, numbers.Number):  # np.isscalar(value):
+        if not isinstance(value, numbers.Complex):  # np.isscalar(value):
             return str(value)
         else:
             if abs(value) >= 10 ** self.EXP_THRESH or abs(value) < 10 ** (
@@ -685,7 +685,7 @@ class Quantity(object):
         elif isinstance(idx, np.bool_) and not idx:
             pass
         else:
-            self.value[idx] = q.value
+            cast(np.ndarray, self.value)[idx] = q.value
 
     def __iter__(self):
         """
@@ -715,7 +715,10 @@ class Quantity(object):
         )
 
     def tolist(self) -> list:
-        return [type(self)(i, self.dimension) for i in self.value]
+        return [
+            type(self)(i, self.dimension)
+            for i in cast(np.ndarray, self.value)
+        ]
 
     @property
     def real(self):
