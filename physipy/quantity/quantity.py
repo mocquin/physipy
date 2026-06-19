@@ -75,6 +75,17 @@ from sympy import Expr, Symbol
 
 from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
 
+# A single scalar stored in a Quantity: any Python/NumPy real or complex
+# number — int, float, complex, fractions.Fraction, numpy scalars, ...
+# Custom value backends (e.g. uncertainties) are supported at runtime via
+# register_property_backend but intentionally fall outside this type.
+ScalarValue = numbers.Complex
+# The full numerical payload of a Quantity: a scalar or an array of scalars.
+ValueType = Union[ScalarValue, np.ndarray]
+# What __init__ / the value setter *accept*: also list/tuple, which the
+# setter normalizes into an ndarray.
+ValueLike = Union[ValueType, list, tuple]
+
 # # Constantes
 UNIT_PREFIX = " "
 DISPLAY_DIGITS = 2
@@ -149,7 +160,7 @@ class Quantity(object):
 
     def __init__(
         self,
-        value,
+        value: ValueLike,
         dimension: Dimension,
         symbol: Union[str, Symbol, Expr] = DEFAULT_SYMBOL,
         favunit: Quantity | None = None,
@@ -205,11 +216,11 @@ class Quantity(object):
             )
 
     @property
-    def value(self):
+    def value(self) -> ValueType:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: ValueLike) -> None:
         if isinstance(value, (list, tuple)):
             self._value = np.array(value)
         else:
@@ -1192,7 +1203,7 @@ class Quantity(object):
         return type(self)(self.value.squeeze(*args, **kwargs), self.dimension)
 
 
-def quantify(x):
+def quantify(x: Union[Quantity, ValueLike]) -> Quantity:
     if isinstance(x, Quantity):
         return x  # .__copy__()
     else:
@@ -1214,7 +1225,9 @@ def dimensionify(x) -> Dimension:
 
 
 def make_quantity(
-    x, symbol="UndefinedSymbol", favunit: Quantity | None = None
+    x: Union[Quantity, ValueLike],
+    symbol: Union[str, Symbol, Expr] = "UndefinedSymbol",
+    favunit: Quantity | None = None,
 ) -> Quantity:
     """
     Create a new Quantity from x, with optionnal symbol and favunit.
