@@ -649,7 +649,6 @@ def np_rollaxis(a, axis, start=0):
         favunit=a.favunit,
     )
 
-<<<<<<< HEAD
 @implements(np.sinc)
 def np_sinc(x):
     if x.dimension!=Dimension(None):
@@ -675,12 +674,6 @@ def np_trapz(q, x=None, dx=1, **kwargs):
             q.dimension * x.dimension,
         )
 
-
-try:
-    if not hasattr(np, "trapezoid"):
-        raise AttributeError(
-            "np.trapezoid is not available in this NumPy version."
-        )
 
 
 # np.trapz was renamed np.trapezoid in NumPy 2.0 (np.trapz still exists there
