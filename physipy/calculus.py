@@ -11,7 +11,7 @@ See : https://docs.scipy.org/doc/scipy/reference/integrate.html
 """
 from __future__ import annotations
 
-from typing import Callable
+from typing import Any, Callable, cast
 
 import numpy as np
 import scipy
@@ -19,6 +19,7 @@ import scipy.integrate
 import scipy.optimize
 
 from physipy import Dimension, DimensionError, Quantity, quantify
+from physipy.quantity.quantity import Operand, QuantityOrValue
 from physipy.quantity.utils import check_dimension
 
 from .quantity._numpy import trapezoid
@@ -26,7 +27,7 @@ from .quantity.dimension import SI_UNIT_SYMBOL
 from .quantity.utils import asqarray, decorate_with_various_unit
 
 
-def xvectorize(func: Callable) -> Callable:
+def xvectorize(func: Callable[..., Any]) -> Callable[[Any], Quantity]:
     """
     1-D vectorize func.
 
@@ -48,14 +49,14 @@ def xvectorize(func: Callable) -> Callable:
         Decorated function.
     """
 
-    def vec_func(x):
+    def vec_func(x: Any) -> Quantity:
         res = asqarray([func(i) for i in x])
         return res
 
     return vec_func
 
 
-def ndvectorize(func: Callable) -> Callable:
+def ndvectorize(func: Callable[..., Any]) -> Callable[[Any], Quantity]:
     """
     1-D vectorize func and accept input as ndarray.
 
@@ -80,9 +81,9 @@ def ndvectorize(func: Callable) -> Callable:
         Decorated function.
     """
 
-    def vec_func(x):
+    def vec_func(x: Any) -> Quantity:
         res = asqarray([func(i) for i in x.flat])
-        res.value = res.value.reshape(x.shape)
+        res.value = cast(np.ndarray, res.value).reshape(x.shape)
         return res
 
     return vec_func
@@ -114,7 +115,14 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
     return int_xy
 
 
-def quad(func, x0, x1, *oargs, args=(), **kwargs):
+def quad(
+    func: Callable[..., Any],
+    x0: Operand,
+    x1: Operand,
+    *oargs: Any,
+    args: tuple = (),
+    **kwargs: Any,
+) -> tuple[QuantityOrValue, float]:
     """A wrapper on scipy.integrate.quad :
     - will check dimensions of x0 and x1 bounds
     - returned value's dimension is infered by calling func(x0)
@@ -131,7 +139,7 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
     res_dim = res.dimension
 
     # define a float-version for inputs and outputs
-    def func_value(x_value, *oargs):
+    def func_value(x_value: Any, *oargs: Any) -> Any:
         # cast back in Quantity
         x = Quantity(x_value, x0.dimension)
         # compute Quantity result
@@ -151,7 +159,14 @@ def quad(func, x0, x1, *oargs, args=(), **kwargs):
     )
 
 
-def quad_vec(func, x0, x1, *oargs, args=(), **kwargs):
+def quad_vec(
+    func: Callable[..., Any],
+    x0: Operand,
+    x1: Operand,
+    *oargs: Any,
+    args: tuple = (),
+    **kwargs: Any,
+) -> tuple[QuantityOrValue, float]:
     """
     A wrapper on scipy.integrate.quad_vec:
     - Will check dimensions of x0 and x1 bounds.
@@ -177,7 +192,7 @@ def quad_vec(func, x0, x1, *oargs, args=(), **kwargs):
     res = quantify(res)
     res_dim = res.dimension
 
-    def func_value(x_value, *args):
+    def func_value(x_value: Any, *args: Any) -> Any:
         x = Quantity(x_value, x0.dimension)
         res_raw = func(x, *args)
         res_quant = quantify(res_raw)
@@ -190,7 +205,16 @@ def quad_vec(func, x0, x1, *oargs, args=(), **kwargs):
     return result_quantity.rm_dim_if_dimless(), prec
 
 
-def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
+def dblquad(
+    func: Callable[..., Any],
+    x0: Operand,
+    x1: Operand,
+    y0: Operand,
+    y1: Operand,
+    *oargs: Any,
+    args: tuple = (),
+    **kwargs: Any,
+) -> tuple[QuantityOrValue, float]:
     """Double intergral on func(y, x)"""
     x0 = quantify(x0)
     x1 = quantify(x1)
@@ -206,7 +230,7 @@ def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
     res = quantify(res)
     res_dim = res.dimension
 
-    def func_value(y_value, x_value, *args):
+    def func_value(y_value: Any, x_value: Any, *args: Any) -> Any:
         x = Quantity(x_value, x0.dimension)
         y = Quantity(y_value, y0.dimension)
         res_raw = func(y, x, *args)
@@ -224,7 +248,16 @@ def dblquad(func, x0, x1, y0, y1, *oargs, args=(), **kwargs):
     )
 
 
-def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
+def tplquad(
+    func: Callable[..., Any],
+    x0: Operand,
+    x1: Operand,
+    y0: Operand,
+    y1: Operand,
+    z0: Operand,
+    z1: Operand,
+    *args: Any,
+) -> tuple[QuantityOrValue, float]:
     x0 = quantify(x0)
     x1 = quantify(x1)
     y0 = quantify(y0)
@@ -243,7 +276,9 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
     res = quantify(res)
     res_dim = res.dimension
 
-    def func_value(z_value, y_value, x_value, *args):
+    def func_value(
+        z_value: Any, y_value: Any, x_value: Any, *args: Any
+    ) -> Any:
         x = Quantity(x_value, x0.dimension)
         y = Quantity(y_value, y0.dimension)
         z = Quantity(z_value, z0.dimension)
@@ -270,17 +305,17 @@ def tplquad(func, x0, x1, y0, y1, z0, z1, *args):
 
 
 def solve_ivp(
-    fun,
-    t_span,
-    Y0,
-    method="RK45",
-    t_eval=None,
-    dense_output=False,
-    events=None,
-    vectorized=False,
-    args=None,
-    **options,
-):
+    fun: Callable[..., Any],
+    t_span: Any,
+    Y0: Any,
+    method: str = "RK45",
+    t_eval: Any = None,
+    dense_output: bool = False,
+    events: Any = None,
+    vectorized: bool = False,
+    args: Any = None,
+    **options: Any,
+) -> Any:
     not_scalar = len(Y0) > 1
 
     # first, quantify everything that could be quantity
@@ -306,9 +341,10 @@ def solve_ivp(
 
     # second : rewrite everything without units
 
-    def func_value(t_value, Y_value):
+    def func_value(t_value: Any, Y_value: Any) -> Any:
         # add back the units
         t = Quantity(t_value, t_span[0].dimension)
+        Y: Any
         if not_scalar:
             Y = np.array(
                 [
@@ -322,6 +358,7 @@ def solve_ivp(
         # compute with units
         res_raw = fun(t, Y)
         # extract the numerical value
+        raw_value: Any
         if not_scalar:
             raw = np.array([quantify(r) for r in res_raw], dtype=object)
             raw_value = np.array([r.value for r in raw])
@@ -360,7 +397,7 @@ def solve_ivp(
 
     # for some reason the solution accepts 0*s as well as 0
     @check_dimension(t_span[0].dimension)
-    def sol_q(t):
+    def sol_q(t: Any) -> Quantity:
         return Quantity(func_sol(t), Y0[0].dimension)  # /t_span[0].dimension)
 
     sol.sol = sol_q
@@ -368,12 +405,17 @@ def solve_ivp(
 
 
 # Generique
-def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
+def root(
+    func_cal: Callable[..., Any],
+    start: Operand,
+    args: tuple = (),
+    **kwargs: Any,
+) -> Quantity:
     start = quantify(start)
     start_val = start.value
     start_dim = start.dimension
 
-    def func_cal_float(x_float):
+    def func_cal_float(x_float: Any) -> Any:
         q = Quantity(x_float, start_dim)
         return func_cal(q, *args)
 
@@ -382,7 +424,12 @@ def root(func_cal: Callable, start, args=(), **kwargs) -> Quantity:
 
 
 def brentq(
-    func_cal: Callable, start, stop, *oargs, args=(), **kwargs
+    func_cal: Callable[..., Any],
+    start: Operand,
+    stop: Operand,
+    *oargs: Any,
+    args: tuple = (),
+    **kwargs: Any,
 ) -> Quantity:
     start = quantify(start)
     stop = quantify(stop)
@@ -393,7 +440,7 @@ def brentq(
     start_dim = start.dimension
     stop_val = stop.value
 
-    def func_float(x):
+    def func_float(x: Any) -> Any:
         res = func_cal(Quantity(x, start_dim), *args)
         return quantify(res).value
 
