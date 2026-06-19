@@ -139,7 +139,7 @@ def prefix_units(
     return prefixed_dict if not extend else {**unit_dict, **prefix_dic}
 
 
-def _make_quantity_dict_with_symbols(dic):
+def _make_quantity_dict_with_symbols(dic: dict) -> dict:
     return {
         key: make_quantity(value, symbol=key) for key, value in dic.items()
     }

@@ -448,7 +448,7 @@ class Quantity(object):
             round(self.value, i), self.dimension, favunit=self.favunit
         )
 
-    def __copy__(self):
+    def __copy__(self) -> Quantity:
         return type(self)(
             self.value,
             self.dimension,
@@ -456,7 +456,7 @@ class Quantity(object):
             symbol=self.symbol,
         )
 
-    def copy(self):
+    def copy(self) -> Quantity:
         return self.__copy__()
 
     def __repr__(self) -> str:
@@ -533,7 +533,12 @@ class Quantity(object):
     #    return p.text(self._repr_latex_())
 
     # TODO : assess the usefullness of this...
-    def plot(self, kind: str = "y", other=None, ax=None) -> None:
+    def plot(
+        self,
+        kind: str = "y",
+        other: Quantity | None = None,
+        ax: Any = None,
+    ) -> None:
         from physipy import plotting_context
 
         if ax is None:
@@ -562,8 +567,10 @@ class Quantity(object):
             complemented = q._compute_complement_value()
             if complemented != "":
                 # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
-                complement_value_str = sp_printing.latex(
-                    sp_parsing.sympy_parser.parse_expr(complemented)
+                complement_value_str = str(
+                    sp_printing.latex(
+                        sp_parsing.sympy_parser.parse_expr(complemented)
+                    )
                 )
             else:
                 complement_value_str = ""
@@ -577,8 +584,10 @@ class Quantity(object):
                     + "$"
                 )
             # if self.value is a scalar, use sympy to parse expression
-            value_str = sp_printing.latex(
-                sp_parsing.sympy_parser.parse_expr(formatted_value)
+            value_str = str(
+                sp_printing.latex(
+                    sp_parsing.sympy_parser.parse_expr(formatted_value)
+                )
             )
             return (
                 "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
@@ -590,7 +599,9 @@ class Quantity(object):
             # context)
             return str(self)
 
-    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Quantity | None:
+    def _pick_smart_favunit(
+        self, array_to_scal: Callable = np.mean
+    ) -> Quantity | None:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
@@ -616,7 +627,7 @@ class Quantity(object):
         )
         best_ixd = np.abs(same_dim_unit_arr - np.abs(self_val)).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
-        return best_favunit
+        return cast(Quantity, best_favunit)
 
     def _format_value(self) -> str:
         """Used to format the value on repr as a str.
@@ -664,7 +675,7 @@ class Quantity(object):
         else:
             return format(self._compute_value(), format_spec) + prefix
 
-    def _compute_value(self):
+    def _compute_value(self) -> ValueType:
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
             ratio_favunit = make_quantity(self / self.favunit)
@@ -672,7 +683,9 @@ class Quantity(object):
         else:
             return self.value
 
-    def _compute_complement_value(self, custom_favunit=None):
+    def _compute_complement_value(
+        self, custom_favunit: Quantity | None = None
+    ) -> str:
         """Return the complement to the value as a str."""
         if custom_favunit is None:
             favunit = self.favunit
@@ -804,7 +817,10 @@ class Quantity(object):
         return np.abs(self)
 
     def integrate(self, *args, **kwargs):
-        return np.trapz(self, *args, **kwargs)
+        # lazy import avoids the quantity <-> _numpy circular import
+        from ._numpy import trapezoid
+
+        return trapezoid(self, *args, **kwargs)
 
     def is_dimensionless(self) -> bool:
         return self.dimension == DIMENSIONLESS

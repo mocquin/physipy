@@ -631,8 +631,9 @@ def np_rollaxis(a, axis, start=0):
         favunit=a.favunit,
     )
 
-# np.trapz was removed in NumPy 2.0 and renamed np.trapezoid; register
-# whichever names this NumPy version exposes.
+# np.trapz was renamed np.trapezoid in NumPy 2.0 (np.trapz still exists there
+# but is deprecated and slated for removal); register whichever names this
+# NumPy version exposes.
 if hasattr(np, "trapz"):
     @implements(np.trapz)
     def np_trapz(q, x=None, dx=1, **kwargs):
@@ -668,6 +669,16 @@ if hasattr(np, "trapezoid"):
                 np.trapezoid(q.value, x=x.value, **kwargs),
                 q.dimension * x.dimension,
             )
+
+
+# Canonical, version-agnostic trapezoid integrator. Prefer the modern name;
+# fall back to the deprecated np.trapz on NumPy < 2.0. Use this (instead of
+# hardcoding either name) in physipy code and tests so they stay portable
+# across NumPy versions. It dispatches through __array_function__, so Quantity
+# units are preserved either way.
+# getattr (not np.trapz directly) so NumPy 2.x stubs, which dropped trapz,
+# don't flag a missing attribute.
+trapezoid: Callable = getattr(np, "trapezoid", None) or getattr(np, "trapz")
 
 
 @implements(np.bincount)

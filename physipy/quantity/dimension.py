@@ -367,7 +367,7 @@ class Dimension(object):
             return self.dim_dict == y.dim_dict
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     # def __ne__(self, y):
