@@ -631,34 +631,30 @@ def np_rollaxis(a, axis, start=0):
         favunit=a.favunit,
     )
 
-
-@implements(np.trapz)
-def np_trapz(q, x=None, dx=1, **kwargs):
-    # if not isinstance(q.value,np.ndarray):
-    #        raise TypeError("Quantity value must be array-like to integrate.")
-    q = quantify(q)
-    if x is None:
-        dx = quantify(dx)
-        return Quantity(
-            np.trapz(q.value, x=None, dx=dx.value, **kwargs),
-            q.dimension * dx.dimension,
-        )
-    else:
-        x = quantify(x)
-        return Quantity(
-            np.trapz(q.value, x=x.value, **kwargs),
-            q.dimension * x.dimension,
-        )
-
-
-try:
-    if not hasattr(np, "trapezoid"):
-        raise AttributeError(
-            "np.trapezoid is not available in this NumPy version."
-        )
-
-    @implements(np.trapezoid)
+# np.trapz was removed in NumPy 2.0 and renamed np.trapezoid; register
+# whichever names this NumPy version exposes.
+if hasattr(np, "trapz"):
+    @implements(np.trapz)
     def np_trapz(q, x=None, dx=1, **kwargs):
+        # if not isinstance(q.value,np.ndarray):
+        #        raise TypeError("Quantity value must be array-like to integrate.")
+        q = quantify(q)
+        if x is None:
+            dx = quantify(dx)
+            return Quantity(
+                np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+                q.dimension * dx.dimension,
+            )
+        else:
+            x = quantify(x)
+            return Quantity(
+                np.trapz(q.value, x=x.value, **kwargs),
+                q.dimension * x.dimension,
+            )
+
+if hasattr(np, "trapezoid"):
+    @implements(np.trapezoid)
+    def np_trapezoid(q, x=None, dx=1, **kwargs):
         q = quantify(q)
         if x is None:
             dx = quantify(dx)
@@ -672,13 +668,6 @@ try:
                 np.trapezoid(q.value, x=x.value, **kwargs),
                 q.dimension * x.dimension,
             )
-
-except AttributeError as e:
-    print("When trying to declare np.trapz wrapper:")
-    print(f"AttributeError: {e}")
-except Exception as e:
-    print("When trying to declare np.trapz wrapper:")
-    print(f"An unexpected error occurred: {e}")
 
 
 @implements(np.bincount)

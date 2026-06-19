@@ -51,11 +51,13 @@ class QuantityConverter(munits.ConversionInterface):
             return self._convert(q, q_unit, axis)
 
     def _convert(self, q, q_unit, axis):
+        from ..quantity import asqarray
+
         if not isinstance(q_unit, Quantity):
             raise TypeError(
                 f"Expect Quantity for q_unit, but got {type(q_unit)} for {q_unit}"
             )
-        return q._plot_get_value_for_plot(q_unit)
+        return asqarray(q)._plot_get_value_for_plot(q_unit)
 
 
 def setup_matplotlib(enable: bool = True) -> None:

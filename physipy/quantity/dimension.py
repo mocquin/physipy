@@ -158,7 +158,9 @@ class Dimension(object):
         elif isinstance(definition, dict) and set(
             list(definition.keys())
         ) == set(SI_SYMBOL_LIST):
-            self.dim_dict = definition
+            # copy to avoid aliasing the caller's dict into this (hashable,
+            # treated-as-immutable) Dimension
+            self.dim_dict = definition.copy()
         # example : {"L":1, "T":-2}
         elif isinstance(definition, dict) and set(
             list(definition.keys())

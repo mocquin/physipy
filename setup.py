@@ -34,6 +34,9 @@ setup(
     packages=find_packages(exclude=("test", 'asv_benchmarks')),
     # add content of MANIFEST
     include_package_data=True,
+    # PEP 561 : ship the inline-type marker so downstream type checkers
+    # actually read physipy's annotations
+    package_data={"physipy": ["py.typed", "quantity/dimension.txt"]},
     install_requires=[
         "numpy",
         "scipy",

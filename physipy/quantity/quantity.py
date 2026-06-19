@@ -236,20 +236,12 @@ class Quantity(object):
         return quantify(x) - self
 
     def __mul__(self, y):
-        # TODO make a decorator "try_raw_then_quantify_if_fail"
-        try:
-            return type(self)(
-                self.value * y.value,
-                self.dimension * y.dimension,
-                symbol=self.symbol * y.symbol,
-            ).rm_dim_if_dimless()
-        except BaseException:
-            y = quantify(y)
-            return type(self)(
-                self.value * y.value,
-                self.dimension * y.dimension,
-                symbol=self.symbol * y.symbol,
-            ).rm_dim_if_dimless()
+        y = quantify(y)
+        return type(self)(
+            self.value * y.value,
+            self.dimension * y.dimension,
+            symbol=self.symbol * y.symbol,
+        ).rm_dim_if_dimless()
 
     __rmul__ = __mul__
 
@@ -678,8 +670,8 @@ class Quantity(object):
         if not q.dimension == self.dimension:
             raise DimensionError(q.dimension, self.dimension)
         if isinstance(idx, np.bool_) and idx:
-            self.valeur = q.value
-        elif isinstance(idx, np.bool_) and idx is False:
+            self.value = q.value
+        elif isinstance(idx, np.bool_) and not idx:
             pass
         else:
             self.value[idx] = q.value
@@ -791,6 +783,13 @@ class Quantity(object):
         q = self.__copy__()
         q.favunit = y
         return q
+
+    def ito(self, y: Quantity) -> Quantity:
+        """in-place version of `to` : set favunit on self and return self."""
+        if not isinstance(y, Quantity):
+            raise TypeError("Cannot express Quantity in not Quantity")
+        self.favunit = y
+        return self
 
     def set_favunit(self, fav: Quantity) -> Quantity:
         """

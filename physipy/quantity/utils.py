@@ -777,4 +777,4 @@ def asqarray(array_like) -> Quantity:
     elif isinstance(array_like, Quantity):
         return array_like
     else:
-        raise ValueError("Type {type(array_like)} not supported")
+        raise ValueError(f"Type {type(array_like)} not supported")
