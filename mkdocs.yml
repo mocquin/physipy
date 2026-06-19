@@ -2,8 +2,8 @@ site_name: "physipy : make python unit-aware"                                   
 site_description: Official documentation for the physipy python package         # This description may appear in search results or metadata
 
 repo_url: https://github.com/mocquin/physipy/                                   # MAterial : In order to display a link to the repository of your project as part of your documentation
-repo_name: mocquin/physipy                                                      # Material : MkDocs will infer the source provider by examining the URL and try to set the repository name automatically. If you wish to customize the name, set repo_name
-use_directory_urls: false                                                       # see https://stackoverflow.com/questions/60354731/why-are-my-local-html-links-going-to-parent-folder-instead-of-the-html
+repo_name: mocquin/physipy                                                      # Material : MkDocs will infer the source provider by examining the URL and try to set the repository name automatica[...]
+use_directory_urls: false                                                       # see https://stackoverflow.com/questions/60354731/why-are-my-local-html-links-going-to-parent-folder-instead-of-the-[...]
 
 docs_dir: docs                                                                  # name of dir containing md files for docs. Defaults to docs
 site_dir: _mkdocks_site                                                                  # the directory where the output HTML and other files are created, Defaults to site
@@ -28,28 +28,28 @@ theme:
         icon: material/brightness-7
         name: Switch to light mode
   features:
-    #- navigation.tabs                                                          # Material : When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports above 1220px, but remain as-is on mobile.1
+    #- navigation.tabs                                                          # Material : When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports a[...]
     #- navigation.tabs.sticky
-    #- navigation.sections                                                      # Material : When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports above 1220px, but remain as-is on mobile.
-    - navigation.top                                                            # A back-to-top button can be shown when the user, after scrolling down, starts to scroll up again. It's rendered centered and just below the header
-    #- navigation.expand                                                         # Material : When expansion is enabled, the left sidebar will expand all collapsible subsections by default, so the user doesn't have to open subsections manuall
-    - navigation.path                                                           # SPONSORS ONLY : When navigation paths are activated, a breadcrumb navigation is rendered above the title of each page, which might make orientation easier for users visiting your documentation on devices with smaller screens
+    #- navigation.sections                                                      # Material : When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports a[...]
+    - navigation.top                                                            # A back-to-top button can be shown when the user, after scrolling down, starts to scroll up again. It's rendered ce[...]
+    #- navigation.expand                                                         # Material : When expansion is enabled, the left sidebar will expand all collapsible subsections by default, so the[...]
+    - navigation.path                                                           # SPONSORS ONLY : When navigation paths are activated, a breadcrumb navigation is rendered above the title of each p[...]
     - search.suggest                                                            # the search will display the likeliest completion for the last word which can be accepted with the Right key.
-    - search.highlight                                                          # When search highlighting is enabled and a user clicks on a search result, Material for MkDocs will highlight all occurrences after following the link
-    - search.share                                                              # When search sharing is activated, a  share button is rendered next to the reset button, which allows to deep link to the current search query and result
-    - content.action.edit                                                       # Material/repo : button for edit on github (After making sure that edit_uri is correctly configured, buttons for code actions can be added.)
+    - search.highlight                                                          # When search highlighting is enabled and a user clicks on a search result, Material for MkDocs will highlight all o[...]
+    - search.share                                                              # When search sharing is activated, a  share button is rendered next to the reset button, which allows to deep link [...]
+    - content.action.edit                                                       # Material/repo : button for edit on github (After making sure that edit_uri is correctly configured, buttons for co[...]
     - content.action.view                                                       # Material/repo : button for viewing page on github
     - toc.follow
-    - content.code.copy                                                         # Material/code blocks : Code blocks can automatically render a button on the right side to allow the user to copy a code block's contents to the clipboard
+    - content.code.copy                                                         # Material/code blocks : Code blocks can automatically render a button on the right side to allow the user to copy a[...]
     - content.code.select
   icon:
-    repo: fontawesome/brands/github                                             # Material/repo : While the default repository icon is a generic git icon, it can be set to any icon bundled with the theme by referencing a valid icon path
+    repo: fontawesome/brands/github                                             # Material/repo : While the default repository icon is a generic git icon, it can be set to any icon bundled with th[...]
     edit: material/pencil                                                       # Material/repo : icon for edit button 
     view: material/eye                                                          # Material/repo : icon for view button
     logo: material/book                                                         # Material  : icon for home button
 
 
-# watch:                                                                          # https://www.mkdocs.org/user-guide/configuration/#watch : Determines additional directories to watch when running mkdocs serve
+# watch:                                                                          # https://www.mkdocs.org/user-guide/configuration/#watch : Determines additional directories to watch when running[...]
 # - ./../                                                                         
 watch: [mkdocs.yml, README.md, physipy/]
 
@@ -82,10 +82,10 @@ markdown_extensions:
   - markdown_include.include:
       base_path: docs
   - pymdownx.highlight:                                                       # The below block allows for code-block syntax colors
-      auto_title: false                                                       # This option will automatically add a title to all code blocks that shows the name of the language being used, e.g. Python is printed for a py block
-      use_pygments: true                                                      # This option allows to control whether highlighting should be carried out during build time using Pygments or in the browser with a JavaScript syntax highlighter
-      anchor_linenums: true                                                   # If a code blocks contains line numbers, enabling this setting will wrap them with anchor links, so they can be hyperlinked and shared more easily:
-      line_spans: __span                                                      #  When this option is set, each line of a code block is wrapped in a span, which is essential for features like line highlighting to work correctly
+      auto_title: false                                                       # This option will automatically add a title to all code blocks that shows the name of the language being used, e.g. P[...]
+      use_pygments: true                                                      # This option allows to control whether highlighting should be carried out during build time using Pygments or in the [...]
+      anchor_linenums: true                                                   # If a code blocks contains line numbers, enabling this setting will wrap them with anchor links, so they can be hyper[...]
+      line_spans: __span                                                      #  When this option is set, each line of a code block is wrapped in a span, which is essential for features like line [...]
       pygments_lang_class: true
       linenums: true                                                          # This option will add line numbers to all code blocks.
       linenums_style: pymdownx-inline                                         # pymdownx-inline renders line numbers as part of the line itself
@@ -94,7 +94,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.arithmatex:                                                      # support for latex, along additionnal javascript below
       generic: true
-  - attr_list                                                                 # For inline button : This configuration allows to add attributes to all inline- and block-level elements with a simple syntax, turning any link into a button
+  - attr_list                                                                 # For inline button : This configuration allows to add attributes to all inline- and block-level elements with a simpl[...]
 
 
 
@@ -141,7 +141,6 @@ nav:                                                                            
 
 extra_javascript:                                     # Following lines for mathjax, along with the ./docs/javascripts/mathjax.js
  # - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 # end of mathjax block
 
