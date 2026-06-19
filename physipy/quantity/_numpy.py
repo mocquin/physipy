@@ -277,8 +277,22 @@ def np_linalg_norm(x, *args, **kwargs):
 def np_linalg_lstsq(a, b, **kwargs):
     a = quantify(a)
     b = quantify(b)
-    sol = np.linalg.lstsq(a.value, b.value, **kwargs)
-    return Quantity(sol, b.dimension / a.dimension)
+    # np.linalg.lstsq returns a 4-tuple, not a single array : the
+    # least-squares solution, the residuals, the rank, and the singular
+    # values. Each carries its own dimension and must be wrapped separately.
+    solution, residuals, rank, singular_values = np.linalg.lstsq(
+        a.value, b.value, **kwargs
+    )
+    return (
+        # solves a @ x = b  ->  x has dimension b / a
+        Quantity(solution, b.dimension / a.dimension),
+        # residuals are sums of squared errors ||b - a @ x||^2
+        Quantity(residuals, b.dimension**2),
+        # rank is a plain integer
+        rank,
+        # singular values of a share a's dimension
+        Quantity(singular_values, a.dimension),
+    )
 
 
 @implements(np.linalg.inv)
@@ -455,9 +469,14 @@ def np_cumsum(a, **kwargs):
 def np_histogram(a, bins=10, range=None, density=None, weights=None, **kwargs):
     a = quantify(a)
     if range is not None:
-        range = (quantify(range[0]), quantify(range[1]))
-        if not range[0].dimension == range[1].dimension:
-            raise DimensionError(range[0].dimension, range[1].dimension)
+        low, high = quantify(range[0]), quantify(range[1])
+        if not low.dimension == high.dimension:
+            raise DimensionError(low.dimension, high.dimension)
+        if not low.dimension == a.dimension:
+            raise DimensionError(a.dimension, low.dimension)
+        # forward the bare magnitudes : np.histogram cannot consume Quantity
+        # edges (np.result_type has no implementation for them).
+        range = (low.value, high.value)
     hist, bin_edges = np.histogram(
         a.value, bins=bins, range=range, density=density, weights=weights
     )
@@ -481,14 +500,25 @@ def np_diagonal(a, **kwargs):
 
 @implements(np.diff)
 def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
-    if prepend != np._NoValue:
+    # prepend/append must be stripped to their magnitude before the inner
+    # np.diff call : forwarding a Quantity into np.diff(a.value, ...) would
+    # re-dispatch here with a bare ndarray and fail on `a.dimension`.
+    prepend_value = prepend
+    if prepend is not np._NoValue:
+        prepend = quantify(prepend)
         if prepend.dimension != a.dimension:
             raise DimensionError(a.dimension, prepend.dimension)
-    if append != np._NoValue:
+        prepend_value = prepend.value
+    append_value = append
+    if append is not np._NoValue:
+        append = quantify(append)
         if append.dimension != a.dimension:
             raise DimensionError(a.dimension, append.dimension)
+        append_value = append.value
     return Quantity(
-        np.diff(a.value, n=n, axis=axis, prepend=prepend, append=append),
+        np.diff(
+            a.value, n=n, axis=axis, prepend=prepend_value, append=append_value
+        ),
         a.dimension,
     )
 

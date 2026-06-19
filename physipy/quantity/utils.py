@@ -105,8 +105,12 @@ def hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """
     try:
         if q1.dimension == q2.dimension:
-            # comparing arrays returns array of bool
-            return q1.value == q2.value and q1.symbol == q2.symbol
+            # np.all collapses the element-wise array comparison to a single
+            # bool, so this works for both scalar and array values (a bare
+            # `array and ...` would raise an ambiguous-truth-value error).
+            return bool(np.all(q1.value == q2.value)) and (
+                q1.symbol == q2.symbol
+            )
         else:
             return False
     except Exception as e:
@@ -117,8 +121,11 @@ def very_hard_equal(q1: Quantity, q2: Quantity) -> bool:
     """Check if 2 Quantities are hard_equal, and have same favunit"""
     if q1.favunit is None and q2.favunit is None:
         return hard_equal(q1, q2)
-    else:
-        return hard_equal(q1, q2) and very_hard_equal(q1.favunit, q2.favunit)
+    # if exactly one favunit is missing, the quantities can't be equal :
+    # recursing here would call very_hard_equal(None, ...) and crash.
+    if q1.favunit is None or q2.favunit is None:
+        return False
+    return hard_equal(q1, q2) and very_hard_equal(q1.favunit, q2.favunit)
 
 
 def hard_favunit(q: Quantity, units_list: list[Quantity]) -> bool:
@@ -752,9 +759,9 @@ def asqarray(array_like: Any) -> Quantity:
                 q = quantify(q)
                 if q.dimension == dim:
                     val_list.append(q.value)
-                    res_val = np_array(val_list)
                 else:
                     raise DimensionError(q.dimension, dim)
+            res_val = np_array(val_list)
             return Quantity(res_val, dim)
         elif isinstance(array_like[0], list):
             flat_array, shape = _wrap(array_like)
@@ -776,9 +783,9 @@ def asqarray(array_like: Any) -> Quantity:
                 for q in array_like:
                     if q.dimension == dim:
                         val_list.append(q.value)
-                        res_val = np_array(val_list)
                     else:
-                        raise DimensionError(q.dim, dim)
+                        raise DimensionError(q.dimension, dim)
+                res_val = np_array(val_list)
                 return Quantity(res_val.reshape(shape), dim)
             else:
                 return quantify(array_like)

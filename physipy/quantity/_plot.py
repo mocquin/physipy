@@ -1,9 +1,15 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import matplotlib
-import matplotlib.units as munits
 import numpy as np
+
+from .._optional import require
+
+# matplotlib powers this whole module (the converter subclasses
+# matplotlib.units.ConversionInterface) ; it is imported lazily by
+# physipy.__getattr__, so a clear error is raised only on first use.
+matplotlib = require("matplotlib", "plotting")
+munits = require("matplotlib.units", "plotting")
 
 from ._units import imperial_units, units
 from .quantity import (

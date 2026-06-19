@@ -542,8 +542,9 @@ class Quantity(object):
         from physipy import plotting_context
 
         if ax is None:
-            import matplotlib.pyplot as plt
+            from .._optional import require
 
+            plt = require("matplotlib.pyplot", "plotting")
             _, ax = plt.subplots()
         with plotting_context():
             if kind == "y" and other is None:
