@@ -168,6 +168,24 @@ def np_nanprod(a, axis=None, **kwargs):
         np.nanprod(a.value, axis=axis, **kwargs), a.dimension ** (n)
     )
 
+@implements(np.iscomplex)
+def np_iscomplex(a):
+    return np.iscomplex(a.value)
+
+@implements(np.iscomplexobj)
+def np_iscomplexobj(a):
+    return np.iscomplexobj(a.value)
+
+@implements(np.isreal)
+def np_isreal(a):
+    return np.isreal(a.value)
+
+@implements(np.isrealobj)
+def np_isrealobj(a):
+    return np.isrealobj(a.value)
+
+
+
 
 @implements(np.nancumsum)
 def np_nancumsum(a, **kwargs):
@@ -630,6 +648,12 @@ def np_rollaxis(a, axis, start=0):
         symbol=a.symbol,
         favunit=a.favunit,
     )
+
+@implements(np.sinc)
+def np_sinc(x):
+    if x.dimension!=Dimension(None):
+        raise DimensionError(x.dimension, Dimension(None))
+    return np.sinc(x.value)
 
 
 @implements(np.trapz)
