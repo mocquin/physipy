@@ -32,6 +32,34 @@ class TestLazyOptionalDeps(unittest.TestCase):
             _ = (2 * m) / (1 * s)          # core arithmetic
             assert "scipy" not in sys.modules, "scipy eagerly imported"
             assert "matplotlib" not in sys.modules, "matplotlib eagerly imported"
+            assert "sympy" not in sys.modules, "sympy eagerly imported"
+            print("OK")
+            """
+        )
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("OK", res.stdout)
+
+    def test_physipy_core_works_without_sympy_installed(self):
+        # hard-block sympy at import time and exercise the symbol-carrying
+        # arithmetic / repr that used to require it.
+        res = _run(
+            """
+            import sys
+            class Blocker:
+                def find_spec(self, name, path=None, target=None):
+                    if name == "sympy" or name.startswith("sympy."):
+                        raise ImportError("sympy blocked")
+                    return None
+            sys.meta_path.insert(0, Blocker())
+
+            import physipy
+            from physipy import m, s, units, Dimension
+            N = units["N"]
+            assert repr(m * m) == "<Quantity : 1 m**2, symbol=m**2>"
+            assert str((N * m).symbol) == "N*m"
+            assert str((m / s).dimension) == "L/T"
+            assert (m.symbol == m.symbol) and not (m.symbol == s.symbol)
+            assert "sympy" not in sys.modules
             print("OK")
             """
         )
