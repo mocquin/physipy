@@ -15,6 +15,9 @@ from physipy import calculus, constants
 from physipy import math as physipy_math
 from physipy import plotting_context, quantity, setup_matplotlib, utils
 
+# version-agnostic trapezoid (np.trapz on NumPy<2.0, np.trapezoid on >=2.0)
+from physipy.quantity._numpy import trapezoid
+
 # from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 # from physipy.quantity import vectorize #turn_scalar_to_str
 from physipy.calculus import (
@@ -311,6 +314,46 @@ class TestQuantity(unittest.TestCase):
         f_cymm = 5 * cy / self.mm
         f_cymm.favunit = cy / self.mm
         self.assertEqual(str(f_cymm), "5.0 cy/mm")
+
+    def test_31_to_into_ito_iinto(self):
+        longueur = 543.21 * m
+
+        # to : returns a copy with favunit set, value unchanged, no dim check
+        out = longueur.to(self.mm)
+        self.assertIsNot(out, longueur)
+        self.assertIsNone(longueur.favunit)  # original untouched
+        self.assertEqual(out.favunit, self.mm)
+        self.assertEqual(out.value, longueur.value)
+        self.assertEqual(str(out), "543210.0 mm")
+        # to accepts a different-dimension favunit (no check)
+        self.assertEqual(longueur.to(1 * s).favunit, 1 * s)
+        # to rejects non-Quantity
+        with self.assertRaises(TypeError):
+            longueur.to(2.0)
+
+        # ito : in-place, returns self with favunit set
+        q = 543.21 * m
+        res = q.ito(self.mm)
+        self.assertIs(res, q)
+        self.assertEqual(q.favunit, self.mm)
+        self.assertEqual(str(q), "543210.0 mm")
+        with self.assertRaises(TypeError):
+            q.ito(2.0)
+
+        # into : like to, but enforces same dimension
+        out = longueur.into(self.mm)
+        self.assertIsNot(out, longueur)
+        self.assertEqual(out.favunit, self.mm)
+        with self.assertRaises(ValueError):
+            longueur.into(1 * s)
+
+        # iinto : like ito (in-place), but enforces same dimension
+        q = 543.21 * m
+        res = q.iinto(self.mm)
+        self.assertIs(res, q)
+        self.assertEqual(q.favunit, self.mm)
+        with self.assertRaises(ValueError):
+            q.iinto(1 * s)
 
     def test_40_interpolateur(self):
         interp = np.interp
@@ -1724,16 +1767,16 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.var(arr_m), 0.6666666666666666 * m**2)
         self.assertEqual(np.var(5 * m), 0 * m**2)
 
-        # np.trapz
-        self.assertEqual(np.trapz(arr_m), 4 * m)
-        self.assertEqual(np.trapz(arr_m, dx=1 * m), 4 * m**2)
+        # np.trapz / np.trapezoid (whichever this NumPy version exposes)
+        self.assertEqual(trapezoid(arr_m), 4 * m)
+        self.assertEqual(trapezoid(arr_m, dx=1 * m), 4 * m**2)
         # q array, dx quantity --> see issue on GH
-        # self.assertEqual(np.trapz(np.arange(5), dx=1*m),
-        #                 np.trapz(np.arange(5), dx=1)*m)
+        # self.assertEqual(trapezoid(np.arange(5), dx=1*m),
+        #                 trapezoid(np.arange(5), dx=1)*m)
         # q array, x quantity
         self.assertEqual(
-            np.trapz(np.arange(5), x=np.arange(5) * m),
-            np.trapz(np.arange(5), x=np.arange(5)) * m,
+            trapezoid(np.arange(5), x=np.arange(5) * m),
+            trapezoid(np.arange(5), x=np.arange(5)) * m,
         )
 
         # np.linspace

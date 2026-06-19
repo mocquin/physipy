@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 from functools import lru_cache
 from operator import attrgetter
-from typing import Callable, Literal, Union
+from typing import Any, Callable, Literal, Union, cast
 
 import numpy as np
 from numpy import (
@@ -13,6 +13,7 @@ from sympy.parsing.sympy_parser import parse_expr
 
 from .quantity import (
     DimensionError,
+    Operand,
     Quantity,
     dimensionify,
     make_quantity,
@@ -20,7 +21,7 @@ from .quantity import (
 )
 
 
-def cached_property_depends_on(*args: str) -> Callable:
+def cached_property_depends_on(*args: str) -> Callable[..., Any]:
     """
     Decorator to cache a property that depends on other attributes.
     This differs from functools.cached_property in that functools.cached_property is made for immutable atributes.
@@ -74,10 +75,10 @@ def cached_property_depends_on(*args: str) -> Callable:
     """
     attrs = attrgetter(*args)
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> property:
         _cache = lru_cache(maxsize=None)(lambda self, _: func(self))
 
-        def _with_tracked(self):
+        def _with_tracked(self: Any) -> Any:
             return _cache(self, attrs(self))
 
         return property(_with_tracked, doc=func.__doc__)
@@ -207,7 +208,9 @@ def expr_to_q(exp_str: str, parsing_dict: dict) -> Union[Quantity, int]:
     return q
 
 
-def strunit_array_to_qunit_array(array_like_of_str, parsing_dict: dict):
+def strunit_array_to_qunit_array(
+    array_like_of_str: Any, parsing_dict: dict
+) -> list:
     """
     Converts an iterable of strings to an iterable of quantities
 
@@ -222,7 +225,12 @@ def strunit_array_to_qunit_array(array_like_of_str, parsing_dict: dict):
     return qs
 
 
-def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
+def qarange(
+    start_or_stop: Operand,
+    stop: Operand | None = None,
+    step: Operand | None = None,
+    **kwargs: Any,
+) -> Quantity:
     """Wrapper around np.arange
 
     Meant to be used as a replacement of np.arange  when Quantity objects
@@ -244,7 +252,7 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     final_start_or_stop = quantify(start_or_stop)
     in_dim = final_start_or_stop.dimension
 
-    qwargs = dict()
+    qwargs: dict[str, Any] = dict()
 
     # stop param
     if stop is None:
@@ -268,18 +276,20 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
             )
         qwargs["step"] = final_step.value
 
-    # final call
-    val = np.arange(final_start_or_stop.value, **qwargs, **kwargs)
+    # final call (a qarange always works on real-scalar quantities)
+    val = np.arange(cast(float, final_start_or_stop.value), **qwargs, **kwargs)
     res = Quantity(val, in_dim)
     return res
 
 
-def _iterify(x):
+def _iterify(x: Any) -> Any:
     """make x iterable"""
     return [x] if not isinstance(x, (list, tuple)) else x
 
 
-def check_dimension(units_in=None, units_out=None) -> Callable:
+def check_dimension(
+    units_in: Any = None, units_out: Any = None
+) -> Callable[..., Any]:
     r"""Check dimensions of inputs and ouputs of function.
 
     Will check that all inputs and outputs have the same dimension
@@ -341,10 +351,10 @@ def check_dimension(units_in=None, units_out=None) -> Callable:
         units_out = _iterify(units_out)
 
     # define the decorator
-    def decorator(func: Callable):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         # create a decorated func
         @functools.wraps(func)
-        def decorated_func(*args, **kwargs):
+        def decorated_func(*args: Any, **kwargs: Any) -> Any:
             # Checking dimension of inputs
             args = _iterify(args)
             if units_in:
@@ -377,7 +387,7 @@ def check_dimension(units_in=None, units_out=None) -> Callable:
     return decorator
 
 
-def set_favunit(*favunits_out) -> Callable:
+def set_favunit(*favunits_out: Any) -> Callable[..., Any]:
     """Sets favunit to outputs.
 
     Sets favunit for the function outputs.
@@ -411,10 +421,10 @@ def set_favunit(*favunits_out) -> Callable:
     favunits_out = _iterify(favunits_out)
     # make decorator
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         # make decorated function
         @functools.wraps(func)
-        def decorated_func(*args, **kwargs):
+        def decorated_func(*args: Any, **kwargs: Any) -> Any:
             # compute outputs and iterable it
             ress = _iterify(func(*args, **kwargs))
             # turn outputs to quantity with favunit
@@ -433,7 +443,9 @@ def set_favunit(*favunits_out) -> Callable:
     return decorator
 
 
-def dimension_and_favunit(inputs=[], outputs=[]) -> Callable:
+def dimension_and_favunit(
+    inputs: Any = [], outputs: Any = []
+) -> Callable[..., Any]:
     """Check dimensions of outputs and inputs, and add favunit to outputs.
 
     A wrapper of `check_dimension` and `set_favunit` decorators. The inputs will
@@ -447,13 +459,15 @@ def dimension_and_favunit(inputs=[], outputs=[]) -> Callable:
     check_dimension : Decorator to check dimension of inputs and outputs.
     """
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         return set_favunit(outputs)(check_dimension(inputs, outputs)(func))
 
     return decorator
 
 
-def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
+def convert_to_unit(
+    *unit_in: Any, keep_dim: bool = False
+) -> Callable[..., Any]:
     """Convert inputs to values in terms of specified units.
 
     Decorator to convert the function's inputs values in terms
@@ -471,9 +485,9 @@ def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
     """
     unit_in = _iterify(unit_in)
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def decorated(*args, **kwargs):
+        def decorated(*args: Any, **kwargs: Any) -> Any:
             arg_unitless = []
             for arg, unit in zip(args, unit_in):
                 if not keep_dim:
@@ -487,7 +501,7 @@ def convert_to_unit(*unit_in, keep_dim=False) -> Callable:
     return decorator
 
 
-def drop_dimension(func: Callable) -> Callable:
+def drop_dimension(func: Callable[..., Any]) -> Callable[..., Any]:
     """Drop the inputs dimension and sends the SI-value.
 
     Decorator to drop inputs dimensions, quantity value is passed
@@ -506,7 +520,7 @@ def drop_dimension(func: Callable) -> Callable:
     """
 
     @functools.wraps(func)
-    def dimension_dropped(*args, **kwargs):
+    def dimension_dropped(*args: Any, **kwargs: Any) -> Any:
         args = _iterify(args)
         value_args = [quantify(arg).value for arg in args]
         return func(*value_args, **kwargs)
@@ -514,7 +528,7 @@ def drop_dimension(func: Callable) -> Callable:
     return dimension_dropped
 
 
-def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
+def add_back_unit_param(*unit_out: Quantity) -> Callable[..., Any]:
     """Multiply outputs of function by the units_out
 
     @add_back_unit_param(m, s)
@@ -526,9 +540,9 @@ def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
     """
     unit_out = _iterify(unit_out)
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def dimension_added_back_func(*args, **kwargs):
+        def dimension_added_back_func(*args: Any, **kwargs: Any) -> Any:
             ress = _iterify(func(*args, **kwargs))
             # multiply each output by the unit
             ress_q = [res * unit for res, unit in zip(ress, unit_out)]
@@ -539,7 +553,9 @@ def add_back_unit_param(*unit_out: tuple[Quantity]) -> Callable:
     return decorator
 
 
-def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
+def decorate_with_various_unit(
+    inputs: Any = [], ouputs: Any = []
+) -> Callable[..., Any]:
     """
     allow abitrary specification of dimension and unit:
     @decorate_with_various_unit(("A", "A"), "A")
@@ -562,10 +578,10 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
     inputs_str = _iterify(inputs)
     outputs_str = _iterify(ouputs)
 
-    def decorator(func):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def decorated(*args, **kwargs):
-            dict_of_units = {}
+        def decorated(*args: Any, **kwargs: Any) -> Any:
+            dict_of_units: dict = {}
             list_inputs_value = []
             # loop over function's inputs and decorator's inputs
             for arg, input_name in zip(args, inputs_str):
@@ -606,7 +622,7 @@ def decorate_with_various_unit(inputs=[], ouputs=[]) -> Callable:
     return decorator
 
 
-def wrap_with_unit(dim_as_str):
+def wrap_with_unit(dim_as_str: str) -> Callable[..., Any]:
     """
     Idea to wrap a function regardless of absolut unit, but relative
     to input unit.
@@ -625,10 +641,10 @@ def wrap_with_unit(dim_as_str):
     """
 
     # define the decorator
-    def decorator(func: Callable):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         # create a decorated func
         @functools.wraps(func)
-        def decorated_func(x):
+        def decorated_func(x: Operand) -> Quantity:
             x = quantify(x)
             dim_in = x.dimension
             res = func(x.value)
@@ -639,10 +655,10 @@ def wrap_with_unit(dim_as_str):
     return decorator
 
 
-def composed_decs(*decs: tuple[Callable]) -> Callable:
+def composed_decs(*decs: Callable[..., Any]) -> Callable[..., Any]:
     """A wrapper to combine multiple decorators"""
 
-    def deco(f):
+    def deco(f: Callable[..., Any]) -> Callable[..., Any]:
         for dec in reversed(decs):
             f = dec(f)
         return f
@@ -650,7 +666,7 @@ def composed_decs(*decs: tuple[Callable]) -> Callable:
     return deco
 
 
-def latex_parse_eq(eq):
+def latex_parse_eq(eq: Any) -> Any:
     """Tests cases :
     - v = d/t
     - 2piRC
@@ -669,40 +685,40 @@ def latex_parse_eq(eq):
     return eq
 
 
-def latex_eq(eqn) -> Callable:
+def latex_eq(eqn: Any) -> Callable[..., Any]:
     """add a 'latex' attribute representation (a string most likely)
     to a function"""
 
-    def wrapper(f):
+    def wrapper(f: Any) -> Any:
         f.latex = latex_parse_eq(eqn)
         return f
 
     return wrapper
 
 
-def name_eq(name) -> Callable:
+def name_eq(name: Any) -> Callable[..., Any]:
     """add a 'name' attribute (a string most likely) to a function"""
 
-    def wrapper(f):
+    def wrapper(f: Any) -> Any:
         f.name = name
         return f
 
     return wrapper
 
 
-def _flatten(x):
+def _flatten(x: Any) -> list:
     if isinstance(x, list):
         return [a for i in x for a in _flatten(i)]
     else:
         return [x]
 
 
-def _is_nested(a):
+def _is_nested(a: Any) -> bool:
     return any(isinstance(i, list) for i in a)
 
 
-def _shape(lst):
-    def ishape(lst):
+def _shape(lst: Any) -> tuple:
+    def ishape(lst: Any) -> list:
         shapes = [ishape(x) if isinstance(x, list) else [] for x in lst]
         shape = shapes[0]
         if shapes.count(shape) != len(shapes):
@@ -713,7 +729,7 @@ def _shape(lst):
     return tuple(reversed(ishape(lst)))
 
 
-def _wrap(a):
+def _wrap(a: Any) -> Any:
     if _is_nested(a):
         shape = _shape(a)
         flatten = list(_flatten(a))
@@ -722,7 +738,7 @@ def _wrap(a):
         return a
 
 
-def asqarray(array_like) -> Quantity:
+def asqarray(array_like: Any) -> Quantity:
     """The value returned will always be a Quantity with array value"""
 
     # tuple or list
@@ -743,7 +759,7 @@ def asqarray(array_like) -> Quantity:
         elif isinstance(array_like[0], list):
             flat_array, shape = _wrap(array_like)
             q = asqarray(flat_array)
-            q.value = q.value.reshape(shape)
+            q.value = cast(np.ndarray, q.value).reshape(shape)
             return q
         # list/tuple of non-quantity value
         else:
@@ -777,4 +793,4 @@ def asqarray(array_like) -> Quantity:
     elif isinstance(array_like, Quantity):
         return array_like
     else:
-        raise ValueError("Type {type(array_like)} not supported")
+        raise ValueError(f"Type {type(array_like)} not supported")

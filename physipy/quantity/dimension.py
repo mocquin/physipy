@@ -144,6 +144,7 @@ class Dimension(object):
     # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
     __slots__ = "dim_dict"
+    dim_dict: dict[str, Scalar]
 
     def __init__(
         self,
@@ -158,7 +159,9 @@ class Dimension(object):
         elif isinstance(definition, dict) and set(
             list(definition.keys())
         ) == set(SI_SYMBOL_LIST):
-            self.dim_dict = definition
+            # copy to avoid aliasing the caller's dict into this (hashable,
+            # treated-as-immutable) Dimension
+            self.dim_dict = definition.copy()
         # example : {"L":1, "T":-2}
         elif isinstance(definition, dict) and set(
             list(definition.keys())
@@ -224,7 +227,7 @@ class Dimension(object):
         """Latex repr hook for IPython."""
         if self.DEFAULT_REPR_LATEX == "dim_dict":
             expr_dim = expand_dict_to_expr(self.dim_dict)
-            return "$" + latex(expr_dim) + "$"
+            return "$" + str(latex(expr_dim)) + "$"
         else:  # self.DEFAULT_REPR_LATEX == "SI_unit":
             return self.latex_SI_unit()
 
@@ -364,7 +367,7 @@ class Dimension(object):
             return self.dim_dict == y.dim_dict
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     # def __ne__(self, y):
@@ -414,10 +417,10 @@ class Dimension(object):
         Dimension.siunit_dict
         """
         expr_SI = expand_dict_to_expr(self.siunit_dict())
-        return "$" + latex(expr_SI) + "$"
+        return "$" + str(latex(expr_SI)) + "$"
 
     @property
-    def dimensionality(self: Dimension):
+    def dimensionality(self: Dimension) -> str:
         """Return the first dimensionality with same dimension found in DIMENSIONALITY.
 
         Returns

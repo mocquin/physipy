@@ -649,6 +649,7 @@ def np_rollaxis(a, axis, start=0):
         favunit=a.favunit,
     )
 
+<<<<<<< HEAD
 @implements(np.sinc)
 def np_sinc(x):
     if x.dimension!=Dimension(None):
@@ -681,8 +682,32 @@ try:
             "np.trapezoid is not available in this NumPy version."
         )
 
-    @implements(np.trapezoid)
+
+# np.trapz was renamed np.trapezoid in NumPy 2.0 (np.trapz still exists there
+# but is deprecated and slated for removal); register whichever names this
+# NumPy version exposes.
+if hasattr(np, "trapz"):
+    @implements(np.trapz)
     def np_trapz(q, x=None, dx=1, **kwargs):
+        # if not isinstance(q.value,np.ndarray):
+        #        raise TypeError("Quantity value must be array-like to integrate.")
+        q = quantify(q)
+        if x is None:
+            dx = quantify(dx)
+            return Quantity(
+                np.trapz(q.value, x=None, dx=dx.value, **kwargs),
+                q.dimension * dx.dimension,
+            )
+        else:
+            x = quantify(x)
+            return Quantity(
+                np.trapz(q.value, x=x.value, **kwargs),
+                q.dimension * x.dimension,
+            )
+
+if hasattr(np, "trapezoid"):
+    @implements(np.trapezoid)
+    def np_trapezoid(q, x=None, dx=1, **kwargs):
         q = quantify(q)
         if x is None:
             dx = quantify(dx)
@@ -697,12 +722,15 @@ try:
                 q.dimension * x.dimension,
             )
 
-except AttributeError as e:
-    print("When trying to declare np.trapz wrapper:")
-    print(f"AttributeError: {e}")
-except Exception as e:
-    print("When trying to declare np.trapz wrapper:")
-    print(f"An unexpected error occurred: {e}")
+
+# Canonical, version-agnostic trapezoid integrator. Prefer the modern name;
+# fall back to the deprecated np.trapz on NumPy < 2.0. Use this (instead of
+# hardcoding either name) in physipy code and tests so they stay portable
+# across NumPy versions. It dispatches through __array_function__, so Quantity
+# units are preserved either way.
+# getattr (not np.trapz directly) so NumPy 2.x stubs, which dropped trapz,
+# don't flag a missing attribute.
+trapezoid: Callable = getattr(np, "trapezoid", None) or getattr(np, "trapz")
 
 
 @implements(np.bincount)

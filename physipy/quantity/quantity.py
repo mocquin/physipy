@@ -65,7 +65,8 @@ from __future__ import annotations
 import math
 import numbers
 import warnings
-from typing import Callable, Union, Any
+from fractions import Fraction
+from typing import Any, Callable, SupportsFloat, SupportsInt, Union, cast
 
 import numpy as np
 import sympy as sp
@@ -74,6 +75,34 @@ import sympy.printing as sp_printing
 from sympy import Expr, Symbol
 
 from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
+
+# A single scalar stored in a Quantity. `complex` covers int/float via the
+# PEP 484 numeric tower; Fraction is listed explicitly (it isn't part of the
+# tower). numpy scalars subclass these where it matters (e.g. np.float64).
+# Custom value backends (e.g. uncertainties) are supported at runtime via
+# register_property_backend but intentionally fall outside this type.
+ScalarValue = Union[complex, Fraction]
+# The full numerical payload of a Quantity: a scalar or an array of scalars.
+ValueType = Union[ScalarValue, np.ndarray]
+# What __init__ / the value setter *accept*: also list/tuple, which the
+# setter normalizes into an ndarray.
+ValueLike = Union[ValueType, list, tuple]
+# Anything a binary operator / quantify() accepts as the other operand.
+Operand = Union["Quantity", ValueLike]
+# The *runtime* result of a dimension-collapsing operation (mul/div/pow/...):
+# a Quantity, or a bare value when the result turns out dimensionless. This is
+# the return type of Quantity.rm_dim_if_dimless (its only use).
+#
+# Do NOT propagate it onto the collapsing operators' signatures, and do NOT
+# delete it just because those operators don't use it: they are deliberately
+# annotated `-> Quantity` instead. Using this union as their return type makes
+# mypy reject chained arithmetic (e.g. `m**2 * kg * s**-3`) — every
+# intermediate becomes a union and mypy tries invalid combinations such as
+# `ndarray * Fraction`. Kept as the documented "honest" contract and as the
+# type to revisit if chaining is ever reworked.
+QuantityOrValue = Union["Quantity", ValueType]
+# Result of a comparison : a python bool, or a boolean numpy array.
+BoolOrArray = Union[bool, np.ndarray]
 
 # # Constantes
 UNIT_PREFIX = " "
@@ -149,7 +178,7 @@ class Quantity(object):
 
     def __init__(
         self,
-        value,
+        value: ValueLike,
         dimension: Dimension,
         symbol: Union[str, Symbol, Expr] = DEFAULT_SYMBOL,
         favunit: Quantity | None = None,
@@ -205,17 +234,17 @@ class Quantity(object):
             )
 
     @property
-    def value(self):
+    def value(self) -> ValueType:
         return self._value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: ValueLike) -> None:
         if isinstance(value, (list, tuple)):
-            self._value = np.array(value)
+            self._value: ValueType = np.array(value)
         else:
             self._value = value
 
-    def __add__(self, y):
+    def __add__(self, y: Operand) -> Quantity:
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
@@ -223,56 +252,54 @@ class Quantity(object):
         #                self.dimension)
         return type(self)(self.value + y.value, self.dimension)
 
-    def __radd__(self, x):
+    def __radd__(self, x: Operand) -> Quantity:
         return self + x
 
-    def __sub__(self, y):
+    def __sub__(self, y: Operand) -> Quantity:
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return type(self)(self.value - y.value, self.dimension)
 
-    def __rsub__(self, x):
+    def __rsub__(self, x: Operand) -> Quantity:
         return quantify(x) - self
 
-    def __mul__(self, y):
-        # TODO make a decorator "try_raw_then_quantify_if_fail"
-        try:
-            return type(self)(
-                self.value * y.value,
-                self.dimension * y.dimension,
-                symbol=self.symbol * y.symbol,
-            ).rm_dim_if_dimless()
-        except BaseException:
-            y = quantify(y)
-            return type(self)(
-                self.value * y.value,
-                self.dimension * y.dimension,
-                symbol=self.symbol * y.symbol,
-            ).rm_dim_if_dimless()
+    # NOTE on return types of the dimension-collapsing operators below
+    # (mul/div/pow/...): at runtime rm_dim_if_dimless() returns a bare value
+    # when the result is dimensionless. We annotate them `-> Quantity` (the
+    # intended/common case) so chained arithmetic type-checks; the payload
+    # arithmetic itself is duck-typed (value backends are supported), hence
+    # the `cast(Any, ...)` on the numeric operands.
+    def __mul__(self, y: Operand) -> Quantity:
+        y = quantify(y)
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) * cast(Any, y.value),
+            self.dimension * y.dimension,
+            symbol=self.symbol * y.symbol,
+        ).rm_dim_if_dimless())
 
     __rmul__ = __mul__
 
-    def __matmul__(self, y):
+    def __matmul__(self, y: Operand) -> Quantity:
         y = quantify(y)
-        return type(self)(
-            self.value @ y.value,
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) @ cast(Any, y.value),
             self.dimension * y.dimension,
             # symbol = self.symbol * y.symbol
-        ).rm_dim_if_dimless()
+        ).rm_dim_if_dimless())
 
-    def __truediv__(self, y):
+    def __truediv__(self, y: Operand) -> Quantity:
         y = quantify(y)
-        return type(self)(
-            self.value / y.value,
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) / cast(Any, y.value),
             self.dimension / y.dimension,
             symbol=self.symbol / y.symbol,
-        ).rm_dim_if_dimless()
+        ).rm_dim_if_dimless())
 
-    def __rtruediv__(self, x):
+    def __rtruediv__(self, x: Operand) -> Quantity:
         return quantify(x) / self
 
-    def __floordiv__(self, y):
+    def __floordiv__(self, y: Operand) -> Quantity:
         """
         Any returned quantity should be dimensionless, but leaving the
         Quantity().remove() because more intuitive
@@ -280,19 +307,19 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return type(self)(
-            self.value // y.value, self.dimension
-        ).rm_dim_if_dimless()
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) // cast(Any, y.value), self.dimension
+        ).rm_dim_if_dimless())
 
-    def __rfloordiv__(self, x):
+    def __rfloordiv__(self, x: Operand) -> Quantity:
         x = quantify(x)
         if not self.dimension == x.dimension:
             raise DimensionError(self.dimension, x.dimension)
-        return type(self)(
-            x.value // self.value, self.dimension
-        ).rm_dim_if_dimless()
+        return cast(Quantity, type(self)(
+            cast(Any, x.value) // cast(Any, self.value), self.dimension
+        ).rm_dim_if_dimless())
 
-    def __mod__(self, y):
+    def __mod__(self, y: Operand) -> Quantity:
         """
         There is no rm_dim_if_dimless() because a
         modulo operation would not change the dimension.
@@ -302,19 +329,20 @@ class Quantity(object):
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return type(self)(
-            self.value % y.value, self.dimension
+            cast(Any, self.value) % cast(Any, y.value), self.dimension
         )  # .rm_dim_if_dimless()
 
-    def __rpow__(power_self, base_other):
+    def __rpow__(power_self, base_other: Operand) -> Quantity:
         base_other = quantify(base_other)
-        if power_self.is_dimensionless:
-            return Quantity(
-                base_other.value**power_self.value,
-                base_other.dimension ** float(power_self.value),
-            ).rm_dim_if_dimless()
+        if power_self.is_dimensionless():
+            return cast(Quantity, Quantity(
+                cast(Any, base_other.value) ** cast(Any, power_self.value),
+                base_other.dimension
+                ** float(cast(SupportsFloat, power_self.value)),
+            ).rm_dim_if_dimless())
         raise TypeError
 
-    def __pow__(self, power):
+    def __pow__(self, power: Operand) -> Quantity:
         """
         A power must always be a dimensionless scalar.
         If a = 1*m, we can't do a ** [1,2], because the result would be
@@ -325,69 +353,79 @@ class Quantity(object):
         # if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
-        power = quantify(power).rm_dim_if_dimless()  # TODO : this feels ugly
-        return type(self)(
-            self.value**power,
-            self.dimension**power,
-            symbol=self.symbol**power,
-        ).rm_dim_if_dimless()
+        pw: Any = quantify(power).rm_dim_if_dimless()  # TODO : this feels ugly
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) ** pw,
+            self.dimension**pw,
+            symbol=self.symbol**pw,
+        ).rm_dim_if_dimless())
 
-    def __neg__(self):
-        return Quantity(-self.value, self.dimension, favunit=self.favunit)
+    def __neg__(self) -> Quantity:
+        return Quantity(
+            -cast(Any, self.value), self.dimension, favunit=self.favunit
+        )
 
-    def __pos__(self):
+    def __pos__(self) -> Quantity:
         return self
 
-    def __len__(self):
-        return len(self.value)
+    def __len__(self) -> int:
+        return len(cast(np.ndarray, self.value))
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.value)
 
     # min and max uses the iterator
-    def __min__(self):
-        return Quantity(min(self.value), self.dimension, favunit=self.favunit)
+    def __min__(self) -> Quantity:
+        return Quantity(
+            min(cast(np.ndarray, self.value)),
+            self.dimension,
+            favunit=self.favunit,
+        )
 
-    def __max__(self):
-        return Quantity(max(self.value), self.dimension, favunit=self.favunit)
+    def __max__(self) -> Quantity:
+        return Quantity(
+            max(cast(np.ndarray, self.value)),
+            self.dimension,
+            favunit=self.favunit,
+        )
 
-    def __eq__(self, y):
+    def __eq__(self, y: object) -> BoolOrArray:  # type: ignore[override]
         # TODO : handle array comparison to return arrays
         try:
-            y = quantify(y)
+            y = quantify(cast(Any, y))
             return np.logical_and(
                 (self.value == y.value), (self.dimension == y.dimension)
             )
         except Exception as e:
             return False
 
-    def __ne__(self, y):
+    def __ne__(self, y: object) -> BoolOrArray:  # type: ignore[override]
         # np.invert for element-wise not, for array compatibility
         return np.invert(self == y)
 
-    def __gt__(self, y):
+    def __gt__(self, y: Operand) -> BoolOrArray:
         y = quantify(y)
         if self.dimension == y.dimension:
-            return self.value > y.value
+            return cast(Any, self.value) > cast(Any, y.value)
         else:
             raise DimensionError(self.dimension, y.dimension)
 
-    def __lt__(self, y):
+    def __lt__(self, y: Operand) -> BoolOrArray:
         y = quantify(y)
         if self.dimension == y.dimension:
-            return self.value < y.value
+            return cast(Any, self.value) < cast(Any, y.value)
         else:
             raise DimensionError(self.dimension, y.dimension)
 
-    def __ge__(self, y):
+    def __ge__(self, y: Operand) -> BoolOrArray:
         return (self > y) | (self == y)  # or bitwise
 
-    def __le__(self, y):
+    def __le__(self, y: Operand) -> BoolOrArray:
         return (self < y) | (self == y)  # or bitwise
 
-    def __abs__(self):
+    def __abs__(self) -> Quantity:
         return type(self)(
-            abs(self.value), self.dimension, favunit=self.favunit
+            abs(cast(Any, self.value)), self.dimension, favunit=self.favunit
         )
 
     def __complex__(self) -> complex:
@@ -398,19 +436,19 @@ class Quantity(object):
     def __int__(self) -> int:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
-        return int(self.value)
+        return int(cast(SupportsInt, self.value))
 
     def __float__(self) -> float:
         if not self.is_dimensionless_ext():
             raise DimensionError(self.dimension, DIMENSIONLESS, binary=False)
-        return float(self.value)
+        return float(cast(SupportsFloat, self.value))
 
     def __round__(self, i=None):
         return type(self)(
             round(self.value, i), self.dimension, favunit=self.favunit
         )
 
-    def __copy__(self):
+    def __copy__(self) -> Quantity:
         return type(self)(
             self.value,
             self.dimension,
@@ -418,7 +456,7 @@ class Quantity(object):
             symbol=self.symbol,
         )
 
-    def copy(self):
+    def copy(self) -> Quantity:
         return self.__copy__()
 
     def __repr__(self) -> str:
@@ -495,7 +533,12 @@ class Quantity(object):
     #    return p.text(self._repr_latex_())
 
     # TODO : assess the usefullness of this...
-    def plot(self, kind: str = "y", other=None, ax=None) -> None:
+    def plot(
+        self,
+        kind: str = "y",
+        other: Quantity | None = None,
+        ax: Any = None,
+    ) -> None:
         from physipy import plotting_context
 
         if ax is None:
@@ -524,8 +567,10 @@ class Quantity(object):
             complemented = q._compute_complement_value()
             if complemented != "":
                 # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
-                complement_value_str = sp_printing.latex(
-                    sp_parsing.sympy_parser.parse_expr(complemented)
+                complement_value_str = str(
+                    sp_printing.latex(
+                        sp_parsing.sympy_parser.parse_expr(complemented)
+                    )
                 )
             else:
                 complement_value_str = ""
@@ -539,8 +584,10 @@ class Quantity(object):
                     + "$"
                 )
             # if self.value is a scalar, use sympy to parse expression
-            value_str = sp_printing.latex(
-                sp_parsing.sympy_parser.parse_expr(formatted_value)
+            value_str = str(
+                sp_printing.latex(
+                    sp_parsing.sympy_parser.parse_expr(formatted_value)
+                )
             )
             return (
                 "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
@@ -552,7 +599,9 @@ class Quantity(object):
             # context)
             return str(self)
 
-    def _pick_smart_favunit(self, array_to_scal=np.mean) -> Quantity | None:
+    def _pick_smart_favunit(
+        self, array_to_scal: Callable = np.mean
+    ) -> Quantity | None:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
         The 'best' favunit is the one minimizing the difference with self.
@@ -578,7 +627,7 @@ class Quantity(object):
         )
         best_ixd = np.abs(same_dim_unit_arr - np.abs(self_val)).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
-        return best_favunit
+        return cast(Quantity, best_favunit)
 
     def _format_value(self) -> str:
         """Used to format the value on repr as a str.
@@ -586,7 +635,7 @@ class Quantity(object):
         Else floating point notation is used.
         """
         value: Any = self._compute_value()
-        if not isinstance(value, numbers.Number):  # np.isscalar(value):
+        if not isinstance(value, numbers.Complex):  # np.isscalar(value):
             return str(value)
         else:
             if abs(value) >= 10 ** self.EXP_THRESH or abs(value) < 10 ** (
@@ -626,7 +675,7 @@ class Quantity(object):
         else:
             return format(self._compute_value(), format_spec) + prefix
 
-    def _compute_value(self):
+    def _compute_value(self) -> ValueType:
         """Return the numerical value corresponding to favunit."""
         if isinstance(self.favunit, Quantity):
             ratio_favunit = make_quantity(self / self.favunit)
@@ -634,7 +683,9 @@ class Quantity(object):
         else:
             return self.value
 
-    def _compute_complement_value(self, custom_favunit=None):
+    def _compute_complement_value(
+        self, custom_favunit: Quantity | None = None
+    ) -> str:
         """Return the complement to the value as a str."""
         if custom_favunit is None:
             favunit = self.favunit
@@ -678,11 +729,11 @@ class Quantity(object):
         if not q.dimension == self.dimension:
             raise DimensionError(q.dimension, self.dimension)
         if isinstance(idx, np.bool_) and idx:
-            self.valeur = q.value
-        elif isinstance(idx, np.bool_) and idx is False:
+            self.value = q.value
+        elif isinstance(idx, np.bool_) and not idx:
             pass
         else:
-            self.value[idx] = q.value
+            cast(np.ndarray, self.value)[idx] = q.value
 
     def __iter__(self):
         """
@@ -712,7 +763,10 @@ class Quantity(object):
         )
 
     def tolist(self) -> list:
-        return [type(self)(i, self.dimension) for i in self.value]
+        return [
+            type(self)(i, self.dimension)
+            for i in cast(np.ndarray, self.value)
+        ]
 
     @property
     def real(self):
@@ -763,12 +817,15 @@ class Quantity(object):
         return np.abs(self)
 
     def integrate(self, *args, **kwargs):
-        return np.trapz(self, *args, **kwargs)
+        # lazy import avoids the quantity <-> _numpy circular import
+        from ._numpy import trapezoid
+
+        return trapezoid(self, *args, **kwargs)
 
     def is_dimensionless(self) -> bool:
         return self.dimension == DIMENSIONLESS
 
-    def rm_dim_if_dimless(self):
+    def rm_dim_if_dimless(self) -> QuantityOrValue:
         if self.is_dimensionless():
             return self.value
         else:
@@ -791,6 +848,13 @@ class Quantity(object):
         q = self.__copy__()
         q.favunit = y
         return q
+
+    def ito(self, y: Quantity) -> Quantity:
+        """in-place version of `to` : set favunit on self and return self."""
+        if not isinstance(y, Quantity):
+            raise TypeError("Cannot express Quantity in not Quantity")
+        self.favunit = y
+        return self
 
     def set_favunit(self, fav: Quantity) -> Quantity:
         """
@@ -889,7 +953,7 @@ class Quantity(object):
         else:
             return self._SI_unitary_quantity
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: str) -> Any:
         """
         Called when an attribute lookup has not found the attribute
         in the usual places (i.e. it is not an instance attribute
@@ -1193,7 +1257,7 @@ class Quantity(object):
         return type(self)(self.value.squeeze(*args, **kwargs), self.dimension)
 
 
-def quantify(x):
+def quantify(x: Union[Quantity, ValueLike]) -> Quantity:
     if isinstance(x, Quantity):
         return x  # .__copy__()
     else:
@@ -1215,7 +1279,9 @@ def dimensionify(x) -> Dimension:
 
 
 def make_quantity(
-    x, symbol="UndefinedSymbol", favunit: Quantity | None = None
+    x: Union[Quantity, ValueLike],
+    symbol: Union[str, Symbol, Expr] = "UndefinedSymbol",
+    favunit: Quantity | None = None,
 ) -> Quantity:
     """
     Create a new Quantity from x, with optionnal symbol and favunit.
