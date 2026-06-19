@@ -69,12 +69,10 @@ from fractions import Fraction
 from typing import Any, Callable, SupportsFloat, SupportsInt, Union, cast
 
 import numpy as np
-import sympy as sp
-import sympy.parsing as sp_parsing
-import sympy.printing as sp_printing
-from sympy import Expr, Symbol
 
+from .._optional import require
 from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
+from ._symbol import UnitSymbol
 
 # A single scalar stored in a Quantity. `complex` covers int/float via the
 # PEP 484 numeric tower; Fraction is listed explicitly (it isn't part of the
@@ -180,7 +178,7 @@ class Quantity(object):
         self,
         value: ValueLike,
         dimension: Dimension,
-        symbol: Union[str, Symbol, Expr] = DEFAULT_SYMBOL,
+        symbol: Union[str, UnitSymbol] = DEFAULT_SYMBOL,
         favunit: Quantity | None = None,
     ) -> None:
         self.value = value
@@ -201,18 +199,15 @@ class Quantity(object):
 
     @symbol.setter
     def symbol(self, value):
-        if isinstance(value, sp.Expr):
+        # The symbol is a pure-Python multiplicative monomial (UnitSymbol).
+        # Strings, dicts, existing UnitSymbols, and (optionally) multiplicative
+        # sympy expressions are accepted via UnitSymbol.coerce; unsupported
+        # types and additive symbol expressions are rejected there with a
+        # descriptive TypeError.
+        if isinstance(value, UnitSymbol):
             self._symbol = value
-        elif isinstance(value, str):
-            self._symbol = sp.Symbol(value)
         else:
-            raise TypeError(
-                (
-                    "Symbol of Quantity must be a string "
-                    "or a sympy-symbol, "
-                    "not {}"
-                ).format(type(value))
-            )
+            self._symbol = UnitSymbol.coerce(value)
 
     @property
     def favunit(self):
@@ -558,6 +553,13 @@ class Quantity(object):
         """Markdown hook for ipython repr in latex.
         See https://ipython.readthedocs.io/en/stable/config/integrating.html"""
         try:
+            # LaTeX rendering is the one optional, sympy-backed feature left
+            # (extra: "symbolic"). If sympy is missing, the ImportError is
+            # caught below and we fall back to the plain str.
+            latex = require("sympy.printing", "symbolic").latex
+            parse_expr = require(
+                "sympy.parsing.sympy_parser", "symbolic"
+            ).parse_expr
             # create a copy
             q = self.__copy__()
             # to set a favunit for display purpose
@@ -568,11 +570,7 @@ class Quantity(object):
             complemented = q._compute_complement_value()
             if complemented != "":
                 # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
-                complement_value_str = str(
-                    sp_printing.latex(
-                        sp_parsing.sympy_parser.parse_expr(complemented)
-                    )
-                )
+                complement_value_str = str(latex(parse_expr(complemented)))
             else:
                 complement_value_str = ""
             # if self.value is an array, only wrap the complement in latex
@@ -585,19 +583,14 @@ class Quantity(object):
                     + "$"
                 )
             # if self.value is a scalar, use sympy to parse expression
-            value_str = str(
-                sp_printing.latex(
-                    sp_parsing.sympy_parser.parse_expr(formatted_value)
-                )
-            )
+            value_str = str(latex(parse_expr(formatted_value)))
             return (
                 "$" + value_str + self.LATEX_SEP + complement_value_str + "$"
             )
         except Exception as e:
             # with some custom backend value, sympy has trouble parsing the
-            # the expression: I'd rather have a regular string displayed rather
-            # than an exception raised (since it is only used in notebook
-            # context)
+            # the expression (or sympy is not installed): fall back to a
+            # regular string rather than raising (only used in notebooks).
             return str(self)
 
     def _pick_smart_favunit(
@@ -1281,7 +1274,7 @@ def dimensionify(x) -> Dimension:
 
 def make_quantity(
     x: Union[Quantity, ValueLike],
-    symbol: Union[str, Symbol, Expr] = "UndefinedSymbol",
+    symbol: Union[str, UnitSymbol] = "UndefinedSymbol",
     favunit: Quantity | None = None,
 ) -> Quantity:
     """

@@ -6,6 +6,7 @@ pyproject.toml :
 
  - scipy       -> physipy.calculus and physipy.constants   (extra: ``calculus``)
  - matplotlib  -> the matplotlib unit integration / plots   (extra: ``plotting``)
+ - sympy       -> compound dimension-string parsing & LaTeX (extra: ``symbolic``)
 
 Modules implementing those features import their dependency through
 :func:`require`, so a minimal install (``pip install physipy``) stays lean and
