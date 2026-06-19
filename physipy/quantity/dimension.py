@@ -445,6 +445,85 @@ class Dimension(object):
 DIMENSIONLESS: Dimension = Dimension(None)
 
 
+def _format_exponent(exp: Scalar) -> str:
+    """Render an exponent exactly like sympy's str printer does."""
+    return str(exp)
+
+
+def _format_factor(name: str, exp: Scalar) -> str:
+    """Render a single ``name**exp`` factor with a *positive* exponent.
+
+    Used for both numerator factors and the absolute exponents of denominator
+    factors : an integer exponent of 1 collapses to the bare symbol.
+    """
+    if isinstance(exp, int) and exp == 1:
+        return name
+    return f"{name}**{_format_exponent(exp)}"
+
+
+def format_power_dict(power_dict: dict, default_str: str) -> str:
+    """Convert a power-dict to its canonical string, without sympy.
+
+    Pure-Python replacement for the sympy-backed rendering that used to power
+    ``str``/``repr`` of :class:`Dimension`. It reproduces sympy's string
+    printer byte-for-byte for the monomials physipy builds (products and
+    quotients of ``symbol**exponent``), so the displayed form is unchanged :
+
+      - symbols are sorted by name ;
+      - positive exponents form the numerator, negative *integer* exponents
+        form the denominator (``a*b**2/(c*d**3)``) ;
+      - a lone factor follows sympy's special cases : ``x`` (exp 1),
+        ``1/x`` (exp -1), ``x**(-2)`` / ``x**0.5`` otherwise.
+
+    sympy is still used for the LaTeX rendering (see
+    :func:`expand_dict_to_expr`), this only removes it from the common
+    ``str``/``repr`` path.
+
+    Parameters
+    ----------
+    power_dict : dict
+        A power-dict mapping symbol strings to scalar exponents.
+    default_str : str
+        Returned when every exponent is zero (the "dimensionless" marker).
+
+    See also
+    --------
+    expand_dict_to_expr : the sympy-based expression, kept for LaTeX output.
+    """
+    items = [(key, exp) for key, exp in power_dict.items() if exp != 0]
+    if not items:
+        return default_str
+    items.sort(key=lambda kv: kv[0])
+
+    # A lone factor : sympy keeps these as a single Pow, with special cases.
+    if len(items) == 1:
+        key, exp = items[0]
+        if isinstance(exp, int) and exp == 1:
+            return key
+        if isinstance(exp, int) and exp == -1:
+            return f"1/{key}"
+        rendered = _format_exponent(exp)
+        return f"{key}**({rendered})" if exp < 0 else f"{key}**{rendered}"
+
+    # Two or more factors : sympy prints them as a numerator/denominator Mul.
+    numerator = [(key, exp) for key, exp in items if exp > 0]
+    denominator = [(key, -exp) for key, exp in items if exp < 0]
+    num_str = (
+        "*".join(_format_factor(k, e) for k, e in numerator)
+        if numerator
+        else "1"
+    )
+    if not denominator:
+        return num_str
+    den_factors = [_format_factor(k, e) for k, e in denominator]
+    den_str = (
+        den_factors[0]
+        if len(den_factors) == 1
+        else "(" + "*".join(den_factors) + ")"
+    )
+    return f"{num_str}/{den_str}"
+
+
 def compute_str(
     power_dict: dict, default_str: str, output_init: int = 1
 ) -> str:
@@ -461,23 +540,19 @@ def compute_str(
     default_str : str
         A string to return if the output value is equal to the output initial value.
     output_init : scalar-like, defaults to 1.
-        The initial value used to compute the expanded value.
+        Unused, kept for backward compatibility.
 
     Returns
     -------
     str
-        The string-casted of the output value if the output value is different from the
-        initial output, otherwise default_str.
+        The canonical string for the power-dict, or default_str if all the
+        exponents are zero.
 
     See also
     --------
-    expand_dict_to_expr : compute the value from a power-dict.
+    format_power_dict : the pure-Python renderer doing the actual work.
     """
-    output = expand_dict_to_expr(power_dict, output_init)
-    if output == output_init:
-        return default_str
-    else:
-        return str(output)
+    return format_power_dict(power_dict, default_str)
 
 
 def expand_dict_to_expr(
