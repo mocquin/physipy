@@ -90,15 +90,16 @@ ValueLike = Union[ValueType, list, tuple]
 # Anything a binary operator / quantify() accepts as the other operand.
 Operand = Union["Quantity", ValueLike]
 # The *runtime* result of a dimension-collapsing operation (mul/div/pow/...):
-# a Quantity, or a bare value when the result turns out dimensionless (see
-# Quantity.rm_dim_if_dimless). This is the honest type of those operations.
+# a Quantity, or a bare value when the result turns out dimensionless. This is
+# the return type of Quantity.rm_dim_if_dimless (its only use).
 #
-# DELIBERATELY UNUSED in signatures — do NOT delete as dead code. Those
-# operators are annotated `-> Quantity` instead, because using this union as a
-# return type makes mypy reject chained arithmetic (e.g. `m**2 * kg * s**-3`):
-# every intermediate becomes a union and mypy tries invalid combinations such
-# as `ndarray * Fraction`. Kept here to document the real return contract and
-# as the obvious type to switch to if chaining is ever reworked.
+# Do NOT propagate it onto the collapsing operators' signatures, and do NOT
+# delete it just because those operators don't use it: they are deliberately
+# annotated `-> Quantity` instead. Using this union as their return type makes
+# mypy reject chained arithmetic (e.g. `m**2 * kg * s**-3`) — every
+# intermediate becomes a union and mypy tries invalid combinations such as
+# `ndarray * Fraction`. Kept as the documented "honest" contract and as the
+# type to revisit if chaining is ever reworked.
 QuantityOrValue = Union["Quantity", ValueType]
 # Result of a comparison : a python bool, or a boolean numpy array.
 BoolOrArray = Union[bool, np.ndarray]
