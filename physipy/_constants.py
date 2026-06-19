@@ -14,7 +14,11 @@ TODO :
 
 """
 
-import scipy.constants as csts
+from ._optional import require
+
+# scipy provides the constant values ; only needed when physipy.constants is
+# actually accessed (this module is imported lazily by physipy.__getattr__).
+csts = require("scipy.constants", "constants")
 
 # setup
 from .quantity import A, K, kg, m, make_quantity, mol, rad, s, units

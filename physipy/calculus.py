@@ -14,9 +14,14 @@ from __future__ import annotations
 from typing import Any, Callable, cast
 
 import numpy as np
-import scipy
-import scipy.integrate
-import scipy.optimize
+
+from physipy._optional import require
+
+# scipy powers every wrapper in this module ; importing physipy.calculus
+# without scipy fails here with a clear, actionable message.
+scipy = require("scipy", "calculus")
+require("scipy.integrate", "calculus")
+require("scipy.optimize", "calculus")
 
 from physipy import Dimension, DimensionError, Quantity, quantify
 from physipy.quantity.quantity import Operand, QuantityOrValue
