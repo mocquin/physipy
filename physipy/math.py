@@ -3,10 +3,12 @@ A simple wrapped version of math module that handles Quantity
 """
 
 import math
+from typing import Any, Callable, SupportsFloat, cast
 
 from physipy import Dimension, DimensionError, Quantity, quantify
+from physipy.quantity.quantity import Operand
 
-implementations = {
+implementations: dict[str, list] = {
     "one_in_same_out": [
         math.ceil,  # also delegated to __ceil__
         math.floor,  # also delegated to __floor__
@@ -80,8 +82,10 @@ implementations = {
 }
 
 
-def decorator_one_in_same_out(math_func):
-    def decorated(x):
+def decorator_one_in_same_out(
+    math_func: Callable[..., Any]
+) -> Callable[[Operand], Quantity]:
+    def decorated(x: Operand) -> Quantity:
         x = quantify(x)
         return Quantity(math_func(x.value), x.dimension)
 
@@ -94,8 +98,10 @@ trunc = decorator_one_in_same_out(math.trunc)
 fabs = decorator_one_in_same_out(math.fabs)
 
 
-def decorator_two_same_in_same_out(math_func):
-    def decorated(x, y):
+def decorator_two_same_in_same_out(
+    math_func: Callable[..., Any]
+) -> Callable[[Operand, Operand], Quantity]:
+    def decorated(x: Operand, y: Operand) -> Quantity:
         x = quantify(x)
         y = quantify(y)
         if not x.dimension == y.dimension:
@@ -109,8 +115,10 @@ remainder = decorator_two_same_in_same_out(math.remainder)
 fmod = decorator_two_same_in_same_out(math.fmod)
 
 
-def decorator_any_bool(math_func):
-    def decorated(x):
+def decorator_any_bool(
+    math_func: Callable[..., bool]
+) -> Callable[[Operand], bool]:
+    def decorated(x: Operand) -> bool:
         x = quantify(x)
         return math_func(x.value)
 
@@ -122,8 +130,10 @@ isfinite = decorator_any_bool(math.isfinite)
 isnan = decorator_any_bool(math.isnan)
 
 
-def decorator_angle_or_dimless_to_dimless(math_func):
-    def decorated(x):
+def decorator_angle_or_dimless_to_dimless(
+    math_func: Callable[..., float]
+) -> Callable[[Operand], float]:
+    def decorated(x: Operand) -> float:
         x = quantify(x)
         if not (
             x.dimension == Dimension(None) or x.dimension == Dimension("RAD")
@@ -144,8 +154,10 @@ tanh = decorator_angle_or_dimless_to_dimless(math.tanh)
 # for f in implementations["one_in_same_out"]:
 
 
-def decorator_dimless_to_dimless(math_func):
-    def decorated(x):
+def decorator_dimless_to_dimless(
+    math_func: Callable[..., float]
+) -> Callable[[Operand], float]:
+    def decorated(x: Operand) -> float:
         x = quantify(x)
         if not (x.dimension == Dimension(None)):
             raise DimensionError(x.dimension, Dimension(None))
@@ -162,8 +174,10 @@ asinh = decorator_dimless_to_dimless(math.asinh)
 atanh = decorator_dimless_to_dimless(math.atanh)
 
 
-def decorator_two_same_to_dimless(math_func):
-    def decorated(y, x):
+def decorator_two_same_to_dimless(
+    math_func: Callable[..., float]
+) -> Callable[[Operand, Operand], float]:
+    def decorated(y: Operand, x: Operand) -> float:
         y = quantify(y)
         x = quantify(x)
         return math_func(y.value, x.value)
@@ -174,14 +188,21 @@ def decorator_two_same_to_dimless(math_func):
 atan2 = decorator_two_same_to_dimless(math.atan2)
 
 
-def copysign(x, y):
+def copysign(x: Operand, y: Operand) -> Quantity:
     x = quantify(x)
     y = quantify(y)
-    return Quantity(math.copysign(x.value, y.value), x.dimension)
+    return Quantity(
+        math.copysign(
+            cast(SupportsFloat, x.value), cast(SupportsFloat, y.value)
+        ),
+        x.dimension,
+    )
 
 
-def decorator_not_implemented(math_func):
-    def decorated(*args):
+def decorator_not_implemented(
+    math_func: Callable[..., Any]
+) -> Callable[..., Any]:
+    def decorated(*args: Any) -> Any:
         raise NotImplementedError
 
     return decorated
@@ -198,7 +219,9 @@ perm = decorator_not_implemented(math.perm)
 pow = decorator_not_implemented(math.pow)
 
 
-def decorator_mute(math_func):
+def decorator_mute(
+    math_func: Callable[..., Any]
+) -> Callable[..., Any]:
     return math_func
 
 
@@ -219,13 +242,17 @@ log2 = decorator_dimless_to_dimless(math.log2)
 expm1 = decorator_dimless_to_dimless(math.expm1)
 
 
-def sqrt(x):
+def sqrt(x: Operand) -> Quantity:
     x = quantify(x)
-    return Quantity(math.sqrt(x.value), x.dimension**0.5)
+    return Quantity(
+        math.sqrt(cast(SupportsFloat, x.value)), x.dimension**0.5
+    )
 
 
-def decorator_any_to_same(math_func):
-    def decorated(x):
+def decorator_any_to_same(
+    math_func: Callable[..., Any]
+) -> Callable[[Operand], Quantity]:
+    def decorated(x: Operand) -> Quantity:
         x = quantify(x)
         return Quantity(math_func(x.value), x.dimension)
 
