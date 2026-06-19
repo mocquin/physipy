@@ -1,7 +1,7 @@
 import time
 import unittest
 
-import pycodestyle
+#import pycodestyle
 
 
 class TestCodeFormat(unittest.TestCase):

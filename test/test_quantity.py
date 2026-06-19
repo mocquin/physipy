@@ -2905,10 +2905,9 @@ class TestQuantity(unittest.TestCase):
         try:
             import uncertainties as uc
         except Exception as e:
-            print(
-                "Could not run unit test, uncertainties package not available."
+            self.skipTest(
+                "uncertainties package not available."
             )
-            return
         else:
             from physipy.quantity.quantity import register_property_backend
 
