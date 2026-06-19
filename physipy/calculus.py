@@ -21,6 +21,7 @@ import scipy.optimize
 from physipy import Dimension, DimensionError, Quantity, quantify
 from physipy.quantity.utils import check_dimension
 
+from .quantity._numpy import trapezoid
 from .quantity.dimension import SI_UNIT_SYMBOL
 from .quantity.utils import asqarray, decorate_with_various_unit
 
@@ -108,8 +109,8 @@ def trapz2(Zs: Quantity, ech_x: Quantity, ech_y: Quantity) -> Quantity:
         #prints 2 m**2
 
     """
-    int_x = np.trapezoid(Zs, axis=-1, x=ech_x)
-    int_xy = np.trapezoid(int_x, axis=-1, x=ech_y)
+    int_x = trapezoid(Zs, axis=-1, x=ech_x)
+    int_xy = trapezoid(int_x, axis=-1, x=ech_y)
     return int_xy
 
 

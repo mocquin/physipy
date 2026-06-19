@@ -15,6 +15,9 @@ from physipy import calculus, constants
 from physipy import math as physipy_math
 from physipy import plotting_context, quantity, setup_matplotlib, utils
 
+# version-agnostic trapezoid (np.trapz on NumPy<2.0, np.trapezoid on >=2.0)
+from physipy.quantity._numpy import trapezoid
+
 # from quantity import DISPLAY_DIGITS, EXP_THRESHOLD
 # from physipy.quantity import vectorize #turn_scalar_to_str
 from physipy.calculus import (
@@ -1764,16 +1767,16 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(np.var(arr_m), 0.6666666666666666 * m**2)
         self.assertEqual(np.var(5 * m), 0 * m**2)
 
-        # np.trapz
-        self.assertEqual(np.trapz(arr_m), 4 * m)
-        self.assertEqual(np.trapz(arr_m, dx=1 * m), 4 * m**2)
+        # np.trapz / np.trapezoid (whichever this NumPy version exposes)
+        self.assertEqual(trapezoid(arr_m), 4 * m)
+        self.assertEqual(trapezoid(arr_m, dx=1 * m), 4 * m**2)
         # q array, dx quantity --> see issue on GH
-        # self.assertEqual(np.trapz(np.arange(5), dx=1*m),
-        #                 np.trapz(np.arange(5), dx=1)*m)
+        # self.assertEqual(trapezoid(np.arange(5), dx=1*m),
+        #                 trapezoid(np.arange(5), dx=1)*m)
         # q array, x quantity
         self.assertEqual(
-            np.trapz(np.arange(5), x=np.arange(5) * m),
-            np.trapz(np.arange(5), x=np.arange(5)) * m,
+            trapezoid(np.arange(5), x=np.arange(5) * m),
+            trapezoid(np.arange(5), x=np.arange(5)) * m,
         )
 
         # np.linspace
