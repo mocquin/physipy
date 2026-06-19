@@ -144,6 +144,7 @@ class Dimension(object):
     # object is displayed in JLab
     DEFAULT_REPR_LATEX = "dim_dict"  # "SI_unit"
     __slots__ = "dim_dict"
+    dim_dict: dict[str, Scalar]
 
     def __init__(
         self,
@@ -226,7 +227,7 @@ class Dimension(object):
         """Latex repr hook for IPython."""
         if self.DEFAULT_REPR_LATEX == "dim_dict":
             expr_dim = expand_dict_to_expr(self.dim_dict)
-            return "$" + latex(expr_dim) + "$"
+            return "$" + str(latex(expr_dim)) + "$"
         else:  # self.DEFAULT_REPR_LATEX == "SI_unit":
             return self.latex_SI_unit()
 
@@ -416,10 +417,10 @@ class Dimension(object):
         Dimension.siunit_dict
         """
         expr_SI = expand_dict_to_expr(self.siunit_dict())
-        return "$" + latex(expr_SI) + "$"
+        return "$" + str(latex(expr_SI)) + "$"
 
     @property
-    def dimensionality(self: Dimension):
+    def dimensionality(self: Dimension) -> str:
         """Return the first dimensionality with same dimension found in DIMENSIONALITY.
 
         Returns

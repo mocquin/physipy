@@ -65,6 +65,7 @@ from __future__ import annotations
 import math
 import numbers
 import warnings
+from fractions import Fraction
 from typing import Any, Callable, SupportsFloat, SupportsInt, Union, cast
 
 import numpy as np
@@ -75,16 +76,32 @@ from sympy import Expr, Symbol
 
 from .dimension import DIMENSIONLESS, SI_UNIT_SYMBOL, Dimension, DimensionError
 
-# A single scalar stored in a Quantity: any Python/NumPy real or complex
-# number — int, float, complex, fractions.Fraction, numpy scalars, ...
+# A single scalar stored in a Quantity. `complex` covers int/float via the
+# PEP 484 numeric tower; Fraction is listed explicitly (it isn't part of the
+# tower). numpy scalars subclass these where it matters (e.g. np.float64).
 # Custom value backends (e.g. uncertainties) are supported at runtime via
 # register_property_backend but intentionally fall outside this type.
-ScalarValue = numbers.Complex
+ScalarValue = Union[complex, Fraction]
 # The full numerical payload of a Quantity: a scalar or an array of scalars.
 ValueType = Union[ScalarValue, np.ndarray]
 # What __init__ / the value setter *accept*: also list/tuple, which the
 # setter normalizes into an ndarray.
 ValueLike = Union[ValueType, list, tuple]
+# Anything a binary operator / quantify() accepts as the other operand.
+Operand = Union["Quantity", ValueLike]
+# The *runtime* result of a dimension-collapsing operation (mul/div/pow/...):
+# a Quantity, or a bare value when the result turns out dimensionless (see
+# Quantity.rm_dim_if_dimless). This is the honest type of those operations.
+#
+# DELIBERATELY UNUSED in signatures — do NOT delete as dead code. Those
+# operators are annotated `-> Quantity` instead, because using this union as a
+# return type makes mypy reject chained arithmetic (e.g. `m**2 * kg * s**-3`):
+# every intermediate becomes a union and mypy tries invalid combinations such
+# as `ndarray * Fraction`. Kept here to document the real return contract and
+# as the obvious type to switch to if chaining is ever reworked.
+QuantityOrValue = Union["Quantity", ValueType]
+# Result of a comparison : a python bool, or a boolean numpy array.
+BoolOrArray = Union[bool, np.ndarray]
 
 # # Constantes
 UNIT_PREFIX = " "
@@ -226,7 +243,7 @@ class Quantity(object):
         else:
             self._value = value
 
-    def __add__(self, y):
+    def __add__(self, y: Operand) -> Quantity:
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
@@ -234,48 +251,54 @@ class Quantity(object):
         #                self.dimension)
         return type(self)(self.value + y.value, self.dimension)
 
-    def __radd__(self, x):
+    def __radd__(self, x: Operand) -> Quantity:
         return self + x
 
-    def __sub__(self, y):
+    def __sub__(self, y: Operand) -> Quantity:
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return type(self)(self.value - y.value, self.dimension)
 
-    def __rsub__(self, x):
+    def __rsub__(self, x: Operand) -> Quantity:
         return quantify(x) - self
 
-    def __mul__(self, y):
+    # NOTE on return types of the dimension-collapsing operators below
+    # (mul/div/pow/...): at runtime rm_dim_if_dimless() returns a bare value
+    # when the result is dimensionless. We annotate them `-> Quantity` (the
+    # intended/common case) so chained arithmetic type-checks; the payload
+    # arithmetic itself is duck-typed (value backends are supported), hence
+    # the `cast(Any, ...)` on the numeric operands.
+    def __mul__(self, y: Operand) -> Quantity:
         y = quantify(y)
-        return type(self)(
-            self.value * y.value,
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) * cast(Any, y.value),
             self.dimension * y.dimension,
             symbol=self.symbol * y.symbol,
-        ).rm_dim_if_dimless()
+        ).rm_dim_if_dimless())
 
     __rmul__ = __mul__
 
-    def __matmul__(self, y):
+    def __matmul__(self, y: Operand) -> Quantity:
         y = quantify(y)
-        return type(self)(
-            self.value @ y.value,
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) @ cast(Any, y.value),
             self.dimension * y.dimension,
             # symbol = self.symbol * y.symbol
-        ).rm_dim_if_dimless()
+        ).rm_dim_if_dimless())
 
-    def __truediv__(self, y):
+    def __truediv__(self, y: Operand) -> Quantity:
         y = quantify(y)
-        return type(self)(
-            self.value / y.value,
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) / cast(Any, y.value),
             self.dimension / y.dimension,
             symbol=self.symbol / y.symbol,
-        ).rm_dim_if_dimless()
+        ).rm_dim_if_dimless())
 
-    def __rtruediv__(self, x):
+    def __rtruediv__(self, x: Operand) -> Quantity:
         return quantify(x) / self
 
-    def __floordiv__(self, y):
+    def __floordiv__(self, y: Operand) -> Quantity:
         """
         Any returned quantity should be dimensionless, but leaving the
         Quantity().remove() because more intuitive
@@ -283,19 +306,19 @@ class Quantity(object):
         y = quantify(y)
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
-        return type(self)(
-            self.value // y.value, self.dimension
-        ).rm_dim_if_dimless()
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) // cast(Any, y.value), self.dimension
+        ).rm_dim_if_dimless())
 
-    def __rfloordiv__(self, x):
+    def __rfloordiv__(self, x: Operand) -> Quantity:
         x = quantify(x)
         if not self.dimension == x.dimension:
             raise DimensionError(self.dimension, x.dimension)
-        return type(self)(
-            x.value // self.value, self.dimension
-        ).rm_dim_if_dimless()
+        return cast(Quantity, type(self)(
+            cast(Any, x.value) // cast(Any, self.value), self.dimension
+        ).rm_dim_if_dimless())
 
-    def __mod__(self, y):
+    def __mod__(self, y: Operand) -> Quantity:
         """
         There is no rm_dim_if_dimless() because a
         modulo operation would not change the dimension.
@@ -305,19 +328,20 @@ class Quantity(object):
         if not self.dimension == y.dimension:
             raise DimensionError(self.dimension, y.dimension)
         return type(self)(
-            self.value % y.value, self.dimension
+            cast(Any, self.value) % cast(Any, y.value), self.dimension
         )  # .rm_dim_if_dimless()
 
-    def __rpow__(power_self, base_other):
+    def __rpow__(power_self, base_other: Operand) -> Quantity:
         base_other = quantify(base_other)
-        if power_self.is_dimensionless:
-            return Quantity(
-                base_other.value**power_self.value,
-                base_other.dimension ** float(power_self.value),
-            ).rm_dim_if_dimless()
+        if power_self.is_dimensionless():
+            return cast(Quantity, Quantity(
+                cast(Any, base_other.value) ** cast(Any, power_self.value),
+                base_other.dimension
+                ** float(cast(SupportsFloat, power_self.value)),
+            ).rm_dim_if_dimless())
         raise TypeError
 
-    def __pow__(self, power):
+    def __pow__(self, power: Operand) -> Quantity:
         """
         A power must always be a dimensionless scalar.
         If a = 1*m, we can't do a ** [1,2], because the result would be
@@ -328,69 +352,79 @@ class Quantity(object):
         # if not np.isscalar(power):#(isinstance(power,int) or isinstance(power,float)):
         #    raise TypeError(("Power must be a number, "
         #                    "not {}").format(type(power)))
-        power = quantify(power).rm_dim_if_dimless()  # TODO : this feels ugly
-        return type(self)(
-            self.value**power,
-            self.dimension**power,
-            symbol=self.symbol**power,
-        ).rm_dim_if_dimless()
+        pw: Any = quantify(power).rm_dim_if_dimless()  # TODO : this feels ugly
+        return cast(Quantity, type(self)(
+            cast(Any, self.value) ** pw,
+            self.dimension**pw,
+            symbol=self.symbol**pw,
+        ).rm_dim_if_dimless())
 
-    def __neg__(self):
-        return Quantity(-self.value, self.dimension, favunit=self.favunit)
+    def __neg__(self) -> Quantity:
+        return Quantity(
+            -cast(Any, self.value), self.dimension, favunit=self.favunit
+        )
 
-    def __pos__(self):
+    def __pos__(self) -> Quantity:
         return self
 
-    def __len__(self):
-        return len(self.value)
+    def __len__(self) -> int:
+        return len(cast(np.ndarray, self.value))
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.value)
 
     # min and max uses the iterator
-    def __min__(self):
-        return Quantity(min(self.value), self.dimension, favunit=self.favunit)
+    def __min__(self) -> Quantity:
+        return Quantity(
+            min(cast(np.ndarray, self.value)),
+            self.dimension,
+            favunit=self.favunit,
+        )
 
-    def __max__(self):
-        return Quantity(max(self.value), self.dimension, favunit=self.favunit)
+    def __max__(self) -> Quantity:
+        return Quantity(
+            max(cast(np.ndarray, self.value)),
+            self.dimension,
+            favunit=self.favunit,
+        )
 
-    def __eq__(self, y):
+    def __eq__(self, y: object) -> BoolOrArray:  # type: ignore[override]
         # TODO : handle array comparison to return arrays
         try:
-            y = quantify(y)
+            y = quantify(cast(Any, y))
             return np.logical_and(
                 (self.value == y.value), (self.dimension == y.dimension)
             )
         except Exception as e:
             return False
 
-    def __ne__(self, y):
+    def __ne__(self, y: object) -> BoolOrArray:  # type: ignore[override]
         # np.invert for element-wise not, for array compatibility
         return np.invert(self == y)
 
-    def __gt__(self, y):
+    def __gt__(self, y: Operand) -> BoolOrArray:
         y = quantify(y)
         if self.dimension == y.dimension:
-            return self.value > y.value
+            return cast(Any, self.value) > cast(Any, y.value)
         else:
             raise DimensionError(self.dimension, y.dimension)
 
-    def __lt__(self, y):
+    def __lt__(self, y: Operand) -> BoolOrArray:
         y = quantify(y)
         if self.dimension == y.dimension:
-            return self.value < y.value
+            return cast(Any, self.value) < cast(Any, y.value)
         else:
             raise DimensionError(self.dimension, y.dimension)
 
-    def __ge__(self, y):
+    def __ge__(self, y: Operand) -> BoolOrArray:
         return (self > y) | (self == y)  # or bitwise
 
-    def __le__(self, y):
+    def __le__(self, y: Operand) -> BoolOrArray:
         return (self < y) | (self == y)  # or bitwise
 
-    def __abs__(self):
+    def __abs__(self) -> Quantity:
         return type(self)(
-            abs(self.value), self.dimension, favunit=self.favunit
+            abs(cast(Any, self.value)), self.dimension, favunit=self.favunit
         )
 
     def __complex__(self) -> complex:
@@ -774,7 +808,7 @@ class Quantity(object):
     def is_dimensionless(self) -> bool:
         return self.dimension == DIMENSIONLESS
 
-    def rm_dim_if_dimless(self):
+    def rm_dim_if_dimless(self) -> QuantityOrValue:
         if self.is_dimensionless():
             return self.value
         else:
@@ -902,7 +936,7 @@ class Quantity(object):
         else:
             return self._SI_unitary_quantity
 
-    def __getattr__(self, item):
+    def __getattr__(self, item: str) -> Any:
         """
         Called when an attribute lookup has not found the attribute
         in the usual places (i.e. it is not an instance attribute

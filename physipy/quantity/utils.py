@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 from functools import lru_cache
 from operator import attrgetter
-from typing import Callable, Literal, Union
+from typing import Any, Callable, Literal, Union, cast
 
 import numpy as np
 from numpy import (
@@ -244,7 +244,7 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
     final_start_or_stop = quantify(start_or_stop)
     in_dim = final_start_or_stop.dimension
 
-    qwargs = dict()
+    qwargs: dict[str, Any] = dict()
 
     # stop param
     if stop is None:
@@ -268,8 +268,8 @@ def qarange(start_or_stop, stop=None, step=None, **kwargs) -> Quantity:
             )
         qwargs["step"] = final_step.value
 
-    # final call
-    val = np.arange(final_start_or_stop.value, **qwargs, **kwargs)
+    # final call (a qarange always works on real-scalar quantities)
+    val = np.arange(cast(float, final_start_or_stop.value), **qwargs, **kwargs)
     res = Quantity(val, in_dim)
     return res
 
@@ -743,7 +743,7 @@ def asqarray(array_like) -> Quantity:
         elif isinstance(array_like[0], list):
             flat_array, shape = _wrap(array_like)
             q = asqarray(flat_array)
-            q.value = q.value.reshape(shape)
+            q.value = cast(np.ndarray, q.value).reshape(shape)
             return q
         # list/tuple of non-quantity value
         else:
