@@ -9,7 +9,7 @@ import numpy as np
 from numpy import (
     array as np_array,
 )  # faster to import once since used in a loop
-from sympy.parsing.sympy_parser import parse_expr
+from .._optional import require
 
 from .quantity import (
     DimensionError,
@@ -184,6 +184,8 @@ def _parse_str_to_dic(exp_str: str) -> dict:
     --------
     parse_expr
     """
+    # Parsing unit expression strings needs sympy (extra: "symbolic").
+    parse_expr = require("sympy.parsing.sympy_parser", "symbolic").parse_expr
     parsed = parse_expr(exp_str)
     exp_dic = {
         str(key): value for key, value in parsed.as_powers_dict().items()

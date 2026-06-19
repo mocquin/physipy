@@ -31,15 +31,16 @@ from __future__ import annotations
 import json
 import numbers
 import os
-from typing import Literal, Union, Optional
+from typing import Any, Literal, Union, Optional
 
 import numpy as np
-from sympy.printing import latex
 
-# import Symbol once as used in a loop, faster this way
-from sympy import Integer as sp_Integer
-from sympy import Symbol as sp_Symbol
-from sympy.parsing.sympy_parser import parse_expr
+from .._optional import require
+
+# sympy is now an *optional* dependency for this module : it is only needed to
+# (B) parse compound dimension strings like "L**2/T" and (C) render LaTeX. The
+# common str/repr path is pure-Python (see format_power_dict), so sympy is
+# imported lazily, inside the few functions that still use it.
 
 dirname = os.path.dirname(__file__)
 with open(os.path.join(dirname, "dimension.txt")) as file:
@@ -74,8 +75,14 @@ def parse_str_to_dic(exp_str: str) -> dict:
     >>> parse_str_to_dic("L**2/M")
     {'L': 2, 'M': -1}
     """
+    # Parsing a compound string is the one construction path that needs sympy
+    # (extra: "symbolic"). Building a Dimension from a dict or a single base
+    # symbol does not go through here.
+    sympy = require("sympy", "symbolic")
+    parse_expr = require("sympy.parsing.sympy_parser", "symbolic").parse_expr
     parsed = parse_expr(
-        exp_str, global_dict={"Symbol": sp_Symbol, "Integer": sp_Integer}
+        exp_str,
+        global_dict={"Symbol": sympy.Symbol, "Integer": sympy.Integer},
     )
     exp_dic = {
         str(key): value for key, value in parsed.as_powers_dict().items()
@@ -223,8 +230,17 @@ class Dimension(object):
         """Return the dim_dict into a <Dimension : ...> tag."""
         return "<Dimension : " + str(self.dim_dict) + ">"
 
-    def _repr_latex_(self: Dimension) -> str:
-        """Latex repr hook for IPython."""
+    def _repr_latex_(self: Dimension):
+        """Latex repr hook for IPython.
+
+        LaTeX rendering is an optional feature (extra: "symbolic") : without
+        sympy, returning None tells IPython to fall back to the plain-text
+        repr instead of raising.
+        """
+        try:
+            latex = require("sympy.printing", "symbolic").latex
+        except ImportError:
+            return None
         if self.DEFAULT_REPR_LATEX == "dim_dict":
             expr_dim = expand_dict_to_expr(self.dim_dict)
             return "$" + str(latex(expr_dim)) + "$"
@@ -416,6 +432,8 @@ class Dimension(object):
         --------
         Dimension.siunit_dict
         """
+        # Explicit LaTeX request : require sympy (extra: "symbolic").
+        latex = require("sympy.printing", "symbolic").latex
         expr_SI = expand_dict_to_expr(self.siunit_dict())
         return "$" + str(latex(expr_SI)) + "$"
 
@@ -555,12 +573,10 @@ def compute_str(
     return format_power_dict(power_dict, default_str)
 
 
-def expand_dict_to_expr(
-    power_dict: dict, output_init: int = 1
-) -> sp_Symbol | int:
+def expand_dict_to_expr(power_dict: dict, output_init: int = 1) -> Any:
     """
     Compute the sympy expression from exponent dict, starting the product with ouptput=1.
-    Used for 'str' and 'repr' methods of Dimension.
+    Used only for the (optional) LaTeX rendering of Dimension.
 
     Parameters
     ----------
@@ -578,9 +594,11 @@ def expand_dict_to_expr(
     --------
     compute_str : Convert a power-dict to a str equivalent.
     """
+    # LaTeX rendering is optional (extra: "symbolic").
+    Symbol = require("sympy", "symbolic").Symbol
     output = output_init
     for key, value in power_dict.items():
-        output *= sp_Symbol(key) ** value
+        output *= Symbol(key) ** value
     return output
 
 
