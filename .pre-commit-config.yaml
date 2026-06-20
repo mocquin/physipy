@@ -1,15 +1,30 @@
-fail_fast: true # so that hooks are stopped at the first fail
-
+# Pre-commit hooks for physipy.
+#
+#   pip install pre-commit  (or: included in the `dev` dependency group)
+#   pre-commit install      # enable on `git commit`
+#   pre-commit run --all-files
+#
+# Ruff handles both linting and formatting; mypy type-checks the package.
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
     hooks:
-      - id: black
-  - repo: local
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.1
     hooks:
-      - id: unittests
-        name: Run unittests
-        entry: python hooks/run_unittests.py
-        language: system
-        verbose: true
-        files: \.py$
+      - id: ruff          # lint
+        args: [--fix]
+      - id: ruff-format    # format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        files: ^physipy/
+        additional_dependencies: [numpy]
