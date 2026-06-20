@@ -12,10 +12,10 @@ hp = constants["h"]   # Planck's constant
 c  = constants["c"]   # speed of light
 
 E_ph = hp * c / (500 * nm)   # energy of a 500 nm photon
-print(E_ph)                  # 3.9728916483435158e-19 kg*m**2/s**2
+print(E_ph)                  # 3.9728917142978567e-19 kg*m**2/s**2
 
 E_ph.favunit = units["J"]    # choose a display ("favourite") unit
-print(E_ph)                  # 3.9728916483435158e-19 J
+print(E_ph)                  # 3.9728917142978567e-19 J
 ```
 
 ## Where to go next
