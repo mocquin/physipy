@@ -55,8 +55,10 @@ plugins:
             show_source: true
   # Render the scientific-stack pages straight from their notebooks, using the
   # outputs stored in the .ipynb (execute: false -> fast and deterministic).
+  # ignore_h1_titles: use the nav labels, not each notebook's first heading.
   - mkdocs-jupyter:
       execute: false
+      ignore_h1_titles: true
 
 markdown_extensions:
   - toc:
