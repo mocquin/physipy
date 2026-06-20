@@ -105,11 +105,7 @@ nav:
       - Performance vs other packages: development-guide/dev-performance-comparison.md
       - Performance of the Dimension class: development-guide/dev-performance-dimension.md
   - Misc:
-      - Alternative packages:
-          - Overview: misc/alternative-packages/alternative-home.md
-          - Pint: misc/alternative-packages/alternative-pint.md
-          - Astropy: misc/alternative-packages/alternative-astropy.md
-          - forallpeople: misc/alternative-packages/alternative-forallpeople.md
+      - Alternative packages: misc/alternative-packages.md
       - Other value backends:
           - decimal: misc/support-for-other-backend-packages/decimal-support.md
           - handcalcs: misc/support-for-other-backend-packages/handcalcs-support.md
