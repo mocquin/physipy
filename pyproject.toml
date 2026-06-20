@@ -140,8 +140,9 @@ target-version = "py310"
 extend-exclude = ["asv_benchmarks", "hooks", "docs", ".venv"]
 
 [tool.ruff.lint]
-# E/W pycodestyle, F pyflakes, I import-sorting, UP pyupgrade, B bugbear.
-select = ["E", "W", "F", "I", "UP", "B"]
+# E/W pycodestyle, F pyflakes, I import-sorting, UP pyupgrade, B bugbear,
+# T10 flake8-debugger (flags leftover pdb.set_trace()/breakpoint()).
+select = ["E", "W", "F", "I", "UP", "B", "T10"]
 ignore = [
     "E741", # ambiguous names (l, I, ...) are common in physics formulas
 ]
