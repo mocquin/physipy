@@ -123,6 +123,14 @@ dev = [
     "sympy>=1.14.0",
     "pandas>=2.3.0",
 ]
+# Third-party quantity libraries used by benchmarks/compare_packages.py.
+benchmark = [
+    "pint>=0.24",
+    "astropy>=6.0",
+    "forallpeople>=2.6",
+    "matplotlib>=3.10.3",
+    "pandas>=2.3.0",
+]
 docs = [
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",

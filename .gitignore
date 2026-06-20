@@ -33,6 +33,10 @@ site/
 # ---- Benchmarks (airspeed velocity) ----
 .asv/
 
+# ---- Benchmark outputs (benchmarks/compare_packages.py defaults) ----
+/compare_packages.csv
+/compare_packages.png
+
 # ---- Notebooks ----
 .ipynb_checkpoints/
 
