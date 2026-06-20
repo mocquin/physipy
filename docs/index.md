@@ -23,11 +23,11 @@ print(E_ph)                  # 3.9728917142978567e-19 J
 - **[Installation](installation.md)** — install from PyPI, including the optional extras.
 - **[Quickstart](quickstart.md)** — a guided tour of physipy by example.
 - **Scientific stack** — integration with
-  [numpy](scientific-stack/numpy-support.md),
-  [matplotlib](scientific-stack/matplotlib-support.md),
-  [pandas](scientific-stack/pandas-support.md),
-  [scipy](scientific-stack/scipy-support.md), and the
-  [standard math module](scientific-stack/math-support.md).
+  [numpy](scientific-stack/numpy-support.ipynb),
+  [matplotlib](scientific-stack/matplotlib-support.ipynb),
+  [pandas](scientific-stack/pandas-support.ipynb),
+  [scipy](scientific-stack/scipy-support.ipynb), and the
+  [standard math module](scientific-stack/math-support.ipynb).
 - **[API reference](API/api-reference.md)** — `Dimension`, `Quantity`, units, constants, plotting.
 - **[Development](development-guide/index.md)** — contributing, benchmarking, and performance.
 

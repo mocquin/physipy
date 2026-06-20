@@ -25,9 +25,10 @@ physipy-test-env/
 htmlcov/
 coverage.xml
 
-# ---- Docs (mkdocs build output) ----
+# ---- Docs (mkdocs build output + plugin caches) ----
 _mkdocks_site/
 site/
+.cache/
 
 # ---- Benchmarks (airspeed velocity) ----
 .asv/

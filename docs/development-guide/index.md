@@ -64,8 +64,10 @@ for details.
 The docs are built with [mkdocs](https://www.mkdocs.org/),
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), and
 [mkdocstrings](https://mkdocstrings.github.io/) (which pulls physipy's docstrings
-into the API reference). The configuration is in `mkdocs.yml`; the docs
-dependencies are declared in the `docs` dependency group of `pyproject.toml`.
+into the API reference) and [mkdocs-jupyter](https://github.com/danielfrg/mkdocs-jupyter)
+(which renders the scientific-stack notebooks). The configuration is in
+`mkdocs.yml`; the docs dependencies are declared in the `docs` dependency group
+of `pyproject.toml`.
 
 ```bash
 uv sync --group docs            # install the docs toolchain
@@ -73,13 +75,12 @@ mkdocs serve                    # live preview at http://127.0.0.1:8000
 mkdocs build                    # build the static site into _mkdocks_site/
 ```
 
-Documentation pages live in [`docs/`](https://github.com/mocquin/physipy/tree/master/docs)
-as Markdown. Some pages are authored as notebooks and converted back and forth:
-
-```bash
-jupyter nbconvert --to markdown docs/scientific-stack/math-support.ipynb
-jupytext --to ipynb docs/scientific-stack/numpy-support.md
-```
+Most documentation pages live in [`docs/`](https://github.com/mocquin/physipy/tree/master/docs)
+as Markdown. The scientific-stack pages are Jupyter notebooks
+(`docs/scientific-stack/*.ipynb`) rendered directly by mkdocs-jupyter using the
+outputs stored in the notebook (`execute: false`) — so re-run a notebook and
+save it to refresh its rendered output and plots; there is no separate
+Markdown-export step.
 
 The site is hosted on [Read the Docs](https://physipy.readthedocs.io/); the build
 is driven by `.readthedocs.yaml`, which installs the `docs` group with uv and runs

@@ -214,11 +214,11 @@ physipy also exposes more specific dicts: `SI_units`, `SI_derived_units` and
 
 physipy is designed to work transparently with the scientific Python stack:
 
-- **[numpy](scientific-stack/numpy-support.md)** — 150+ functions and ufuncs work
+- **[numpy](scientific-stack/numpy-support.ipynb)** — 150+ functions and ufuncs work
   on quantities, with dimensional analysis applied throughout.
-- **[matplotlib](scientific-stack/matplotlib-support.md)** — `setup_matplotlib()`
+- **[matplotlib](scientific-stack/matplotlib-support.ipynb)** — `setup_matplotlib()`
   labels axes with units automatically.
-- **[scipy](scientific-stack/scipy-support.md)** and the
-  **[standard math module](scientific-stack/math-support.md)**.
+- **[scipy](scientific-stack/scipy-support.ipynb)** and the
+  **[standard math module](scientific-stack/math-support.ipynb)**.
 - **pandas** — via the companion package
   [`physipandas`](https://github.com/mocquin/physipandas).
