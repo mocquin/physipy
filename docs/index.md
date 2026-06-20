@@ -29,6 +29,7 @@ print(E_ph)                  # 3.9728917142978567e-19 J
   [scipy](scientific-stack/scipy-support.ipynb), and the
   [standard math module](scientific-stack/math-support.ipynb).
 - **[API reference](API/api-reference.md)** — `Dimension`, `Quantity`, units, constants, plotting.
+- **[Alternative packages](misc/alternative-packages.md)** — how physipy compares to pint, astropy.units, unyt and others.
 - **[Development](development-guide/index.md)** — contributing, benchmarking, and performance.
 
 ## At a glance
