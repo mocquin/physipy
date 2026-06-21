@@ -35,6 +35,7 @@ site/
 
 # ---- Benchmark outputs (benchmarks/compare_packages.py defaults) ----
 /compare_packages.csv
+/compare_packages_capability.csv
 /compare_packages.png
 
 # ---- Notebooks ----
