@@ -1,398 +1,130 @@
----
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.3'
-      jupytext_version: 1.14.7
-  kernelspec:
-    display_name: Python 3 (ipykernel)
-    language: python
-    name: python3
----
+# Performance vs other packages
 
-# Performance
+physipy is benchmarked against the other main physical-quantity libraries —
+[pint](https://pint.readthedocs.io/), [astropy.units](https://docs.astropy.org/en/stable/units/)
+and [forallpeople](https://github.com/connorferster/forallpeople) — plus a
+unit-less **raw** float/`ndarray` baseline. The benchmark lives in the
+repository at
+[`benchmarks/compare_packages.py`](https://github.com/mocquin/physipy/blob/master/benchmarks/compare_packages.py)
+and can be reproduced in one command.
 
+## What is measured
 
-Obviously, using unit-aware variables will slow down any computation compared to raw python values (int, flot, numpy.ndarray).
+The script compares the libraries on two axes:
 
-```python
-import matplotlib.pyplot as plt
-import numpy as np
+- **Capability** — *which* operations each library actually supports (unary and
+  binary operators, numpy ufuncs, and numpy functions), discovered by trying
+  each operation and catching failures. This is a qualitative comparison, not a
+  timing.
+- **Speed** — time per call for a curated set of common operations, reported in
+  microseconds and **relative to the raw-numpy baseline** (`×numpy`), for both
+  scalar and array (length 1000) values.
 
-import physipy
-from physipy import s, m, setup_matplotlib
+Binary operations are exercised against three operand relationships (an idea
+borrowed from [quantities-comparison](https://github.com/tbekolay/quantities-comparison)):
 
-from physipy import Dimension, units, quantify, Quantity
+| Relationship  | Example          | What it exercises               |
+| ------------- | ---------------- | ------------------------------- |
+| `same`        | meter `+` meter  | plain arithmetic                |
+| `compatible`  | meter `+` mile   | same dimension, unit conversion |
+| `different`   | meter `+` second | different dimension             |
 
-ms = units["ms"]
-mm = units['mm']
-km = units["km"]
-cm = units["cm"]
-mus = units["mus"]
-ns = units["ns"]
-a = 123456
-b = 654321
+Each timing is the best of several `timeit` repeats, with the number of inner
+loops chosen automatically.
 
-aq = a*m
-bq = b*m
+## Reproduce
+
+```bash
+uv sync --group benchmark      # installs pint, astropy, forallpeople, ...
+uv run python benchmarks/compare_packages.py
+# options: --size N  --repeat R  --csv PATH  --plot PATH  --no-plot
 ```
 
+It prints the tables below, writes a timings CSV and a capability CSV, and saves
+the chart.
 
-Basic comparison on addition
+## Results
 
-```python
-%timeit  (a +  b)
-%timeit (aq + bq)
+!!! note
+    Microbenchmark on a single machine — read the numbers as *relative*
+    comparisons (the `×numpy` column), not absolute throughput. Re-run locally
+    for your own hardware and library versions.
+
+### Capability (supported / total)
+
+How many operations of each category each library accepts on array operands:
+
+```text
+library            unary_op     binary_op   unary_ufunc  binary_ufunc    numpy_func
+raw               3/3          36/36         18/18         12/12         11/11
+physipy           3/3          25/36         11/18         11/12         11/11
+pint              3/3          25/36         11/18         11/12         11/11
+astropy           3/3          25/36         11/18         11/12         11/11
+forallpeople      2/3          11/36          8/18          8/12         10/11
 ```
 
-```python
-print(12.4*mus/(63.7*ns))
+physipy, pint and astropy share an essentially identical capability profile.
+The "missing" unary ufuncs are transcendental functions such as `exp`, `log`
+and `sin` applied to a *length*: these are correctly **rejected** as
+dimensionally invalid (a feature, not a gap). forallpeople, being
+scalar-oriented, supports far fewer operations.
+
+### Timing — arrays (length 1000)
+
+Time per call, `µs` and `×numpy` overhead:
+
+```text
+operation                      raw           physipy              pint           astropy      forallpeople
+create                0.411 x    1      2.957 x    7      3.720 x    9      2.605 x    6    408.723 x  994
+neg                   0.280 x    1      0.869 x    3      1.480 x    5      2.084 x    7    418.799 x 1496
+abs                   0.295 x    1      0.880 x    3      1.486 x    5      2.094 x    7     28.849 x   98
+add.same              0.340 x    1      1.029 x    3      3.427 x   10      2.475 x    7    531.605 x 1563
+add.compatible        0.333 x    1      1.048 x    3      8.752 x   26      3.719 x   11               N/A
+sub                   0.328 x    1      1.022 x    3      3.364 x   10      2.436 x    7    530.913 x 1621
+mul                   0.329 x    1      2.465 x    7      3.575 x   11      4.929 x   15   5933.254 x18007
+div                   0.364 x    1      2.516 x    7      3.763 x   10      2.773 x    8   2658.620 x 7312
+pow                   0.306 x    1      2.753 x    9      3.257 x   11      3.801 x   12   1477.430 x 4829
+less_than             0.400 x    1      0.683 x    2      1.109 x    3      1.855 x    5     78.385 x  196
+np.sqrt               0.447 x    1      2.823 x    6      5.197 x   12      5.206 x   12   2331.691 x 5214
+np.sum                1.023 x    1      2.102 x    2     12.499 x   12      3.579 x    3    524.820 x  513
+np.mean               1.422 x    1      2.473 x    2     17.663 x   12      3.503 x    2    536.508 x  377
+np.max                0.971 x    1      1.954 x    2     16.857 x   17      3.523 x    4     81.995 x   84
+np.sort              12.619 x    1     13.681 x    1     27.756 x    2     13.417 x    1    640.278 x   51
+np.concatenate        0.542 x    1      2.040 x    4      8.661 x   16      3.506 x    6      3.869 x    7
 ```
 
-Basic comparison on pow
+### Timing — scalars
 
-```python
-%timeit  (a**2)
-%timeit (aq**2)
+```text
+operation                      raw           physipy              pint           astropy      forallpeople
+create                0.034 x    1      2.402 x   71      3.003 x   89      2.593 x   77      0.446 x   13
+neg                   0.032 x    1      0.569 x   18      1.064 x   33      2.121 x   67      0.449 x   14
+add.same              0.036 x    1      0.657 x   18      2.840 x   79      2.572 x   71      0.572 x   16
+add.compatible        0.035 x    1      0.652 x   19      6.649 x  189      3.300 x   94               N/A
+mul                   0.036 x    1      2.023 x   56      2.995 x   83      5.025 x  139      5.645 x  156
+np.sum                1.102 x    1      2.136 x    2     12.450 x   11      3.412 x    3      1.275 x    1
+np.sqrt               0.263 x    1      2.528 x   10      4.968 x   19      4.977 x   19      2.765 x   10
 ```
 
-```python
-print(22.8*mus/(289*ns))
-```
+### Chart
 
-```python
-%%timeit 
-try:
-    pass
-except:
-    pass
-```
+![Cross-package benchmark: scalar timing, array timing, and capability coverage](../ressources/compare_packages.png)
 
-```python
-%%timeit
-isinstance(m, Quantity)
-```
+## Takeaways
 
-## benchmark timing
+- **physipy has the lowest overhead of the unit libraries on essentially every
+  operation** — typically 2–7× numpy on arrays, where pint and astropy are
+  often 2–4× higher.
+- The `compatible` relation exposes **unit-conversion cost**: `add.compatible`
+  (meter + mile) pushes pint from 10× to 26× numpy and astropy from 7× to 11×,
+  while physipy stays at 3× because it normalises to SI at construction.
+- **forallpeople is scalar-oriented**: on arrays it builds object arrays of
+  scalar `Physical`s, so array operations are 100–18000× slower — fine for
+  engineering scalars, unsuitable for array workloads.
+- numpy reductions (`sum`, `mean`, `max`) are cheap in physipy and astropy
+  (2–4× numpy) but markedly slower in pint (12–17×).
 
-
-Here is a comparison of most operations : 
-
-```python
-import numpy as np
-from physipy import m, s, Quantity
-arr = np.linspace(0, 200)
-sca = 5.14
-pi = np.pi
-arr_m = arr * m
-
-
-ech_lmbda_mum = np.linspace(2, 15)
-
-def bench_scalar_op_add(): m + m
-def bench_scalar_op_sub(): m - m
-def bench_scalar_op_mul(): m * m
-def bench_scalar_op_div(): m / m
-def bench_scalar_op_truediv(): m // m
-def bench_scalar_op_pow(): m ** 1
-def use_case():
-    x = arr * m
-    x2 = sca * s**2
-    y = x*x2/pi * np.sum(x**2) + 3*m**3*s**2
-
-def bench_arr_scalar_op_add(): arr_m + m
-def bench_arr_scalar_op_sub(): arr_m - m
-def bench_arr_scalar_op_mul(): arr_m * m
-def bench_arr_scalar_op_div(): arr_m / m
-def bench_arr_scalar_op_truediv(): arr_m // m
-def bench_arr_scalar_op_pow(): arr_m ** 1
-def use_case2():
-    from physipy import units, constants, K
-    mum = units["mum"]
-    hp = constants["h"]
-    c = constants["c"]
-    kB = constants["k"]
-    
-    def plancks_law(lmbda, Tbb):
-        return 2*hp*c**2/lmbda**5# * 1/(np.exp(hp*c/(lmbda*kB*Tbb))-1)
-    lmbdas = ech_lmbda_mum*mum
-    Tbb = 300*K
-    integral = np.trapz(plancks_law(lmbdas, Tbb), x=lmbdas)
-```
-
-```python
-import pint
-import physipy
-import forallpeople
-import numpy as np
-from astropy import units as astropy_units
-
-ureg = pint.UnitRegistry()
-
-a = 123
-b = 654
-
-# we don't want a big array since we are intersted in the differences
-# between scalars and arrays, if any. Big array length could introduce
-# time deltas from the numerical computation, not the unit overhead
-arr = np.arange(1, 4)
-
-import timeit
-
-import operator
-```
-
-```python
-operations = {
-    "add":"__add__", 
-    "sub":"__sub__",
-    "mul":"__mul__",
-    "truediv":"__truediv__",
-}
-N = 100000
-
-physipy_qs = {
-    "name":"physipy",
-    "a":a*physipy.m,
-    "b":b*physipy.m,
-    'arrm':arr*physipy.m,
-}
-pint_qs = {
-    "name":"pint",
-    "a":a*ureg.m,
-    "b":b*ureg.m,
-    'arrm':arr*ureg.m,
-}
-fap_qs = {
-    "name":"forallpeople",
-    "a":a*forallpeople.m,
-    "b":b*forallpeople.m, 
-    'arrm':arr*forallpeople.m, 
-}
-asp_qs = {
-    "name":"astropy",
-    "a":a*astropy_units.m,
-    "b":b*astropy_units.m,
-    "arrm":arr*astropy_units.m,
-}
-```
-
-```python
-results = []
-
-for modules_dict in [physipy_qs, pint_qs, fap_qs, asp_qs]:
-    print(modules_dict["name"])
-    for operation, operation_method in operations.items():
-        aq = modules_dict["a"]
-        bq = modules_dict["b"]
-        #time = timeit.timeit('a.'+operation_method+"(b)", number=10000, globals=globals())
-        time_q = timeit.timeit('aq.'+operation_method+"(bq)", number=N, globals={"aq":aq, "bq":bq})#), globals=globals())        
-        #print(f"{operation: >5} : {time_q/time: <5.1f}")
-        print(f"{operation :>5} : {time_q:.5f}")
-        results.append((modules_dict['name'], operation, time_q, aq, bq, "sca", "sca", str(getattr(operator, operation)(aq, bq))))
-    for operation, operation_method in operations.items():
-        aq = modules_dict["a"]
-        arrq = modules_dict["arrm"]
-        #time = timeit.timeit('a.'+operation_method+"(b)", number=10000, globals=globals())
-        try:
-            time_qarr = timeit.timeit('aq.'+operation_method+"(arr)", number=N, globals={"aq":aq, "arr":arrq})#), globals=globals())      
-            print(f"{operation :>5} : {time_qarr:.5f}")
-            results.append((modules_dict['name'], operation, time_q, aq, arrq, "sca", "arr", str(getattr(operator, operation)(aq, arrq))))
-
-        except Exception as e:
-            print(f"{operation :>5} : {e}")
-            
-            results.append((modules_dict['name'], operation, np.nan, aq, arrq, "sca", "arr", "Failed"))
-import pandas as pd
-import seaborn as sns
-df = pd.DataFrame(results, columns=["package", "op", "time", "left", "right", "left_type", "right_type", "result"])
-sns.catplot(
-    col="op", x="right_type", y="time", hue="package", data=df, kind="bar")
-```
-
-```python
-aq=a*physipy.m
-arrm = arr*physipy.m
-```
-
-```python
-%timeit arr*a
-%timeit aq*arrm
-```
-
-```python
-arrm
-```
-
-```python
-import timeit
-
-operations = {
-    "add":"__add__", 
-    "sub":"__sub__",
-    "mul":"__mul__",
-}
-```
-
-```python
-import pint
-import physipy
-import forallpeople
-import numpy as np
-
-ureg = pint.UnitRegistry()
-
-a = 123456
-b = 654321
-arr = np.arange(100)
-```
-
-```python
-physipy_qs = {
-    "name":"physipy",
-    "a":a*physipy.m,
-    "b":b*physipy.m,
-    'arrm':arr*physipy.m,
-}
-pint_qs = {
-    "name":"pint",
-    "a":a*ureg.m,
-    "b":b*ureg.m,
-    'arrm':arr*ureg.m,
-}
-fap_qs = {
-    "name":"forallpeople",
-    "a":a*forallpeople.m,
-    "b":b*forallpeople.m, 
-    'arrm':arr*forallpeople.m, 
-}
-
-for modules_dict in [physipy_qs, pint_qs, fap_qs]:
-    print(modules_dict["name"])
-    for operation, operation_method in operations.items():
-        aq = modules_dict["a"]
-        bq = modules_dict["b"]
-        #time = timeit.timeit('a.'+operation_method+"(b)", number=10000, globals=globals())
-        time_q = timeit.timeit('aq.'+operation_method+"(bq)", number=10000, globals=globals())        
-        #print(f"{operation: >5} : {time_q/time: <5.1f}")
-        print(f"{operation :>5} : {time_q:.5f}")
-    for operation, operation_method in operations.items():
-        aq = modules_dict["a"]
-        arr = modules_dict["arrm"]
-        #time = timeit.timeit('a.'+operation_method+"(b)", number=10000, globals=globals())
-        time_qarr = timeit.timeit('aq.'+operation_method+"(arr)", number=10000, globals=globals())
-        
-        #print(f"{operation: >5} : {time_q/time: <5.1f}")
-        print(f"{operation :>5} : {time_qarr:.5f}")
-```
-
-
-## Array creation
-
-
-Compare lazy creation of arrays
-
-```python
-%timeit asqarray([0*m, 2*m])
-%timeit [0, 2]*m
-```
-
-## Profiling base operations
-
-```python
-from physipy import m, s, rad, sr
-```
-
-```python
-bench_scalar_op_add
-bench_scalar_op_mul
-bench_arr_scalar_op_add
-bench_arr_scalar_op_mul
-```
-
-```python
-#%prun -D prunsum -s time m+m 
-%prun -D prunsum_file -s nfl use_case()
-!snakeviz prunsum_file
-```
-
-Ideas for better performances : 
- - less 'isinstance'
- - remove sympy 
- - cleaner 'setattr'
-
-```python
-%%prun -s cumulative -D prundump
-m + m
-2 * m
-2*s /(3*m)
-m**3
-```
-
-```python
-!snakeviz prundump
-```
-
-## Profiling tests
-
-```python
-import sys
-sys.path.insert(0,r"/Users/mocquin/MYLIB10/MODULES/physipy/test")
-import physipy
-import test_dimension
-import unittest
-from physipy import Quantity, Dimension
-```
-
-```python
-from test_dimension import TestClassDimension
-from test_quantity import TestQuantity
-```
-
-```python
-suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestQuantity)
-```
-
-```python
-%%prun -s calls -D prun
-unittest.TextTestRunner().run(suite)
-```
-
-```python
-!snakeviz prun
-```
-
-```python
-%timeit Quantity(1, Dimension(None))
-```
-
-```python
-%timeit Quantity(1, Dimension(None))
-```
-
-```python
-testdim = test_dimension.TestClassDimension()
-```
-
-```python
-testdim.run()
-```
-
-```python
-%cd ..
-```
-
-```python
-#%cd
-%prun -s module !python -m unittest
-```
-
-```python
-
-```
-
-```python
-
-```
+See also the [airspeed-velocity benchmarks](dev-benchmarking-with-asv.md), which
+track physipy's own performance over time, and the
+[alternative packages](../misc/alternative-packages.md) page for a qualitative
+comparison.

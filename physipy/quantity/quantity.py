@@ -1,65 +1,75 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""quantity module : allows manipulation of physical quantities.
+"""Manipulation of physical quantities.
 
-TODO:
- - [X] : find a better way to include SI units in
- - [ ] : sum() : problem with init of iterator, using radd, needs to start with sum(y_q,Quantity(1,Dimension("L")))
- - [ ] : avec Q_vectorize qui utilise interp, lève une erreur pas claire si on renvoi une valeur dans un array déjà initialisé avec une autre dimension
- - [ ] : make DISPLAY_DIGITS and EXP_THRESHOLD variable-attribute, not constant
- - [X] : PENDING : make __true_div__ = __div__
- - [ ] : try to factor quantify and make_quantity
- - [X] : add a method for fast-friendly display in another unit
- - [X] : add methods to check dimensions (is_length, is_surface, etc)
- - [ ] : factorize quad and dblquad, and make nquad
- - [X] : make a decorator for trigo functions
- - [ ] : deal with precision of quads
- - [X] : make a round method
- - [ ] : quick plot method for array value (matplotlib)
- - [ ] : interp and vectorize adds "no-dimension" if needed - homogenize
- - [ ] : init favunit to SI unit if none is passed ?
- - [X] : make cos, sin, etc method for numpy compatibility
- - [ ] : test quantity with complex and fractions.fractions
- - [ ] : float must be commented for solvers to work....
- - [ ] : make default symbol variable name ?
- - [ ] : make favunit defaults to SI ?
- - [ ] : for trigo method, prevent when unit is sr ?
- - [X] : create a Wrong dimension Error, for trigo functions for eg
- - [X] : deal with numpy slicing a[a>1]
- - [ ] : improve Inration of eq, ne (ex : assertNotEqual when dealing with arrays)
- - [ ] : when uncertainties is implemented, add an automatic plotting
- - [X] : add a format method --> need a refactor of repr..
- - [X] : add a method to reset favunit ?
- - [ ] : better tests for complex number support
- - [ ] : see if possible to not rely on sympy, numpy and scipy
- - [ ] : improve code for __array_ufunc__
- - [ ] : better tests for Fraction support
+This module defines `Quantity`, the core object pairing a numerical value with
+a physical `Dimension`, together with the helpers used to build and coerce
+quantities (`quantify`, `dimensionify`, `make_quantity`). Quantities support
+arithmetic, comparisons and most numpy operations while propagating dimensions
+and raising `DimensionError` on incompatible operations.
 
+The idiomatic way to create a quantity is to multiply a value by a unit::
 
-PROPOSITIONS/QUESTIONS :
- - make sum, mean, integrate, is_dimensionless properties IO methods ?
- - add a 0 quantity to radd to allow magic function sum ?
- - should __pow__ be allowed with array, returning an array of quantities
-     (and quantity of array if power is scalar)
- - should mul and rmul be different :
-    - [1,2,3]*m = ([1,2,3])m
-    - m*[1,2,3] = [1m, 2m, 3m]
- - make Quantity self)converted to numpy : ex : np.cos(q) if q is dimensionless
-     'Quantity' object has no attribute 'cos' ???
- -  when multiplying or dividing not quanity with quantity, propagate favunit ?
- - should setting dimension be forbiden ? or with a warning ?
- - make a floordiv ?
- - no np.all in comparison for indexing a[a>1], but then np.all is needed in functions verifications
- - should repr precise the favunit and symbol ?
- - switch base system by replacing the dimension dict (or making it setable)
- - exponent repr : use re to change “**” to “^” or to “”
- - base nominal representation and str should allow plain copy/paste to be reused in code
- - list unicode possible changes : micron character, superscripts for exponents
- - quantify in each method is ugly
- - should redefine every numpy ufunc as method ?
-
+    from physipy import m, s
+    speed = 5 * m / s
 """
+# Developer notes (kept out of the rendered docs).
+#
+# TODO:
+#  - [X] : find a better way to include SI units in
+#  - [ ] : sum() : problem with init of iterator, using radd, needs to start with sum(y_q,Quantity(1,Dimension("L")))
+#  - [ ] : avec Q_vectorize qui utilise interp, lève une erreur pas claire si on renvoi une valeur dans un array déjà initialisé avec une autre dimension
+#  - [ ] : make DISPLAY_DIGITS and EXP_THRESHOLD variable-attribute, not constant
+#  - [X] : PENDING : make __true_div__ = __div__
+#  - [ ] : try to factor quantify and make_quantity
+#  - [X] : add a method for fast-friendly display in another unit
+#  - [X] : add methods to check dimensions (is_length, is_surface, etc)
+#  - [ ] : factorize quad and dblquad, and make nquad
+#  - [X] : make a decorator for trigo functions
+#  - [ ] : deal with precision of quads
+#  - [X] : make a round method
+#  - [ ] : quick plot method for array value (matplotlib)
+#  - [ ] : interp and vectorize adds "no-dimension" if needed - homogenize
+#  - [ ] : init favunit to SI unit if none is passed ?
+#  - [X] : make cos, sin, etc method for numpy compatibility
+#  - [ ] : test quantity with complex and fractions.fractions
+#  - [ ] : float must be commented for solvers to work....
+#  - [ ] : make default symbol variable name ?
+#  - [ ] : make favunit defaults to SI ?
+#  - [ ] : for trigo method, prevent when unit is sr ?
+#  - [X] : create a Wrong dimension Error, for trigo functions for eg
+#  - [X] : deal with numpy slicing a[a>1]
+#  - [ ] : improve Inration of eq, ne (ex : assertNotEqual when dealing with arrays)
+#  - [ ] : when uncertainties is implemented, add an automatic plotting
+#  - [X] : add a format method --> need a refactor of repr..
+#  - [X] : add a method to reset favunit ?
+#  - [ ] : better tests for complex number support
+#  - [ ] : see if possible to not rely on sympy, numpy and scipy
+#  - [ ] : improve code for __array_ufunc__
+#  - [ ] : better tests for Fraction support
+#
+# PROPOSITIONS/QUESTIONS :
+#  - make sum, mean, integrate, is_dimensionless properties IO methods ?
+#  - add a 0 quantity to radd to allow magic function sum ?
+#  - should __pow__ be allowed with array, returning an array of quantities
+#      (and quantity of array if power is scalar)
+#  - should mul and rmul be different :
+#     - [1,2,3]*m = ([1,2,3])m
+#     - m*[1,2,3] = [1m, 2m, 3m]
+#  - make Quantity self)converted to numpy : ex : np.cos(q) if q is dimensionless
+#      'Quantity' object has no attribute 'cos' ???
+#  -  when multiplying or dividing not quanity with quantity, propagate favunit ?
+#  - should setting dimension be forbiden ? or with a warning ?
+#  - make a floordiv ?
+#  - no np.all in comparison for indexing a[a>1], but then np.all is needed in functions verifications
+#  - should repr precise the favunit and symbol ?
+#  - switch base system by replacing the dimension dict (or making it setable)
+#  - exponent repr : use re to change “**” to “^” or to “”
+#  - base nominal representation and str should allow plain copy/paste to be reused in code
+#  - list unicode possible changes : micron character, superscripts for exponents
+#  - quantify in each method is ugly
+#  - should redefine every numpy ufunc as method ?
 from __future__ import annotations
 
 import math
@@ -157,7 +167,39 @@ def register_property_backend(klass, interface_dict=None):
 
 
 class Quantity(object):
-    """Quantity class :"""
+    """A physical quantity: a numerical value paired with a `Dimension`.
+
+    A `Quantity` couples a value (a Python scalar, a numpy array, or any
+    supported numeric backend) with the physical dimension it carries. Once
+    built, quantities behave like numbers: arithmetic, comparisons and most
+    numpy operations are supported and propagate dimensions, raising a
+    `DimensionError` when an operation mixes incompatible dimensions.
+
+    In practice you rarely call the constructor directly. Quantities are
+    usually built by multiplying a value with a unit (``5 * m``), which is the
+    idiomatic style throughout physipy.
+
+    Attributes:
+        value: The raw numerical value (scalar or numpy array). Lists and
+            tuples are converted to numpy arrays on assignment.
+        dimension: The `Dimension` carried by the quantity.
+        symbol: The display symbol (a `UnitSymbol`), used in ``repr``/``str``.
+        favunit: The "favourite unit", a `Quantity` controlling how this
+            quantity is displayed (see `to`/`set_favunit`). Does not change
+            the stored value.
+
+    Examples:
+        >>> from physipy import m, s
+        >>> speed = 5 * m / s
+        >>> speed.value
+        5.0
+        >>> total = (3 * m) + (2 * m)
+        >>> total.value
+        5
+        >>> ((3 * m) + (2 * s))  # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+        physipy.quantity.dimension.DimensionError: ...
+    """
 
     DIGITS = DISPLAY_DIGITS
     EXP_THRESH = EXP_THRESHOLD
@@ -181,6 +223,15 @@ class Quantity(object):
         symbol: Union[str, UnitSymbol] = DEFAULT_SYMBOL,
         favunit: Quantity | None = None,
     ) -> None:
+        """Build a quantity from a value and a dimension.
+
+        Args:
+            value: The numerical value (scalar, numpy array, or supported
+                backend). Lists and tuples are converted to numpy arrays.
+            dimension: The physical `Dimension` carried by the quantity.
+            symbol: The display symbol; defaults to an undefined symbol.
+            favunit: Optional favourite unit controlling display (see `to`).
+        """
         self.value = value
         self.dimension = dimension
         self.symbol = symbol
@@ -188,6 +239,7 @@ class Quantity(object):
 
     @property
     def size(self):
+        """The number of elements in the value (1 for a scalar)."""
         if isinstance(self.value, np.ndarray):
             return self.value.size
         else:
@@ -195,6 +247,7 @@ class Quantity(object):
 
     @property
     def symbol(self):
+        """The display symbol (a `UnitSymbol`); accepts a str/dict on set."""
         return self._symbol
 
     @symbol.setter
@@ -211,6 +264,7 @@ class Quantity(object):
 
     @property
     def favunit(self):
+        """The favourite display unit (a `Quantity` or None); see `to`."""
         return self._favunit
 
     @favunit.setter
@@ -230,6 +284,7 @@ class Quantity(object):
 
     @property
     def value(self) -> ValueType:
+        """The raw numerical value; lists/tuples become numpy arrays on set."""
         return self._value
 
     @value.setter
@@ -452,6 +507,7 @@ class Quantity(object):
         )
 
     def copy(self) -> Quantity:
+        """Return a shallow copy (same value, dimension, symbol and favunit)."""
         return self.__copy__()
 
     def __repr__(self) -> str:
@@ -534,6 +590,19 @@ class Quantity(object):
         other: Quantity | None = None,
         ax: Any = None,
     ) -> None:
+        """Plot the quantity with matplotlib, with unit-aware axes.
+
+        Args:
+            kind: ``"y"`` to plot self against its index (default), or ``"x"``
+                to plot self on the x-axis against ``other`` on the y-axis.
+            other: The companion quantity, required when ``kind == "x"``.
+            ax: An existing matplotlib axes to draw on. A new figure and axes
+                are created when omitted.
+
+        Raises:
+            ValueError: If ``kind`` is ``"x"`` without ``other``, or otherwise
+                not a valid kind/other combination.
+        """
         from physipy import plotting_context
 
         if ax is None:
@@ -744,6 +813,7 @@ class Quantity(object):
 
     @property
     def flat(self) -> FlatQuantityIterator:
+        """An iterator over the flattened values (like ``numpy.ndarray.flat``)."""
         # pint implementation
         # for v in self.value.flat:
         #    yield Quantity(v, self.dimension)
@@ -752,11 +822,13 @@ class Quantity(object):
         return FlatQuantityIterator(self)
 
     def flatten(self):
+        """Return a flattened (1-D) copy, preserving dimension and favunit."""
         return type(self)(
             self.value.flatten(), self.dimension, favunit=self.favunit
         )
 
     def tolist(self) -> list:
+        """Return a list of scalar `Quantity` objects, one per array element."""
         return [
             type(self)(i, self.dimension)
             for i in cast(np.ndarray, self.value)
@@ -764,79 +836,141 @@ class Quantity(object):
 
     @property
     def real(self):
+        """The real part, as a `Quantity` with the same dimension."""
         return type(self)(self.value.real, self.dimension, favunit=self.favunit)
 
     @property
     def imag(self):
+        """The imaginary part, as a `Quantity` with the same dimension."""
         return type(self)(self.value.imag, self.dimension, favunit=self.favunit)
 
     def conjugate(self):
+        """Return the complex conjugate, as a `Quantity` (same dimension)."""
         return type(self)(self.value.conjugate(), self.dimension, favunit=self.favunit)
 
     @property
     def T(self):
+        """The transpose, as a `Quantity` with the same dimension."""
         return type(self)(self.value.T, self.dimension, favunit=self.favunit)
 
     def inverse(self):
-        """is this method usefull ?"""
+        """Return the reciprocal quantity (1/value with the inverse dimension)."""
         return type(self)(1 / self.value, 1 / self.dimension)
 
-    # see list of array methods:
+    # These wrap the corresponding numpy reductions and preserve the dimension
+    # (and favunit). See the numpy array-method reference:
     # https://numpy.org/doc/stable/reference/arrays.ndarray.html#array-methods
     def min(self, **kwargs):
+        """Return the minimum as a `Quantity`, preserving the dimension."""
         return np.min(self, **kwargs).set_favunit(self.favunit)
 
     def max(self, **kwargs):
+        """Return the maximum as a `Quantity`, preserving the dimension."""
         return np.max(self, **kwargs).set_favunit(self.favunit)
 
     def sum(self, **kwargs):
+        """Return the sum as a `Quantity`, preserving the dimension."""
         return np.sum(self, **kwargs).set_favunit(self.favunit)
 
     def mean(self, **kwargs):
+        """Return the mean as a `Quantity`, preserving the dimension."""
         return np.mean(self, **kwargs).set_favunit(self.favunit)
 
     def std(self, *args, **kwargs):
+        """Return the standard deviation as a `Quantity` (same dimension)."""
         return np.std(self, *args, **kwargs).set_favunit(self.favunit)
 
     def conj(self):
+        """Return the complex conjugate as a `Quantity` (same dimension)."""
         return np.conj(self).set_favunit(self.favunit)
 
     def round(self, *args, **kwargs):
+        """Return the value rounded, as a `Quantity` (same dimension)."""
         return np.round(self, *args, **kwargs).set_favunit(self.favunit)
 
     def var(self, **kwargs):
+        """Return the variance as a `Quantity` (dimension squared)."""
         return np.var(self, **kwargs)
 
     def abs(self):
+        """Return the absolute value as a `Quantity` (same dimension)."""
         return np.abs(self)
 
     def integrate(self, *args, **kwargs):
+        """Integrate the value with the trapezoidal rule, preserving units.
+
+        Arguments are forwarded to the trapezoidal integrator (e.g. ``x`` or
+        ``dx`` along the integration axis).
+        """
         # lazy import avoids the quantity <-> _numpy circular import
         from ._numpy import trapezoid
 
         return trapezoid(self, *args, **kwargs)
 
     def is_dimensionless(self) -> bool:
+        """Return True if the quantity has no physical dimension.
+
+        Note that dimensionless results of arithmetic are usually collapsed to
+        a bare value (see `rm_dim_if_dimless`), so this is most useful on
+        quantities explicitly built with a dimensionless `Dimension`.
+
+        Examples:
+            >>> from physipy import m
+            >>> (5 * m).is_dimensionless()
+            False
+        """
         return self.dimension == DIMENSIONLESS
 
     def rm_dim_if_dimless(self) -> QuantityOrValue:
+        """Collapse to the bare value if dimensionless, else return self.
+
+        This is what lets dimension-cancelling operations (e.g. ``m / m``)
+        return a plain number instead of a dimensionless `Quantity`.
+
+        Returns:
+            ``self.value`` if the quantity is dimensionless, otherwise self.
+        """
         if self.is_dimensionless():
             return self.value
         else:
             return self
-        
+
     def ravel(self):
+        """Return a contiguous flattened `Quantity` (array-valued only).
+
+        Raises:
+            NotImplementedError: If the value is not a numpy array.
+        """
         if isinstance(self.value , np.ndarray):
             return np.ravel(self)
         raise NotImplementedError
 
     def has_integer_dimension_power(self) -> bool:
+        """Return True if every base dimension has an integer exponent."""
         return all(
             value == int(value) for value in self.dimension.dim_dict.values()
         )
 
-    def to(self, y: Quantity):
-        """return quantity with another favunit."""
+    def to(self, y: Quantity) -> Quantity:
+        """Return a copy displayed in the unit ``y`` (the "favourite unit").
+
+        Only the display is affected: the stored `value` and `dimension` are
+        unchanged. Unlike `into`, ``y`` may have any dimension.
+
+        Args:
+            y: The unit to display this quantity in, as a `Quantity`.
+
+        Returns:
+            A copy of self with its `favunit` set to ``y``.
+
+        Raises:
+            TypeError: If ``y`` is not a `Quantity`.
+
+        Examples:
+            >>> from physipy import m, units
+            >>> (5 * m).to(units["mm"]).value
+            5
+        """
         if not isinstance(y, Quantity):
             raise TypeError("Cannot express Quantity in not Quantity")
         q = self.__copy__()
@@ -844,71 +978,146 @@ class Quantity(object):
         return q
 
     def ito(self, y: Quantity) -> Quantity:
-        """in-place version of `to` : set favunit on self and return self."""
+        """In-place version of `to`: set the favunit on self and return self.
+
+        Args:
+            y: The unit to display this quantity in, as a `Quantity`.
+
+        Returns:
+            self, with its `favunit` set to ``y``.
+
+        Raises:
+            TypeError: If ``y`` is not a `Quantity`.
+        """
         if not isinstance(y, Quantity):
             raise TypeError("Cannot express Quantity in not Quantity")
         self.favunit = y
         return self
 
     def set_favunit(self, fav: Quantity) -> Quantity:
-        """
-        To be used as one-line declaration : (np.linspace(3, 10)*mum).set_favunit(mum)
+        """Set the favourite display unit and return self.
+
+        Designed for one-line declarations, e.g.
+        ``(np.linspace(3, 10) * mum).set_favunit(mum)``.
+
+        Args:
+            fav: The favourite unit, as a `Quantity`.
+
+        Returns:
+            self, with its `favunit` set to ``fav``.
         """
         self.favunit = fav
         return self
 
     def set_symbol(self, symbol: str) -> Quantity:
-        """
-        To be used as one-line declaration for a favunit : my_period=(10*s).set_symbol("period")
+        """Set the display symbol and return self.
+
+        Designed for one-line declarations, e.g.
+        ``my_period = (10 * s).set_symbol("period")``.
+
+        Args:
+            symbol: The symbol to display this quantity with.
+
+        Returns:
+            self, with its `symbol` set.
         """
         self.symbol = symbol
         return self
 
     def into(self, y: Quantity) -> Quantity:
-        """like to, but with same dimension"""
+        """Like `to`, but require ``y`` to have the same dimension.
+
+        Args:
+            y: The unit to display this quantity in, as a `Quantity`.
+
+        Returns:
+            A copy of self with its `favunit` set to ``y``.
+
+        Raises:
+            ValueError: If ``y`` does not have the same dimension as self.
+        """
         if not self.dimension == y.dimension:
             raise ValueError("must have same unit. Try to().")
         return self.to(y)
 
-    def iinto(self, y):
-        """like ito, but with same dimension"""
+    def iinto(self, y: Quantity) -> Quantity:
+        """Like `ito`, but require ``y`` to have the same dimension.
+
+        Args:
+            y: The unit to display this quantity in, as a `Quantity`.
+
+        Returns:
+            self, with its `favunit` set to ``y``.
+
+        Raises:
+            ValueError: If ``y`` does not have the same dimension as self.
+        """
         if not self.dimension == y.dimension:
             raise ValueError("must have same unit. Try to().")
         return self.ito(y)
 
-    # Shortcut for checking dimension
+    # Shortcuts for checking the dimension against a common physical quantity.
     def is_length(self) -> bool:
+        """Return True if the dimension is a length (L)."""
         return self.dimension == Dimension("L")
 
     def is_surface(self) -> bool:
+        """Return True if the dimension is a surface (L**2)."""
         return self.dimension == Dimension("L") ** 2
 
     def is_volume(self) -> bool:
+        """Return True if the dimension is a volume (L**3)."""
         return self.dimension == Dimension("L") ** 3
 
     def is_time(self) -> bool:
+        """Return True if the dimension is a time (T)."""
         return self.dimension == Dimension("T")
 
     def is_mass(self) -> bool:
+        """Return True if the dimension is a mass (M)."""
         return self.dimension == Dimension("M")
 
     def is_angle(self) -> bool:
+        """Return True if the dimension is a plane angle (RAD)."""
         return self.dimension == Dimension("RAD")
 
     def is_solid_angle(self) -> bool:
+        """Return True if the dimension is a solid angle (SR)."""
         return self.dimension == Dimension("SR")
 
     def is_temperature(self) -> bool:
+        """Return True if the dimension is a temperature (theta)."""
         return self.dimension == Dimension("theta")
 
     def is_nan(self):
-        "For use with pandas extension"
+        """Return the element-wise NaN mask of the value (pandas extension)."""
         return np.isnan(self.value)
 
     def is_dimensionless_ext(self) -> bool:
+        """Return True if dimensionless or a plane angle.
+
+        Angles are dimensionless in the SI sense; this "extended" check treats
+        them as dimensionless, which is convenient for trigonometric helpers.
+        """
         return self.is_dimensionless() or self.is_angle()
 
-    def check_dim(self, dim) -> bool:
+    def check_dim(self, dim: Any) -> bool:
+        """Return True if self has the given dimension.
+
+        Args:
+            dim: A `Dimension`, a `Quantity`, or anything `dimensionify`
+                accepts (e.g. a unit quantity or a dimension string).
+
+        Returns:
+            True if self's dimension matches ``dim``.
+
+        Examples:
+            >>> from physipy import m, Dimension
+            >>> (5 * m).check_dim(Dimension("L"))
+            True
+            >>> (5 * m).check_dim(m)
+            True
+        """
         return self.dimension == dimensionify(dim)
 
     # for munits support
@@ -1010,6 +1219,7 @@ class Quantity(object):
     #    return np.asarray(self.value)
 
     def reshape(self, *args, **kwargs):
+        """Return a `Quantity` with a reshaped value (same dimension)."""
         return type(self)(self.value.reshape(*args, **kwargs), self.dimension)
 
     def __array_function__(self, func, types, args, kwargs):
@@ -1252,13 +1462,36 @@ class Quantity(object):
 
 
 def quantify(x: Union[Quantity, ValueLike]) -> Quantity:
+    """Coerce a value into a `Quantity`.
+
+    A `Quantity` is returned unchanged; anything else is wrapped in a
+    dimensionless `Quantity`. Used internally to accept plain numbers wherever
+    a quantity is expected.
+
+    Args:
+        x: A `Quantity`, or a value to wrap as a dimensionless quantity.
+
+    Returns:
+        ``x`` if it is already a `Quantity`, otherwise a dimensionless
+        `Quantity` holding ``x``.
+    """
     if isinstance(x, Quantity):
         return x  # .__copy__()
     else:
         return Quantity(x, DIMENSIONLESS)
 
 
-def dimensionify(x) -> Dimension:
+def dimensionify(x: Any) -> Dimension:
+    """Extract or build a `Dimension` from ``x``.
+
+    Args:
+        x: A `Dimension` (returned as-is), a `Quantity` (its dimension is
+            returned), a scalar or numpy array (treated as dimensionless), or
+            anything the `Dimension` constructor accepts (e.g. a string).
+
+    Returns:
+        The `Dimension` corresponding to ``x``.
+    """
     if isinstance(x, Dimension):
         return x
     elif isinstance(x, Quantity):
@@ -1333,6 +1566,11 @@ class QuantityIterator(object):
 
 
 class FlatQuantityIterator(object):
+    """Iterator over a quantity's flattened values, yielding scalar quantities.
+
+    Backs the `Quantity.flat` property, mirroring ``numpy.ndarray.flat``.
+    """
+
     def __init__(self, q):
         self.value = q.value
         self.dimension = q.dimension

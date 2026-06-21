@@ -1,218 +1,254 @@
 # physipy
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
-[![PyPI version](https://badge.fury.io/py/physipy.svg)](https://pypi.org/project/physipy/)
-[![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest/)
-[![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
-[![Downloads](https://static.pepy.tech/badge/physipy/month)](https://pepy.tech/project/physipy)
 
-This python package allows you to manipulate physical quantities, basically considering in the association of a value (scalar, numpy.ndarray and more) and a physical unit (like meter or joule).
+[![PyPI version](https://badge.fury.io/py/physipy.svg)](https://pypi.org/project/physipy/)
+[![Python versions](https://img.shields.io/pypi/pyversions/physipy.svg)](https://pypi.org/project/physipy/)
+[![Read the Docs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest/)
+[![Benchmarked by asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![Downloads](https://static.pepy.tech/badge/physipy/month)](https://pepy.tech/project/physipy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Try it on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)
+
+**physipy** lets you manipulate *physical quantities* in Python — the association
+of a value (a scalar, a `numpy.ndarray`, and more) with a *physical unit* (such
+as meter or joule). Dimensional consistency is enforced automatically, so adding
+a length to a time raises an error instead of producing nonsense.
 
 ```python
 >>> from physipy import units, constants
->>> nm = units['nm']    # nanometer
->>> hp = constants['h'] # Planck's constant
->>> c  = constants['c'] # speed of light
->>> E_ph = hp * c / (500 * nm) # energy of a photon at wavelength 500nm
+>>> nm = units["nm"]      # nanometer
+>>> hp = constants["h"]   # Planck's constant
+>>> c  = constants["c"]   # speed of light
+>>> E_ph = hp * c / (500 * nm)   # energy of a 500 nm photon
 >>> print(E_ph)
-3.9728916483435158e-19 kg*m**2/s**2
->>> J = units['J'] # Joule
->>> E_ph.favunit = J # set the favourite unit for display/print
+3.9728917142978567e-19 kg*m**2/s**2
+>>> E_ph.favunit = units["J"]    # choose a display ("favourite") unit
 >>> print(E_ph)
-3.9728916483435158e-19 J
+3.9728917142978567e-19 J
 ```
 
-For a quickstart, check the [quickstart notebook](https://github.com/mocquin/physipy/blob/master/quickstart.ipynb) on the [homepage](https://github.com/mocquin/physipy)
-
-## Documentation [![Readthedocs](https://readthedocs.org/projects/physipy/badge/?version=latest&style=flat)](https://physipy.readthedocs.io/en/latest/)
-Full documentation of `physipy` is available here : [https://physipy.readthedocs.io/en/latest/](https://physipy.readthedocs.io/en/latest/), generated with mkdocs and hosted on readthedocs.
-
-## Try physipy online now [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mocquin/physipy/HEAD)  
-Get a live python session with physipy [by clicking here](https://mybinder.org/v2/gh/mocquin/physipy/HEAD). After a while, you'll get an interactive notebook session, then open the `quiskstart.ipynb` notebook in the left panel.
+- 📖 **Documentation:** https://physipy.readthedocs.io/en/latest/
+- 🚀 **Quickstart:** https://physipy.readthedocs.io/en/latest/quickstart.html
+- 🧪 **Try it live (Binder):** [launch a session](https://mybinder.org/v2/gh/mocquin/physipy/HEAD),
+  then open any notebook under `docs/scientific-stack/`.
+- 🐍 **PyPI:** https://pypi.org/project/physipy/
+- 💻 **Source:** https://github.com/mocquin/physipy
 
 ## Installation
-The latest release of physipy is available on [pypi] at [https://pypi.org/project/physipy/](https://pypi.org/project/physipy/).
-Hence the easiest way to install physipy is using pip : 
-```
+
+physipy is published on [PyPI](https://pypi.org/project/physipy/). The core only
+needs numpy:
+
+```bash
 pip install physipy
 ```
 
-Latest source code is hosted on Github at [https://github.com/mocquin/physipy/](https://github.com/mocquin/physipy/).
-You can download and un-zip the package localy, or clone the git repository with : 
+Heavier dependencies are **optional extras** — install only what you use:
+
+| Extra        | Enables                                                        | Pulls in     |
+| ------------ | ------------------------------------------------------------- | ------------ |
+| `calculus`   | `physipy.calculus` (integration / ODE / root finding)         | scipy        |
+| `constants`  | physical-constant values in `physipy.constants`               | scipy        |
+| `plotting`   | unit-aware matplotlib integration (`setup_matplotlib`)        | matplotlib   |
+| `symbolic`   | compound dimension parsing (`Dimension("L**2/T")`) and LaTeX  | sympy        |
+| `all`        | everything above                                              | all of them  |
+
+```bash
+pip install "physipy[plotting]"   # core + matplotlib integration
+pip install "physipy[all]"        # everything
 ```
+
+If you use an optional feature without its dependency installed, physipy raises a
+clear, actionable `ImportError` telling you which extra to install.
+
+To work from source:
+
+```bash
 git clone https://github.com/mocquin/physipy
+cd physipy
+pip install -e ".[all]"
 ```
-For more information, see [here](https://docs.github.com/fr/repositories/creating-and-managing-repositories/cloning-a-repository).
 
-## Why choose this package  
-Here are some reasons that might encourage you to choose this package for quantity/physical/units handling in python : 
+## Why physipy?
 
- - Light-weight package (2 classes, few helper functions - the rest is convenience)
- - Great numpy compatibility (see below)
- - Great pandas compatibility (see below)
- - Great matplotlib compatibility (see below)
- - As fast (if not faster) than the main other units packages (see below)
+- **Light-weight** — two core classes (`Dimension` and `Quantity`) plus a few
+  helpers; the rest is convenience.
+- **Great numpy support** — 150+ functions and ufuncs work transparently on
+  quantities (see below).
+- **pandas support** via the companion package [`physipandas`](https://github.com/mocquin/physipandas).
+- **matplotlib support** — unit-aware axes with a single `setup_matplotlib()` call.
+- **Fast** — on par with or faster than the main alternative packages, for both
+  scalars and arrays.
+- Extensively unit-tested, performance tracked with
+  [airspeed velocity](https://asv.readthedocs.io/), and shipped with inline type
+  hints (PEP 561).
 
-Also : 
+### Project goals
 
- - lots of unit tests
- - computation performances tracked with airspeed-velocity (see below)
- - Jupyter widgets that handle units (as ipywidgets and Qt, see below)
+- Few lines of code.
+- A simple architecture, built around only two classes (`Dimension` and `Quantity`).
+- High numpy compatibility.
+- Human-readable, fast-to-write syntax.
 
-## Goals of the project
-The project focuses on keeping these goals in the center of any new development : 
+## How it works
 
-- Few LOC
-- Simple architecture, with only 2 classes (namely `Dimension` and `Quantity`)
-- High numpy compatibility
-- Human-readable syntax (fast syntax !)
- 
-## Implementation approach
+- A **`Dimension`** represents a [physical dimension](https://en.wikipedia.org/wiki/Dimensional_analysis),
+  based on the [SI system](https://en.wikipedia.org/wiki/International_System_of_Units).
+  It is essentially a dict mapping each base dimension to its exponent.
+- A **`Quantity`** is the association of a value (scalar, array, …) with a
+  `Dimension`. It does *not* subclass `numpy.ndarray`, yet stays compatible with
+  numpy ufuncs. Most of the work lives in this class.
+- By default a `Quantity` is displayed in SI units. Set its `favunit` (favourite
+  unit) to display it differently — `my_toe_length.favunit = mm`.
+- Plenty of units (e.g. watt) and constants (e.g. the speed of light) ship with
+  physipy. Your quantities, units, and constants are all `Quantity` objects.
 
-If you're only interested in using physipy, you don't need to understand this part (thou it wouldn't hurt to read it) : 
-
-- a `Dimension` object represents a [physical dimension](https://en.wikipedia.org/wiki/Dimensional_analysis). For now, these dimension are based on the [SI unit](https://en.wikipedia.org/wiki/International_System_of_Units). It is basically a dictionary where the keys represent the base dimensions, and the values are the exponent these dimensions.
-- a `Quantity` object is simply the association of a value, scalar or array (or more!), and a `Dimension` object. Note that this `Quantity` class does not sub-class numpy's `ndarray` (although `Quantity` instances are compatible with numpy's ufuncs, see below). **Most of the work is done by this class**.
-- By default, a `Quantity` is displayed in term of SI untis. To express a `Quantity` in another unit, just set the "favunit", which stands for "favorit unit" of the `Quantity` : ```my_toe_length.favunit = mm```.
-- Plenty of common units (ex : Watt) and constants (ex : speed of light) are packed in. Your physical quantities (```my_toe_length```), units (```kg```), and constants (```kB```) are all `Quantity` objects.
-
-## Numpy's support
-
-One the biggest strength of physipy is its numpy support :
+## numpy support
 
 ```python
 import numpy as np
 from physipy import m, units
 
-mm = units['mm']
+mm = units["mm"]
 
-lengths = np.linspace(-3*m, 4.5*m, 12*mm)
+lengths = np.linspace(-3 * m, 4.5 * m, num=12)
 print(lengths[4])
 print(lengths.mean())
 ```
 
-Numpy is almost fully and transparently handled in physipy : basic operations, indexing, numpy functions and universal functions are handled. There are more than 150 functions implemented ! Some limitations still exist but can be can be circumvented.
-See the [documentation for numpy support](https://physipy.readthedocs.io/en/latest/scientific-stack/numpy-support.html).
+numpy is handled almost fully and transparently: basic operations, indexing,
+numpy functions and universal functions all work. Over 150 functions are
+implemented. A few limitations remain, but they can be worked around — see the
+[numpy support page](https://physipy.readthedocs.io/en/latest/scientific-stack/numpy-support.html).
 
-## Pandas' support
+## pandas support
 
-Pandas can be interfaced with physipy through the extension API exposed by pandas. For this, just install the package [`physipandas`](https://github.com/mocquin/physipandas). You can then use `pd.Series` and `pd.DataFrame` whilst keeping the meaningfull units. Checkout the dedicated repo for [physipandas](https://github.com/mocquin/physipandas) for more information.
+pandas integrates with physipy through its extension API, provided by the
+companion package [`physipandas`](https://github.com/mocquin/physipandas):
 
 ```python
-import pandas as pd
 import numpy as np
+import pandas as pd
 from physipy import m
 from physipandas import QuantityDtype, QuantityArray
 
-# definition is a bit verbose...
-c = pd.Series(QuantityArray(np.arange(10)*m), 
-              dtype=QuantityDtype(m))
+c = pd.Series(QuantityArray(np.arange(10) * m), dtype=QuantityDtype(m))
 
-print(type(c))                 # --> <class 'pandas.core.series.Series'>
-print(c.physipy.dimension)     # --> : L
-print(c.physipy.values.mean()) # --> : 4.5 m
-c
-
-0   0
-1   1
-2   2
-3   3
-4   4
-5   5
-6   6
-7   7
-8   8
-9   9
-dtype: physipy[1 m]
+print(type(c))                  # <class 'pandas.core.series.Series'>
+print(c.physipy.dimension)      # L
+print(c.physipy.values.mean())  # 4.5 m
 ```
 
-## Matplotlib's units support
+See the [physipandas repository](https://github.com/mocquin/physipandas) for more.
 
-Matplotlib allows defining a physical units interface, which can be turned-on using physipy's `setup_matplotlib`, all plot involving a physical quantity will automatically label the axis accordingly : 
+## matplotlib support
+
+Call `setup_matplotlib()` once and matplotlib will label axes with units
+automatically:
+
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 from physipy import s, m, units, setup_matplotlib
-setup_matplotlib() # make matplotlib physipy's units aware
-mm = units["mm"]   # get millimiter
-ms = units["ms"]   # get millisecond
 
-# physipy work
+setup_matplotlib()        # make matplotlib physipy-aware
+mm = units["mm"]
+ms = units["ms"]
+
 x = np.linspace(0, 5) * s
-x.favunit = ms 
+x.favunit = ms
 y = np.linspace(0, 30) * mm
-y.favunit = mm 
+y.favunit = mm
 
-# standard matplotlib
 fig, ax = plt.subplots()
 ax.plot(x, y)
 ```
 
 [<img src="./docs/ressources/matplotlib_plot_with_units.png" height="150px" />](https://physipy.readthedocs.io/en/latest/scientific-stack/matplotlib-support.html)
 
-Checkout the [matplotlib page on physipy documentation](https://physipy.readthedocs.io/en/latest/scientific-stack/matplotlib-support.html).
+See the [matplotlib support page](https://physipy.readthedocs.io/en/latest/scientific-stack/matplotlib-support.html).
 
 ## Widgets
 
-Some ipywidgets and PyQt widgets are provided to make your physical researches and results more interactive : everything is stored in a separate package.
+A set of ipywidgets and PyQt widgets that understand units is available in a
+separate package, to make interactive exploration of results easier.
 
-## Alternative packages
+## Performance
 
-A quick performance benchmark show that physipy is just as fast (or faster) than other well-known physical packages, both when computing scalars (int or float) and numpy arrays :  
+physipy's performance is tracked with
+[airspeed velocity](https://asv.readthedocs.io/); results are published at
+https://mocquin.github.io/physipy/. A quick benchmark shows physipy is as fast as
+(or faster than) other well-known packages, for both scalars and arrays.
 
 <img src="./docs/ressources/performance_alternative_packages.png" height="200px" />
 
-For a more in-depth comparison, checkout this repository (not maintenained but it should!) : https://github.com/mocquin/quantities-comparison : 
+For an in-depth comparison see the
+[quantities-comparison repository](https://github.com/mocquin/quantities-comparison).
 
-<img src="./docs/ressources/quantites-comparison.png" height="200px" />
+## Alternative packages
 
-There are plenty of python packages that handle physical quantities computation. Some of them are full packages while some are just plain python module. Here is a list of those I could find (approximately sorted by guessed-popularity) :
+For a detailed comparison of physipy with pint, astropy.units, unyt and others —
+design choices, pros/cons and implementation differences — see the
+[Alternative packages](https://physipy.readthedocs.io/en/latest/misc/alternative-packages.html)
+page in the documentation.
 
- - [astropy](http://www.astropy.org/astropy-tutorials/Quantities.html)
- - [sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html)
- - [pint](https://pint.readthedocs.io/en/latest/)
- - [forallpeople](https://github.com/connorferster/forallpeople)
- - [unyt](https://github.com/yt-project/unyt)
- - [python-measurement](https://github.com/coddingtonbear/python-measurement)
- - [Unum](https://bitbucket.org/kiv/unum/)
- - [scipp](https://scipp.github.io/reference/units.html)
- - [magnitude](http://juanreyero.com/open/magnitude/)
- -  physics.py : there are actually several packages based on the same core code : [ipython-physics](https://bitbucket.org/birkenfeld/ipython-physics) (python 2 only) and [python3-physics](https://github.com/TheGrum/python3-physics) (python 3 only)
- - [ScientificPython.Scientific.Physics.PhysicalQuantities](https://github.com/ScientificPython/ScientificPython)
- - [numericalunits](https://github.com/sbyrnes321/numericalunits)
- - [dimensions.py](https://code.activestate.com/recipes/577333-numerical-type-with-units-dimensionspy/) (python 2 only)
- - [buckingham](https://github.com/mdipierro/buckingham)
- - [units](https://bitbucket.org/adonohue/units/)
- - [quantities](https://pythonhosted.org/quantities/user/tutorial.html)
- - [physical-quantities](https://github.com/hplgit/physical-quantities)
- - [brian](https://brian2.readthedocs.io/en/stable/user/units.html)
- - [quantiphy](https://github.com/KenKundert/quantiphy)
- - [parampy](https://github.com/matthewwardrop/python-parampy/blob/master/parampy/quantities.pyx)
- - [pynbody](https://github.com/pynbody/pynbody)
- - [python-units](https://pypi.org/project/python-units/)
- - [pyansys-units](https://github.com/ansys/pyansys-units/tree/main) (forked from pint?)
- - [natu](https://github.com/kdavies4/natu)
- - [misu](https://github.com/cjrh/misu)
- - [units](https://github.com/IAMconsortium/units)
- - [physunits](https://github.com/pacosalces/physunits) 
- - [openscn](https://github.com/openscm/openscm-units)
- - and finally [pysics](https://bitbucket.org/Phicem/pysics) from which this package was inspired
+There are many Python packages handling physical quantities. A non-exhaustive
+list (roughly by popularity):
 
-If you know another package that is not in this list yet, feel free to contribute ! Also, if you are interested in the subject of physical quantities packages in python, check this [quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo and [this talk](https://www.youtube.com/watch?v=N-edLdxiM40). Also check this [comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages) and [this talk](https://pyvideo.org/pycon-ca-2012/writing-self-documenting-scientific-code-using-ph.html).
+[astropy](http://www.astropy.org/astropy-tutorials/Quantities.html) ·
+[sympy](https://docs.sympy.org/latest/modules/physics/units/philosophy.html) ·
+[pint](https://pint.readthedocs.io/en/latest/) ·
+[forallpeople](https://github.com/connorferster/forallpeople) ·
+[unyt](https://github.com/yt-project/unyt) ·
+[python-measurement](https://github.com/coddingtonbear/python-measurement) ·
+[Unum](https://bitbucket.org/kiv/unum/) ·
+[scipp](https://scipp.github.io/reference/units.html) ·
+[magnitude](http://juanreyero.com/open/magnitude/) ·
+[numericalunits](https://github.com/sbyrnes321/numericalunits) ·
+[buckingham](https://github.com/mdipierro/buckingham) ·
+[quantities](https://pythonhosted.org/quantities/user/tutorial.html) ·
+[brian](https://brian2.readthedocs.io/en/stable/user/units.html) ·
+[quantiphy](https://github.com/KenKundert/quantiphy) ·
+[pynbody](https://github.com/pynbody/pynbody) ·
+[pyansys-units](https://github.com/ansys/pyansys-units) ·
+[natu](https://github.com/kdavies4/natu) ·
+[misu](https://github.com/cjrh/misu) ·
+[openscm-units](https://github.com/openscm/openscm-units) ·
+and [pysics](https://bitbucket.org/Phicem/pysics), from which physipy was
+originally inspired.
 
-Some C/C++ alternatives :  
- - [units](https://units.readthedocs.io/en/latest/index.html)
+Know another one? Contributions are welcome. For broader context, see this
+[quantities-comparison](https://github.com/tbekolay/quantities-comparison) repo,
+[this talk](https://www.youtube.com/watch?v=N-edLdxiM40), and this
+[comparison table](https://socialcompare.com/en/comparison/python-units-quantities-packages).
 
-## Performance [![asv](http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat)](https://mocquin.github.io/physipy/)
-Performance of `physipy` are tracked using [`airspeedvelocity`](https://asv.readthedocs.io/en/v0.6.1/). Results are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/).
-[<img src="./docs/ressources/asv_screenshot.png" height="200px" />](https://mocquin.github.io/physipy/)
+## Development
+
+```bash
+git clone https://github.com/mocquin/physipy
+cd physipy
+uv sync --all-extras            # or: pip install -e ".[all]" --group dev
+pre-commit install              # enable lint/format/type hooks on commit
+
+pytest                          # run the test suite
+ruff check . && ruff format .   # lint + format
+mypy                            # type-check
+mkdocs serve                    # preview the docs locally
+```
+
+Building distributions:
+
+```bash
+python -m build       # or: uv build
+```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+physipy is released under the MIT License — see [LICENSE](LICENSE).
 
 ## Acknowledgment
 
-Thumbs up to phicem and his [pysics](https://bitbucket.org/Phicem/pysics) package, on which this package was highly inspired. Check it out !
+Hat tip to phicem and the [pysics](https://bitbucket.org/Phicem/pysics) package,
+which inspired physipy. Check it out!

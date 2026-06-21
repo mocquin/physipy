@@ -1,12 +1,51 @@
-*.pyc
-pycache/
-.ipynb_checkpoints/
-_old/
+# ---- Python ----
 __pycache__/
-local_*
-dist/
-build/
+*.py[cod]
 *.egg-info/
+.eggs/
+
+# ---- Build / distribution ----
+build/
+dist/
 MANIFEST
+
+# ---- Packaging / environments ----
+.venv/
+venv_*/
+physipy-test-env/
+.python-version
+
+# ---- Test / coverage / type-checker caches ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+.coverage_html/
+htmlcov/
+coverage.xml
+
+# ---- Docs (mkdocs build output + plugin caches) ----
+_mkdocks_site/
+site/
+.cache/
+
+# ---- Benchmarks (airspeed velocity) ----
+.asv/
+
+# ---- Benchmark outputs (benchmarks/compare_packages.py defaults) ----
+/compare_packages.csv
+/compare_packages_capability.csv
+/compare_packages.png
+
+# ---- Notebooks ----
+.ipynb_checkpoints/
+
+# ---- Editors / OS ----
 .vscode/
-venv_*
+.idea/
+.DS_Store
+
+# ---- Local scratch ----
+local_*
+_old/

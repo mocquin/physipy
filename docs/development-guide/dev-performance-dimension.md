@@ -15,29 +15,17 @@ jupyter:
 # Dimension performance
 
 ```python
-import sys
-sys.path.append(r"/Users/mocquin/MYLIB10/MODULES/simparser/")
-```
-
-```python
 from physipy import Dimension
 from physipy.quantity.dimension import parse_str_to_dic
-from simparser import new_parse_str_to_dict
 ```
 
 ```python
 %timeit parse_str_to_dic("M*L**2/T**3*I**-1")
-%timeit new_parse_str_to_dict("M*L**2/T**3*I**-1")
 ```
 
 ```python
 %timeit Dimension({"M":1, "L":2, "T":-3, "I":-1})
 %timeit Dimension("M*L**2/T**3*I**-1")
-```
-
-```python
-%prun -D prunsum_file -s nfl  new_parse_str_to_dict("M*L**2/T**3*I**-1")
-!snakeviz prunsum_file
 ```
 
 ```python

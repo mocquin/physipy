@@ -1,87 +1,100 @@
-# Setup the environment
+# Development guide
 
-## General checks
+physipy uses [uv](https://docs.astral.sh/uv/) for environment and dependency
+management. All project metadata, dependencies, and tool configuration live in a
+single [`pyproject.toml`](https://github.com/mocquin/physipy/blob/master/pyproject.toml).
 
- - `perflint physipy`
+## Setup
 
-## Release
+```bash
+git clone https://github.com/mocquin/physipy
+cd physipy
+uv sync --all-extras            # core + optional extras + the `dev` group
+pre-commit install              # run lint/format/type checks on commit
+```
 
-### On Github
-Once the package is shipped to pypi, you can create a release on Github : ([help from github](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)) : 
- - Go to the package home
- - On the right-side menu, click on Release
- - Draft a new release
- - Select the tag version
- - Write a title and description
- - The source code from the repo are packed in zip/tar.gz files. You can add wheel or other packages by drag-n-drop.
-
+(With plain pip: `pip install -e ".[all]"` and `pip install --group dev`.)
 
 ## Testing
 
-### Run unittests
-`python -W ignore -m unittest -v`
+Run the test suite with pytest:
 
-### Type hints, type checking
-`mypy ./physipy`
-
-### With doctest
-Run each file with doctest: 
-```
-python -m doctest -v physipy/quantity/dimension.py
+```bash
+pytest
+pytest --cov                    # with coverage (pytest-cov)
 ```
 
-Another approach is to use pytest to run all tests, including the doctests 
-```
-pytest --doctest-modules
-pytest -v --doctest-modules --doctest-glob="*.py"
-pytest -vv --doctest-modules --doctest-glob="*.py" .\physipy\
-```
-Note that using `python -m doctest -v .\physipy\quantity\utils.py` (for example) fails because of relative import, as the script is considered a stand-alone file.
+Doctests can be collected too:
 
-## Sorting imports
-A simple good practice is to sort imports using the isort package:
-`pip install isort`
-`isort .\physipy\ --verbose`
-To run just check to see if anything import should be sorted : 
-`isort . --check-only`
-
-## Formatting
-pycodestyle --config=setup.cfg --verbose --statistics -qq .
-Given an error number : 
-pycodestyle --show-source --select=E722 .
-
-## Benchmarking versions
-
-Benchmark results using [asv](https://github.com/airspeed-velocity/asv) are available at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/) :
-
-[![./../ressources/asv_screenshot.png](./../ressources/asv_screenshot.png)](https://mocquin.github.io/physipy/)
-
-For more information, see the dedicated documentation page on [benchmarking with airspeedvelocity].
-
-## For documentation
-
-The documentation system of physipy is based on [mkdocs]. It relies additionnaly on [mkdocs-material] for easy customisation and [mkdocstrings] to automaticaly include all physipy's docstrings into the documentation.
-
- - `pip install mkdocs`
- - `pip install mkdocs-material`
- - `pip install mkdocstrings-python`
- - `pip install markdown_include` : to include the repo README.md directly into the documentation site
-
-The documentation configuration is set in the `mkdocs.yml` configuration file at the root of the project.
-
-The raw documentation is stored in the [docs] directory as markdown files. Markdown files can converted back-and-forth with notebook format, using : 
-```
-jupyter nbconvert --to markdown .\docs\scientific-stack\math-support.ipynb # from nb to md
-jupytext --to ipynb .\docs\scientific-stack\numpy-support.md               # from md to nb
+```bash
+pytest --doctest-modules physipy
 ```
 
-During development, cd to physipy root directory, and run the following command to launch a live server :
-`mkdocs serve`
+## Linting, formatting and imports
 
-Please note that this only serves the documentation, and does not export it to an actual static-website.
-To export the documentation to a static-website use : 
-`mkdocs build`
+[Ruff](https://docs.astral.sh/ruff/) handles linting, import sorting, and
+formatting (configured under `[tool.ruff]` in `pyproject.toml`):
 
-This will generate the content to a directory given by `site_dir` in the `mkdocs.yml` configuration file (currently in `_mkdocs_site`).
+```bash
+ruff check .                    # lint (add --fix to autofix)
+ruff format .                   # format (add --check to verify only)
+```
 
-To pin the packages needed for the doc, create a new venv, install pip-tools, then the packages specified in docs/requirements.in. Use `mkdocs serve` to review the docs, and then `pip-compile docs/requirements.in` to create a `docs/requirements.txt` file.
+## Type checking
+
+physipy ships inline type hints (PEP 561, via the `py.typed` marker). Check them
+with [mypy](https://mypy-lang.org/) (configured under `[tool.mypy]`):
+
+```bash
+mypy
+```
+
+## Benchmarking
+
+Performance is tracked with [asv](https://github.com/airspeed-velocity/asv);
+results are published at [https://mocquin.github.io/physipy/](https://mocquin.github.io/physipy/).
+
+[![asv benchmarks](./../ressources/asv_screenshot.png)](https://mocquin.github.io/physipy/)
+
+See the [benchmarking with airspeed velocity](dev-benchmarking-with-asv.md) page
+for details.
+
+## Documentation
+
+The docs are built with [mkdocs](https://www.mkdocs.org/),
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), and
+[mkdocstrings](https://mkdocstrings.github.io/) (which pulls physipy's docstrings
+into the API reference) and [mkdocs-jupyter](https://github.com/danielfrg/mkdocs-jupyter)
+(which renders the scientific-stack notebooks). The configuration is in
+`mkdocs.yml`; the docs dependencies are declared in the `docs` dependency group
+of `pyproject.toml`.
+
+```bash
+uv sync --group docs            # install the docs toolchain
+mkdocs serve                    # live preview at http://127.0.0.1:8000
+mkdocs build                    # build the static site into _mkdocks_site/
+```
+
+Most documentation pages live in [`docs/`](https://github.com/mocquin/physipy/tree/master/docs)
+as Markdown. The scientific-stack pages are Jupyter notebooks
+(`docs/scientific-stack/*.ipynb`) rendered directly by mkdocs-jupyter using the
+outputs stored in the notebook (`execute: false`) — so re-run a notebook and
+save it to refresh its rendered output and plots; there is no separate
+Markdown-export step.
+
+The site is hosted on [Read the Docs](https://physipy.readthedocs.io/); the build
+is driven by `.readthedocs.yaml`, which installs the `docs` group with uv and runs
+`mkdocs build`.
+
+## Releasing
+
+The version is the single value in
+[`physipy/_version.py`](https://github.com/mocquin/physipy/blob/master/physipy/_version.py)
+(read at build time by hatchling). To cut a release:
+
+1. Bump `__version__` in `physipy/_version.py`.
+2. Build the distributions: `uv build` (or `python -m build`).
+3. (Optional) smoke-test on TestPyPI: `uv publish --index testpypi`.
+4. Publish to PyPI: `uv publish` (or `twine upload dist/*`).
+5. Create a matching release/tag on
+   [GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
