@@ -1,31 +1,34 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""allows manipulating physical Dimension objects.
+"""Manipulation of physical dimensions.
 
-PROPOSITIONS:
- * method to return a latex-formated str ?
- * change the str/repr style to a table-view of the dimension content ?
- * should sr be just a unit with dimension rad**2 ?
- * add a full-named repr ? (ex: "length/time")
- * should Dimension implement add/sub operation (allowed when dims are equal) ?
- * change the dimension representation from dict to array (faster) ?
- * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
- * could define a contains method to check if a dimension is not 0
- * try to not relie on numpy/sympy
- * should allow complex exponent ?
- * move has_integer_dimension from Quantity to Dimension ?
- * allow None definition with Dimension() ?
- * implementation should not rely on the dimension system choosen
+This module defines `Dimension`, which represents the physical dimensions of a
+quantity as exponents over the SI base dimensions (length, mass, time, ...),
+plus `DimensionError` and the string/sympy helpers used to parse and render
+dimension expressions.
 
-PLEASE NOTE :
-- rad and sr are not base SI-units, but were added for convenience. They can be
-    deleted if not needed, but update tests in consequence.
-- this modules relies on :
- - sympy to compute the concatenated representation of the Dimension object
- - numpy to check if the dimension powers are scalars
-
+Note:
+    ``rad`` (plane angle) and ``sr`` (solid angle) are not SI base dimensions
+    but are included for convenience. The string representation relies on sympy,
+    and numpy is used to check that dimension powers are scalars.
 """
+# Developer notes (kept out of the rendered docs).
+#
+# PROPOSITIONS:
+#  * method to return a latex-formated str ?
+#  * change the str/repr style to a table-view of the dimension content ?
+#  * should sr be just a unit with dimension rad**2 ?
+#  * add a full-named repr ? (ex: "length/time")
+#  * should Dimension implement add/sub operation (allowed when dims are equal) ?
+#  * change the dimension representation from dict to array (faster) ?
+#  * allow construction with strings (Dimension("m**2") or Dimension ("L**2")) ?
+#  * could define a contains method to check if a dimension is not 0
+#  * try to not relie on numpy/sympy
+#  * should allow complex exponent ?
+#  * move has_integer_dimension from Quantity to Dimension ?
+#  * allow None definition with Dimension() ?
+#  * implementation should not rely on the dimension system choosen
 from __future__ import annotations
 
 import json

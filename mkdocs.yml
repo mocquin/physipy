@@ -51,8 +51,21 @@ plugins:
       handlers:
         python:
           options:
+            # Parse the prose docstrings as Google-style so Args/Returns/
+            # Raises/Examples sections render as tables when present.
+            docstring_style: google
             show_submodules: true
             show_source: true
+            # Render a clean heading + signature for each documented object.
+            show_root_heading: true
+            show_root_full_path: false
+            separate_signature: true
+            show_signature_annotations: true
+            merge_init_into_class: true
+            # Group members by kind (classes / functions / attributes) and
+            # keep them in source order within each group.
+            group_by_category: true
+            members_order: source
   # Render the scientific-stack pages straight from their notebooks, using the
   # outputs stored in the .ipynb (execute: false -> fast and deterministic).
   # ignore_h1_titles: use the nav labels, not each notebook's first heading.
