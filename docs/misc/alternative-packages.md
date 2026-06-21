@@ -155,6 +155,11 @@ optionally, for parsing dimension strings and LaTeX rendering.)
 
 ## Performance
 
+A dedicated, reproducible benchmark compares physipy with pint, astropy and
+forallpeople on speed *and* operation coverage — see
+[Performance vs other packages](../development-guide/dev-performance-comparison.md)
+for the full tables and chart.
+
 A quick benchmark shows physipy is as fast as (or faster than) other well-known
 packages, for both scalars and numpy arrays:
 
