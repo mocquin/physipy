@@ -60,48 +60,53 @@ def build_libraries():
     def adapter(unit_map):
         return lambda value, name: value * unit_map[name]
 
-    # Unit-less baseline: ignore the unit entirely (no dimensional checking).
-    libs["raw"] = lambda value, name: value * 1.0
+    def try_add(name, loader):
+        # Skip a library that is missing OR fails to import/initialise (e.g. an
+        # astropy too old for the installed numpy). One broken package must not
+        # take down the whole comparison.
+        try:
+            libs[name] = loader()
+        except Exception as exc:
+            print(f"skipping {name}: {type(exc).__name__}: {exc}")
 
-    try:
+    # Unit-less baseline: ignore the unit entirely (no dimensional checking).
+    libs["raw"] = lambda value, _name: value * 1.0
+
+    def load_physipy():
         from physipy import imperial_units, units
 
         umap = {"meter": units["m"], "second": units["s"]}
         if "mi" in imperial_units:
             umap["mile"] = imperial_units["mi"]
-        libs["physipy"] = adapter(umap)
-    except ImportError:
-        pass
+        return adapter(umap)
 
-    try:
+    def load_pint():
         import pint
 
         ureg = pint.UnitRegistry()
-        libs["pint"] = adapter(
+        return adapter(
             {"meter": ureg.meter, "mile": ureg.mile, "second": ureg.second}
         )
-    except ImportError:
-        pass
 
-    try:
+    def load_astropy():
         from astropy import units as u
 
-        libs["astropy"] = adapter(
+        return adapter(
             {"meter": u.m, "mile": u.imperial.mile, "second": u.s}
         )
-    except ImportError:
-        pass
 
-    try:
+    def load_forallpeople():
         import forallpeople as fp
 
         umap = {"meter": fp.m}
         if hasattr(fp, "s"):
             umap["second"] = fp.s
-        libs["forallpeople"] = adapter(umap)
-    except ImportError:
-        pass
+        return adapter(umap)
 
+    try_add("physipy", load_physipy)
+    try_add("pint", load_pint)
+    try_add("astropy", load_astropy)
+    try_add("forallpeople", load_forallpeople)
     return libs
 
 
