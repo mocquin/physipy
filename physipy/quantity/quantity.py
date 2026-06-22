@@ -16,6 +16,9 @@ The idiomatic way to create a quantity is to multiply a value by a unit::
 """
 # Developer notes (kept out of the rendered docs).
 #
+# INVARIANT: _value is always stored in SI base units. favunit/symbol are
+# display-only. Never use _compute_value() in numeric paths -- use .value.
+#
 # TODO:
 #  - [X] : find a better way to include SI units in
 #  - [ ] : sum() : problem with init of iterator, using radd, needs to start with sum(y_q,Quantity(1,Dimension("L")))
@@ -179,14 +182,25 @@ class Quantity(object):
     usually built by multiplying a value with a unit (``5 * m``), which is the
     idiomatic style throughout physipy.
 
+    Getting a plain number back:
+        q.value -> the magnitude in SI base units (for maths/interop)
+        q / mm  -> the magnitude expressed in mm
+
+    The second form works because dividing by a same-dimension unit yields a
+    dimensionless result, which physipy returns as a bare value (a
+    float/ndarray), not a `Quantity`. Beware: ``q.into(mm)`` / ``q.to(mm)`` only
+    change *display* -- ``q.into(mm).value`` is still the SI magnitude, not the
+    value in mm.
+
     Attributes:
-        value: The raw numerical value (scalar or numpy array). Lists and
-            tuples are converted to numpy arrays on assignment.
+        value: The raw numerical value (scalar or numpy array), always
+            expressed in SI base units. Lists and tuples are converted to
+            numpy arrays on assignment.
         dimension: The `Dimension` carried by the quantity.
         symbol: The display symbol (a `UnitSymbol`), used in ``repr``/``str``.
         favunit: The "favourite unit", a `Quantity` controlling how this
-            quantity is displayed (see `to`/`set_favunit`). Does not change
-            the stored value.
+            quantity is displayed (see `to`/`set_favunit`). Display only: it
+            changes neither ``.value`` nor ``.dimension``.
 
     Examples:
         >>> from physipy import m, s
@@ -284,7 +298,18 @@ class Quantity(object):
 
     @property
     def value(self) -> ValueType:
-        """The raw numerical value; lists/tuples become numpy arrays on set."""
+        """The raw numerical value, **always in SI base units**.
+
+        This is the invariant the whole library rests on: a quantity stores its
+        magnitude in SI internally, regardless of `favunit`. Use ``.value``
+        whenever you need a plain number for maths/interop. To get the number
+        expressed in some other unit ``U``, divide: ``q / U`` (a same-dimension
+        division is dimensionless, so it returns a bare number). ``favunit``
+        only affects display -- it never changes ``.value``, and in particular
+        ``q.into(U).value`` is still the SI magnitude, not the value in ``U``.
+
+        Lists/tuples become numpy arrays on assignment.
+        """
         return self._value
 
     @value.setter
@@ -739,7 +764,15 @@ class Quantity(object):
             return format(self._compute_value(), format_spec) + prefix
 
     def _compute_value(self) -> ValueType:
-        """Return the numerical value corresponding to favunit."""
+        """The numerical value expressed in `favunit` (``self / favunit``), or
+        `value` when no favunit is set.
+
+        Display/formatting/plotting helper only -- NOT an SI accessor. When a
+        favunit with a non-unit scale is set (e.g. ``1e6 kg/...``) this differs
+        from ``.value`` by that scale factor, so using it in numeric/maths code
+        silently introduces a unit-scale error. For computation use ``.value``
+        (SI); for "value in unit U" use ``(q / U).value``.
+        """
         if isinstance(self.favunit, Quantity):
             ratio_favunit = make_quantity(self / self.favunit)
             return ratio_favunit.value
