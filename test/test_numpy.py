@@ -573,5 +573,23 @@ class TestInPlaceWrites(unittest.TestCase):
                 func()
 
 
+class TestFullLikeQuantityFill(unittest.TestCase):
+    """Gotcha (issue #26): numpy dispatches `full_like` on its template and
+    `full` on `like=`, never on `fill_value` -- so a Quantity fill with a plain
+    template isn't honoured. These pin the documented reliable workarounds."""
+
+    def test_template_carrying_unit_works(self):
+        res = np.full_like(np.arange(3) * m, 3 * m)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(res.value, [3.0, 3.0, 3.0])
+
+    def test_multiply_unitless_template_works(self):
+        res = np.ones_like(np.arange(3)) * (3 * m)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(res.value, [3.0, 3.0, 3.0])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
