@@ -96,6 +96,7 @@ nav:
   - Installation: installation.md
   - Quickstart: quickstart.md
   - Values, units & display: values-units-and-display.md
+  - Tips and gotchas: tips-and-gotchas.md
   - Scientific stack support:
       - Standard math module: scientific-stack/math-support.ipynb
       - numpy: scientific-stack/numpy-support.ipynb
