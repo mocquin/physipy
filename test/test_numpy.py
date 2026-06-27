@@ -311,5 +311,124 @@ class TestAxisReorder(unittest.TestCase):
                 self.assertEqual(str(res.favunit.symbol), "mm")
 
 
+class TestPtp(unittest.TestCase):
+    """np.ptp (peak-to-peak) keeps the input's dimension."""
+
+    def test_value_and_dimension(self):
+        a = L([1.0, 5.0, 2.0, 8.0, 3.0])
+        res = np.ptp(a)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        self.assertAlmostEqual(res.value, 7.0)
+
+    def test_axis(self):
+        res = np.ptp(L([[1.0, 5.0], [2.0, 3.0]]), axis=1)
+        np.testing.assert_allclose(res.value, [4.0, 1.0])
+        self.assertEqual(res.dimension, m.dimension)
+
+
+class TestQuantile(unittest.TestCase):
+    """np.quantile / np.nanquantile keep the input's dimension (q is a fraction)."""
+
+    def test_quantile(self):
+        res = np.quantile(L([1.0, 2.0, 3.0, 4.0]), 0.5)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        self.assertAlmostEqual(res.value, 2.5)
+
+    def test_nanquantile(self):
+        res = np.nanquantile(L([1.0, np.nan, 3.0]), 0.5)
+        self.assertEqual(res.dimension, m.dimension)
+        self.assertAlmostEqual(res.value, 2.0)
+
+    def test_matches_percentile(self):
+        a = L([3.0, 1.0, 4.0, 1.0, 5.0])
+        self.assertAlmostEqual(
+            np.quantile(a, 0.25).value, np.percentile(a, 25).value
+        )
+
+
+class TestImag(unittest.TestCase):
+    """np.imag mirrors np.real : keeps the dimension, takes the imaginary part."""
+
+    def test_complex(self):
+        c = np.array([1 + 2j, 3 - 1j]) * m
+        res = np.imag(c)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(res.value, [2.0, -1.0])
+
+    def test_real_input_gives_zeros(self):
+        res = np.imag(L([1.0, 2.0, 3.0]))
+        np.testing.assert_allclose(res.value, [0.0, 0.0, 0.0])
+        self.assertEqual(res.dimension, m.dimension)
+
+
+class TestCumulative(unittest.TestCase):
+    """Cumulative reductions : sum keeps the dimension, prod requires dimensionless."""
+
+    def test_cumulative_sum_keeps_dimension(self):
+        a = L([1.0, 2.0, 3.0, 4.0])
+        for func in (np.cumsum, np.cumulative_sum):
+            with self.subTest(func=func.__name__):
+                res = func(a)
+                self.assertIsInstance(res, Quantity)
+                self.assertEqual(res.dimension, m.dimension)
+                np.testing.assert_allclose(res.value, [1.0, 3.0, 6.0, 10.0])
+
+    def test_cumprod_dimensionless_ok(self):
+        d = Quantity(np.array([1.0, 2.0, 3.0, 4.0]), Dimension(None))
+        for func in (np.cumprod, np.cumulative_prod):
+            with self.subTest(func=func.__name__):
+                res = func(d)
+                self.assertIsInstance(res, Quantity)
+                self.assertTrue(res.is_dimensionless())
+                np.testing.assert_allclose(res.value, [1.0, 2.0, 6.0, 24.0])
+
+    def test_cumprod_dimensionful_raises(self):
+        a = L([1.0, 2.0, 3.0])
+        for func in (np.cumprod, np.cumulative_prod):
+            with self.subTest(func=func.__name__):
+                with self.assertRaises(DimensionError):
+                    func(a)
+
+
+class TestSplit(unittest.TestCase):
+    """The split family returns a list of sub-Quantities, each keeping the
+    input's dimension (and favunit)."""
+
+    def test_split_and_array_split(self):
+        a = L([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
+        for func, arg, n in [(np.split, 3, 3), (np.array_split, 4, 4)]:
+            with self.subTest(func=func.__name__):
+                parts = func(a, arg)
+                self.assertIsInstance(parts, list)
+                self.assertEqual(len(parts), n)
+                for p, raw in zip(parts, func(a.value, arg)):
+                    self.assertIsInstance(p, Quantity)
+                    self.assertEqual(p.dimension, m.dimension)
+                    np.testing.assert_allclose(p.value, raw)
+
+    def test_hsplit_vsplit_dsplit(self):
+        m2 = (np.arange(16.0).reshape(4, 4)) * m
+        for func in (np.hsplit, np.vsplit):
+            with self.subTest(func=func.__name__):
+                parts = func(m2, 2)
+                self.assertEqual(len(parts), 2)
+                self.assertTrue(all(p.dimension == m.dimension for p in parts))
+        m3 = (np.arange(8.0).reshape(2, 2, 2)) * m
+        parts = np.dsplit(m3, 2)
+        self.assertEqual(len(parts), 2)
+        self.assertTrue(all(p.dimension == m.dimension for p in parts))
+
+    def test_preserves_favunit(self):
+        from physipy import units
+
+        a = np.arange(6.0) * m
+        a.favunit = units["mm"]
+        for part in np.split(a, 3):
+            self.assertEqual(str(part.favunit.symbol), "mm")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,6 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from ._numpy import (
+    NumpyCoverage,
+    numpy_coverage,
+    supported_numpy_functions,
+)
 from ._units import A, K, cd, imperial_units, kg, m, mol, rad, s, sr, units
 from .quantity import (
     SI_UNIT_SYMBOL,

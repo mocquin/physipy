@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Callable, Union
 
 import numpy as np
@@ -86,6 +87,15 @@ def np_amin(q):
     return Quantity(np.amin(q.value), q.dimension, favunit=q.favunit)
 
 
+@implements(np.ptp)
+def np_ptp(a, *args, **kwargs):
+    # peak-to-peak (max - min) keeps the input's dimension
+    a = quantify(a)
+    return Quantity(
+        np.ptp(a.value, *args, **kwargs), a.dimension, favunit=a.favunit
+    )
+
+
 @implements(np.append)
 def np_append(arr, values, **kwargs):
     values = quantify(values)
@@ -149,6 +159,12 @@ def np_nanstd(a, **kwargs):
 @implements(np.nanpercentile)
 def np_nanpercentile(a, *args, **kwargs):
     return Quantity(np.nanpercentile(a.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.nanquantile)
+def np_nanquantile(a, *args, **kwargs):
+    a = quantify(a)
+    return Quantity(np.nanquantile(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.nanprod)
@@ -266,6 +282,41 @@ def np_broadcast_arrays(*args, **kwargs):
     # get broadcasted arrays
     res = np.broadcast_arrays(*arrs, **kwargs)
     return [Quantity(r, q.dimension) for r, q in zip(res, qargs)]
+
+
+# split family : divide an array into sub-arrays, each keeping the dimension
+# (and symbol/favunit) of the input.
+def _split_like(func, ary, *args, **kwargs):
+    ary = quantify(ary)
+    return [
+        Quantity(part, ary.dimension, symbol=ary.symbol, favunit=ary.favunit)
+        for part in func(ary.value, *args, **kwargs)
+    ]
+
+
+@implements(np.split)
+def np_split(ary, *args, **kwargs):
+    return _split_like(np.split, ary, *args, **kwargs)
+
+
+@implements(np.array_split)
+def np_array_split(ary, *args, **kwargs):
+    return _split_like(np.array_split, ary, *args, **kwargs)
+
+
+@implements(np.hsplit)
+def np_hsplit(ary, *args, **kwargs):
+    return _split_like(np.hsplit, ary, *args, **kwargs)
+
+
+@implements(np.vsplit)
+def np_vsplit(ary, *args, **kwargs):
+    return _split_like(np.vsplit, ary, *args, **kwargs)
+
+
+@implements(np.dsplit)
+def np_dsplit(ary, *args, **kwargs):
+    return _split_like(np.dsplit, ary, *args, **kwargs)
 
 
 @implements(np.linalg.norm)
@@ -465,6 +516,31 @@ def np_cumsum(a, **kwargs):
     return Quantity(np.cumsum(a.value, **kwargs), a.dimension)
 
 
+@implements(np.cumulative_sum)
+def np_cumulative_sum(a, *args, **kwargs):
+    # numpy>=2.0 array-API spelling of cumsum : same dimension as input
+    a = quantify(a)
+    return Quantity(np.cumulative_sum(a.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.cumprod)
+def np_cumprod(a, *args, **kwargs):
+    # each partial product would carry a different power of the dimension, so
+    # the result is only representable as a single Quantity when dimensionless
+    a = quantify(a)
+    if not a.is_dimensionless():
+        raise DimensionError(a.dimension, Dimension(None))
+    return Quantity(np.cumprod(a.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.cumulative_prod)
+def np_cumulative_prod(a, *args, **kwargs):
+    a = quantify(a)
+    if not a.is_dimensionless():
+        raise DimensionError(a.dimension, Dimension(None))
+    return Quantity(np.cumulative_prod(a.value, *args, **kwargs), a.dimension)
+
+
 @implements(np.histogram)
 def np_histogram(a, bins=10, range=None, density=None, weights=None, **kwargs):
     a = quantify(a)
@@ -568,6 +644,12 @@ def np_min(qarr, *args, **kwargs):
 def np_percentile(a, *args, **kwargs):
     a = quantify(a)
     return Quantity(np.percentile(a.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.quantile)
+def np_quantile(a, *args, **kwargs):
+    a = quantify(a)
+    return Quantity(np.quantile(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.searchsorted)
@@ -934,6 +1016,12 @@ def np_meshgrid(*xi, **kwargs):
 @implements(np.real)
 def np_real(a):
     return Quantity(np.real(a.value), a.dimension)
+
+
+@implements(np.imag)
+def np_imag(a):
+    a = quantify(a)
+    return Quantity(np.imag(a.value), a.dimension)
 
 
 @implements(np.isclose)
@@ -1341,3 +1429,162 @@ implemented_ufuncs = (
     + inv_angle_1
     + deg_rad
 )
+
+
+# ---------------------------------------------------------------------------
+# Introspection : which numpy functions does physipy support ?
+# ---------------------------------------------------------------------------
+# Two dispatch mechanisms feed this :
+#   - __array_function__ handlers, registered in HANDLED_FUNCTIONS via
+#     @implements (np.concatenate, np.unique, np.linalg.norm, np.fft.*, ...)
+#   - __array_ufunc__ ufuncs, listed by name in implemented_ufuncs
+#     (np.add, np.sin, np.sqrt, ...)
+
+# numpy namespaces scanned to enumerate the public, non-ufunc function surface.
+_NUMPY_FUNC_NAMESPACES = (("", np), ("linalg", np.linalg), ("fft", np.fft))
+
+
+def _qualified(prefix: str, name: str) -> str:
+    return f"{prefix}.{name}" if prefix else name
+
+
+def _public_numpy_functions() -> dict[str, Callable]:
+    """Map ``qualified_name -> callable`` for numpy's public, non-ufunc functions."""
+    funcs: dict[str, Callable] = {}
+    for prefix, ns in _NUMPY_FUNC_NAMESPACES:
+        for name in getattr(ns, "__all__", dir(ns)):
+            if name.startswith("_"):
+                continue
+            obj = getattr(ns, name, None)
+            if not callable(obj) or isinstance(obj, (type, np.ufunc)):
+                continue
+            funcs[_qualified(prefix, name)] = obj
+    return funcs
+
+
+def _canonical_numpy_ufuncs() -> dict[str, np.ufunc]:
+    """Map ``canonical_name -> ufunc`` for every numpy ufunc, deduped over aliases.
+
+    numpy>=2.0 exposes alias ufuncs (``np.abs`` *is* ``np.absolute``, ``np.acos``
+    *is* ``np.arccos``, ...). Aliases share the same object, so keying on
+    ``ufunc.__name__`` collapses them onto their canonical name -- which is also
+    the name physipy dispatches on in ``Quantity.__array_ufunc__``.
+    """
+    ufuncs: dict[str, np.ufunc] = {}
+    for name in dir(np):
+        obj = getattr(np, name)
+        if isinstance(obj, np.ufunc):
+            ufuncs[obj.__name__] = obj
+    return ufuncs
+
+
+def supported_numpy_functions(*, names: bool = False):
+    """Return every numpy callable physipy can apply to ``Quantity`` objects.
+
+    Unifies both dispatch mechanisms : the ``__array_function__`` handlers
+    registered via :func:`implements` and the ``__array_ufunc__`` ufuncs listed
+    in :data:`implemented_ufuncs`.
+
+    Parameters
+    ----------
+    names : bool, optional
+        When ``True``, return a sorted list of names instead of the callables.
+
+    Returns
+    -------
+    set[Callable] or list[str]
+        The supported callables, or their sorted names when ``names`` is set.
+    """
+    ufuncs = {getattr(np, n) for n in implemented_ufuncs if hasattr(np, n)}
+    supported = set(HANDLED_FUNCTIONS) | ufuncs
+    if names:
+        return sorted(getattr(f, "__name__", repr(f)) for f in supported)
+    return supported
+
+
+@dataclass(frozen=True)
+class _CoverageGroup:
+    """Implemented vs. missing names for one numpy dispatch family."""
+
+    implemented: tuple[str, ...]
+    missing: tuple[str, ...]
+    not_applicable: tuple[str, ...] = ()
+
+    @property
+    def n_relevant(self) -> int:
+        """Implemented + missing (excludes the not-applicable functions)."""
+        return len(self.implemented) + len(self.missing)
+
+    @property
+    def ratio(self) -> float:
+        """Fraction of dimension-relevant functions that are implemented."""
+        return len(self.implemented) / self.n_relevant if self.n_relevant else 1.0
+
+
+@dataclass(frozen=True)
+class NumpyCoverage:
+    """Snapshot of physipy's numpy coverage, computed against the running numpy."""
+
+    ufuncs: _CoverageGroup
+    array_functions: _CoverageGroup
+    numpy_version: str
+
+    def summary(self) -> str:
+        lines = [f"physipy numpy coverage (numpy {self.numpy_version})"]
+        for label, grp in (
+            ("ufuncs", self.ufuncs),
+            ("array functions", self.array_functions),
+        ):
+            extra = f", {len(grp.not_applicable)} n/a" if grp.not_applicable else ""
+            lines.append(
+                f"  {label:16s}: {len(grp.implemented):3d}/{grp.n_relevant:3d} "
+                f"implemented ({grp.ratio:6.1%}){extra}"
+            )
+        return "\n".join(lines)
+
+    def __str__(self) -> str:
+        return self.summary()
+
+
+def numpy_coverage() -> NumpyCoverage:
+    """Compare the running numpy's public API against what physipy implements.
+
+    ufuncs are deduplicated over numpy-2.0 aliases and split into ``implemented``
+    (in :data:`implemented_ufuncs`), ``not_applicable`` (declared in
+    :data:`cant_be_implemented`) and ``missing`` (everything else).
+
+    array functions are the public, non-ufunc callables of ``numpy``,
+    ``numpy.linalg`` and ``numpy.fft``, split by membership in
+    :data:`HANDLED_FUNCTIONS`.
+    """
+    # ufuncs
+    canonical = _canonical_numpy_ufuncs()
+    impl_set = set(implemented_ufuncs)
+    na_set = set(cant_be_implemented)
+    uf_impl, uf_missing, uf_na = [], [], []
+    for name in canonical:
+        if name in impl_set:
+            uf_impl.append(name)
+        elif name in na_set:
+            uf_na.append(name)
+        else:
+            uf_missing.append(name)
+
+    # array functions
+    public = _public_numpy_functions()
+    handled = set(HANDLED_FUNCTIONS)
+    fn_impl = [name for name, obj in public.items() if obj in handled]
+    fn_missing = [name for name, obj in public.items() if obj not in handled]
+
+    return NumpyCoverage(
+        ufuncs=_CoverageGroup(
+            implemented=tuple(sorted(uf_impl)),
+            missing=tuple(sorted(uf_missing)),
+            not_applicable=tuple(sorted(uf_na)),
+        ),
+        array_functions=_CoverageGroup(
+            implemented=tuple(sorted(fn_impl)),
+            missing=tuple(sorted(fn_missing)),
+        ),
+        numpy_version=np.__version__,
+    )
