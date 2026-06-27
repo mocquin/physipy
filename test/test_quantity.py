@@ -3001,5 +3001,26 @@ class TestPickSmartFavunitWithZeros(unittest.TestCase):
         self.assertEqual(fav.value, 1000.0)  # kilometre
 
 
+class TestReprLatexSymbolCollision(unittest.TestCase):
+    """Regression for issue #10: a unit symbol that clashes with a sympy callable
+    (deg, N, rad, S, GF, ...) must render as the symbol in `_repr_latex_`, not as
+    the resolved function (e.g. '<function deg at 0x...>')."""
+
+    def test_colliding_symbols_render_as_symbol(self):
+        for sym in ("deg", "N", "rad", "S", "GF"):
+            with self.subTest(symbol=sym):
+                q = 5 * units[sym]
+                q.favunit = units[sym]
+                latex = q._repr_latex_()
+                self.assertNotIn("<function", latex)
+                self.assertIn(sym, latex)
+
+    def test_plain_and_array_units_unaffected(self):
+        for q in (5 * m, np.array([1.0, 2.0]) * m):
+            latex = q._repr_latex_()
+            self.assertNotIn("<function", latex)
+            self.assertIn("m", latex)
+
+
 if __name__ == "__main__":
     unittest.main()

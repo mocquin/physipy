@@ -77,6 +77,7 @@ from __future__ import annotations
 
 import math
 import numbers
+import re
 import warnings
 from fractions import Fraction
 from typing import Any, Callable, SupportsFloat, SupportsInt, Union, cast
@@ -663,8 +664,18 @@ class Quantity(object):
             formatted_value = q._format_value()
             complemented = q._compute_complement_value()
             if complemented != "":
-                # this line simplifies 'K*s/K' when a = 1*s and c = a.to(K)
-                complement_value_str = str(latex(parse_expr(complemented)))
+                # Parse the unit symbol to simplify it (e.g. 'K*s/K' -> 's'),
+                # forcing every identifier to a plain Symbol so unit names that
+                # clash with a sympy callable (deg, N, rad, S, ...) are not
+                # resolved to that function. See issue #10.
+                Symbol = require("sympy", "symbolic").Symbol
+                local_dict = {
+                    name: Symbol(name)
+                    for name in re.findall(r"[A-Za-z_]\w*", complemented)
+                }
+                complement_value_str = str(
+                    latex(parse_expr(complemented, local_dict=local_dict))
+                )
             else:
                 complement_value_str = ""
             # if self.value is an array, only wrap the complement in latex
