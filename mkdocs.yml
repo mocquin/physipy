@@ -106,6 +106,7 @@ nav:
       - Physics: examples/physics-examples.md
       - Thermal equation (finite differences): examples/thermal-equation-using-fdm.md
       - Fourier transform: examples/fourier-transform-example.md
+  - Comparison with other packages: comparison-with-other-packages.md
   - API reference:
       - Introduction: API/api-reference.md
       - Dimension: API/dimension-api.md
@@ -116,10 +117,8 @@ nav:
   - Development:
       - General guidance: development-guide/index.md
       - Benchmarking with asv: development-guide/dev-benchmarking-with-asv.md
-      - Performance vs other packages: development-guide/dev-performance-comparison.md
       - Performance of the Dimension class: development-guide/dev-performance-dimension.md
   - Misc:
-      - Alternative packages: misc/alternative-packages.md
       - Other value backends:
           - decimal: misc/support-for-other-backend-packages/decimal-support.md
           - handcalcs: misc/support-for-other-backend-packages/handcalcs-support.md

@@ -191,7 +191,7 @@ For an in-depth comparison see the
 
 For a detailed comparison of physipy with pint, astropy.units, unyt and others —
 design choices, pros/cons and implementation differences — see the
-[Alternative packages](https://physipy.readthedocs.io/en/latest/misc/alternative-packages.html)
+[Comparison with other packages](https://physipy.readthedocs.io/en/latest/comparison-with-other-packages.html)
 page in the documentation.
 
 There are many Python packages handling physical quantities. A non-exhaustive
