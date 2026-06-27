@@ -759,6 +759,36 @@ def np_transpose(a, axes=None):
     )
 
 
+@implements(np.moveaxis)
+def np_moveaxis(a, source, destination):
+    return Quantity(
+        np.moveaxis(a.value, source, destination),
+        a.dimension,
+        favunit=a.favunit,
+        symbol=a.symbol,
+    )
+
+
+@implements(np.swapaxes)
+def np_swapaxes(a, axis1, axis2):
+    return Quantity(
+        np.swapaxes(a.value, axis1, axis2),
+        a.dimension,
+        favunit=a.favunit,
+        symbol=a.symbol,
+    )
+
+
+@implements(np.rollaxis)
+def np_rollaxis(a, axis, start=0):
+    return Quantity(
+        np.rollaxis(a.value, axis, start),
+        a.dimension,
+        favunit=a.favunit,
+        symbol=a.symbol,
+    )
+
+
 @implements(np.rot90)
 def np_rot90(m, k=1, axes=(0, 1)):
     return Quantity(

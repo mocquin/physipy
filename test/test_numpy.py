@@ -258,5 +258,58 @@ class TestDiffPrependAppend(unittest.TestCase):
             np.diff(L([1.0, 2.0, 3.0]), append=0 * s)
 
 
+class TestAxisReorder(unittest.TestCase):
+    """np.moveaxis / swapaxes / rollaxis only permute axes: the values are
+    reordered exactly like raw numpy, and dimension/symbol/favunit carry
+    through unchanged."""
+
+    def _arr(self):
+        return L(np.arange(24).reshape(2, 3, 4))
+
+    def test_moveaxis_value_and_dimension(self):
+        a = self._arr()
+        res = np.moveaxis(a, -1, 0)
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.shape, (4, 2, 3))
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_array_equal(res.value, np.moveaxis(a.value, -1, 0))
+
+    def test_moveaxis_multiple_axes(self):
+        a = self._arr()
+        res = np.moveaxis(a, [0, 1], [-1, -2])
+        self.assertEqual(res.shape, (4, 3, 2))
+        np.testing.assert_array_equal(
+            res.value, np.moveaxis(a.value, [0, 1], [-1, -2])
+        )
+
+    def test_swapaxes(self):
+        a = self._arr()
+        res = np.swapaxes(a, 0, 2)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_array_equal(res.value, np.swapaxes(a.value, 0, 2))
+
+    def test_rollaxis(self):
+        a = self._arr()
+        res = np.rollaxis(a, 2, 0)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_array_equal(res.value, np.rollaxis(a.value, 2, 0))
+
+    def test_preserves_symbol_and_favunit(self):
+        from physipy import units
+
+        a = np.arange(24).reshape(2, 3, 4) * m
+        a.symbol = "x"
+        a.favunit = units["mm"]
+        for func, args in [
+            (np.moveaxis, (-1, 0)),
+            (np.swapaxes, (0, 2)),
+            (np.rollaxis, (2, 0)),
+        ]:
+            with self.subTest(func=func.__name__):
+                res = func(a, *args)
+                self.assertEqual(str(res.symbol), "x")
+                self.assertEqual(str(res.favunit.symbol), "mm")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
