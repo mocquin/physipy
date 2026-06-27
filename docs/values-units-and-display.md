@@ -70,9 +70,9 @@ This is the trap to internalise: **`q.into(mm).value` is the SI magnitude
 - `into(U)` — same, but raises if `U` is dimensionally incompatible.
 - `set_favunit(U)` / `ito(U)` / `iinto(U)` — in-place variants returning `self`.
 
-## A common footgun: `_compute_value()` is display-only
+## A common footgun: `_favunit_value()` is display-only
 
-`Quantity` has an internal helper `_compute_value()` that returns the value
+`Quantity` has an internal helper `_favunit_value()` that returns the value
 **expressed in the favourite unit** (`self / favunit`), falling back to `.value`
 when no favunit is set. It exists for formatting/plotting.
 
@@ -88,16 +88,16 @@ q = 3 * units["W"] / units["m"]**2
 q.favunit = 1e6 * units["W"] / units["m"]**2   # a favunit whose scale is 1e6
 
 print(q.value)             # 3.0     -> SI
-print(q._compute_value())  # 3.0e-6  -> value in the favunit (SI / 1e6)
+print(q._favunit_value())  # 3.0e-6  -> value in the favunit (SI / 1e6)
 ```
 
-If you then integrate, average, or otherwise combine `_compute_value()` output
+If you then integrate, average, or otherwise combine `_favunit_value()` output
 with SI-valued data, you introduce a `1/scale` error that *cancels in ratios*
 and *looks fine in favunit-consistent plots* — so it can go unnoticed for a
 long time.
 
 **Rule of thumb:** use `.value` for computation, `q / U` for "value in unit U",
-and reserve `_compute_value()` for display/formatting code.
+and reserve `_favunit_value()` for display/formatting code.
 
 ## Summary
 
@@ -106,5 +106,5 @@ and reserve `_compute_value()` for display/formatting code.
 - `favunit` / `to` / `into` change **display only** — `.value` stays SI, and
   `q.into(U).value` is *not* the value in `U`.
 - Dimensionless results are returned as plain numbers, not `Quantity`.
-- `_compute_value()` is a favunit-relative display helper, **not** an SI
+- `_favunit_value()` is a favunit-relative display helper, **not** an SI
   accessor — keep it out of numeric paths.
