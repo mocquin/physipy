@@ -155,6 +155,26 @@ Two more numpy specifics:
   np.arange(10) * m            # also fine
   ```
 
+### `np.full_like` / `np.full` with a `Quantity` fill value
+
+A `Quantity` `fill_value` is **not** honoured when the template/shape is plain,
+because numpy dispatches `full_like` on its template `a` and `full` on `like=` —
+**never on `fill_value`** — so physipy's `__array_function__` is never consulted.
+The two functions even fail differently:
+
+```python
+np.full_like(np.arange(3), 3 * m)   # raises DimensionError (via internal copyto)
+np.full(3, 3 * m)                   # silently drops the unit -> array([3, 3, 3])
+```
+
+Make the **template** carry the dimension (then dispatch fires), or multiply a
+unitless template by the quantity:
+
+```python
+np.full_like(np.arange(3) * m, 3 * m)   # -> [3 3 3] m   (a is a Quantity)
+np.ones_like(np.arange(3)) * (3 * m)    # -> [3 3 3] m   (multiply instead)
+```
+
 ### matplotlib: activate the unit interface
 
 By default matplotlib won't put units on your axes. Turn on the interface once
