@@ -2974,5 +2974,32 @@ class TestFavunitValue(unittest.TestCase):
         self.assertFalse(hasattr(3.0 * m, "_compute_value"))
 
 
+class TestPickSmartFavunitWithZeros(unittest.TestCase):
+    """Regression for issue #4: a mixed-sign array (including 0) must not pick
+    the tiniest unit. `_pick_smart_favunit` reduces the |magnitudes| (not the
+    signed values), so opposite signs no longer cancel under the mean."""
+
+    def test_mixed_sign_with_zero_picks_metre(self):
+        fav = (np.array([0.0, -1.2, 1.2]) * m)._pick_smart_favunit()
+        # metre (scale 1), not yocto (1e-24)
+        self.assertEqual(fav.value, 1.0)
+        self.assertEqual(fav.dimension, m.dimension)
+
+    def test_matches_single_sign_variants(self):
+        mixed = (np.array([0.0, -1.2, 1.2]) * m)._pick_smart_favunit()
+        nozero = (np.array([0.0, 1.2]) * m)._pick_smart_favunit()
+        self.assertEqual(mixed.value, nozero.value)
+
+    def test_all_zero_array_uses_unit_magnitude(self):
+        # every value is 0 -> compare against magnitude 1, not 0 (-> yocto)
+        fav = (np.array([0.0, 0.0]) * m)._pick_smart_favunit()
+        self.assertEqual(fav.value, 1.0)
+
+    def test_scale_still_tracks_magnitude(self):
+        # the pick still scales with the data: larger values -> larger unit
+        fav = (np.array([0.0, -1200.0, 1200.0]) * m)._pick_smart_favunit()
+        self.assertEqual(fav.value, 1000.0)  # kilometre
+
+
 if __name__ == "__main__":
     unittest.main()
