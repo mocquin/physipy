@@ -143,6 +143,22 @@ class TestNumpyCoverage(unittest.TestCase):
         self.assertIn("numpy coverage", s)
         self.assertEqual(str(self.cov), s)
 
+    def test_to_markdown(self):
+        md = self.cov.to_markdown()
+        self.assertIsInstance(md, str)
+        # both family sections are present
+        self.assertIn("### Array functions", md)
+        self.assertIn("### Ufuncs", md)
+        # the three buckets are rendered with their counts
+        fn = self.cov.array_functions
+        self.assertIn(f"**Implemented ({len(fn.implemented)}):**", md)
+        self.assertIn(f"**Missing ({len(fn.missing)}):**", md)
+        self.assertIn(f"**Not applicable ({len(fn.not_applicable)}):**", md)
+        # known names land in the rendered text
+        self.assertIn("`concatenate`", md)
+        self.assertIn("`vander`", md)
+        self.assertIn(self.cov.numpy_version, md)
+
 
 if __name__ == "__main__":
     unittest.main()
