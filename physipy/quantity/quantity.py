@@ -692,9 +692,11 @@ class Quantity(object):
     ) -> Quantity | None:
         """Method to pick the best favunit among the units dict.
         A smart favunit always have the same dimension as self.
-        The 'best' favunit is the one minimizing the difference with self.
-        In case self.value is an array, array_to_scal is
-        used to convert the array to a single value.
+        The 'best' favunit is the one whose scale is closest to the typical
+        *magnitude* of self. For an array, the magnitudes are reduced to a
+        single value with array_to_scal (mean by default) -- taking the
+        absolute value first, so opposite-sign values (and zeros) don't cancel
+        and drive the pick toward the smallest unit (see issue #4).
         """
         from ._units import units
         from .utils import asqarray
@@ -708,12 +710,16 @@ class Quantity(object):
         if len(same_dim_unit_list) == 0:
             return None
         same_dim_unit_arr = asqarray(same_dim_unit_list)
-        self_val = (
-            self
+        magnitude = (
+            np.abs(self)
             if not isinstance(self.value, np.ndarray)
-            else array_to_scal(self)
+            else array_to_scal(np.abs(self))
         )
-        best_ixd = np.abs(same_dim_unit_arr - np.abs(self_val)).argmin()
+        # an all-zero (or zero scalar) input has no scale of its own : compare
+        # against magnitude 1 so we pick the natural base-ish unit, not yocto.
+        if magnitude.value == 0:
+            magnitude = self._SI_unitary_quantity
+        best_ixd = np.abs(same_dim_unit_arr - magnitude).argmin()
         best_favunit = same_dim_unit_list[best_ixd]
         return cast(Quantity, best_favunit)
 
