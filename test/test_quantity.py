@@ -2954,5 +2954,25 @@ class TestQuantity(unittest.TestCase):
         self.assertEqual(res, Quantity(2**14, Dimension({"L": 14})))
 
 
+class TestFavunitValue(unittest.TestCase):
+    """`_favunit_value()` (renamed from `_compute_value`) returns the magnitude
+    expressed in the favunit -- a display-only helper, distinct from SI `.value`."""
+
+    def test_without_favunit_returns_si_value(self):
+        q = 3.0 * m
+        self.assertEqual(q._favunit_value(), q.value)
+
+    def test_with_scaled_favunit(self):
+        q = 3000.0 * m
+        q.favunit = units["km"]
+        # 3000 m expressed in km is 3.0, while .value stays in SI
+        self.assertAlmostEqual(q._favunit_value(), 3.0)
+        self.assertEqual(q.value, 3000.0)
+
+    def test_old_name_is_gone(self):
+        # guard against the pre-rename `_compute_value` creeping back
+        self.assertFalse(hasattr(3.0 * m, "_compute_value"))
+
+
 if __name__ == "__main__":
     unittest.main()

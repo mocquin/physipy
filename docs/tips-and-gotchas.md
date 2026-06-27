@@ -92,13 +92,13 @@ typed if you used a non-SI unit:
 
 See [The storage invariant](values-units-and-display.md#the-storage-invariant-values-are-always-si).
 
-### `_compute_value()` is display-only — don't compute with it
+### `_favunit_value()` is display-only — don't compute with it
 
-`_compute_value()` returns the value *expressed in the favunit*, not SI. Using it
+`_favunit_value()` returns the value *expressed in the favunit*, not SI. Using it
 in numeric code introduces a silent `1/scale` error that cancels in ratios and
 looks fine in plots. **Rule of thumb:** `.value` for computation, `q / U` for
-"value in unit U", `_compute_value()` only for display.
-See [the footgun section](values-units-and-display.md#a-common-footgun-_compute_value-is-display-only).
+"value in unit U", `_favunit_value()` only for display.
+See [the footgun section](values-units-and-display.md#a-common-footgun-_favunit_value-is-display-only).
 
 ### Dimensionless results collapse to plain numbers
 

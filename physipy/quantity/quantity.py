@@ -17,7 +17,7 @@ The idiomatic way to create a quantity is to multiply a value by a unit::
 # Developer notes (kept out of the rendered docs).
 #
 # INVARIANT: _value is always stored in SI base units. favunit/symbol are
-# display-only. Never use _compute_value() in numeric paths -- use .value.
+# display-only. Never use _favunit_value() in numeric paths -- use .value.
 #
 # TODO:
 #  - [X] : find a better way to include SI units in
@@ -553,13 +553,13 @@ class Quantity(object):
         complement_value_for_repr = self._compute_complement_value()
         if not complement_value_for_repr == "":
             return (
-                str(self._compute_value())
+                str(self._favunit_value())
                 + UNIT_PREFIX
                 + complement_value_for_repr
                 + UNIT_SUFFIX
             )
         else:
-            return str(self._compute_value()) + UNIT_SUFFIX
+            return str(self._favunit_value()) + UNIT_SUFFIX
 
     def __hash__(self):
         return hash(str(self.value) + str(self.dimension))
@@ -722,7 +722,7 @@ class Quantity(object):
         If the value is > to 10**self.EXP_THRESH, it is displayed with scientific notation.
         Else floating point notation is used.
         """
-        value: Any = self._compute_value()
+        value: Any = self._favunit_value()
         if not isinstance(value, numbers.Complex):  # np.isscalar(value):
             return str(value)
         else:
@@ -755,15 +755,15 @@ class Quantity(object):
             prefix = ""
         if not complement_value_for_repr == "":
             return (
-                format(self._compute_value(), format_spec)
+                format(self._favunit_value(), format_spec)
                 + prefix
                 + complement_value_for_repr
                 + UNIT_SUFFIX
             )
         else:
-            return format(self._compute_value(), format_spec) + prefix
+            return format(self._favunit_value(), format_spec) + prefix
 
-    def _compute_value(self) -> ValueType:
+    def _favunit_value(self) -> ValueType:
         """The numerical value expressed in `favunit` (``self / favunit``), or
         `value` when no favunit is set.
 
