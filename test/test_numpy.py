@@ -430,5 +430,148 @@ class TestSplit(unittest.TestCase):
             self.assertEqual(str(part.favunit.symbol), "mm")
 
 
+class TestDelete(unittest.TestCase):
+    """np.delete drops elements while keeping the dimension (and favunit)."""
+
+    def test_1d(self):
+        a = L([0.0, 1.0, 2.0, 3.0, 4.0])
+        res = np.delete(a, [1, 3])
+        self.assertIsInstance(res, Quantity)
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(res.value, [0.0, 2.0, 4.0])
+
+    def test_axis(self):
+        res = np.delete(np.arange(9.0).reshape(3, 3) * m, 1, axis=0)
+        self.assertEqual(res.shape, (2, 3))
+        self.assertEqual(res.dimension, m.dimension)
+
+    def test_preserves_favunit(self):
+        from physipy import units
+
+        a = np.arange(4.0) * m
+        a.favunit = units["mm"]
+        self.assertEqual(str(np.delete(a, 0).favunit.symbol), "mm")
+
+
+class TestTriangularDiagflat(unittest.TestCase):
+    """tril / triu / diagflat keep the input's dimension."""
+
+    def test_tril_triu(self):
+        M = np.arange(9.0).reshape(3, 3) * m
+        for func in (np.tril, np.triu):
+            for k in (-1, 0, 1):
+                with self.subTest(func=func.__name__, k=k):
+                    res = func(M, k)
+                    self.assertIsInstance(res, Quantity)
+                    self.assertEqual(res.dimension, m.dimension)
+                    np.testing.assert_allclose(res.value, func(M.value, k))
+
+    def test_diagflat(self):
+        res = np.diagflat(L([1.0, 2.0, 3.0]))
+        self.assertEqual(res.shape, (3, 3))
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(np.diag(res.value), [1.0, 2.0, 3.0])
+
+
+class TestDimensionPreservingTransforms(unittest.TestCase):
+    """Tier-1 transforms : run on the magnitudes and keep the input dimension."""
+
+    def test_value_preserving_funcs(self):
+        a = L([1.0, 3.0, 6.0, 10.0])
+        cases = [
+            (np.ediff1d, (), [2.0, 3.0, 4.0]),
+            (np.fix, (), np.fix(a.value)),
+            (np.trim_zeros, (), a.value),
+            (np.nan_to_num, (), a.value),
+            (np.sort_complex, (), np.sort_complex(a.value)),
+            (np.real_if_close, (), a.value),
+        ]
+        for func, args, expected in cases:
+            with self.subTest(func=func.__name__):
+                res = func(a, *args)
+                self.assertIsInstance(res, Quantity)
+                self.assertEqual(res.dimension, m.dimension)
+                np.testing.assert_allclose(res.value, expected)
+
+    def test_ediff1d_to_end_begin(self):
+        res = np.ediff1d(L([1.0, 3.0]), to_end=5.0 * m, to_begin=0.0 * m)
+        np.testing.assert_allclose(res.value, [0.0, 2.0, 5.0])
+        with self.assertRaises(DimensionError):
+            np.ediff1d(L([1.0, 2.0]), to_end=5.0 * s)
+
+    def test_resize_take_along_axis(self):
+        self.assertEqual(np.resize(L([1.0, 2.0, 3.0]), (2, 3)).shape, (2, 3))
+        res = np.take_along_axis(L([10.0, 20.0, 30.0]), np.array([2, 0]), axis=0)
+        np.testing.assert_allclose(res.value, [30.0, 10.0])
+        self.assertEqual(res.dimension, m.dimension)
+
+    def test_unstack(self):
+        parts = np.unstack(L([[1.0, 2.0], [3.0, 4.0]]), axis=0)
+        self.assertIsInstance(parts, tuple)
+        self.assertTrue(all(p.dimension == m.dimension for p in parts))
+        np.testing.assert_allclose(parts[1].value, [3.0, 4.0])
+
+    def test_block(self):
+        res = np.block([L([1.0, 2.0]), L([3.0, 4.0])])
+        self.assertEqual(res.dimension, m.dimension)
+        np.testing.assert_allclose(res.value, [1.0, 2.0, 3.0, 4.0])
+        with self.assertRaises(DimensionError):
+            np.block([L([1.0]), np.array([2.0]) * s])
+
+    def test_extract_choose(self):
+        res = np.extract(np.array([True, False, True]), L([1.0, 2.0, 3.0]))
+        np.testing.assert_allclose(res.value, [1.0, 3.0])
+        res = np.choose(np.array([0, 1, 0]), [L([1.0, 2.0, 3.0]), L([4.0, 5.0, 6.0])])
+        np.testing.assert_allclose(res.value, [1.0, 5.0, 3.0])
+        self.assertEqual(res.dimension, m.dimension)
+        with self.assertRaises(DimensionError):
+            np.choose(np.array([0, 1]), [L([1.0, 2.0]), np.array([3.0, 4.0]) * s])
+
+
+class TestIndexReturning(unittest.TestCase):
+    """nonzero / argwhere / flatnonzero drop the unit (indices are plain ints)."""
+
+    def test_indices(self):
+        a = L([0.0, 1.0, 0.0, 2.0])
+        nz = np.nonzero(a)
+        self.assertIsInstance(nz, tuple)
+        np.testing.assert_array_equal(nz[0], [1, 3])
+        np.testing.assert_array_equal(np.flatnonzero(a), [1, 3])
+        np.testing.assert_array_equal(np.argwhere(a).ravel(), [1, 3])
+
+
+class TestInPlaceWrites(unittest.TestCase):
+    """put / putmask / place / put_along_axis mutate through `.value`, return None."""
+
+    def test_put(self):
+        a = L([1.0, 2.0, 3.0, 4.0])
+        self.assertIsNone(np.put(a, [0, 2], 9.0 * m))
+        np.testing.assert_allclose(a.value, [9.0, 2.0, 9.0, 4.0])
+
+    def test_putmask(self):
+        a = L([1.0, 2.0, 3.0, 4.0])
+        np.putmask(a, np.array([True, False, True, False]), 0.0 * m)
+        np.testing.assert_allclose(a.value, [0.0, 2.0, 0.0, 4.0])
+
+    def test_place(self):
+        a = L([1.0, 2.0, 3.0, 4.0])
+        np.place(a, a > 2.0 * m, np.array([7.0, 8.0]) * m)
+        np.testing.assert_allclose(a.value, [1.0, 2.0, 7.0, 8.0])
+
+    def test_put_along_axis(self):
+        a = L([[1.0, 2.0], [3.0, 4.0]])
+        np.put_along_axis(a, np.array([[0], [1]]), 0.0 * m, axis=1)
+        np.testing.assert_allclose(a.value, [[0.0, 2.0], [3.0, 0.0]])
+
+    def test_dimension_mismatch_raises(self):
+        for func in (
+            lambda: np.put(L([1.0, 2.0]), [0], 9.0 * s),
+            lambda: np.putmask(L([1.0, 2.0]), np.array([True, False]), 9.0 * s),
+            lambda: np.place(L([1.0, 2.0]), np.array([True, False]), 9.0 * s),
+        ):
+            with self.assertRaises(DimensionError):
+                func()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -90,7 +90,6 @@ def np_amin(q):
 @implements(np.ptp)
 def np_ptp(a, *args, **kwargs):
     # peak-to-peak (max - min) keeps the input's dimension
-    a = quantify(a)
     return Quantity(
         np.ptp(a.value, *args, **kwargs), a.dimension, favunit=a.favunit
     )
@@ -163,7 +162,6 @@ def np_nanpercentile(a, *args, **kwargs):
 
 @implements(np.nanquantile)
 def np_nanquantile(a, *args, **kwargs):
-    a = quantify(a)
     return Quantity(np.nanquantile(a.value, *args, **kwargs), a.dimension)
 
 
@@ -287,7 +285,6 @@ def np_broadcast_arrays(*args, **kwargs):
 # split family : divide an array into sub-arrays, each keeping the dimension
 # (and symbol/favunit) of the input.
 def _split_like(func, ary, *args, **kwargs):
-    ary = quantify(ary)
     return [
         Quantity(part, ary.dimension, symbol=ary.symbol, favunit=ary.favunit)
         for part in func(ary.value, *args, **kwargs)
@@ -360,6 +357,21 @@ def np_eig(a):
 @implements(np.diag)
 def np_diag(v, *args, **kwargs):
     return Quantity(np.diag(v.value, *args, **kwargs), v.dimension)
+
+
+@implements(np.diagflat)
+def np_diagflat(v, *args, **kwargs):
+    return Quantity(np.diagflat(v.value, *args, **kwargs), v.dimension)
+
+
+@implements(np.tril)
+def np_tril(m, *args, **kwargs):
+    return Quantity(np.tril(m.value, *args, **kwargs), m.dimension)
+
+
+@implements(np.triu)
+def np_triu(m, *args, **kwargs):
+    return Quantity(np.triu(m.value, *args, **kwargs), m.dimension)
 
 
 @implements(np.flip)
@@ -519,7 +531,6 @@ def np_cumsum(a, **kwargs):
 @implements(np.cumulative_sum)
 def np_cumulative_sum(a, *args, **kwargs):
     # numpy>=2.0 array-API spelling of cumsum : same dimension as input
-    a = quantify(a)
     return Quantity(np.cumulative_sum(a.value, *args, **kwargs), a.dimension)
 
 
@@ -527,7 +538,6 @@ def np_cumulative_sum(a, *args, **kwargs):
 def np_cumprod(a, *args, **kwargs):
     # each partial product would carry a different power of the dimension, so
     # the result is only representable as a single Quantity when dimensionless
-    a = quantify(a)
     if not a.is_dimensionless():
         raise DimensionError(a.dimension, Dimension(None))
     return Quantity(np.cumprod(a.value, *args, **kwargs), a.dimension)
@@ -535,7 +545,6 @@ def np_cumprod(a, *args, **kwargs):
 
 @implements(np.cumulative_prod)
 def np_cumulative_prod(a, *args, **kwargs):
-    a = quantify(a)
     if not a.is_dimensionless():
         raise DimensionError(a.dimension, Dimension(None))
     return Quantity(np.cumulative_prod(a.value, *args, **kwargs), a.dimension)
@@ -599,6 +608,165 @@ def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
     )
 
 
+# --- dimension-preserving transforms : run on the magnitudes, keep the unit ---
+
+
+@implements(np.ediff1d)
+def np_ediff1d(ary, to_end=None, to_begin=None):
+    ary = quantify(ary)
+    # to_end / to_begin are inserted verbatim, so they must share the dimension
+    extras = {}
+    for name, val in (("to_end", to_end), ("to_begin", to_begin)):
+        if val is not None:
+            val = quantify(val)
+            if not val.dimension == ary.dimension:
+                raise DimensionError(ary.dimension, val.dimension)
+            extras[name] = val.value
+    return Quantity(np.ediff1d(ary.value, **extras), ary.dimension)
+
+
+@implements(np.nan_to_num)
+def np_nan_to_num(x, *args, **kwargs):
+    return Quantity(np.nan_to_num(x.value, *args, **kwargs), x.dimension)
+
+
+@implements(np.trim_zeros)
+def np_trim_zeros(filt, *args, **kwargs):
+    return Quantity(np.trim_zeros(filt.value, *args, **kwargs), filt.dimension)
+
+
+@implements(np.fix)
+def np_fix(x, *args, **kwargs):
+    return Quantity(np.fix(x.value, *args, **kwargs), x.dimension)
+
+
+@implements(np.real_if_close)
+def np_real_if_close(a, *args, **kwargs):
+    return Quantity(np.real_if_close(a.value, *args, **kwargs), a.dimension)
+
+
+@implements(np.sort_complex)
+def np_sort_complex(a):
+    return Quantity(np.sort_complex(a.value), a.dimension)
+
+
+@implements(np.resize)
+def np_resize(a, new_shape):
+    return Quantity(np.resize(a.value, new_shape), a.dimension)
+
+
+@implements(np.take_along_axis)
+def np_take_along_axis(arr, indices, axis):
+    return Quantity(
+        np.take_along_axis(arr.value, indices, axis), arr.dimension
+    )
+
+
+@implements(np.unstack)
+def np_unstack(x, *args, **kwargs):
+    return tuple(
+        Quantity(part, x.dimension, symbol=x.symbol, favunit=x.favunit)
+        for part in np.unstack(x.value, *args, **kwargs)
+    )
+
+
+def _block_values(node):
+    # recurse np.block's nested list/tuple grid, collecting one shared dimension
+    if isinstance(node, (list, tuple)):
+        children = [_block_values(child) for child in node]
+        dimension = children[0][1]
+        for _, dim in children[1:]:
+            if not dim == dimension:
+                raise DimensionError(dimension, dim)
+        return [value for value, _ in children], dimension
+    node = quantify(node)
+    return node.value, node.dimension
+
+
+@implements(np.block)
+def np_block(arrays):
+    values, dimension = _block_values(arrays)
+    return Quantity(np.block(values), dimension)
+
+
+@implements(np.extract)
+def np_extract(condition, arr):
+    arr = quantify(arr)
+    return Quantity(np.extract(condition, arr.value), arr.dimension)
+
+
+@implements(np.choose)
+def np_choose(a, choices, *args, **kwargs):
+    qchoices = [quantify(c) for c in choices]
+    dimension = qchoices[0].dimension
+    for c in qchoices[1:]:
+        if not c.dimension == dimension:
+            raise DimensionError(dimension, c.dimension)
+    index = a.value if isinstance(a, Quantity) else a
+    return Quantity(
+        np.choose(index, [c.value for c in qchoices], *args, **kwargs),
+        dimension,
+    )
+
+
+# --- index-returning : the result is a plain integer array, no dimension ---
+
+
+@implements(np.nonzero)
+def np_nonzero(a):
+    return np.nonzero(a.value)
+
+
+@implements(np.argwhere)
+def np_argwhere(a):
+    return np.argwhere(a.value)
+
+
+@implements(np.flatnonzero)
+def np_flatnonzero(a):
+    return np.flatnonzero(a.value)
+
+
+# --- in-place writes : mutate the magnitudes through `.value`, return None ---
+# (the inserted values must match the target's dimension)
+
+
+@implements(np.put_along_axis)
+def np_put_along_axis(arr, indices, values, axis):
+    arr = quantify(arr)
+    values = quantify(values)
+    if not arr.dimension == values.dimension:
+        raise DimensionError(arr.dimension, values.dimension)
+    np.put_along_axis(arr.value, indices, values.value, axis)
+
+
+@implements(np.place)
+def np_place(arr, mask, vals):
+    arr = quantify(arr)
+    vals = quantify(vals)
+    if not arr.dimension == vals.dimension:
+        raise DimensionError(arr.dimension, vals.dimension)
+    np.place(arr.value, mask, vals.value)
+
+
+@implements(np.put)
+def np_put(a, ind, v, *args, **kwargs):
+    a = quantify(a)
+    v = quantify(v)
+    if not a.dimension == v.dimension:
+        raise DimensionError(a.dimension, v.dimension)
+    np.put(a.value, ind, v.value, *args, **kwargs)
+
+
+@implements(np.putmask)
+def np_putmask(a, mask, values):
+    a = quantify(a)
+    values = quantify(values)
+    if not a.dimension == values.dimension:
+        raise DimensionError(a.dimension, values.dimension)
+    np.putmask(a.value, mask, values.value)
+
+
 @implements(np.apply_along_axis)
 def np_apply_along_axis(func1d, axis, arr, *args, **kwargs):
     res = np.apply_along_axis(func1d, axis, arr.value, *args, **kwargs)
@@ -648,7 +816,6 @@ def np_percentile(a, *args, **kwargs):
 
 @implements(np.quantile)
 def np_quantile(a, *args, **kwargs):
-    a = quantify(a)
     return Quantity(np.quantile(a.value, *args, **kwargs), a.dimension)
 
 
@@ -682,6 +849,15 @@ def np_insert(arr, obj, values, *args, **kwargs):
         raise DimensionError(arr.dimension, values.dimension)
     return Quantity(
         np.insert(arr.value, obj, values.value, *args, **kwargs),
+        arr.dimension,
+        favunit=arr.favunit,
+    )
+
+
+@implements(np.delete)
+def np_delete(arr, obj, *args, **kwargs):
+    return Quantity(
+        np.delete(arr.value, obj, *args, **kwargs),
         arr.dimension,
         favunit=arr.favunit,
     )
@@ -1020,7 +1196,6 @@ def np_real(a):
 
 @implements(np.imag)
 def np_imag(a):
-    a = quantify(a)
     return Quantity(np.imag(a.value), a.dimension)
 
 
