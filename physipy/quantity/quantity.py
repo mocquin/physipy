@@ -673,8 +673,14 @@ class Quantity(object):
                     name: Symbol(name)
                     for name in re.findall(r"[A-Za-z_]\w*", complemented)
                 }
+                # mul_symbol="dot" renders a product as 'm \cdot s' so that
+                # meter*second (m·s) isn't ambiguous with millisecond (ms).
+                # See issue #20.
                 complement_value_str = str(
-                    latex(parse_expr(complemented, local_dict=local_dict))
+                    latex(
+                        parse_expr(complemented, local_dict=local_dict),
+                        mul_symbol="dot",
+                    )
                 )
             else:
                 complement_value_str = ""

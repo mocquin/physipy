@@ -3022,5 +3022,16 @@ class TestReprLatexSymbolCollision(unittest.TestCase):
             self.assertIn("m", latex)
 
 
+class TestReprLatexMulSymbol(unittest.TestCase):
+    """Regression for issue #20: unit products use a middle dot in the LaTeX
+    repr, so meter*second (m·s) isn't ambiguous with millisecond (ms)."""
+
+    def test_product_uses_cdot(self):
+        self.assertIn(r"\cdot", (m * s)._repr_latex_())
+
+    def test_product_distinct_from_prefixed_unit(self):
+        self.assertNotEqual((m * s)._repr_latex_(), units["ms"]._repr_latex_())
+
+
 if __name__ == "__main__":
     unittest.main()
