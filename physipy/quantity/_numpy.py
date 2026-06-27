@@ -1738,6 +1738,41 @@ class NumpyCoverage:
             )
         return "\n".join(lines)
 
+    def to_markdown(self) -> str:
+        """Render the full coverage report as Markdown (used by the docs).
+
+        Each family gets a section with its ratio and the enumerated
+        ``implemented`` / ``missing`` / ``not applicable`` function names.
+        """
+
+        def section(grp: "_CoverageGroup", title: str) -> str:
+            head = (
+                f"### {title}\n\n"
+                f"{len(grp.implemented)}/{grp.n_relevant} implemented "
+                f"(**{grp.ratio:.0%}**)"
+            )
+            if grp.not_applicable:
+                head += f", {len(grp.not_applicable)} not applicable"
+            rows = [
+                f"- **Implemented ({len(grp.implemented)}):** "
+                + ", ".join(f"`{n}`" for n in grp.implemented),
+                f"- **Missing ({len(grp.missing)}):** "
+                + ", ".join(f"`{n}`" for n in grp.missing),
+            ]
+            if grp.not_applicable:
+                rows.append(
+                    f"- **Not applicable ({len(grp.not_applicable)}):** "
+                    + ", ".join(f"`{n}`" for n in grp.not_applicable)
+                )
+            return head + "\n\n" + "\n".join(rows)
+
+        return (
+            f"# physipy numpy coverage (numpy {self.numpy_version})\n\n"
+            + section(self.array_functions, "Array functions")
+            + "\n\n"
+            + section(self.ufuncs, "Ufuncs")
+        )
+
     def __str__(self) -> str:
         return self.summary()
 
