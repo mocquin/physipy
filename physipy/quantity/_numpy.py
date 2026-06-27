@@ -1618,6 +1618,27 @@ implemented_ufuncs = (
 # numpy namespaces scanned to enumerate the public, non-ufunc function surface.
 _NUMPY_FUNC_NAMESPACES = (("", np), ("linalg", np.linalg), ("fft", np.fft))
 
+# Array functions that can't be expressed with physipy's data model. A Quantity
+# is a single ndarray of magnitudes sharing ONE dimension, so any function whose
+# natural output is a single array with *per-element heterogeneous* dimensions
+# has no faithful representation. The polynomial-coefficient family is the main
+# example : a 1-D coefficient array is inherently heterogeneous (c_n carries y,
+# c_{n-1} carries y/x, ...), which is exactly why np.polyfit returns a *tuple* of
+# separate Quantities rather than one array. These are reported as
+# ``not_applicable`` (not ``missing``) so coverage reflects only dimension-
+# relevant functions. See also the ufunc-level :data:`cant_be_implemented`.
+cant_be_implemented_functions = (
+    "vander",  # columns x**0, x**1, ... x**(n-1) : one dimension per column
+    "poly",  # coefficients from roots : heterogeneous coefficient array
+    "polyadd",
+    "polysub",
+    "polymul",
+    "polydiv",
+    "polyint",
+    "polyder",
+    "roots",  # input is a (heterogeneous) coefficient array
+)
+
 
 def _qualified(prefix: str, name: str) -> str:
     return f"{prefix}.{name}" if prefix else name
@@ -1729,8 +1750,9 @@ def numpy_coverage() -> NumpyCoverage:
     :data:`cant_be_implemented`) and ``missing`` (everything else).
 
     array functions are the public, non-ufunc callables of ``numpy``,
-    ``numpy.linalg`` and ``numpy.fft``, split by membership in
-    :data:`HANDLED_FUNCTIONS`.
+    ``numpy.linalg`` and ``numpy.fft``, split into ``implemented`` (in
+    :data:`HANDLED_FUNCTIONS`), ``not_applicable`` (declared in
+    :data:`cant_be_implemented_functions`) and ``missing`` (everything else).
     """
     # ufuncs
     canonical = _canonical_numpy_ufuncs()
@@ -1748,8 +1770,15 @@ def numpy_coverage() -> NumpyCoverage:
     # array functions
     public = _public_numpy_functions()
     handled = set(HANDLED_FUNCTIONS)
-    fn_impl = [name for name, obj in public.items() if obj in handled]
-    fn_missing = [name for name, obj in public.items() if obj not in handled]
+    fn_na_set = set(cant_be_implemented_functions)
+    fn_impl, fn_missing, fn_na = [], [], []
+    for name, obj in public.items():
+        if obj in handled:
+            fn_impl.append(name)
+        elif name in fn_na_set:
+            fn_na.append(name)
+        else:
+            fn_missing.append(name)
 
     return NumpyCoverage(
         ufuncs=_CoverageGroup(
@@ -1760,6 +1789,7 @@ def numpy_coverage() -> NumpyCoverage:
         array_functions=_CoverageGroup(
             implemented=tuple(sorted(fn_impl)),
             missing=tuple(sorted(fn_missing)),
+            not_applicable=tuple(sorted(fn_na)),
         ),
         numpy_version=np.__version__,
     )

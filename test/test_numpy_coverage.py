@@ -86,9 +86,15 @@ class TestNumpyCoverage(unittest.TestCase):
 
     def test_array_function_partition_is_complete_and_disjoint(self):
         grp = self.cov.array_functions
-        impl, miss = set(grp.implemented), set(grp.missing)
+        impl, miss, na = (
+            set(grp.implemented),
+            set(grp.missing),
+            set(grp.not_applicable),
+        )
         self.assertFalse(impl & miss)
-        self.assertEqual(impl | miss, set(_public_numpy_functions()))
+        self.assertFalse(impl & na)
+        self.assertFalse(miss & na)
+        self.assertEqual(impl | miss | na, set(_public_numpy_functions()))
 
     def test_known_buckets(self):
         uf, fn = self.cov.ufuncs, self.cov.array_functions
@@ -101,6 +107,9 @@ class TestNumpyCoverage(unittest.TestCase):
         # declared impossible -> not_applicable, never missing/implemented
         self.assertIn("logical_and", uf.not_applicable)
         self.assertNotIn("logical_and", uf.missing)
+        # heterogeneous-output array funcs can't fit the single-Dimension model
+        self.assertIn("vander", fn.not_applicable)
+        self.assertNotIn("vander", fn.missing)
 
     def test_alias_dedup(self):
         # numpy>=2.0 aliases collapse onto their canonical name and are not
