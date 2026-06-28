@@ -1304,16 +1304,84 @@ class Quantity(object):
         This doesn't need __getattr__ nor __array__
 
         """
+        # numpy passes ``out`` as a tuple of targets. We intercept it here,
+        # once, for every method: the per-method handlers compute a fresh
+        # result and ``_handle_out`` then applies numpy's ``out=`` semantics
+        # uniformly. Popping it also keeps it out of the ``ufunc.reduce`` /
+        # ``ufunc.accumulate`` forwarding below, which would otherwise choke on
+        # a ``Quantity`` target (it is not an ndarray).
+        out = kwargs.pop("out", None)
         if method == "__call__":
-            return self._ufunc_call(ufunc, method, *args, **kwargs)
+            result = self._ufunc_call(ufunc, method, *args, **kwargs)
         elif method == "reduce":
-            return self._ufunc_reduce(ufunc, method, *args, **kwargs)
+            result = self._ufunc_reduce(ufunc, method, *args, **kwargs)
         elif method == "accumulate":
-            return self._ufunc_accumulate(ufunc, method, *args, **kwargs)
+            result = self._ufunc_accumulate(ufunc, method, *args, **kwargs)
         else:
             raise NotImplementedError(
                 f"array ufunc {ufunc} with method {method} not implemented"
             )
+        return self._handle_out(out, result)
+
+    def _handle_out(self, out, result):
+        """Apply numpy's ``out=`` semantics to a freshly computed result.
+
+        ``out`` is the value popped from the ufunc kwargs (numpy always passes
+        it as a tuple of targets, or ``None`` when absent). ``result`` is what
+        the per-method handler returned: a `Quantity`, a bare number/ndarray
+        (dimensionless outputs such as comparisons), or a tuple (``modf``).
+
+        With no ``out`` the result is returned untouched. Otherwise each target
+        buffer is written in place and the *target* is returned, so the numpy
+        contract ``np.ufunc(..., out=o) is o`` holds.
+        """
+        if out is None:
+            return result
+        targets = out if isinstance(out, tuple) else (out,)
+        results = result if isinstance(result, tuple) else (result,)
+        if len(targets) != len(results):
+            # Arity mismatch (e.g. a single out for a 2-output ufunc): leave
+            # the freshly computed result untouched rather than guess.
+            return result
+        stored = tuple(
+            self._store_out(t, r)
+            for t, r in zip(targets, results, strict=True)
+        )
+        return stored[0] if len(stored) == 1 else stored
+
+    def _store_out(self, target, r):
+        """Write one computed result ``r`` into one ``out`` target buffer.
+
+        A `Quantity` target must share the result's dimension (else
+        `DimensionError`); a plain ndarray target is only valid for a
+        dimensionless result -- a bare array cannot carry a `Dimension`, so a
+        dimensioned result into a plain ndarray is refused (same stance as
+        astropy). The target is mutated in place and returned.
+        """
+        if target is None:
+            return r
+        r_dim = r.dimension if isinstance(r, Quantity) else DIMENSIONLESS
+        r_val = r.value if isinstance(r, Quantity) else r
+        if isinstance(target, Quantity):
+            if not target.dimension == r_dim:
+                raise DimensionError(target.dimension, r_dim)
+            if isinstance(target.value, np.ndarray):
+                np.copyto(target.value, r_val)
+            else:
+                # A 0-d / scalar buffer (e.g. ``np.zeros(()) * m`` collapses to
+                # a numpy scalar) can't be written in place -- rebind instead.
+                # Identity still holds: we return the same ``target`` object.
+                target.value = r_val
+            return target
+        # Plain ndarray (or other) out buffer: cannot hold a dimension.
+        if not r_dim == DIMENSIONLESS:
+            raise TypeError(
+                "Cannot store a dimensioned ufunc result (dimension "
+                f"{r_dim}) into a plain ndarray passed as out=; pass a "
+                "Quantity with the matching dimension as out instead."
+            )
+        np.copyto(target, r_val)
+        return target
 
     def _ufunc_accumulate(self, ufunc, method, *args, **kwargs):
         ufunc_name = ufunc.__name__

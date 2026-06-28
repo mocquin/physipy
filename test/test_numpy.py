@@ -591,5 +591,86 @@ class TestFullLikeQuantityFill(unittest.TestCase):
         np.testing.assert_allclose(res.value, [3.0, 3.0, 3.0])
 
 
+class TestUfuncOut(unittest.TestCase):
+    """``out=`` handling for the ufunc (``__array_ufunc__``) dispatch.
+
+    Before the fix ``out=`` was silently dropped on the ``__call__`` path
+    (buffer never written, ``r is out`` False) and crashed the ``reduce`` /
+    ``accumulate`` paths with an ``AttributeError``.
+    """
+
+    def test_binary_out_quantity_matching_dim(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3) * m
+        buf_id = id(out.value)
+        r = np.add(a, a, out=out)
+        # numpy contract: the return value *is* the out target
+        self.assertIs(r, out)
+        # written in place (same underlying buffer), correct values
+        self.assertEqual(id(out.value), buf_id)
+        np.testing.assert_allclose(out.value, [2.0, 4.0, 6.0])
+        self.assertEqual(out.dimension, m.dimension)
+
+    def test_multiply_out_quantity_result_dim(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3) * m**2
+        r = np.multiply(a, a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(out.value, [1.0, 4.0, 9.0])
+        self.assertEqual(out.dimension, (m**2).dimension)
+
+    def test_unary_sqrt_out_quantity(self):
+        a = L([1.0, 4.0, 9.0])
+        out = np.zeros(3) * m**0.5
+        r = np.sqrt(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(out.value, [1.0, 2.0, 3.0])
+        self.assertEqual(out.dimension, (m**0.5).dimension)
+
+    def test_out_quantity_wrong_dim_raises(self):
+        a = L([1.0, 2.0, 3.0])
+        with self.assertRaises(DimensionError):
+            np.add(a, a, out=np.zeros(3) * s)
+
+    def test_out_plain_ndarray_dimensioned_raises(self):
+        # a bare ndarray cannot carry a Dimension -> refuse (astropy stance)
+        a = L([1.0, 2.0, 3.0])
+        with self.assertRaises(TypeError):
+            np.add(a, a, out=np.zeros(3))
+
+    def test_reduce_out_quantity(self):
+        # the reduce path used to crash with AttributeError on out=Quantity
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(()) * m
+        r = np.add.reduce(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(np.asarray(out.value), 6.0)
+        self.assertEqual(out.dimension, m.dimension)
+
+    def test_accumulate_out_quantity(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3) * m
+        r = np.add.accumulate(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(out.value, [1.0, 3.0, 6.0])
+        self.assertEqual(out.dimension, m.dimension)
+
+    def test_comparison_out_plain_bool_buffer(self):
+        # dimensionless result -> a plain ndarray out is fine and aliased
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3, dtype=bool)
+        r = np.greater(a, 2 * m, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_array_equal(out, [False, False, True])
+
+    def test_no_out_is_unchanged(self):
+        # regression: omitting out= still returns a fresh Quantity
+        a = L([1.0, 2.0, 3.0])
+        r = np.add(a, a)
+        self.assertIsInstance(r, Quantity)
+        self.assertIsNot(r, a)
+        np.testing.assert_allclose(r.value, [2.0, 4.0, 6.0])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
