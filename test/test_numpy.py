@@ -672,5 +672,78 @@ class TestUfuncOut(unittest.TestCase):
         np.testing.assert_allclose(r.value, [2.0, 4.0, 6.0])
 
 
+class TestArrayFunctionOut(unittest.TestCase):
+    """``out=`` handling for the array-function (``__array_function__``) path.
+
+    These funcs (``sum``, ``prod``, ``cumsum``, ``mean``, ``clip``, …) route
+    through ``__array_function__``, *not* ``__array_ufunc__``. Before the fix
+    ``out=Quantity`` recursed / raised ``AttributeError`` because the handler
+    forwarded ``out`` straight into the inner numpy call.
+    """
+
+    def test_sum_out_quantity(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(()) * m
+        r = np.sum(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(np.asarray(out.value), 6.0)
+        self.assertEqual(out.dimension, m.dimension)
+
+    def test_prod_out_quantity_result_dim(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(()) * m**3
+        r = np.prod(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(np.asarray(out.value), 6.0)
+        self.assertEqual(out.dimension, (m**3).dimension)
+
+    def test_cumsum_out_quantity_in_place(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3) * m
+        buf_id = id(out.value)
+        r = np.cumsum(a, out=out)
+        self.assertIs(r, out)
+        self.assertEqual(id(out.value), buf_id)  # written in place
+        np.testing.assert_allclose(out.value, [1.0, 3.0, 6.0])
+
+    def test_mean_out_quantity(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(()) * m
+        r = np.mean(a, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(np.asarray(out.value), 2.0)
+
+    def test_clip_out_quantity(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(3) * m
+        r = np.clip(a, 1.5 * m, 2.5 * m, out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(out.value, [1.5, 2.0, 2.5])
+
+    def test_concatenate_out_quantity(self):
+        a = L([1.0, 2.0, 3.0])
+        out = np.zeros(6) * m
+        r = np.concatenate([a, a], out=out)
+        self.assertIs(r, out)
+        np.testing.assert_allclose(out.value, [1.0, 2.0, 3.0, 1.0, 2.0, 3.0])
+
+    def test_out_quantity_wrong_dim_raises(self):
+        a = L([1.0, 2.0, 3.0])
+        with self.assertRaises(DimensionError):
+            np.sum(a, out=np.zeros(()) * s)
+
+    def test_out_plain_ndarray_dimensioned_raises(self):
+        a = L([1.0, 2.0, 3.0])
+        with self.assertRaises(TypeError):
+            np.sum(a, out=np.zeros(()))
+
+    def test_no_out_is_unchanged(self):
+        # regression: omitting out= still returns a fresh Quantity
+        a = L([1.0, 2.0, 3.0])
+        r = np.cumsum(a)
+        self.assertIsInstance(r, Quantity)
+        np.testing.assert_allclose(r.value, [1.0, 3.0, 6.0])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

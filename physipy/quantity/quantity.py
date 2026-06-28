@@ -1287,6 +1287,14 @@ class Quantity(object):
         # __array_function__ to handle DiagonalArray objects.
         # if not all(issubclass(t, self.__class__) for t in types):
         #    return NotImplemented
+        # ``out=`` counterpart of the ufunc handling: pop it so the handler
+        # computes a fresh result (otherwise numpy re-dispatches on the
+        # Quantity ``out`` buffer -> recursion / AttributeError), then apply
+        # numpy's out semantics uniformly via ``_handle_out``.
+        if "out" in kwargs:
+            out = kwargs.pop("out")
+            result = HANDLED_FUNCTIONS[func](*args, **kwargs)
+            return self._handle_out(out, result)
         return HANDLED_FUNCTIONS[func](*args, **kwargs)
 
     # TODO : make this a static function ?
@@ -1326,14 +1334,16 @@ class Quantity(object):
     def _handle_out(self, out, result):
         """Apply numpy's ``out=`` semantics to a freshly computed result.
 
-        ``out`` is the value popped from the ufunc kwargs (numpy always passes
-        it as a tuple of targets, or ``None`` when absent). ``result`` is what
-        the per-method handler returned: a `Quantity`, a bare number/ndarray
-        (dimensionless outputs such as comparisons), or a tuple (``modf``).
+        Shared by both dispatch paths -- ``__array_ufunc__`` (where ``out`` is
+        a tuple of targets) and ``__array_function__`` (where it is a single
+        target). ``out`` is the popped kwarg value (or ``None`` when absent).
+        ``result`` is what the handler returned: a `Quantity`, a bare
+        number/ndarray (dimensionless outputs such as comparisons), or a tuple
+        (``modf``).
 
         With no ``out`` the result is returned untouched. Otherwise each target
         buffer is written in place and the *target* is returned, so the numpy
-        contract ``np.ufunc(..., out=o) is o`` holds.
+        contract ``np.func(..., out=o) is o`` holds.
         """
         if out is None:
             return result
@@ -1376,7 +1386,7 @@ class Quantity(object):
         # Plain ndarray (or other) out buffer: cannot hold a dimension.
         if not r_dim == DIMENSIONLESS:
             raise TypeError(
-                "Cannot store a dimensioned ufunc result (dimension "
+                "Cannot store a dimensioned result (dimension "
                 f"{r_dim}) into a plain ndarray passed as out=; pass a "
                 "Quantity with the matching dimension as out instead."
             )
