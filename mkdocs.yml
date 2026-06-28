@@ -117,6 +117,7 @@ nav:
       - Plotting: API/plotting-api.md
   - Development:
       - General guidance: development-guide/index.md
+      - numpy integration (design & stability): development-guide/dev-numpy-integration.md
       - Benchmarking with asv: development-guide/dev-benchmarking-with-asv.md
       - Performance of the Dimension class: development-guide/dev-performance-dimension.md
   - Misc:
