@@ -90,11 +90,33 @@ is driven by `.readthedocs.yaml`, which installs the `docs` group with uv and ru
 
 The version is the single value in
 [`physipy/_version.py`](https://github.com/mocquin/physipy/blob/master/physipy/_version.py)
-(read at build time by hatchling). To cut a release:
+(read at build time by hatchling). Releases are tagged with the **bare version**
+(`0.3.1`, no `v` prefix), matching the existing tag history.
 
-1. Bump `__version__` in `physipy/_version.py`.
-2. Build the distributions: `uv build` (or `python -m build`).
-3. (Optional) smoke-test on TestPyPI: `uv publish --index testpypi`.
-4. Publish to PyPI: `uv publish` (or `twine upload dist/*`).
-5. Create a matching release/tag on
-   [GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
+A release is cut with one command —
+[`scripts/release.py`](https://github.com/mocquin/physipy/blob/master/scripts/release.py),
+which bumps the version, rolls `CHANGELOG.md`, builds, smoke-tests on TestPyPI,
+publishes to PyPI, then commits, tags and pushes:
+
+```bash
+# preview everything first — prints each step, changes nothing
+uv run python scripts/release.py patch --dry-run
+
+# do it (patch | minor | major, or an explicit X.Y.Z)
+uv run python scripts/release.py patch
+```
+
+Notes:
+
+- **Add release notes as you go** under `## [Unreleased]` in
+  [`CHANGELOG.md`](https://github.com/mocquin/physipy/blob/master/CHANGELOG.md);
+  the script moves them under the new dated version automatically.
+- Useful flags: `--no-testpypi` (skip the smoke upload), `--no-push` (commit and
+  tag locally only), `--allow-dirty`, `-y` (non-interactive).
+- **Consistency guard:** `uv run python scripts/release.py check` fails if the
+  latest git tag does not match `__version__` (also accepts `--tag X.Y.Z`).
+- PyPI / TestPyPI credentials are read by `uv publish` from your environment
+  (e.g. `UV_PUBLISH_TOKEN`) or `~/.pypirc`; the script never handles secrets.
+
+The pure logic (version bump, the tag/version guard, the changelog roll) is
+unit-tested in [`test/test_release.py`](https://github.com/mocquin/physipy/blob/master/test/test_release.py).
