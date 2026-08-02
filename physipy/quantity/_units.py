@@ -264,11 +264,15 @@ raw_imperial_units = {
     # SPEED
     "kn": 1852 * m / h,
     # FORCE
+    # pound of force or pound-force
     "lbf": (32.174049 * 16 * 28.349523125 * g) * (12 * 2.54 * cm) * s ** (-2),
     "kip": 1000
     * (32.174049 * 16 * 28.349523125 * g)
     * (12 * 2.54 * cm)
     * s ** (-2),
+    # TORQUE
+    # pound-foot (lb-ft) or pound-force foot (lbf-ft)
+    "lbft": (453.59237 * g) * (9.80665 * m / s ** 2) * (0.3048 * m),
     # ENERGY
     "BTU": 1.05505585 * kJ,
     "cal": 4.184 * J,
