@@ -800,5 +800,62 @@ class TestFavunitPropagation(unittest.TestCase):
         self.assertIsNone(np.nanvar(self.a_nan).favunit)
 
 
+class TestFavunitPropagationTier1(unittest.TestCase):
+    """Tier 1 follow-up: single-source, dimension-preserving array-function
+    handlers (shape/selection/rounding transforms) should preserve favunit
+    the same way the reductions do (see TestFavunitPropagation).
+    """
+
+    def setUp(self):
+        self.mm = units["mm"]
+        self.a = (np.array([1.0, 5.0, 3.0]) * m).set_favunit(self.mm)
+        self.diag_a = np.diag(self.a)
+
+    def test_propagates_favunit(self):
+        for name, result in [
+            ("sort", np.sort(self.a)),
+            ("around", np.around(self.a)),
+            ("round", np.round(self.a)),
+            ("take", np.take(self.a, [0, 1])),
+            (
+                "take_along_axis",
+                np.take_along_axis(self.a, np.array([0, 1, 2]), axis=0),
+            ),
+            ("squeeze", np.squeeze(self.a)),
+            ("repeat", np.repeat(self.a, 2)),
+            ("roll", np.roll(self.a, 1)),
+            ("ravel", np.ravel(self.a)),
+            ("reshape", np.reshape(self.a, (3,))),
+            ("resize", np.resize(self.a, (5,))),
+            ("diagonal", np.diagonal(self.diag_a)),
+            ("diag", np.diag(self.a)),
+            ("diagflat", np.diagflat(self.a)),
+            ("tril", np.tril(self.diag_a)),
+            ("triu", np.triu(self.diag_a)),
+            ("compress", np.compress([True, False, True], self.a)),
+            ("extract", np.extract([True, False, True], self.a)),
+            ("expand_dims", np.expand_dims(self.a, 0)),
+            ("tile", np.tile(self.a, 2)),
+            ("clip", np.clip(self.a, 1 * m, 4 * m)),
+            ("diff", np.diff(self.a)),
+            ("ediff1d", np.ediff1d(self.a)),
+            ("nan_to_num", np.nan_to_num(self.a)),
+            ("trim_zeros", np.trim_zeros(self.a)),
+            ("fix", np.fix(self.a)),
+            ("real_if_close", np.real_if_close(self.a)),
+            ("sort_complex", np.sort_complex(self.a)),
+            ("real", np.real(self.a)),
+            ("imag", np.imag(self.a)),
+            ("copy", np.copy(self.a)),
+            ("broadcast_to", np.broadcast_to(self.a, (3,))),
+            ("linalg.norm", np.linalg.norm(self.a)),
+            ("fftshift", np.fft.fftshift(self.a)),
+            ("ifftshift", np.fft.ifftshift(self.a)),
+        ]:
+            with self.subTest(func=name):
+                self.assertIsInstance(result, Quantity)
+                self.assertIs(result.favunit, self.mm)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

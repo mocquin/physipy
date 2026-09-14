@@ -95,6 +95,7 @@ def np_unique(ar, *args, **kwargs):
 
 
 @implements(np.asanyarray)
+@preserves_favunit
 def np_asanyarray(a):
     return Quantity(np.asanyarray(a.value), a.dimension)
 
@@ -261,6 +262,7 @@ def np_argsort(a, **kwargs):
 
 
 @implements(np.sort)
+@preserves_favunit
 def np_sort(a, **kwargs):
     return Quantity(np.sort(a.value, **kwargs), a.dimension)
 
@@ -271,6 +273,7 @@ def np_argmin(a, **kwargs):
 
 
 @implements(np.around)
+@preserves_favunit
 def np_around(a, **kwargs):
     return Quantity(np.around(a.value, **kwargs), a.dimension)
 
@@ -302,6 +305,7 @@ def np_average(q):
 
 
 @implements(np.broadcast_to)
+@preserves_favunit
 def np_broadcast_to(array, *args, **kwargs):
     return Quantity(
         np.broadcast_to(array.value, *args, **kwargs), array.dimension
@@ -353,6 +357,7 @@ def np_dsplit(ary, *args, **kwargs):
 
 
 @implements(np.linalg.norm)
+@preserves_favunit
 def np_linalg_norm(x, *args, **kwargs):
     return Quantity(np.linalg.norm(x.value, *args, **kwargs), x.dimension)
 
@@ -391,21 +396,25 @@ def np_eig(a):
 
 
 @implements(np.diag)
+@preserves_favunit
 def np_diag(v, *args, **kwargs):
     return Quantity(np.diag(v.value, *args, **kwargs), v.dimension)
 
 
 @implements(np.diagflat)
+@preserves_favunit
 def np_diagflat(v, *args, **kwargs):
     return Quantity(np.diagflat(v.value, *args, **kwargs), v.dimension)
 
 
 @implements(np.tril)
+@preserves_favunit
 def np_tril(m, *args, **kwargs):
     return Quantity(np.tril(m.value, *args, **kwargs), m.dimension)
 
 
 @implements(np.triu)
+@preserves_favunit
 def np_triu(m, *args, **kwargs):
     return Quantity(np.triu(m.value, *args, **kwargs), m.dimension)
 
@@ -459,6 +468,7 @@ def np_polyfit(x, y, deg, *args, **kwargs):
 
 
 @implements(np.round)
+@preserves_favunit
 def np_round(a, *args, **kwargs):
     return Quantity(np.round(a.value, *args, **kwargs), a.dimension)
 
@@ -472,6 +482,7 @@ def np_polyval(p, x):
 
 
 @implements(np.clip)
+@preserves_favunit
 def np_clip(a, a_min, a_max, *args, **kwargs):
     a_min = quantify(a_min)
     a_max = quantify(a_max)
@@ -523,7 +534,11 @@ def np_column_stack(tup):
 
 @implements(np.compress)
 def np_compress(condition, a, **kwargs):
-    return Quantity(np.compress(condition, a.value, **kwargs), a.dimension)
+    return Quantity(
+        np.compress(condition, a.value, **kwargs),
+        a.dimension,
+        favunit=a.favunit,
+    )
 
 
 @implements(np.concatenate)
@@ -538,6 +553,7 @@ def np_concatenate(tup, *args, **kwargs):
 
 
 @implements(np.copy)
+@preserves_favunit
 def np_copy(a, **kwargs):
     return Quantity(np.copy(a.value, **kwargs), a.dimension)
 
@@ -620,11 +636,13 @@ def np_histogram2d(x, y, bins=10, range=None, weights=None, **kwargs):
 
 
 @implements(np.diagonal)
+@preserves_favunit
 def np_diagonal(a, **kwargs):
     return Quantity(np.diagonal(a.value, **kwargs), a.dimension)
 
 
 @implements(np.diff)
+@preserves_favunit
 def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
     # prepend/append must be stripped to their magnitude before the inner
     # np.diff call : forwarding a Quantity into np.diff(a.value, ...) would
@@ -653,6 +671,7 @@ def np_diff(a, n=1, axis=-1, prepend=np._NoValue, append=np._NoValue):
 
 
 @implements(np.ediff1d)
+@preserves_favunit
 def np_ediff1d(ary, to_end=None, to_begin=None):
     ary = quantify(ary)
     # to_end / to_begin are inserted verbatim, so they must share the dimension
@@ -667,36 +686,43 @@ def np_ediff1d(ary, to_end=None, to_begin=None):
 
 
 @implements(np.nan_to_num)
+@preserves_favunit
 def np_nan_to_num(x, *args, **kwargs):
     return Quantity(np.nan_to_num(x.value, *args, **kwargs), x.dimension)
 
 
 @implements(np.trim_zeros)
+@preserves_favunit
 def np_trim_zeros(filt, *args, **kwargs):
     return Quantity(np.trim_zeros(filt.value, *args, **kwargs), filt.dimension)
 
 
 @implements(np.fix)
+@preserves_favunit
 def np_fix(x, *args, **kwargs):
     return Quantity(np.fix(x.value, *args, **kwargs), x.dimension)
 
 
 @implements(np.real_if_close)
+@preserves_favunit
 def np_real_if_close(a, *args, **kwargs):
     return Quantity(np.real_if_close(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.sort_complex)
+@preserves_favunit
 def np_sort_complex(a):
     return Quantity(np.sort_complex(a.value), a.dimension)
 
 
 @implements(np.resize)
+@preserves_favunit
 def np_resize(a, new_shape):
     return Quantity(np.resize(a.value, new_shape), a.dimension)
 
 
 @implements(np.take_along_axis)
+@preserves_favunit
 def np_take_along_axis(arr, indices, axis):
     return Quantity(
         np.take_along_axis(arr.value, indices, axis), arr.dimension
@@ -733,7 +759,9 @@ def np_block(arrays):
 @implements(np.extract)
 def np_extract(condition, arr):
     arr = quantify(arr)
-    return Quantity(np.extract(condition, arr.value), arr.dimension)
+    return Quantity(
+        np.extract(condition, arr.value), arr.dimension, favunit=arr.favunit
+    )
 
 
 @implements(np.choose)
@@ -918,6 +946,7 @@ def np_dstack(tup):
 
 
 @implements(np.tile)
+@preserves_favunit
 def np_tile(A, reps):
     return Quantity(np.tile(A.value, reps), A.dimension)
 
@@ -1156,7 +1185,8 @@ def np_empty_like(prototype, **kwargs):
 
 
 @implements(np.expand_dims)
-def np_expand_ims(a, axis):
+@preserves_favunit
+def np_expand_dims(a, axis):
     return Quantity(np.expand_dims(a.value, axis), a.dimension)
 
 
@@ -1213,21 +1243,25 @@ def np_corrcoef(x, y=None, *args, **kwargs):
 
 
 @implements(np.take)
+@preserves_favunit
 def np_take(a, *args, **kwargs):
     return Quantity(np.take(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.squeeze)
+@preserves_favunit
 def np_squeeze(a, *args):
     return Quantity(np.squeeze(a.value, *args), a.dimension)
 
 
 @implements(np.repeat)
+@preserves_favunit
 def np_repeat(a, *args, **kwargs):
     return Quantity(np.repeat(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.roll)
+@preserves_favunit
 def np_roll(a, *args, **kwargs):
     return Quantity(np.roll(a.value, *args, **kwargs), a.dimension)
 
@@ -1240,11 +1274,13 @@ def np_meshgrid(*xi, **kwargs):
 
 
 @implements(np.real)
+@preserves_favunit
 def np_real(a):
     return Quantity(np.real(a.value), a.dimension)
 
 
 @implements(np.imag)
+@preserves_favunit
 def np_imag(a):
     return Quantity(np.imag(a.value), a.dimension)
 
@@ -1288,11 +1324,13 @@ def np_allclose(a, b, rtol=1e-05, atol=None, *args, **kwargs):
 
 
 @implements(np.ravel)
+@preserves_favunit
 def np_ravel(a, *args, **kwargs):
     return Quantity(np.ravel(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.reshape)
+@preserves_favunit
 def np_reshape(a, *args, **kwargs):
     return Quantity(np.reshape(a.value, *args, **kwargs), a.dimension)
 
@@ -1467,6 +1505,7 @@ def np_fft_ihfft(a, *args, **kwargs):
 
 
 @implements(np.fft.fftshift)
+@preserves_favunit
 def np_fft_fftshift(a, *args, **kwargs):
     """Numpy fft.fftshift wrapper for Quantity objects.
     Drop dimension, compute result and add it back."""
@@ -1475,6 +1514,7 @@ def np_fft_fftshift(a, *args, **kwargs):
 
 
 @implements(np.fft.ifftshift)
+@preserves_favunit
 def np_fft_ifftshift(a, *args, **kwargs):
     """Numpy fft.ifftshift wrapper for Quantity objects.
     Drop dimension, compute result and add it back."""

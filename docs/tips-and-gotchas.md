@@ -175,6 +175,18 @@ Dimension-**changing** reductions — `var`/`nanvar` (squares the dimension),
 dimension and has no valid meaning once the dimension is squared or raised to
 a power, so the result's `favunit` is left `None` by design.
 
+The same rule extends to the single-source, dimension-preserving shape and
+selection transforms — `sort`, `round`/`around`, `take`/`take_along_axis`,
+`squeeze`, `repeat`, `roll`, `ravel`, `reshape`, `resize`, `diagonal`, `diag`,
+`diagflat`, `tril`, `triu`, `compress`, `extract`, `expand_dims`, `tile`,
+`clip`, `diff`, `ediff1d`, `nan_to_num`, `trim_zeros`, `fix`, `real_if_close`,
+`sort_complex`, `real`, `imag`, `copy`, `broadcast_to`, `linalg.norm`,
+`fft.fftshift`/`fft.ifftshift` — they all carry the input's `favunit` too.
+`np.asanyarray` is a documented exception: it never reaches physipy's
+`__array_function__` override (the unit-stripping `__array__` escape hatch
+intercepts it first), so it drops the unit entirely — a separate, pre-existing
+gap, not a favunit-specific one.
+
 ### `np.full_like` / `np.full` with a `Quantity` fill value
 
 A `Quantity` `fill_value` is **not** honoured when the template/shape is plain,
