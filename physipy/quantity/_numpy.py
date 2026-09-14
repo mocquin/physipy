@@ -1,3 +1,4 @@
+import functools
 from dataclasses import dataclass
 from typing import Callable, Union
 
@@ -23,6 +24,27 @@ def implements_like(np_function: Callable) -> Callable:
         return func
 
     return decorator
+
+
+def preserves_favunit(func: Callable) -> Callable:
+    """Mark a dimension-preserving reduction handler as propagating favunit.
+
+    Applies to handlers whose first argument is the source Quantity and
+    whose result has the same dimension (max, min, mean, median, percentile,
+    cumsum, ...): the source's favunit is copied onto the result, matching
+    the behaviour of the equivalent `Quantity` instance methods (`.max()`,
+    `.mean()`, ...). Do NOT use on dimension-changing reductions (var, prod,
+    cumprod, ...) where the source favunit's dimension no longer matches the
+    result.
+    """
+
+    @functools.wraps(func)
+    def wrapper(a, *args, **kwargs):
+        result = func(a, *args, **kwargs)
+        result.favunit = quantify(a).favunit
+        return result
+
+    return wrapper
 
 
 @implements_like(np.arange)
@@ -111,11 +133,13 @@ def np_argmax(a, **kwargs):
 
 
 @implements(np.nanmin)
+@preserves_favunit
 def np_nanmin(a, **kwargs):
     return Quantity(np.nanmin(a.value, **kwargs), a.dimension)
 
 
 @implements(np.nanmax)
+@preserves_favunit
 def np_nanmax(a, **kwargs):
     return Quantity(np.nanmax(a.value, **kwargs), a.dimension)
 
@@ -131,36 +155,45 @@ def np_nanargmax(a, **kwargs):
 
 
 @implements(np.nansum)
+@preserves_favunit
 def np_nansum(a, **kwargs):
     return Quantity(np.nansum(a.value, **kwargs), a.dimension)
 
 
 @implements(np.nanmean)
+@preserves_favunit
 def np_nanmean(a, **kwargs):
     return Quantity(np.nanmean(a.value, **kwargs), a.dimension)
 
 
 @implements(np.nanmedian)
+@preserves_favunit
 def np_nanmedian(a, **kwargs):
     return Quantity(np.nanmedian(a.value, **kwargs), a.dimension)
 
 
 @implements(np.nanvar)
 def np_nanvar(a, **kwargs):
+    # variance squares the dimension, so the source favunit (linear in the
+    # original dimension) does not apply to the result: intentionally not
+    # propagated.
     return Quantity(np.nanvar(a.value, **kwargs), a.dimension**2)
 
 
 @implements(np.nanstd)
+@preserves_favunit
 def np_nanstd(a, **kwargs):
     return Quantity(np.nanstd(a.value, **kwargs), a.dimension)
 
 
 @implements(np.nanpercentile)
+@preserves_favunit
 def np_nanpercentile(a, *args, **kwargs):
     return Quantity(np.nanpercentile(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.nanquantile)
+@preserves_favunit
 def np_nanquantile(a, *args, **kwargs):
     return Quantity(np.nanquantile(a.value, *args, **kwargs), a.dimension)
 
@@ -178,6 +211,8 @@ def np_nanprod(a, axis=None, **kwargs):
             "Axis type not handled, use None, int or tuple of int."
         )
     # should the dimension be len(a)-number of nan ?
+    # a product raises the dimension to a power, so the source favunit does
+    # not apply to the result: intentionally not propagated.
     return Quantity(
         np.nanprod(a.value, axis=axis, **kwargs), a.dimension ** (n)
     )
@@ -202,6 +237,7 @@ def np_isrealobj(a):
 
 
 @implements(np.nancumsum)
+@preserves_favunit
 def np_nancumsum(a, **kwargs):
     return Quantity(np.nancumsum(a.value, **kwargs), a.dimension)
 
@@ -524,11 +560,13 @@ def np_cross(a, b, **kwargs):
 
 
 @implements(np.cumsum)
+@preserves_favunit
 def np_cumsum(a, **kwargs):
     return Quantity(np.cumsum(a.value, **kwargs), a.dimension)
 
 
 @implements(np.cumulative_sum)
+@preserves_favunit
 def np_cumulative_sum(a, *args, **kwargs):
     # numpy>=2.0 array-API spelling of cumsum : same dimension as input
     return Quantity(np.cumulative_sum(a.value, *args, **kwargs), a.dimension)
@@ -538,6 +576,8 @@ def np_cumulative_sum(a, *args, **kwargs):
 def np_cumprod(a, *args, **kwargs):
     # each partial product would carry a different power of the dimension, so
     # the result is only representable as a single Quantity when dimensionless
+    # (and, being dimensionless, favunit propagation would be meaningless
+    # anyway): intentionally not propagated.
     if not a.is_dimensionless():
         raise DimensionError(a.dimension, Dimension(None))
     return Quantity(np.cumprod(a.value, *args, **kwargs), a.dimension)
@@ -545,6 +585,7 @@ def np_cumprod(a, *args, **kwargs):
 
 @implements(np.cumulative_prod)
 def np_cumulative_prod(a, *args, **kwargs):
+    # see np_cumprod: dimensionless-only, favunit propagation not applicable.
     if not a.is_dimensionless():
         raise DimensionError(a.dimension, Dimension(None))
     return Quantity(np.cumulative_prod(a.value, *args, **kwargs), a.dimension)
@@ -799,22 +840,26 @@ def np_cov(m, y=None, *args, **kwargs):
 
 
 @implements(np.max)
+@preserves_favunit
 def np_max(qarr, *args, **kwargs):
     return Quantity(np.max(qarr.value, *args, **kwargs), qarr.dimension)
 
 
 @implements(np.min)
+@preserves_favunit
 def np_min(qarr, *args, **kwargs):
     return Quantity(np.min(qarr.value, *args, **kwargs), qarr.dimension)
 
 
 @implements(np.percentile)
+@preserves_favunit
 def np_percentile(a, *args, **kwargs):
     a = quantify(a)
     return Quantity(np.percentile(a.value, *args, **kwargs), a.dimension)
 
 
 @implements(np.quantile)
+@preserves_favunit
 def np_quantile(a, *args, **kwargs):
     return Quantity(np.quantile(a.value, *args, **kwargs), a.dimension)
 
@@ -879,6 +924,8 @@ def np_tile(A, reps):
 
 @implements(np.prod)
 def np_prod(a, **kwargs):
+    # a product raises the dimension to a power, so the source favunit does
+    # not apply to the result: intentionally not propagated.
     return Quantity(np.prod(a.value), a.dimension ** (len(a)))
 
 
@@ -925,6 +972,9 @@ def np_median(q):
 
 @implements(np.var)
 def np_var(q, *args, **kwargs):
+    # variance squares the dimension, so the source favunit (linear in the
+    # original dimension) does not apply to the result: intentionally not
+    # propagated.
     return Quantity(np.var(q.value, *args, **kwargs), q.dimension**2)
 
 

@@ -155,6 +155,26 @@ Two more numpy specifics:
   np.arange(10) * m            # also fine
   ```
 
+### `favunit` propagation in reductions: dimension-preserving only
+
+Dimension-**preserving** reductions — `max`/`min`/`nanmax`/`nanmin`, `mean`,
+`median`, `percentile`/`quantile` (and their `nan*` variants), `sum`/`nansum`,
+`std`/`nanstd`, `cumsum`/`nancumsum`/`cumulative_sum` — carry the input's
+`favunit` onto the result, matching the equivalent `Quantity` methods
+(`.max()`, `.mean()`, ...):
+
+```python
+a = qarange(1, 4) * m
+a.favunit = units["mm"]
+np.max(a).favunit   # -> mm, same as a.max().favunit
+```
+
+Dimension-**changing** reductions — `var`/`nanvar` (squares the dimension),
+`prod`/`nanprod`/`cumprod`/`cumulative_prod` (raises it to a power) — do
+**not** propagate `favunit`: the source favunit is linear in the original
+dimension and has no valid meaning once the dimension is squared or raised to
+a power, so the result's `favunit` is left `None` by design.
+
 ### `np.full_like` / `np.full` with a `Quantity` fill value
 
 A `Quantity` `fill_value` is **not** honoured when the template/shape is plain,
