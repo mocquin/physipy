@@ -17,7 +17,7 @@ import unittest
 
 import numpy as np
 
-from physipy import Dimension, DimensionError, Quantity, m, s
+from physipy import Dimension, DimensionError, Quantity, m, s, units
 
 
 def L(arr):
@@ -743,6 +743,61 @@ class TestArrayFunctionOut(unittest.TestCase):
         r = np.cumsum(a)
         self.assertIsInstance(r, Quantity)
         np.testing.assert_allclose(r.value, [1.0, 3.0, 6.0])
+
+
+class TestFavunitPropagation(unittest.TestCase):
+    """np.max/np.nanmax and friends should preserve favunit like the
+    equivalent Quantity instance methods (.max(), .mean(), ...) already do.
+    """
+
+    def setUp(self):
+        self.mm = units["mm"]
+        self.a = (np.array([1.0, 5.0, 3.0]) * m).set_favunit(self.mm)
+        self.a_nan = (np.array([1.0, 5.0, np.nan]) * m).set_favunit(self.mm)
+
+    def test_dimension_preserving_reductions_propagate_favunit(self):
+        for func, args in [
+            (np.max, ()),
+            (np.min, ()),
+            (np.mean, ()),
+            (np.median, ()),
+            (np.percentile, (50,)),
+            (np.quantile, (0.5,)),
+            (np.cumsum, ()),
+            (np.cumulative_sum, ()),
+        ]:
+            with self.subTest(func=func.__name__):
+                result = func(self.a, *args)
+                self.assertIs(result.favunit, self.mm)
+
+    def test_nan_reductions_propagate_favunit(self):
+        for func, args in [
+            (np.nanmax, ()),
+            (np.nanmin, ()),
+            (np.nansum, ()),
+            (np.nanmean, ()),
+            (np.nanmedian, ()),
+            (np.nanstd, ()),
+            (np.nanpercentile, (50,)),
+            (np.nanquantile, (0.5,)),
+            (np.nancumsum, ()),
+        ]:
+            with self.subTest(func=func.__name__):
+                result = func(self.a_nan, *args)
+                self.assertIs(result.favunit, self.mm)
+
+    def test_dimension_changing_reductions_do_not_propagate_favunit(self):
+        # var/prod/cumprod change the dimension (squared / powered), so the
+        # source's linear favunit is not applicable and is intentionally
+        # left as None on the result.
+        for func, args in [
+            (np.var, ()),
+            (np.prod, ()),
+        ]:
+            with self.subTest(func=func.__name__):
+                result = func(self.a, *args)
+                self.assertIsNone(result.favunit)
+        self.assertIsNone(np.nanvar(self.a_nan).favunit)
 
 
 if __name__ == "__main__":
